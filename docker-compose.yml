@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  eswms:
+    image: ${DOCKER_REGISTRY-}eswms
+    build:
+      context: .
+      dockerfile: src/esWMS/esWMS/Dockerfile
