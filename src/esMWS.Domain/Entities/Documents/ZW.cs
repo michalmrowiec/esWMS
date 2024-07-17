@@ -2,5 +2,6 @@
 {
     public class ZW : DocumentBase
     {
+        public DateTime? GoodsReceiptDate { get; set; }
     }
 }

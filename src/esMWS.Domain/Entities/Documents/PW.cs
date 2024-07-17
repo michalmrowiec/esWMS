@@ -2,5 +2,6 @@
 {
     public class PW : DocumentBase
     {
+        public DateTime? GoodsReceiptDate { get; set; }
     }
 }
