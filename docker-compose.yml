@@ -2,7 +2,15 @@ version: '3.4'
 
 services:
   eswms:
+    container_name: eswms
     image: ${DOCKER_REGISTRY-}eswms
     build:
       context: .
       dockerfile: src/esWMS/esWMS/Dockerfile
+
+  db:
+    container_name: mysqldb
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Strong@Passw0rd
