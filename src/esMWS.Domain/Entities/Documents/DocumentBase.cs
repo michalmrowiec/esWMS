@@ -1,7 +1,6 @@
 ﻿using esMWS.Domain.Entities.SystemActors;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace esMWS.Domain.Entities.Documents
 {
@@ -25,5 +24,6 @@ namespace esMWS.Domain.Entities.Documents
         public Warehouse? IssueWarehouse { get; set; }
         public Employee? IssuingEmployee { get; set; }
         public Employee? ApprovingEmployee { get; set; }
+        public IList<DocumentItem>? DocumentItems { get; set; }
     }
 }

@@ -31,6 +31,8 @@ namespace esMWS.Domain.Entities.Documents
         [Required]
         public bool IsApproved { get; set; }
 
+        public DocumentBase? Document { get; set; }
+        public Product? Product { get; set; }
         public WarehouseUnitItems? WarehouseUnitItem { get; set; }
     }
 }

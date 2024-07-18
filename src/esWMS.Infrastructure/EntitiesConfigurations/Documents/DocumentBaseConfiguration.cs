@@ -8,7 +8,15 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
     {
         public void Configure(EntityTypeBuilder<DocumentBase> builder)
         {
-            
+            builder
+                .HasDiscriminator<string>("DocumentType")
+                .HasValue<PZ>("PZ")
+                .HasValue<PW>("PW")
+                .HasValue<ZW>("ZW")
+                .HasValue<WZ>("WZ")
+                .HasValue<RW>("RW")
+                .HasValue<MMM>("MMM")
+                .HasValue<MMP>("MMP");
         }
     }
 }
