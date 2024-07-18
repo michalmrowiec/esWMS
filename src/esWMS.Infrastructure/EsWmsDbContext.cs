@@ -21,7 +21,7 @@ namespace esWMS.Infrastructure
         public DbSet<Zone> Zones { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<WarehouseUnit> WarehouseUnits { get; set; }
-        public DbSet<WarehouseUnitItems> WarehouseUnitItems { get; set; }
+        public DbSet<WarehouseUnitItem> WarehouseUnitItems { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Contractor> Contractors { get; set; }

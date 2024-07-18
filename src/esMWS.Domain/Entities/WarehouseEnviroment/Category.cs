@@ -11,5 +11,9 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
         [StringLength(50)]
         public string CategoryName { get; set; } = null!;
         public string? ParentCategoryId { get; set; }
+
+        public IList<Product>? Products { get; set; }
+        public Category? ParentCategory { get; set; }
+        public IList<Category>? ChildCategories { get; set; }
     }
 }

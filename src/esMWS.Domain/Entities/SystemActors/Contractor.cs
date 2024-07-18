@@ -1,4 +1,5 @@
 ﻿using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.WarehouseEnviroment;
 using System.ComponentModel.DataAnnotations;
 
 namespace esMWS.Domain.Entities.SystemActors
@@ -36,5 +37,6 @@ namespace esMWS.Domain.Entities.SystemActors
 
         public IList<PZ>? PZDocuments { get; set; }
         public IList<WZ>? WZDocuments { get; set; }
+        public IList<Product>? Products { get; set; }
     }
 }

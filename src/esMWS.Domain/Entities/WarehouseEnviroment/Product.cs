@@ -1,4 +1,5 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.SystemActors;
 using System.ComponentModel.DataAnnotations;
 
 namespace esMWS.Domain.Entities.WarehouseEnviroment
@@ -34,5 +35,8 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
 
         public Category? Category { get; set; }
         public Contractor? SupplierContractor { get; set; }
+        public IList<DocumentItem>? DocumentItems { get; set; }
+        public IList<WarehouseUnitItem>? WarehouseUnitItems { get; set; }
+        public IList<Location>? LocationDefaultMedia { get; set; }
     }
 }

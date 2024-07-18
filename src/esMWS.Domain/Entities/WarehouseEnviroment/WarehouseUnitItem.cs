@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace esMWS.Domain.Entities.WarehouseEnviroment
 {
-    public class WarehouseUnitItems
+    public class WarehouseUnitItem
     {
         [Required]
         [MaxLength(450)]

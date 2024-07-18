@@ -17,6 +17,18 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .HasValue<RW>("RW")
                 .HasValue<MMM>("MMM")
                 .HasValue<MMP>("MMP");
+
+            builder
+                .HasOne(d => d.IssueWarehouse)
+                .WithMany(w => w.Documents)
+                .HasForeignKey(d => d.IssueWarehouseId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder
+                .HasMany(d => d.DocumentItems)
+                .WithOne(di => di.Document)
+                .HasForeignKey(di => di.DocumentId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

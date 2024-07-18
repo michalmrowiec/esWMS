@@ -33,6 +33,6 @@ namespace esMWS.Domain.Entities.Documents
 
         public DocumentBase? Document { get; set; }
         public Product? Product { get; set; }
-        public WarehouseUnitItems? WarehouseUnitItem { get; set; }
+        public WarehouseUnitItem? WarehouseUnitItem { get; set; }
     }
 }
