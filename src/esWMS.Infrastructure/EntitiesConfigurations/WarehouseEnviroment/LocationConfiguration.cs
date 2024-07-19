@@ -1,6 +1,7 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 {
@@ -9,6 +10,48 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
         public void Configure(EntityTypeBuilder<Location> builder)
         {
             builder.HasKey(l => l.LocationId);
+
+            builder.Property(l => l.LocationId)
+                .IsRequired()
+                .HasMaxLength(11);
+
+            builder.Property(l => l.ZoneId)
+                .IsRequired()
+                .HasMaxLength(5);
+
+            builder.Property(l => l.Row)
+                .IsRequired()
+                .HasAnnotation("Range", new RangeAttribute(0, 99));
+
+            builder.Property(l => l.Column)
+                .IsRequired()
+                .HasMaxLength(1);
+
+            builder.Property(l => l.Level)
+                .IsRequired()
+                .HasAnnotation("Range", new RangeAttribute(0, 9));
+
+            builder.Property(l => l.Cell)
+                .IsRequired()
+                .HasAnnotation("Range", new RangeAttribute(0, 9));
+
+            builder.Property(l => l.Capacity)
+                .IsRequired()
+                .HasDefaultValue(1)
+                .HasAnnotation("Range", new RangeAttribute(1, 2_000_000));
+
+            builder.Property(l => l.IsBusy)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+            builder.Property(l => l.CreatedAt)
+                .IsRequired();
+
+            builder.Property(l => l.CreatedBy)
+                .HasMaxLength(60);
+
+            builder.Property(l => l.ModifiedBy)
+                .HasMaxLength(60);
 
             builder
                 .HasOne(l => l.Zone)

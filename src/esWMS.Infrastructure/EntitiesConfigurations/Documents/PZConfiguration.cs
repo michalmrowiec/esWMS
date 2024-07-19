@@ -8,6 +8,10 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
     {
         public void Configure(EntityTypeBuilder<PZ> builder)
         {
+            builder.Property(d => d.SupplierContractorId)
+                .IsRequired()
+                .HasMaxLength(3);
+
             builder
                 .HasOne(d => d.SupplierContractor)
                 .WithMany(c => c.PZDocuments)

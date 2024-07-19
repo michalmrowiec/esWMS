@@ -10,6 +10,29 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
         {
             builder.HasKey(d => d.DocumentId);
 
+            builder.Property(d => d.DocumentId)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            builder.Property(d => d.IssueWarehouseId)
+                .IsRequired()
+                .HasMaxLength(3);
+
+            builder.Property(d => d.DocumentIssueDate)
+                .IsRequired();
+
+            builder.Property(d => d.IsApproved)
+                .IsRequired();
+
+            builder.Property(d => d.CreatedAt)
+                .IsRequired();
+
+            builder.Property(d => d.CreatedBy)
+                .HasMaxLength(60);
+
+            builder.Property(d => d.ModifiedBy)
+                .HasMaxLength(60);
+
             builder
                 .HasDiscriminator<string>("DocumentType")
                 .HasValue<PZ>("PZ")

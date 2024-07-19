@@ -1,26 +1,20 @@
 ﻿using esMWS.Domain.Entities.Documents;
-using System.ComponentModel.DataAnnotations;
 
 namespace esMWS.Domain.Entities.WarehouseEnviroment
 {
     public class Warehouse
     {
-        [Required]
-        [MaxLength(3)]
-        public string? WarehouseId { get; set; }
-        [Required]
-        [MaxLength(250)]
-        public string? WarehouseName { get; set; }
-        [MaxLength(100)]
-        public string Country { get; set; }
-        [MaxLength(100)]
-        public string City { get; set; }
-        [MaxLength(100)]
-        public string Region { get; set; }
-        [MaxLength(25)]
-        public string PostalCode { get; set; }
-        [MaxLength(250)]
-        public string Address { get; set; }
+        public string WarehouseId { get; set; } = null!;
+        public string WarehouseName { get; set; } = null!;
+        public string? Country { get; set; }
+        public string? City { get; set; }
+        public string? Region { get; set; }
+        public string? PostalCode { get; set; }
+        public string? Address { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public string? ModifiedBy { get; set; }
 
         public IList<Zone>? Zones { get; set; }
         public IList<WarehouseUnit>? WarehouseUnits { get; set; }

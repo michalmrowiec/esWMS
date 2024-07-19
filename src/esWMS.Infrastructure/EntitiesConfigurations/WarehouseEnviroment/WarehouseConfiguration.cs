@@ -1,5 +1,4 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esMWS.Domain.Entities.WarehouseEnviroment;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,6 +9,38 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
         public void Configure(EntityTypeBuilder<Warehouse> builder)
         {
             builder.HasKey(w => w.WarehouseId);
+
+            builder.Property(w => w.WarehouseId)
+                .IsRequired()
+                .HasMaxLength(3);
+
+            builder.Property(w => w.WarehouseName)
+                .IsRequired()
+                .HasMaxLength(250);
+
+            builder.Property(w => w.Country)
+                .HasMaxLength(100);
+
+            builder.Property(w => w.City)
+                .HasMaxLength(100);
+
+            builder.Property(w => w.Region)
+                .HasMaxLength(100);
+
+            builder.Property(w => w.PostalCode)
+                .HasMaxLength(25);
+
+            builder.Property(w => w.Address)
+                .HasMaxLength(250);
+
+            builder.Property(w => w.CreatedAt)
+                .IsRequired();
+
+            builder.Property(w => w.CreatedBy)
+                .HasMaxLength(60);
+
+            builder.Property(w => w.ModifiedBy)
+                .HasMaxLength(60);
 
             builder
                 .HasMany(w => w.Documents)

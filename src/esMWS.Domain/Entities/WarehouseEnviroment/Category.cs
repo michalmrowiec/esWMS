@@ -1,16 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace esMWS.Domain.Entities.WarehouseEnviroment
+﻿namespace esMWS.Domain.Entities.WarehouseEnviroment
 {
     public class Category
     {
-        [Required]
-        [StringLength(450)]
         public string CategoryId { get; set; } = null!;
-        [Required]
-        [StringLength(50)]
         public string CategoryName { get; set; } = null!;
         public string? ParentCategoryId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public string? ModifiedBy { get; set; }
 
         public IList<Product>? Products { get; set; }
         public Category? ParentCategory { get; set; }

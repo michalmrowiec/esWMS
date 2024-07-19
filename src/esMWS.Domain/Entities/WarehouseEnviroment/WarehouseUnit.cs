@@ -1,13 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace esMWS.Domain.Entities.WarehouseEnviroment
+﻿namespace esMWS.Domain.Entities.WarehouseEnviroment
 {
     public class WarehouseUnit
     {
-        [Required]
-        [MaxLength(450)]
         public string WarehouseUnitId { get; set; } = null!;
-        [Required]
         public string WarehouseId { get; set; } = null!;
         public string? MediaId { get; set; }
         public string? LocationId { get; set; }
@@ -17,6 +12,10 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
         public int? TotalHeight { get; set; }
         public bool? CanBeStacked { get; set; }
         public string? StackOnId { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public string? ModifiedBy { get; set; }
 
         public Warehouse? Warehouse { get; set; }
         public Product? Media { get; set; }

@@ -10,6 +10,30 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
         {
             builder.HasKey(z => z.ZoneId);
 
+            builder.Property(z => z.ZoneId)
+                .IsRequired()
+                .HasMaxLength(5);
+
+            builder.Property(z => z.ZoneName)
+                .HasMaxLength(30);
+
+            builder.Property(z => z.ZoneAlias)
+                .IsRequired()
+                .HasMaxLength(1);
+
+            builder.Property(z => z.WarehouseId)
+                .IsRequired()
+                .HasMaxLength(3);
+
+            builder.Property(z => z.CreatedAt)
+                .IsRequired();
+
+            builder.Property(z => z.CreatedBy)
+                .HasMaxLength(60);
+
+            builder.Property(z => z.ModifiedBy)
+                .HasMaxLength(60);
+
             builder
                 .HasOne(z => z.Warehouse)
                 .WithMany(w => w.Zones)

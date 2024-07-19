@@ -10,6 +10,27 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
         {
             builder.HasKey(c => c.CategoryId);
 
+            builder.Property(c => c.CategoryId)
+                .IsRequired()
+                .HasMaxLength(450);
+
+            builder.Property(c => c.CategoryName)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            builder.Property(c => c.ParentCategoryId)
+                .IsRequired()
+                .HasMaxLength(450);
+
+            builder.Property(c => c.CreatedAt)
+                .IsRequired();
+
+            builder.Property(c => c.CreatedBy)
+                .HasMaxLength(60);
+
+            builder.Property(c => c.ModifiedBy)
+                .HasMaxLength(60);
+
             builder
                 .HasOne(c => c.ParentCategory)
                 .WithMany(c => c.ChildCategories)

@@ -8,6 +8,10 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
     {
         public void Configure(EntityTypeBuilder<MMP> builder)
         {
+            builder.Property(d => d.FromWarehouseId)
+                .IsRequired()
+                .HasMaxLength(3);
+
             builder
                 .HasOne(d => d.FromWarehouse)
                 .WithMany(w => w.MMPDocuments)
