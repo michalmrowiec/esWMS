@@ -70,3 +70,21 @@
 2024-07-19 09:48:13.1890 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
 2024-07-19 09:48:13.2178 Info Configuration initialized.
 2024-07-19 09:48:13.8429 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 10:19:33.5606 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2024-07-19 10:19:33.5810 Info Registered target NLog.Targets.ConsoleTarget(Name=logconsole)
+2024-07-19 10:19:33.6488 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
+2024-07-19 10:19:33.6848 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 10:19:33.7094 Info Configuration initialized.
+2024-07-19 10:19:34.3490 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 10:22:00.3888 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2024-07-19 10:22:00.4095 Info Registered target NLog.Targets.ConsoleTarget(Name=logconsole)
+2024-07-19 10:22:00.4712 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
+2024-07-19 10:22:00.5084 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 10:22:00.5346 Info Configuration initialized.
+2024-07-19 10:22:01.1642 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 10:22:35.2914 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2024-07-19 10:22:35.3166 Info Registered target NLog.Targets.ConsoleTarget(Name=logconsole)
+2024-07-19 10:22:35.3825 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
+2024-07-19 10:22:35.4258 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 10:22:35.4582 Info Configuration initialized.
+2024-07-19 10:22:36.0721 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
