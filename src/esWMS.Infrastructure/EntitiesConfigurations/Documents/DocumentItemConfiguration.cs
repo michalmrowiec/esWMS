@@ -8,6 +8,8 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
     {
         public void Configure(EntityTypeBuilder<DocumentItem> builder)
         {
+            builder.HasKey(di => di.DocumentItemsId);
+
             builder
                 .HasOne(di => di.Document)
                 .WithMany(d => d.DocumentItems)

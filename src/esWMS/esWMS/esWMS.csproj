@@ -13,8 +13,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\esWMS.Infrastructure\esWMS.Infrastructure.csproj" />
     <ProjectReference Include="..\esWMS.Client\esWMS.Client.csproj" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.4" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.11" />
   </ItemGroup>
 
 </Project>

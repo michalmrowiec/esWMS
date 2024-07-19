@@ -8,6 +8,8 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.SystemActors
     {
         public void Configure(EntityTypeBuilder<Contractor> builder)
         {
+            builder.HasKey(c => c.ContractorId);
+
             builder
                 .HasMany(c => c.PZDocuments)
                 .WithOne(pz => pz.SupplierContractor)

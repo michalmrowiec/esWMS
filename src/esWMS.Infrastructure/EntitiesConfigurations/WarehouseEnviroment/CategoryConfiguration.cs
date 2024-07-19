@@ -8,6 +8,8 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
+            builder.HasKey(c => c.CategoryId);
+
             builder
                 .HasOne(c => c.ParentCategory)
                 .WithMany(c => c.ChildCategories)

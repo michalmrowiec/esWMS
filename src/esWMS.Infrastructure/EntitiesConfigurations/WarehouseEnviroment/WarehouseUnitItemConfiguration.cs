@@ -8,6 +8,8 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
     {
         public void Configure(EntityTypeBuilder<WarehouseUnitItem> builder)
         {
+            builder.HasKey(wui => wui.WarehouseUnitItemId);
+
             builder
                 .HasOne(wui => wui.WarehouseUnit)
                 .WithMany(wu => wu.WarehouseUnitItems)

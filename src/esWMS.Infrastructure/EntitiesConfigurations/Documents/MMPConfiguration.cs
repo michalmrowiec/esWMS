@@ -10,7 +10,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
         {
             builder
                 .HasOne(d => d.FromWarehouse)
-                .WithMany(w => w.Documents as IList<MMP>)
+                .WithMany(w => w.MMPDocuments)
                 .HasForeignKey(d => d.FromWarehouseId)
                 .OnDelete(DeleteBehavior.NoAction);
 

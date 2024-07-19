@@ -8,6 +8,8 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
     {
         public void Configure(EntityTypeBuilder<DocumentBase> builder)
         {
+            builder.HasKey(d => d.DocumentId);
+
             builder
                 .HasDiscriminator<string>("DocumentType")
                 .HasValue<PZ>("PZ")

@@ -2,11 +2,10 @@
 using esMWS.Domain.Entities.SystemActors;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Contracts;
 
 namespace esWMS.Infrastructure
 {
-    internal class EsWmsDbContext : DbContext
+    public class EsWmsDbContext : DbContext
     {
         public DbSet<DocumentBase> Documents { get; set; }
         public DbSet<PZ> PZ { get; set; }

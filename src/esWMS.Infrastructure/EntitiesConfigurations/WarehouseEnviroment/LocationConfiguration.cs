@@ -8,6 +8,8 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
     {
         public void Configure(EntityTypeBuilder<Location> builder)
         {
+            builder.HasKey(l => l.LocationId);
+
             builder
                 .HasOne(l => l.Zone)
                 .WithMany(z => z.Locations)

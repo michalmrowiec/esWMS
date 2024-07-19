@@ -9,6 +9,8 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
     {
         public void Configure(EntityTypeBuilder<Warehouse> builder)
         {
+            builder.HasKey(w => w.WarehouseId);
+
             builder
                 .HasMany(w => w.Documents)
                 .WithOne(d => d.IssueWarehouse)
@@ -16,13 +18,13 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder
-                .HasMany(w => w.Documents as IList<MMM>)
+                .HasMany(w => w.MMMDocuments)
                 .WithOne(d => d.ToWarehouse)
                 .HasForeignKey(d => d.ToWarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder
-                .HasMany(w => w.Documents as IList<MMP>)
+                .HasMany(w => w.MMPDocuments)
                 .WithOne(d => d.FromWarehouse)
                 .HasForeignKey(d => d.FromWarehouseId)
                 .OnDelete(DeleteBehavior.Restrict);

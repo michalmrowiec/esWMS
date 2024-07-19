@@ -6,7 +6,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
     {
         [Required]
         [MaxLength(450)]
-        public string WarehouseUnitsId { get; set; } = null!;
+        public string WarehouseUnitId { get; set; } = null!;
         [Required]
         public string WarehouseId { get; set; } = null!;
         public string? MediaId { get; set; }

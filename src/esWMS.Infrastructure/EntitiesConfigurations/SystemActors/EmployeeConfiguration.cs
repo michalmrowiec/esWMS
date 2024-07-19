@@ -8,7 +8,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.SystemActors
     {
         public void Configure(EntityTypeBuilder<Employee> builder)
         {
-            
+            builder.HasKey(e => e.EmployeeId);
         }
     }
 }
