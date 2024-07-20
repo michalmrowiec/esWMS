@@ -1,0 +1,18 @@
+2024-07-19 18:36:32.8080 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2024-07-19 18:36:32.8182 Info Registered target NLog.Targets.ConsoleTarget(Name=logconsole)
+2024-07-19 18:36:32.8486 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
+2024-07-19 18:36:32.8643 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 18:36:32.8758 Info Configuration initialized.
+2024-07-19 18:36:33.4549 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 18:36:57.7277 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2024-07-19 18:36:57.7363 Info Registered target NLog.Targets.ConsoleTarget(Name=logconsole)
+2024-07-19 18:36:57.7680 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
+2024-07-19 18:36:57.7860 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 18:36:57.7983 Info Configuration initialized.
+2024-07-19 18:36:58.2330 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 18:40:38.2811 Info Registered target NLog.Targets.FileTarget(Name=allfile)
+2024-07-19 18:40:38.2908 Info Registered target NLog.Targets.ConsoleTarget(Name=logconsole)
+2024-07-19 18:40:38.3211 Info NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c. File version: 5.3.2.2526. Product version: 5.3.2+8d52d4f3fcdbd84beae3442e1fdc8125598ed81f. GlobalAssemblyCache: False
+2024-07-19 18:40:38.3388 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config
+2024-07-19 18:40:38.3520 Info Configuration initialized.
+2024-07-19 18:40:38.7772 Info Validating config: TargetNames=allfile, logconsole, ConfigItems=25, FilePath=/app/bin/Debug/net8.0/NLog.config

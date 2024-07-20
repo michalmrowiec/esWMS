@@ -12,7 +12,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 
             builder.Property(d => d.DocumentId)
                 .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(25);
 
             builder.Property(d => d.IssueWarehouseId)
                 .IsRequired()

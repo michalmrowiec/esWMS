@@ -1,6 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using esMWS.Domain.Entities.SystemActors;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace esWMS.Infrastructure
 {
@@ -10,6 +14,34 @@ namespace esWMS.Infrastructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            var authenticationSettings = new AuthenticationSettings();
+            configuration.GetSection("Authentication").Bind(authenticationSettings);
+
+            services.AddAuthentication(option =>
+            {
+                option.DefaultAuthenticateScheme = "Bearer";
+                option.DefaultScheme = "Bearer";
+                option.DefaultChallengeScheme = "Bearer";
+            }).AddJwtBearer(cfg =>
+            {
+                cfg.RequireHttpsMetadata = false;
+                cfg.SaveToken = true;
+                cfg.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = authenticationSettings.JwtIssuer,
+                    ValidAudience = authenticationSettings.JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey)),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true
+                };
+            });
+
+            services.AddSingleton(authenticationSettings);
+
+            services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
+
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 29));
 
             services.AddDbContext<EsWmsDbContext>(
