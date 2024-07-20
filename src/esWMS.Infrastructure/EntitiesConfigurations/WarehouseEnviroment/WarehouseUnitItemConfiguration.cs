@@ -25,8 +25,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 
             builder.Property(wui => wui.Quantity)
                 .IsRequired()
-                .HasDefaultValue(0)
-                .HasAnnotation("Range", new RangeAttribute(0, 1_000_000));
+                .HasDefaultValue(0);
 
             builder.Property(wui => wui.BatchLot)
                 .HasMaxLength(50);

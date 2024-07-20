@@ -20,25 +20,21 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .HasMaxLength(5);
 
             builder.Property(l => l.Row)
-                .IsRequired()
-                .HasAnnotation("Range", new RangeAttribute(0, 99));
+                .IsRequired();
 
             builder.Property(l => l.Column)
                 .IsRequired()
                 .HasMaxLength(1);
 
             builder.Property(l => l.Level)
-                .IsRequired()
-                .HasAnnotation("Range", new RangeAttribute(0, 9));
+                .IsRequired();
 
             builder.Property(l => l.Cell)
-                .IsRequired()
-                .HasAnnotation("Range", new RangeAttribute(0, 9));
+                .IsRequired();
 
             builder.Property(l => l.Capacity)
                 .IsRequired()
-                .HasDefaultValue(1)
-                .HasAnnotation("Range", new RangeAttribute(1, 2_000_000));
+                .HasDefaultValue(1);
 
             builder.Property(l => l.IsBusy)
                 .IsRequired()

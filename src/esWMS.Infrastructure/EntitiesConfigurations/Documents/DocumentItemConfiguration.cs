@@ -36,8 +36,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 
             builder.Property(di => di.Quantity)
                 .IsRequired()
-                .HasDefaultValue(0)
-                .HasAnnotation("Range", new RangeAttribute(0, 1_000_000));
+                .HasDefaultValue(0);
 
             builder.Property(di => di.Price)
                 .HasColumnType("decimal(18,2)");
