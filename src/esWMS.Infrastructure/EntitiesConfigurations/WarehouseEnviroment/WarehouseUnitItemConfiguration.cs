@@ -34,6 +34,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
             builder.Property(wui => wui.SerialNumber)
                 .HasMaxLength(100);
 
+            builder.Property(wui => wui.Price)
+                .HasColumnType("decimal(18,2)");
+
             builder.Property(wui => wui.CreatedAt)
                 .IsRequired();
 

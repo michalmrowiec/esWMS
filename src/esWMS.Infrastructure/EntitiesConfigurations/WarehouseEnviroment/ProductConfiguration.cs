@@ -43,6 +43,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
             builder.Property(p => p.MediaTypeAlias)
                 .HasMaxLength(10);
 
+            builder.Property(p => p.Price)
+                .HasColumnType("decimal(18,2)");
+
             builder.Property(p => p.IsActive)
                 .IsRequired();
 

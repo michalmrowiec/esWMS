@@ -40,7 +40,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .HasAnnotation("Range", new RangeAttribute(0, 1_000_000));
 
             builder.Property(di => di.Price)
-                .HasAnnotation("Range", new RangeAttribute(0, 10_000_000));
+                .HasColumnType("decimal(18,2)");
 
             builder.Property(di => di.Currency)
                 .HasMaxLength(5);

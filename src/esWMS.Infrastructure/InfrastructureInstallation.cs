@@ -1,4 +1,6 @@
 ﻿using esMWS.Domain.Entities.SystemActors;
+using esWMS.Application.Contracts.Persistence;
+using esWMS.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -47,6 +49,8 @@ namespace esWMS.Infrastructure
             services.AddDbContext<EsWmsDbContext>(
                 dbContextOptions => dbContextOptions
                     .UseMySql(configuration.GetConnectionString("ContainerDb"), serverVersion));
+
+            services.AddScoped<IProductRepository, ProductRepository>();
         }
     }
 }
