@@ -10,6 +10,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
         {
             builder.HasKey(d => d.DocumentId);
 
+            builder.HasIndex(d => d.DocumentIssueDate)
+                .HasDatabaseName("IX_Documents_DocumentIssueDate");
+
             builder.Property(d => d.DocumentId)
                 .IsRequired()
                 .HasMaxLength(25);
