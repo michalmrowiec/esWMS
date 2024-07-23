@@ -4,13 +4,12 @@ using Microsoft.Extensions.Logging;
 
 namespace esWMS.Infrastructure.Repositories
 {
-    internal class BaseRepository<TEntity, TId, TLogger>(EsWmsDbContext context, ILogger<TLogger> logger)
+    internal class BaseRepository<TEntity, TId>(EsWmsDbContext context, ILogger logger)
         : IBaseRepository<TEntity, TId>
         where TEntity : class
-        where TLogger : class
     {
         private readonly EsWmsDbContext _context = context;
-        private readonly ILogger<TLogger> _logger = logger;
+        private readonly ILogger _logger = logger;
 
         public async Task<TEntity> CreateAsync(TEntity entity)
         {

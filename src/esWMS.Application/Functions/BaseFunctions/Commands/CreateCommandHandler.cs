@@ -6,17 +6,18 @@ using MediatR;
 
 namespace esWMS.Application.Functions.BaseFunctions.Commands
 {
-    public class CreateCommandHandler<TRequest, TEntity, TId, TEntityDto>
+    public abstract class CreateCommandHandler<TRequest, TEntity, TId, TEntityDto>
         : IRequestHandler<TRequest, BaseResponse<TEntityDto>>
         where TRequest : IRequest<BaseResponse<TEntityDto>>
         where TEntity : class
         where TEntityDto : class
     {
-        private AbstractValidator<TRequest> _validator;
+        private readonly IValidator<TRequest> _validator;
         private readonly IBaseRepository<TEntity, TId> _repository;
         private readonly IMapper _mapper;
+
         public CreateCommandHandler
-            (AbstractValidator<TRequest> validator,
+            (IValidator<TRequest> validator,
             IBaseRepository<TEntity, TId> repository,
             IMapper mapper)
         {
@@ -24,6 +25,7 @@ namespace esWMS.Application.Functions.BaseFunctions.Commands
             _repository = repository;
             _mapper = mapper;
         }
+
         public virtual async Task<BaseResponse<TEntityDto>> Handle
             (TRequest request, CancellationToken cancellationToken)
         {

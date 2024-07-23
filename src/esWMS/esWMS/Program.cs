@@ -1,7 +1,9 @@
 using esWMS.Application;
+using esWMS.Application.Functions.Categories.Commands;
 using esWMS.Components;
 using esWMS.Infrastructure;
 using esWMS.Services;
+using MediatR;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
@@ -23,6 +25,9 @@ try
 
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
+
+    builder.Services.AddScoped<IUserContextService, UserContextService>();
+    builder.Services.AddHttpContextAccessor();
 
     builder.Services.AddControllers();
 
@@ -67,7 +72,6 @@ try
         .GetRequiredService<EsWmsDbContext>()
         .UpdateDatabase(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
 
-
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -91,6 +95,10 @@ try
     app.UseAntiforgery();
 
     app.UseAuthorization();
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller}/{action}/{id?}");
 
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode()

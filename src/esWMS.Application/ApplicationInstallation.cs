@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace esWMS.Application
 {
@@ -10,6 +11,8 @@ namespace esWMS.Application
             {
                 cfg.RegisterServicesFromAssembly(typeof(ApplicationInstallation).Assembly);
             });
+
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
         }
     }
 }

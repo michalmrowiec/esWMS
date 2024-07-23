@@ -53,10 +53,9 @@ namespace esWMS.Application.UnitTests.Functions.Categories
             mapperMock.Setup(m => m.Map<CategoryDto>(It.IsAny<Category>()))
                 .Returns(categoryDto);
 
-            var handler = new CreateCategoryCommandHandler(
-                new CreateCategoryValidator(), repositoryMock.Object, mapperMock.Object);
+            var handler = new CreateCategoryCommandHandler(repositoryMock.Object, mapperMock.Object);
 
-            BaseResponse<CategoryDto> response = (BaseResponse<CategoryDto>)await handler.Handle(categoryCommand, new CancellationToken());
+            BaseResponse<CategoryDto> response = await handler.Handle(categoryCommand, new CancellationToken());
 
             response.Success.Should().BeTrue();
             response.Message.Should().BeNull();
