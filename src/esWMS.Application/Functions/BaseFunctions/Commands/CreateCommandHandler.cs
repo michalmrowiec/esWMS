@@ -6,7 +6,7 @@ using MediatR;
 
 namespace esWMS.Application.Functions.BaseFunctions.Commands
 {
-    internal class CreateCommandHandler<TRequest, TEntity, TId, TEntityDto>
+    public class CreateCommandHandler<TRequest, TEntity, TId, TEntityDto>
         : IRequestHandler<TRequest, BaseResponse<TEntityDto>>
         where TRequest : IRequest<BaseResponse<TEntityDto>>
         where TEntity : class
@@ -38,7 +38,9 @@ namespace esWMS.Application.Functions.BaseFunctions.Commands
 
             var createdEntity = await _repository.CreateAsync(entity);
 
-            return new BaseResponse<TEntityDto>(createdEntity);
+            var entityDto = _mapper.Map<TEntityDto>(createdEntity);
+
+            return new BaseResponse<TEntityDto>(entityDto);
         }
     }
 }

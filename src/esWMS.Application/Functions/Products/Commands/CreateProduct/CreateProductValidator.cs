@@ -2,7 +2,7 @@
 
 namespace esWMS.Application.Functions.Products.Commands.CreateProduct
 {
-    internal class CreateProductValidator : AbstractValidator<CreateProductCommand>
+    public class CreateProductValidator : AbstractValidator<CreateProductCommand>
     {
 
     }

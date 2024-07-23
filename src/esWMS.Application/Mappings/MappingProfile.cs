@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Commands.CreateProduct;
 
 namespace esWMS.Application.Mappings
@@ -9,6 +10,7 @@ namespace esWMS.Application.Mappings
         public MappingProfile()
         {
             CreateMap<CreateProductCommand, Product>();
+            CreateMap<Product, ProductDto>();
         }
     }
 }
