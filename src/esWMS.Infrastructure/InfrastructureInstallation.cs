@@ -3,11 +3,9 @@ using esWMS.Application.Contracts.Persistence;
 using esWMS.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace esWMS.Infrastructure
@@ -55,6 +53,9 @@ namespace esWMS.Infrastructure
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IWarehouseRepository, WarehouseRepository>();
+            services.AddScoped<IZoneRepository, ZoneRepository>();
+            services.AddScoped<ILocationRepository, LocationRepository>();
         }
     }
 }

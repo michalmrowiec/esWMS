@@ -19,9 +19,11 @@ namespace esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<WarehouseDto>> Handle(CreateWarehouseCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<WarehouseDto>> Handle
+            (CreateWarehouseCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await new CreateWarehouseValidator().ValidateAsync(request, cancellationToken);
+            var validationResult =
+                await new CreateWarehouseValidator().ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {

@@ -19,9 +19,11 @@ namespace esWMS.Application.Functions.Zones.Commands.CreateZone
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<ZoneDto>> Handle(CreateZoneCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<ZoneDto>> Handle
+            (CreateZoneCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await new CreateZoneValidator().ValidateAsync(request, cancellationToken);
+            var validationResult =
+                await new CreateZoneValidator().ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
