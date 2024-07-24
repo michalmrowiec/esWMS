@@ -4,7 +4,7 @@ using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Responses;
 using MediatR;
 
-namespace esWMS.Application.Functions.Categories.Commands
+namespace esWMS.Application.Functions.Categories.Commands.CreateCategory
 {
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, BaseResponse<CategoryDto>>
     {

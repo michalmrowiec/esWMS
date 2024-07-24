@@ -1,7 +1,7 @@
 ﻿using esWMS.Application.Functions.Responses;
 using MediatR;
 
-namespace esWMS.Application.Functions.Categories.Commands
+namespace esWMS.Application.Functions.Categories.Commands.CreateCategory
 {
     public class CreateCategoryCommand : IRequest<BaseResponse<CategoryDto>>
     {

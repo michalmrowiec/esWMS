@@ -3,6 +3,7 @@ using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands;
+using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Responses;
 using FluentAssertions;
 using Moq;

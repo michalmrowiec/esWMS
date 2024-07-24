@@ -2,6 +2,7 @@ using esWMS.Application;
 using esWMS.Application.Functions.Categories.Commands;
 using esWMS.Components;
 using esWMS.Infrastructure;
+using esWMS.Middleware;
 using esWMS.Services;
 using MediatR;
 using Microsoft.OpenApi.Models;
@@ -25,6 +26,8 @@ try
 
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
+
+    builder.Services.AddScoped<ErrorHandlingMiddleware>();
 
     builder.Services.AddScoped<IUserContextService, UserContextService>();
     builder.Services.AddHttpContextAccessor();
@@ -95,6 +98,8 @@ try
     app.UseAntiforgery();
 
     app.UseAuthorization();
+
+    app.UseMiddleware<ErrorHandlingMiddleware>();
 
     app.MapControllerRoute(
         name: "default",

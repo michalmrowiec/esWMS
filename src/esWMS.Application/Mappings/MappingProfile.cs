@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Functions.Categories;
-using esWMS.Application.Functions.Categories.Commands;
+using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Commands.CreateProduct;
 
