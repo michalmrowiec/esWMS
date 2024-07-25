@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
-using esWMS.Application.Functions.Responses;
+using esWMS.Application.Responses;
 using MediatR;
 
 namespace esWMS.Application.Functions.Categories.Commands.CreateCategory
 {
-    public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, BaseResponse<CategoryDto>>
+    public class CreateCategoryCommandHandler
+        : IRequestHandler<CreateCategoryCommand, BaseResponse<CategoryDto>>
     {
         private readonly ICategoryRepository _repository;
         private readonly IMapper _mapper;
@@ -18,9 +19,11 @@ namespace esWMS.Application.Functions.Categories.Commands.CreateCategory
             _mapper = mapper;
         }
 
-        public async Task<BaseResponse<CategoryDto>> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<CategoryDto>> Handle
+            (CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await new CreateCategoryValidator().ValidateAsync(request, cancellationToken);
+            var validationResult =
+                await new CreateCategoryValidator().ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {

@@ -2,6 +2,7 @@
 
 namespace esWMS.Application.Contracts.Persistence
 {
-    public interface ILocationRepository : IBaseRepository<Location, string>
+    public interface ILocationRepository
+        : IBaseRepository<Location, string>
     { }
 }

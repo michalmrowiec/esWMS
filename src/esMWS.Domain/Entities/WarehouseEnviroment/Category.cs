@@ -10,8 +10,8 @@
         public DateTime? ModifiedAt { get; set; }
         public string? ModifiedBy { get; set; }
 
-        public IList<Product>? Products { get; set; }
+        public IList<Product> Products { get; set; } = [];
         public Category? ParentCategory { get; set; }
-        public IList<Category>? ChildCategories { get; set; }
+        public IList<Category> ChildCategories { get; set; } = [];
     }
 }

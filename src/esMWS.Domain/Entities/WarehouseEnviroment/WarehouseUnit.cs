@@ -21,6 +21,6 @@
         public Product? Media { get; set; }
         public Location? Location { get; set; }
         public WarehouseUnit? StackOn { get; set; }
-        public IList<WarehouseUnitItem>? WarehouseUnitItems { get; set; }
+        public IList<WarehouseUnitItem> WarehouseUnitItems { get; set; } = [];
     }
 }

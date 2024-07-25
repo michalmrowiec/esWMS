@@ -23,8 +23,8 @@ namespace esMWS.Domain.Entities.SystemActors
         public DateTime? ModifiedAt { get; set; }
         public string? ModifiedBy { get; set; }
 
-        public IList<PZ>? PZDocuments { get; set; }
-        public IList<WZ>? WZDocuments { get; set; }
-        public IList<Product>? Products { get; set; }
+        public IList<PZ> PZDocuments { get; set; } = [];
+        public IList<WZ> WZDocuments { get; set; } = [];
+        public IList<Product> Products { get; set; } = [];
     }
 }

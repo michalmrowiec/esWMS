@@ -13,6 +13,6 @@
         public string? ModifiedBy { get; set; }
 
         public Warehouse? Warehouse { get; set; }
-        public IList<Location>? Locations { get; set; }
+        public IList<Location> Locations { get; set; } = [];
     }
 }

@@ -21,6 +21,6 @@ namespace esMWS.Domain.Entities.Documents
         public Warehouse? IssueWarehouse { get; set; }
         public Employee? IssuingEmployee { get; set; }
         public Employee? ApprovingEmployee { get; set; }
-        public IList<DocumentItem>? DocumentItems { get; set; }
+        public IList<DocumentItem> DocumentItems { get; set; } = [];
     }
 }

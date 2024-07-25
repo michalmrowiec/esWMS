@@ -2,7 +2,8 @@
 
 namespace esWMS.Application.Contracts.Persistence
 {
-    public interface ICategoryRepository : IBaseRepository<Category, string>
+    public interface ICategoryRepository
+        : IBaseRepository<Category, string>
     {
         Task<IList<Category>> GetCategoryWithChilds(string idParentCategory);
     }

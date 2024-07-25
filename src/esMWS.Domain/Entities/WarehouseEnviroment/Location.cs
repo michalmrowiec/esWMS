@@ -22,6 +22,6 @@
 
         public Zone? Zone { get; set; }
         public Product? DefaultMediaType { get; set; }
-        public IList<WarehouseUnit>? WarehouseUnits { get; set; }
+        public IList<WarehouseUnit> WarehouseUnits { get; set; } = [];
     }
 }

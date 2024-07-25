@@ -1,7 +1,7 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
-using esWMS.Application.Functions.Responses;
+using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

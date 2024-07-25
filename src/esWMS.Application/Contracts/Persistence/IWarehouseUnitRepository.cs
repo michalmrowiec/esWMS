@@ -2,7 +2,7 @@
 
 namespace esWMS.Application.Contracts.Persistence
 {
-    public interface IZoneRepository
-        : IBaseRepository<Zone, string>
+    public interface IWarehouseUnitRepository
+        : IBaseRepository<WarehouseUnit, string>
     { }
 }

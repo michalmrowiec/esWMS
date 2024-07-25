@@ -1,7 +1,6 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.ComponentModel.DataAnnotations;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 {
@@ -24,6 +23,10 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .HasMaxLength(450);
 
             builder.Property(wui => wui.Quantity)
+                .IsRequired()
+                .HasDefaultValue(0);
+
+            builder.Property(wui => wui.BlockedQuantity)
                 .IsRequired()
                 .HasDefaultValue(0);
 

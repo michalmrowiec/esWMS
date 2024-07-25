@@ -16,10 +16,10 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
         public DateTime? ModifiedAt { get; set; }
         public string? ModifiedBy { get; set; }
 
-        public IList<Zone>? Zones { get; set; }
-        public IList<WarehouseUnit>? WarehouseUnits { get; set; }
-        public IList<DocumentBase>? Documents { get; set; }
-        public IList<MMP>? MMPDocuments { get; set; }
-        public IList<MMM>? MMMDocuments { get; set; }
+        public IList<Zone> Zones { get; set; } = [];
+        public IList<WarehouseUnit> WarehouseUnits { get; set; } = [];
+        public IList<DocumentBase> Documents { get; set; } = [];
+        public IList<MMP> MMPDocuments { get; set; } = [];
+        public IList<MMM> MMMDocuments { get; set; } = [];
     }
 }

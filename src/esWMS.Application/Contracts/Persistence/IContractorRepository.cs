@@ -2,6 +2,7 @@
 
 namespace esWMS.Application.Contracts.Persistence
 {
-    public interface IContractorRepository : IBaseRepository<Contractor, string>
+    public interface IContractorRepository
+        : IBaseRepository<Contractor, string>
     { }
 }

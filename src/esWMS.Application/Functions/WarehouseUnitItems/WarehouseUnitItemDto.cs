@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 
-namespace esMWS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Application.Functions.WarehouseUnitItems
 {
-    public class WarehouseUnitItem
+    public class WarehouseUnitItemDto
     {
         public string WarehouseUnitItemId { get; set; } = null!;
         public string WarehouseUnitId { get; set; } = null!;
@@ -14,12 +14,5 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
         public string? BatchLot { get; set; }
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? ModifiedAt { get; set; }
-        public string? ModifiedBy { get; set; }
-
-        public WarehouseUnit? WarehouseUnit { get; set; }
-        public Product? Product { get; set; }
     }
 }

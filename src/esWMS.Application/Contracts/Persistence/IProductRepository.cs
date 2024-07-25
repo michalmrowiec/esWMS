@@ -2,6 +2,7 @@
 
 namespace esWMS.Application.Contracts.Persistence
 {
-    public interface IProductRepository : IBaseRepository<Product, string>
+    public interface IProductRepository
+        : IBaseRepository<Product, string>
     { }
 }

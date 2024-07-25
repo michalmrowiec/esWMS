@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using esWMS.Application.Contracts.Persistence;
-using esWMS.Application.Functions.Responses;
+using esWMS.Application.Responses;
 using FluentValidation;
 using MediatR;
 

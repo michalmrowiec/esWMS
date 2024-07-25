@@ -1,4 +1,4 @@
-﻿namespace esWMS.Application.Functions.Responses
+﻿namespace esWMS.Application.Responses
 {
     public class BaseResponse
     {

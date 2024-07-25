@@ -2,16 +2,10 @@
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Categories;
-using esWMS.Application.Functions.Categories.Commands;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
-using esWMS.Application.Functions.Responses;
+using esWMS.Application.Responses;
 using FluentAssertions;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace esWMS.Application.UnitTests.Functions.Categories
 {
