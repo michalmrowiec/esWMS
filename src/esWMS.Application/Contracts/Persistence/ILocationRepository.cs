@@ -3,6 +3,6 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface ILocationRepository
-        : IBaseRepository<Location, string>
+        : IBaseRepository<Location>
     { }
 }

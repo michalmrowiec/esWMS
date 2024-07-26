@@ -102,5 +102,12 @@ namespace esWMS.Infrastructure.Repositories
             }
         }
     }
-
+    internal class BaseRepository<TEntity>
+        : BaseRepository<TEntity, string>, IBaseRepository<TEntity>
+        where TEntity : class
+    {
+        public BaseRepository(EsWmsDbContext context, ILogger logger)
+            : base(context, logger)
+        { }
+    }
 }

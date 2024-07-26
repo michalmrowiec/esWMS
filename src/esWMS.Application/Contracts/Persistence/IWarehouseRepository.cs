@@ -3,6 +3,6 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface IWarehouseRepository
-        : IBaseRepository<Warehouse, string>
+        : IBaseRepository<Warehouse>
     { }
 }

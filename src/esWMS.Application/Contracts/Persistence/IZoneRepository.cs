@@ -3,6 +3,6 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface IZoneRepository
-        : IBaseRepository<Zone, string>
+        : IBaseRepository<Zone>
     { }
 }

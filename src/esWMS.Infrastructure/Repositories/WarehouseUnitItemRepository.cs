@@ -5,6 +5,6 @@ using Microsoft.Extensions.Logging;
 namespace esWMS.Infrastructure.Repositories
 {
     internal class WarehouseUnitItemRepository(EsWmsDbContext context, ILogger<WarehouseUnitItemRepository> logger)
-                : BaseRepository<WarehouseUnitItem, string>(context, logger), IWarehouseUnitItemRepository
+                : BaseRepository<WarehouseUnitItem>(context, logger), IWarehouseUnitItemRepository
     { }
 }

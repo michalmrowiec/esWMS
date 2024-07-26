@@ -5,6 +5,6 @@ using Microsoft.Extensions.Logging;
 namespace esWMS.Infrastructure.Repositories
 {
     internal class LocationRepository(EsWmsDbContext context, ILogger<LocationRepository> logger)
-                : BaseRepository<Location, string>(context, logger), ILocationRepository
+                : BaseRepository<Location>(context, logger), ILocationRepository
     { }
 }

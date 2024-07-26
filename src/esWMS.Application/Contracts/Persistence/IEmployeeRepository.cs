@@ -3,6 +3,6 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface IEmployeeRepository
-        : IBaseRepository<Employee, string>
+        : IBaseRepository<Employee>
     { }
 }

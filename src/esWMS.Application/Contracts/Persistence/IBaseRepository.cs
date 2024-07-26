@@ -8,4 +8,7 @@
         Task<TEntity> GetByIdAsync(TId id);
         Task<IList<TEntity>> GetAllAsync();
     }
+
+    public interface IBaseRepository<TEntity> : IBaseRepository<TEntity, string>
+        where TEntity : class;
 }

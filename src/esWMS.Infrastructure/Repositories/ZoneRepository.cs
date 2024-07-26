@@ -5,6 +5,6 @@ using Microsoft.Extensions.Logging;
 namespace esWMS.Infrastructure.Repositories
 {
     internal class ZoneRepository(EsWmsDbContext context, ILogger<ZoneRepository> logger)
-                : BaseRepository<Zone, string>(context, logger), IZoneRepository
+                : BaseRepository<Zone>(context, logger), IZoneRepository
     { }
 }

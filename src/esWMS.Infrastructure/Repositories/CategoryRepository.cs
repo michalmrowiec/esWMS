@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace esWMS.Infrastructure.Repositories
 {
     internal class CategoryRepository(EsWmsDbContext context, ILogger<CategoryRepository> logger)
-        : BaseRepository<Category, string>(context, logger), ICategoryRepository
+        : BaseRepository<Category>(context, logger), ICategoryRepository
     {
 
         public Task<IList<Category>> GetCategoryWithChilds(string idParentCategory)

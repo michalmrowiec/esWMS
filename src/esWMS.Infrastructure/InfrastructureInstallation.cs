@@ -51,6 +51,7 @@ namespace esWMS.Infrastructure
                     .UseMySql(configuration.GetConnectionString("ContainerDb"), serverVersion));
 
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
+            services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IWarehouseRepository, WarehouseRepository>();

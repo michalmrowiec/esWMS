@@ -5,6 +5,6 @@ using Microsoft.Extensions.Logging;
 namespace esWMS.Infrastructure.Repositories
 {
     internal class ProductRepository(EsWmsDbContext context, ILogger<ProductRepository> logger)
-        : BaseRepository<Product, string>(context, logger), IProductRepository
+        : BaseRepository<Product>(context, logger), IProductRepository
     { }
 }
