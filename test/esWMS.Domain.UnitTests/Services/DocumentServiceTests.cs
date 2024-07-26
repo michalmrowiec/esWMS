@@ -42,7 +42,7 @@ namespace esWMS.Domain.UnitTests.Services
 
         [Theory]
         [MemberData(nameof(ValidTestDataForGenerateDocumentId))]
-        public void GenerateDocumentId_ForValidData_ReturnsValidId(DocumentBase document, int documentNumber, string result)
+        public void GenerateDocumentId_ForValidData_ReturnsValidId(BaseDocument document, int documentNumber, string result)
         {
             string documentId = document.GenerateDocumentId(documentNumber);
             documentId.Should().Be(result);
@@ -117,7 +117,7 @@ namespace esWMS.Domain.UnitTests.Services
 
         [Theory]
         [MemberData(nameof(InvalidTestDataForGenerateDocumentId))]
-        public void GenerateDocumentId_ForInvalidData_ThrowsArgumentException(DocumentBase document, int documentNumber)
+        public void GenerateDocumentId_ForInvalidData_ThrowsArgumentException(BaseDocument document, int documentNumber)
         {
             Action action = () => document.GenerateDocumentId(documentNumber);
             action.Should().Throw<ArgumentException>();

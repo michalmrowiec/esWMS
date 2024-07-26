@@ -1,6 +1,6 @@
 ﻿namespace esMWS.Domain.Entities.Documents
 {
-    public class ZW : DocumentBase
+    public class ZW : BaseDocument
     {
         public DateTime? GoodsReceiptDate { get; set; }
     }

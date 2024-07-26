@@ -4,7 +4,7 @@ namespace esMWS.Domain.Services
 {
     public static class DocumentService
     {
-        public static string GenerateDocumentId(this DocumentBase document, int documentNumber)
+        public static string GenerateDocumentId(this BaseDocument document, int documentNumber)
         {
             if (documentNumber < 1 || documentNumber > 999)
             {

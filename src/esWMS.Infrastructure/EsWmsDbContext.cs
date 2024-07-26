@@ -7,7 +7,7 @@ namespace esWMS.Infrastructure
 {
     public class EsWmsDbContext : DbContext
     {
-        public DbSet<DocumentBase> Documents { get; set; }
+        public DbSet<BaseDocument> Documents { get; set; }
         public DbSet<PZ> PZ { get; set; }
         public DbSet<PW> PW { get; set; }
         public DbSet<ZW> ZW { get; set; }

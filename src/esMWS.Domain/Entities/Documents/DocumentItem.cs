@@ -20,7 +20,7 @@ namespace esMWS.Domain.Entities.Documents
         public DateTime? ModifiedAt { get; set; }
         public string? ModifiedBy { get; set; }
 
-        public DocumentBase? Document { get; set; }
+        public BaseDocument? Document { get; set; }
         public Product? Product { get; set; }
         public WarehouseUnitItem? WarehouseUnitItem { get; set; }
     }

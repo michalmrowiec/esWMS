@@ -2,7 +2,7 @@
 
 namespace esMWS.Domain.Entities.Documents
 {
-    public class MMP : DocumentBase
+    public class MMP : BaseDocument
     {
         public DateTime? GoodsReceiptDate { get; set; }
         public string FromWarehouseId { get; set; } = null!;

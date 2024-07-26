@@ -1,7 +1,9 @@
 ﻿using esMWS.Domain.Entities.SystemActors;
 using esWMS.Application.Contracts.Persistence;
+using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Infrastructure.Repositories;
+using esWMS.Infrastructure.Repositories.Documents;
 using esWMS.Infrastructure.Utilities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -56,6 +58,7 @@ namespace esWMS.Infrastructure
 
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped(typeof(IBaseDocumentRepository<>), typeof(BaseDocumentRepository<>));
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IWarehouseRepository, WarehouseRepository>();

@@ -3,7 +3,7 @@ using esMWS.Domain.Entities.WarehouseEnviroment;
 
 namespace esMWS.Domain.Entities.Documents
 {
-    public abstract class DocumentBase
+    public abstract class BaseDocument
     {
         public string DocumentId { get; set; } = null!;
         public string IssueWarehouseId { get; set; } = null!;

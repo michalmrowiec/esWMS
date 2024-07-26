@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
-    internal class DocumentBaseConfiguration : IEntityTypeConfiguration<DocumentBase>
+    internal class DocumentBaseConfiguration : IEntityTypeConfiguration<BaseDocument>
     {
-        public void Configure(EntityTypeBuilder<DocumentBase> builder)
+        public void Configure(EntityTypeBuilder<BaseDocument> builder)
         {
             builder.HasKey(d => d.DocumentId);
 

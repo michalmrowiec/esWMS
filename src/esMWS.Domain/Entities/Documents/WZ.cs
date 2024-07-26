@@ -2,7 +2,7 @@
 
 namespace esMWS.Domain.Entities.Documents
 {
-    public class WZ : DocumentBase
+    public class WZ : BaseDocument
     {
         public DateTime? GoodsReleaseDate { get; set; }
         public string RecipientContractorId { get; set; } = null!;
