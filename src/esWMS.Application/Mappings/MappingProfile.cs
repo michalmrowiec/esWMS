@@ -1,7 +1,12 @@
 ﻿using AutoMapper;
+using esMWS.Domain.Entities.SystemActors;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
+using esWMS.Application.Functions.Contractors;
+using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
+using esWMS.Application.Functions.Locations;
+using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Commands.CreateProduct;
 using esWMS.Application.Functions.Warehouses;
@@ -10,6 +15,8 @@ using esWMS.Application.Functions.WarehouseUnitItems;
 using esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehouseUnitItem;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
+using esWMS.Application.Functions.Zones;
+using esWMS.Application.Functions.Zones.Commands.CreateZone;
 
 namespace esWMS.Application.Mappings
 {
@@ -32,6 +39,15 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreateWarehouseUnitItemCommand, WarehouseUnitItem>();
             CreateMap<WarehouseUnitItem, WarehouseUnitItemDto>();
+
+            CreateMap<CreateZoneCommand, Zone>();
+            CreateMap<Zone, ZoneDto>();
+
+            CreateMap<CreateLocationCommand, Location>();
+            CreateMap<Location, LocationDto>();
+
+            CreateMap<CreateContractorCommand, Contractor>();
+            CreateMap<Contractor, ContractorDto>();
         }
     }
 }
