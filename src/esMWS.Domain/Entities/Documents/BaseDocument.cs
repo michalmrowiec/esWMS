@@ -10,6 +10,7 @@ namespace esMWS.Domain.Entities.Documents
         public string? Comment { get; set; }
         public DateTime DocumentIssueDate { get; set; }
         public string? IssuingEmployeeId { get; set; }
+        public string? AssignedEmployeeId { get; set; }
         public bool IsApproved { get; set; }
         public DateTime? AprovedDate { get; set; }
         public string? ApprovingEmployeeId { get; set; }
@@ -20,6 +21,7 @@ namespace esMWS.Domain.Entities.Documents
 
         public Warehouse? IssueWarehouse { get; set; }
         public Employee? IssuingEmployee { get; set; }
+        public Employee? AssignedEmployee { get; set; }
         public Employee? ApprovingEmployee { get; set; }
         public IList<DocumentItem> DocumentItems { get; set; } = [];
     }

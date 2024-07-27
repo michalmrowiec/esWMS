@@ -8,9 +8,7 @@ namespace esWMS.Application.Functions.Documents.BaseDocumentFunctions.Command
         public string? Comment { get; set; }
         public DateTime DocumentIssueDate { get; set; }
         public string? IssuingEmployeeId { get; set; }
-        public bool IsApproved { get; set; }
-        public DateTime? AprovedDate { get; set; }
-        public string? ApprovingEmployeeId { get; set; }
+        public string? AssignedEmployeeId { get; set; }
         public string? CreatedBy { get; set; }
 
         public IList<CreateDocumentItemCommand> DocumentItems { get; set; } = [];

@@ -25,7 +25,8 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .IsRequired();
 
             builder.Property(d => d.IsApproved)
-                .IsRequired();
+                .IsRequired()
+                .HasDefaultValue(false);
 
             builder.Property(d => d.CreatedAt)
                 .IsRequired();
