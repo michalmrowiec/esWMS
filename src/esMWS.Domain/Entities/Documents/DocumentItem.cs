@@ -4,7 +4,7 @@ namespace esMWS.Domain.Entities.Documents
 {
     public class DocumentItem
     {
-        public string DocumentItemsId { get; set; } = null!;
+        public string DocumentItemId { get; set; } = null!;
         public string DocumentId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
         public string ProductCode { get; set; } = null!;

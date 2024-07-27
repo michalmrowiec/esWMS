@@ -9,9 +9,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
     {
         public void Configure(EntityTypeBuilder<DocumentItem> builder)
         {
-            builder.HasKey(di => di.DocumentItemsId);
+            builder.HasKey(di => di.DocumentItemId);
 
-            builder.Property(di => di.DocumentItemsId)
+            builder.Property(di => di.DocumentItemId)
                 .IsRequired()
                 .HasMaxLength(450);
 

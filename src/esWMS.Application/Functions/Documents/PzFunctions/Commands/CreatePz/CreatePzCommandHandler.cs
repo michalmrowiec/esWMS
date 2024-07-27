@@ -36,6 +36,11 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 
             entity.DocumentId = entity.GenerateDocumentId(lastNumber);
 
+            foreach (var item in entity.DocumentItems)
+            {
+                item.DocumentId = entity.DocumentId;
+            }
+
             var createdEntity = await _repository.CreateAsync(entity);
 
             var entityDto = _mapper.Map<PzDto>(createdEntity);

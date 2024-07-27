@@ -1,5 +1,4 @@
-﻿using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
-using esWMS.Application.Responses;
+﻿using esWMS.Application.Responses;
 using MediatR;
 
 namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem

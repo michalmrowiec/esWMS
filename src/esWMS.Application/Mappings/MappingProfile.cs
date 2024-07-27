@@ -8,6 +8,7 @@ using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
+using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.UpdateDocumentItems;
 using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
 using esWMS.Application.Functions.Locations;
@@ -40,7 +41,8 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreateWarehouseUnitCommand, WarehouseUnit>();
             CreateMap<WarehouseUnit, WarehouseUnitDto>()
-                .ForMember(dto => dto.WarehouseUnitItems, opt => opt.MapFrom(src => src.WarehouseUnitItems));
+                .ForMember(dto => dto.WarehouseUnitItems,
+                           opt => opt.MapFrom(src => src.WarehouseUnitItems));
 
             CreateMap<CreateWarehouseUnitItemCommand, WarehouseUnitItem>();
             CreateMap<WarehouseUnitItem, WarehouseUnitItemDto>();

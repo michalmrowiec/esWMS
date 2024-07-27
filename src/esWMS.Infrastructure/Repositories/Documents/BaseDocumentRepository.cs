@@ -57,5 +57,10 @@ namespace esWMS.Infrastructure.Repositories.Documents
                 throw;
             }
         }
+
+        public Task<BaseDocument> UpdateDocumentAsync(BaseDocument document)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
