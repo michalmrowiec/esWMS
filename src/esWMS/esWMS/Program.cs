@@ -71,13 +71,16 @@ try
 
     using var scope = app.Services.CreateScope();
 
-    scope.ServiceProvider
-        .GetRequiredService<EsWmsDbContext>()
-        .UpdateDatabase(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<EsWmsDbContext>();
+
+    dbContext.UpdateDatabase(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
+        dbContext.SeedStartData();
+
         app.UseWebAssemblyDebugging();
 
         app.UseSwagger();
