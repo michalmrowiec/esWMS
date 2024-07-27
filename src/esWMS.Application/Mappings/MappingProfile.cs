@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
+using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Entities.SystemActors;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
+using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
+using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
+using esWMS.Application.Functions.Documents.PzFunctions;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 using esWMS.Application.Functions.Products;
@@ -48,6 +53,12 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreateContractorCommand, Contractor>();
             CreateMap<Contractor, ContractorDto>();
+
+            CreateMap<CreateDocumentItemCommand, DocumentItem>();
+            CreateMap<DocumentItem, DocumentItemDto>();
+
+            CreateMap<CreatePzCommand, PZ>();
+            CreateMap<PZ, PzDto>();
         }
     }
 }

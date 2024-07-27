@@ -3,6 +3,6 @@
 namespace esWMS.Application.Contracts.Persistence.Documents
 {
     public interface IMmmRepository
-        : IBaseRepository<MMM>
+        : IBaseDocumentRepository<MMM>
     { }
 }

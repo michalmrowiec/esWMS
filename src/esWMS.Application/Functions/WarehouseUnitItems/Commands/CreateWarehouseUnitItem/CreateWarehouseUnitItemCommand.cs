@@ -15,5 +15,6 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehous
         public string? BatchLot { get; set; }
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
+        public string? CreatedBy { get; set; }
     }
 }

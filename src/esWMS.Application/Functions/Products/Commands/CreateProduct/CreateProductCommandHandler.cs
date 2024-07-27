@@ -6,17 +6,11 @@ using MediatR;
 
 namespace esWMS.Application.Functions.Products.Commands.CreateProduct
 {
-    public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, BaseResponse<ProductDto>>
+    public class CreateProductCommandHandler(IProductRepository repository, IMapper mapper)
+        : IRequestHandler<CreateProductCommand, BaseResponse<ProductDto>>
     {
-        private readonly IProductRepository _repository;
-        private readonly IMapper _mapper;
-
-        public CreateProductCommandHandler
-            (IProductRepository repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        private readonly IProductRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<BaseResponse<ProductDto>> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {

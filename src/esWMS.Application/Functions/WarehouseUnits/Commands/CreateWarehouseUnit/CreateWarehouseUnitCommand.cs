@@ -15,6 +15,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUni
         public int? TotalHeight { get; set; }
         public bool? CanBeStacked { get; set; }
         public string? StackOnId { get; set; }
+        public string? CreatedBy { get; set; }
 
         public IList<CreateWarehouseUnitItemCommand> WarehouseUnitItems { get; set; } = [];
     }

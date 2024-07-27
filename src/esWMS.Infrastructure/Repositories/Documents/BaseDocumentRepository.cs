@@ -37,5 +37,10 @@ namespace esWMS.Infrastructure.Repositories.Documents
                 throw;
             }
         }
+
+        public Task<int> GetLastDocumentNumberOfDay(DateTime dateTime)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -18,5 +18,6 @@ namespace esWMS.Application.Functions.Contractors.Commands.CreateContractor
         public string? EmailAddress { get; set; }
         public string? PhoneNumber { get; set; }
         public bool IsActive { get; set; }
+        public string? CreatedBy { get; set; }
     }
 }

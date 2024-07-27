@@ -17,5 +17,6 @@ namespace esWMS.Application.Functions.Locations.Commands.CreateLocation
         public int MaxWeight { get; set; }
         public bool IsBusy { get; set; }
         public string? DefaultMediaTypeId { get; set; }
+        public string? CreatedBy { get; set; }
     }
 }
