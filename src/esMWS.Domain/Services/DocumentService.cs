@@ -1,11 +1,41 @@
 ﻿using esMWS.Domain.Entities.Documents;
+using System.Text.RegularExpressions;
 
 namespace esMWS.Domain.Services
 {
     public static class DocumentService
     {
-        public static string GenerateDocumentId(this BaseDocument document, int documentNumber)
+        public static string GenerateDocumentId(this BaseDocument document, string[] documentIds)
         {
+            if (documentIds == null)
+            {
+                throw new ArgumentException("Document IDs cannot be null", nameof(documentIds));
+            }
+
+            string pattern = @"^[A-Z]{2,3}/([A-Z]|\d){3}/\d{4}/[0-1]\d/[0-3]\d/\d{3}$";
+            var regex = new Regex(pattern);
+
+            int documentNumber = 0;
+
+            if (documentIds.Length > 0)
+            {
+                documentNumber = documentIds
+                .Select(x =>
+                {
+                    if (!regex.IsMatch(x))
+                    {
+                        throw new ArgumentException($"Invalid document Id format: {x}");
+                    }
+
+                    return int.Parse(new string(x.TakeLast(3).ToArray()));
+                })
+                .Max() + 1;
+            }
+            else
+            {
+                documentNumber = 1;
+            }
+
             if (documentNumber < 1 || documentNumber > 999)
             {
                 throw new ArgumentException("The document number must have a value between 1 and 999", nameof(documentNumber));

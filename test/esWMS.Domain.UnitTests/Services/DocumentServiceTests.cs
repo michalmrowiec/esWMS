@@ -15,7 +15,7 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = new DateTime(2023, 7, 1),
                     IssueWarehouseId = "MPT"
                 },
-                1,
+                new string[] { },
                 "PZ/MPT/2023/07/01/001"
             },
             new object[]
@@ -23,28 +23,29 @@ namespace esWMS.Domain.UnitTests.Services
                 new MMP()
                 {
                     DocumentIssueDate = new DateTime(2034, 11, 8),
-                    IssueWarehouseId = "W)!"
+                    IssueWarehouseId = "W10"
                 },
-                999,
-                "MMP/W)!/2034/11/08/999"
+                new string[] { "MMP/W10/2034/11/08/996", "MMP/W10/2034/11/08/998", "MMP/W10/2034/11/08/100" },
+                "MMP/W10/2034/11/08/999"
             },
             new object[]
             {
                 new RW()
                 {
                     DocumentIssueDate = new DateTime(2024, 12, 30),
-                    IssueWarehouseId = "P-1"
+                    IssueWarehouseId = "PA1"
                 },
-                876,
-                "RW/P-1/2024/12/30/876"
+                new string[] { "RW/PA1/2024/12/30/873", "RW/PA1/2024/12/30/874", "RW/PA1/2024/12/30/875" },
+                "RW/PA1/2024/12/30/876"
             },
         };
 
         [Theory]
         [MemberData(nameof(ValidTestDataForGenerateDocumentId))]
-        public void GenerateDocumentId_ForValidData_ReturnsValidId(BaseDocument document, int documentNumber, string result)
+        public void GenerateDocumentId_ForValidData_ReturnsValidId
+            (BaseDocument document, string[] documentIds, string result)
         {
-            string documentId = document.GenerateDocumentId(documentNumber);
+            string documentId = document.GenerateDocumentId(documentIds);
             documentId.Should().Be(result);
         }
 
@@ -57,7 +58,7 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = new DateTime(2023, 7, 1),
                     IssueWarehouseId = "MPT"
                 },
-                0
+                new string[] { "INVALID", "BADID" }
             },
             new object[]
             {
@@ -66,7 +67,7 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = new DateTime(2034, 11, 8),
                     IssueWarehouseId = "W)!"
                 },
-                -23
+                new string[] { "DOC/1001" }
             },
             new object[]
             {
@@ -75,7 +76,7 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = new DateTime(2034, 11, 8),
                     IssueWarehouseId = "W)!"
                 },
-                1000
+                new string[] { "DOC/0" }
             },
             new object[]
             {
@@ -84,7 +85,7 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = new DateTime(2034, 11, 8),
                     IssueWarehouseId = "A"
                 },
-                11100
+                new string[] { "DOC/001" }
             },
             new object[]
             {
@@ -93,7 +94,7 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = new DateTime(2023, 7, 1),
                     IssueWarehouseId = ""
                 },
-                1
+                new string[] { "DOC/001" }
             },
             new object[]
             {
@@ -102,7 +103,7 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = default,
                     IssueWarehouseId = "MPT"
                 },
-                1
+                new string[] { "DOC/001" }
             },
             new object[]
             {
@@ -111,15 +112,26 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = default,
                     IssueWarehouseId = ""
                 },
-                -1
+                new string[] { "DOC/001" }
+            },
+            new object[]
+            {
+                new PZ()
+                {
+                    DocumentIssueDate = new DateTime(2023, 7, 1),
+                    IssueWarehouseId = "MPT"
+                },
+                null
             }
         };
 
         [Theory]
         [MemberData(nameof(InvalidTestDataForGenerateDocumentId))]
-        public void GenerateDocumentId_ForInvalidData_ThrowsArgumentException(BaseDocument document, int documentNumber)
+        public void GenerateDocumentId_ForInvalidData_ThrowsArgumentException
+            (BaseDocument document, string[] documentIds)
         {
-            Action action = () => document.GenerateDocumentId(documentNumber);
+            Action action = () => document.GenerateDocumentId(documentIds);
+
             action.Should().Throw<ArgumentException>();
         }
     }

@@ -38,9 +38,24 @@ namespace esWMS.Infrastructure.Repositories.Documents
             }
         }
 
-        public Task<int> GetLastDocumentNumberOfDay(DateTime dateTime)
+        public async Task<string[]> GetAllDocumentIdForDay(DateTime date)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var result = await _context
+                    .Set<TDocument>()
+                    .AsNoTracking()
+                    .Where(x => x.DocumentIssueDate.Date.Equals(date.Date))
+                    .Select(x => x.DocumentId)
+                    .ToArrayAsync();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving document for date: {Date}", date.Date);
+                throw;
+            }
         }
     }
 }

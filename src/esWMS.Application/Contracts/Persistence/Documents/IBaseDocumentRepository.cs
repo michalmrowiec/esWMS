@@ -7,6 +7,6 @@ namespace esWMS.Application.Contracts.Persistence.Documents
         where TDocument : BaseDocument
     {
         Task<TDocument> GetDocumentByIdWithItemsAsync(string id);
-        Task<int> GetLastDocumentNumberOfDay(DateTime dateTime);
+        Task<string[]> GetAllDocumentIdForDay(DateTime date);
     }
 }

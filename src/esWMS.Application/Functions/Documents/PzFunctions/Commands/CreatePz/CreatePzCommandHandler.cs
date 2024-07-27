@@ -32,7 +32,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
                 return new BaseResponse<PzDto>(false, "");
             }
 
-            var lastNumber = await _repository.GetLastDocumentNumberOfDay(entity.DocumentIssueDate);
+            var lastNumber = await _repository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
 
             entity.DocumentId = entity.GenerateDocumentId(lastNumber);
 
