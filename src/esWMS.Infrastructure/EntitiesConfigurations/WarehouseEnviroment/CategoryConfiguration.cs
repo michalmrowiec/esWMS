@@ -34,7 +34,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .HasOne(c => c.ParentCategory)
                 .WithMany(c => c.ChildCategories)
                 .HasForeignKey(c => c.ParentCategoryId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasMany(c => c.Products)
