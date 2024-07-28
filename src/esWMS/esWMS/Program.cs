@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
+using MudBlazor.Services;
 
 var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("init main");
@@ -19,6 +20,8 @@ try
     builder.Logging.ClearProviders();
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
+
+    builder.Services.AddMudServices();
 
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents()
