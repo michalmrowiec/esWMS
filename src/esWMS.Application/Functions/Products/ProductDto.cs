@@ -1,6 +1,5 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.SystemActors;
-using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Application.Functions.Categories;
+using esWMS.Application.Functions.Contractors;
 
 namespace esWMS.Application.Functions.Products
 {
@@ -22,7 +21,7 @@ namespace esWMS.Application.Functions.Products
         public string? SupplierContractorId { get; set; }
         public bool IsActive { get; set; }
 
-        public Category? Category { get; set; }
-        public Contractor? SupplierContractor { get; set; }
+        public CategoryDto? Category { get; set; }
+        public ContractorDto? SupplierContractor { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Sieve.Services;
 using System.Text;
 
 namespace esWMS.Infrastructure
@@ -55,6 +56,7 @@ namespace esWMS.Infrastructure
                     .UseMySql(configuration.GetConnectionString("ContainerDb"), serverVersion));
 
             services.AddScoped<ITransactionManager, EfTransactionManager>();
+            services.AddScoped<ISieveProcessor, EsWmsSieveProcessor>();
 
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
