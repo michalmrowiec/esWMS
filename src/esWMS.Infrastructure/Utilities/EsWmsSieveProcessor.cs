@@ -11,6 +11,10 @@ namespace esWMS.Infrastructure.Utilities
     {
         protected override SievePropertyMapper MapProperties(SievePropertyMapper mapper)
         {
+            mapper.Property<Product>(p => p.ProductCode)
+                .CanSort()
+                .CanFilter();
+
             mapper.Property<Product>(p => p.ProductName)
                 .CanSort()
                 .CanFilter();
@@ -19,6 +23,14 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter()
                 .HasName("CategoryName");
+            
+            mapper.Property<Product>(p => p.Price)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Product>(p => p.Unit)
+                .CanSort()
+                .CanFilter();
 
             return mapper;
         }
