@@ -1,0 +1,34 @@
+﻿@page "/products"
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@rendermode InteractiveAuto
+@inject IProductService productService
+
+<h3>ProductDataGrid</h3>
+
+<h5>@Res</h5>
+
+<MudDataGrid T="ProductVM" Items="@Products">
+    <Columns>
+        <PropertyColumn Property="x => x.ProductCode" />
+        <PropertyColumn Property="x => x.ProductName" />
+        <PropertyColumn Property="x => x.Category.CategoryName" />
+        <PropertyColumn Property="x => x.Price" />
+        <PropertyColumn Property="x => x.Unit" />
+    </Columns>
+</MudDataGrid>
+
+@code {
+    private string Res = "none";
+    private IEnumerable<ProductVM> Products = [];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Products = await productService.GetProduct();
+            Res = Products.FirstOrDefault()?.ProductName ?? "ERROR";
+            StateHasChanged();
+        }
+    }
+}

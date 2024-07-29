@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
 using MudBlazor.Services;
+using esWMS.Client.Services;
 
 var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("init main");
@@ -20,6 +21,9 @@ try
     builder.Logging.ClearProviders();
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
+
+    builder.Services.AddTransient<IProductService, ProductService>();
+    builder.Services.AddHttpClient();
 
     builder.Services.AddMudServices();
 
