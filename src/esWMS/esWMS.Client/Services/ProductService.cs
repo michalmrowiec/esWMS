@@ -29,9 +29,6 @@ namespace esWMS.Client.Services
 
         public async Task<PagedResultVM<ProductVM>> GetProduct2(SieveModelVM sieveModel)
         {
-            //var response = await _httpClient.GetFromJsonAsync<BaseServerResponseVM<PagedResultVM<ProductVM>>>("api/v1/product");
-
-            //var response = await _httpClient.GetAsync("api/v1/product");
             var postJson = new StringContent(JsonConvert.SerializeObject(sieveModel), Encoding.UTF8, "application/json");
 
             using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/product/get-filtered");
