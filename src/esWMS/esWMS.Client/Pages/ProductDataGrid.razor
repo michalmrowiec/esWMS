@@ -8,7 +8,7 @@
 
 <h5>@Res</h5>
 
-<MudDataGrid T="ProductVM" Items="@Products">
+@* <MudDataGrid T="ProductVM" Items="@Products">
     <Columns>
         <PropertyColumn Property="x => x.ProductCode" />
         <PropertyColumn Property="x => x.ProductName" />
@@ -16,11 +16,65 @@
         <PropertyColumn Property="x => x.Price" />
         <PropertyColumn Property="x => x.Unit" />
     </Columns>
-</MudDataGrid>
+</MudDataGrid> *@
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudSpacer />
+        <MudTextField T="string" ValueChanged="@(s=>OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="nr_field" T="ProductVM">Code</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="sign_field" T="ProductVM">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="name_field" T="ProductVM">Category</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="position_field" T="ProductVM">Price</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="position_field" T="ProductVM">Unit</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nr">@context.ProductCode</MudTd>
+        <MudTd DataLabel="Sign">@context.ProductName</MudTd>
+        <MudTd DataLabel="Name">@context.Category.CategoryName</MudTd>
+        <MudTd DataLabel="Position">@context.Price</MudTd>
+        <MudTd DataLabel="Position">@context.Unit</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
 
 @code {
     private string Res = "none";
     private IEnumerable<ProductVM> Products = [];
+
+    private IEnumerable<ProductVM> pagedData;
+    private MudTable<ProductVM> table;
+
+    private int totalItems;
+    private string searchString = null;
+
+    private async Task<TableData<ProductVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        //var url = $"webapi/periodictable?page={state.Page}&pageSize={state.PageSize}&sort={state.SortLabel}&direction={(state.SortDirection == SortDirection.Descending ? "desc" : "asc")}";
+
+        var sm = new SieveModelVM();
+        var response = await productService.GetProduct2(sm);
+
+        return new TableData<ProductVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
