@@ -32,6 +32,23 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter();
 
+            mapper.Property<Category>(p => p.CategoryId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Category>(p => p.ParentCategoryId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Category>(p => p.CategoryName)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Category>(p => p.ParentCategory.CategoryName)
+                .CanSort()
+                .CanFilter()
+                .HasName("ParentCategoryName");
+
             return mapper;
         }
     }

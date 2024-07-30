@@ -1,5 +1,4 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
+﻿using esMWS.Domain.Models;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;

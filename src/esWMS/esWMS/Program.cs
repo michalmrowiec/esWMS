@@ -1,15 +1,13 @@
 using esWMS.Application;
-using esWMS.Application.Functions.Categories.Commands;
+using esWMS.Client.Services;
 using esWMS.Components;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
-using MediatR;
 using Microsoft.OpenApi.Models;
+using MudBlazor.Services;
 using NLog;
 using NLog.Web;
-using MudBlazor.Services;
-using esWMS.Client.Services;
 
 var logger = NLog.LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 logger.Debug("init main");
@@ -23,6 +21,7 @@ try
     builder.Host.UseNLog();
 
     builder.Services.AddTransient<IProductService, ProductService>();
+    builder.Services.AddTransient<ICategoryService, CategoryService>();
     builder.Services.AddHttpClient();
 
     builder.Services.AddMudServices();

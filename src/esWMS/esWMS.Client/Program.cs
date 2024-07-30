@@ -10,6 +10,7 @@ builder.Services.AddTransient(http => new HttpClient
 });
 
 builder.Services.AddTransient<IProductService, ProductService>();
+builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddMudServices();
 
 await builder.Build().RunAsync();

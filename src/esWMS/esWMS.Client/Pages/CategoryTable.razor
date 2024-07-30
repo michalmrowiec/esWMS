@@ -1,0 +1,122 @@
+﻿@page "/categories"
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@rendermode InteractiveAuto
+@inject ICategoryService categoryService
+
+<style>
+    .mud-table-cell-custom-group {
+        font-weight: 500;
+    }
+
+    .mud-table-cell-custom-group-footer {
+        padding-bottom: 50px;
+        text-align: right;
+    }
+</style>
+
+<PageTitle>Kategorie</PageTitle>
+
+<h3>Kategorie</h3>
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table"
+          GroupBy="@_groupDefinition" GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4" Height="500px" FixedHeader="true">
+    <ColGroup>
+        <col style="width: 60px;" />
+        <col />
+        <col />
+        <col />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="CategoryName" T="CategoryVM">
+                Nazwa
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch2("CategoryName", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ParentCategoryName" T="CategoryVM">
+                Nadkategoria Nazwa
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch2("ParentCategoryName", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="CategoryId" T="CategoryVM">
+                Id
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch2("CategoryId", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ParentCategoryId" T="CategoryVM">
+                Id Nadkategoria
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch2("ParentCategoryId", s))"></MudTextField>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Category Name">@context.CategoryName</MudTd>
+        <MudTd DataLabel="Parent Category Name">@context.ParentCategory?.CategoryName</MudTd>
+        <MudTd DataLabel="Nr">@context.CategoryId</MudTd>
+        <MudTd DataLabel="Parent Category">@context.ParentCategoryId</MudTd>
+    </RowTemplate>
+    <GroupHeaderTemplate>
+        <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"{context.GroupName}: {context.Key}")</MudTh>
+    </GroupHeaderTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] {500}" />
+    </PagerContent>
+</MudTable>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3" OnClick="@((args) => table.ExpandAllGroups())">Expand all groups</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mt-3 ml-3" OnClick="@((args) => table.CollapseAllGroups())">Collapse all groups</MudButton>
+
+@code {
+    private MudTable<CategoryVM> table;
+
+    private TableGroupDefinition<CategoryVM> _groupDefinition = new()
+        {
+            GroupName = "Kategoria Nadrzędna",
+            Indentation = false,
+            Expandable = true,
+            IsInitiallyExpanded = false,
+            Selector = (category) => category.ParentCategory?.CategoryName ?? "Brak"
+        };
+
+    private Dictionary<string, string> searchString2 = new();
+
+    private async Task<TableData<CategoryVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM
+            {
+                Page = state.Page + 1,
+                PageSize = state.PageSize,
+                Sorts = state.SortLabel != null ? (state.SortDirection == SortDirection.Descending ? "-" : "") + state.SortLabel : null
+            };
+
+        sm.Filters = string.Join(",", searchString2.Select(f => $"{f.Key}@={f.Value}"));
+
+        var response = await categoryService.GetCategory(sm);
+        return new TableData<CategoryVM> { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch2(string column, string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            searchString2.Remove(column);
+        }
+        else
+        {
+            searchString2[column] = text;
+        }
+
+        table.ReloadServerData();
+    }
+}

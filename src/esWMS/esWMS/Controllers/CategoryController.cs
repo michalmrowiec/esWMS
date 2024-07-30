@@ -1,10 +1,13 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Models;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
+using esWMS.Application.Functions.Categories.Queries.GetSortedFilteredCategories;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 
 namespace esWMS.Controllers
 {
@@ -24,6 +27,12 @@ namespace esWMS.Controllers
             _mediator = mediator;
             _logger = logger;
             _userContextService = userContextService;
+        }
+
+        [HttpPost("get-filtered")]
+        public async Task<ActionResult<BaseResponse<PagedResult<CategoryDto>>>> GetSortedAndFilteredCategories([FromBody] SieveModel sieveModel)
+        {
+            return Ok(await _mediator.Send(new GetSortedFilteredCategoriesQuery(sieveModel)));
         }
 
         [HttpPost]
