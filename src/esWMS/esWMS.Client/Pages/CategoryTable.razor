@@ -3,6 +3,7 @@
 @using esWMS.Client.ViewModels
 @rendermode InteractiveAuto
 @inject ICategoryService categoryService
+@inject IDialogService DialogService
 
 <style>
     .mud-table-cell-custom-group {
@@ -19,6 +20,10 @@
 
 <h3>Kategorie</h3>
 
+<MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+    Utwórz kategorię
+</MudButton>
+
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table"
           GroupBy="@_groupDefinition" GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
           GroupFooterClass="mb-4" Height="500px" FixedHeader="true">
@@ -33,25 +38,25 @@
             <MudTableSortLabel SortLabel="CategoryName" T="CategoryVM">
                 Nazwa
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s => OnSearch2("CategoryName", s))"></MudTextField>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch("CategoryName", s))"></MudTextField>
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="ParentCategoryName" T="CategoryVM">
                 Nadkategoria Nazwa
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s => OnSearch2("ParentCategoryName", s))"></MudTextField>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch("ParentCategoryName", s))"></MudTextField>
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="CategoryId" T="CategoryVM">
                 Id
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s => OnSearch2("CategoryId", s))"></MudTextField>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch("CategoryId", s))"></MudTextField>
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="ParentCategoryId" T="CategoryVM">
                 Id Nadkategoria
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s => OnSearch2("ParentCategoryId", s))"></MudTextField>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch("ParentCategoryId", s))"></MudTextField>
         </MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -89,7 +94,7 @@
             Selector = (category) => category.ParentCategory?.CategoryName ?? "Brak"
         };
 
-    private Dictionary<string, string> searchString2 = new();
+    private Dictionary<string, string> searchString = new();
 
     private async Task<TableData<CategoryVM>> ServerReload(TableState state, CancellationToken token)
     {
@@ -100,23 +105,30 @@
                 Sorts = state.SortLabel != null ? (state.SortDirection == SortDirection.Descending ? "-" : "") + state.SortLabel : null
             };
 
-        sm.Filters = string.Join(",", searchString2.Select(f => $"{f.Key}@={f.Value}"));
+        sm.Filters = string.Join(",", searchString.Select(f => $"{f.Key}@={f.Value}"));
 
         var response = await categoryService.GetCategory(sm);
         return new TableData<CategoryVM> { TotalItems = response.TotalItems, Items = response.Items };
     }
 
-    private void OnSearch2(string column, string text)
+    private void OnSearch(string column, string text)
     {
         if (string.IsNullOrEmpty(text))
         {
-            searchString2.Remove(column);
+            searchString.Remove(column);
         }
         else
         {
-            searchString2[column] = text;
+            searchString[column] = text;
         }
 
         table.ReloadServerData();
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        return DialogService.ShowAsync<AddCategoryDialogForm>(null, options);
     }
 }

@@ -7,6 +7,7 @@ namespace esWMS.Client.Services
     public interface ICategoryService
     {
         Task<PagedResultVM<CategoryVM>> GetCategory(SieveModelVM sieveModel);
+        Task<HttpResponseMessage> CreateCategory(CategoryVM categoryVM);
     }
 
     public class CategoryService : ICategoryService
@@ -16,6 +17,18 @@ namespace esWMS.Client.Services
         public CategoryService(HttpClient httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        public async Task<HttpResponseMessage> CreateCategory(CategoryVM categoryVM)
+        {
+            var postJson = new StringContent(JsonConvert.SerializeObject(categoryVM), Encoding.UTF8, "application/json");
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, "api/v1/category");
+            request.Content = postJson;
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
         }
 
         public async Task<PagedResultVM<CategoryVM>> GetCategory(SieveModelVM sieveModel)

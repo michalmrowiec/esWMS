@@ -36,7 +36,7 @@ namespace esWMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryCommand createCategoryCommand)
+        public async Task<ActionResult<BaseResponse<CategoryDto>>> CreateCategory([FromBody] CreateCategoryCommand createCategoryCommand)
         {
             if (_userContextService.GetUserId is not null)
                 createCategoryCommand.CreatedBy = _userContextService.GetUserId.ToString();
@@ -45,10 +45,16 @@ namespace esWMS.Controllers
 
             if (result is BaseResponse<CategoryDto> r)
             {
-                return Created("", r.ReturnedObj);
+                if (r.Success)
+                {
+                    return Created("", r.ReturnedObj);
+                }
+                else if (r.ValidationErrors?.Any() ?? false)
+                {
+                    return BadRequest(result.ValidationErrors);
+                }
             }
-
-            return BadRequest(result.ValidationErrors);
+            return BadRequest();
         }
     }
 }
