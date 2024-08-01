@@ -128,7 +128,10 @@
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
-
-        return DialogService.ShowAsync<AddCategoryDialogForm>(null, options);
+        var parameters = new DialogParameters<AddCategoryDialogForm>
+        {
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+        };
+        return DialogService.ShowAsync<AddCategoryDialogForm>(null, parameters, options);
     }
 }

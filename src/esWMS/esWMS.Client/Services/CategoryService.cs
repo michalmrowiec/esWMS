@@ -41,9 +41,9 @@ namespace esWMS.Client.Services
             var response = await _httpClient.SendAsync(request);
 
             var json = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<BaseServerResponseVM<PagedResultVM<CategoryVM>>>(json);
+            var responseObj = JsonConvert.DeserializeObject<PagedResultVM<CategoryVM>>(json);
 
-            return responseObj?.ReturnedObj ?? new();
+            return responseObj ?? new();
         }
     }
 }

@@ -1,14 +1,12 @@
 ﻿using esWMS.Client.ViewModels;
 using Newtonsoft.Json;
-using System.Net.Http.Json;
 using System.Text;
 
 namespace esWMS.Client.Services
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductVM>> GetProduct();
-        Task<PagedResultVM<ProductVM>> GetProduct2(SieveModelVM sieveModel);
+        Task<PagedResultVM<ProductVM>> GetProduct(SieveModelVM sieveModel);
     }
 
     public class ProductService : IProductService
@@ -20,14 +18,7 @@ namespace esWMS.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<ProductVM>> GetProduct()
-        {
-            var response = await _httpClient.GetFromJsonAsync<BaseServerResponseVM<PagedResultVM<ProductVM>>>("api/v1/product");
-
-            return response?.ReturnedObj?.Items ?? [];
-        }
-
-        public async Task<PagedResultVM<ProductVM>> GetProduct2(SieveModelVM sieveModel)
+        public async Task<PagedResultVM<ProductVM>> GetProduct(SieveModelVM sieveModel)
         {
             var postJson = new StringContent(JsonConvert.SerializeObject(sieveModel), Encoding.UTF8, "application/json");
 
@@ -37,9 +28,9 @@ namespace esWMS.Client.Services
             var response = await _httpClient.SendAsync(request);
 
             var json = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<BaseServerResponseVM<PagedResultVM<ProductVM>>>(json);
+            var responseObj = JsonConvert.DeserializeObject<PagedResultVM<ProductVM>>(json);
 
-            return responseObj?.ReturnedObj ?? new();
+            return responseObj;
         }
     }
 }

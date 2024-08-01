@@ -8,8 +8,6 @@
 
 <h3>Artykuły</h3>
 
-<h5>@Res</h5>
-
 <MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Periodic Elements</MudText>
@@ -71,7 +69,6 @@
 </MudTable>
 
 @code {
-    private string Res = "none";
     private IEnumerable<ProductVM> Products = [];
 
     private IEnumerable<ProductVM> pagedData;
@@ -99,7 +96,7 @@
         }
 
 
-        var response = await productService.GetProduct2(sm);
+        var response = await productService.GetProduct(sm);
 
         return new TableData<ProductVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
@@ -124,15 +121,5 @@
             searchString2[column] = $"@={text}";
         }
         table.ReloadServerData();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            Products = await productService.GetProduct();
-            Res = Products.FirstOrDefault()?.ProductName ?? "ERROR";
-            StateHasChanged();
-        }
     }
 }

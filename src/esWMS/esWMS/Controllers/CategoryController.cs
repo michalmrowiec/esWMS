@@ -3,6 +3,7 @@ using esMWS.Domain.Models;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Categories.Queries.GetSortedFilteredCategories;
+using esWMS.Application.Functions.Products;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
@@ -32,7 +33,20 @@ namespace esWMS.Controllers
         [HttpPost("get-filtered")]
         public async Task<ActionResult<BaseResponse<PagedResult<CategoryDto>>>> GetSortedAndFilteredCategories([FromBody] SieveModel sieveModel)
         {
-            return Ok(await _mediator.Send(new GetSortedFilteredCategoriesQuery(sieveModel)));
+            var result = await _mediator.Send(new GetSortedFilteredCategoriesQuery(sieveModel));
+
+            if (result is BaseResponse<PagedResult<CategoryDto>> r)
+            {
+                if (r.Success)
+                {
+                    return Ok(r.ReturnedObj);
+                }
+                else
+                {
+                    return BadRequest(r.Message);
+                }
+            }
+            return BadRequest();
         }
 
         [HttpPost]

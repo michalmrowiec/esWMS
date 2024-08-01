@@ -50,15 +50,15 @@
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-
-    // private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private MudForm form;
+    private CategoryVM model = new();
     private CreateCategoryVMValidator validator = new();
-    private void Cancel() => MudDialog.Cancel();
     private List<string> responseErrors = new();
-    MudForm form;
-    CategoryVM model = new();
-
     private List<CategoryVM> parentCategories = new();
+    [Parameter]
+    public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+
+    private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
@@ -73,6 +73,7 @@
                 //Snackbar.Configuration.PositionClass = "Bottom-End";
                 Snackbar.Add(new MarkupString($"Utworzono <strong>{model.CategoryName}</strong>"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
+                FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {

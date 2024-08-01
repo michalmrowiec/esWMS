@@ -1,4 +1,6 @@
 ﻿using esMWS.Domain.Models;
+using esWMS.Application.Functions.Categories.Commands.CreateCategory;
+using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
@@ -28,22 +30,22 @@ namespace esWMS.Controllers
         }
 
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<BaseResponse<PagedResult<ProductDto>>>> GetSortedAndFilteredProducts([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<ProductDto>>> GetSortedAndFilteredProducts([FromBody] SieveModel sieveModel)
         {
-            return Ok(await _mediator.Send(new GetSortedFilteredProductsQuery(sieveModel)));
-        }
+            var result = await _mediator.Send(new GetSortedFilteredProductsQuery(sieveModel));
 
-        [HttpGet]
-        public async Task<ActionResult<BaseResponse<PagedResult<ProductDto>>>> GetSortedAndFilteredProducts()
-        {
-            var sm = new SieveModel()
+            if (result is BaseResponse<PagedResult<ProductDto>> r)
             {
-                Page = 1,
-                PageSize = 10,
-                Filters = "",
-                Sorts = ""
-            };
-            return Ok(await _mediator.Send(new GetSortedFilteredProductsQuery(sm)));
+                if (r.Success)
+                {
+                    return Ok(r.ReturnedObj);
+                }
+                else
+                {
+                    return BadRequest(r.Message);
+                }
+            }
+            return BadRequest();
         }
     }
 }
