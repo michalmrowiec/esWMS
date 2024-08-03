@@ -37,6 +37,12 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .IsRequired()
                 .HasDefaultValue(0);
 
+            builder.Property(wui => wui.BatchLot)
+                .HasMaxLength(50);
+
+            builder.Property(wui => wui.SerialNumber)
+                .HasMaxLength(100);
+
             builder.Property(di => di.Price)
                 .HasColumnType("decimal(18,2)");
 

@@ -24,7 +24,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                     }
 
                     var documentItemIds = document!.DocumentItems.Select(x => x.DocumentItemsId).ToArray();
-                    var contained = value.DocumentItemsWithAssigment.Select(x => x.DocumentItemId).Except(documentItemIds);
+                    var contained = value.DocumentItemsWithAssignment.Select(x => x.DocumentItemId).Except(documentItemIds);
 
                     if (contained.Any())
                     {
@@ -33,10 +33,8 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                             $"The original document does not contain these item identifiers: {string.Join("; ", contained)}");
                     }
 
-                    string[] warehouseUnitIds = value.DocumentItemsWithAssigment
+                    string[] warehouseUnitIds = value.DocumentItemsWithAssignment
                                                     .Select(x => x.WarehouseUnitId)
-                                                    .Where(x => x != null)
-                                                    .OfType<string>()
                                                     .ToArray();
 
                     if (warehouseUnitIds.Length != 0)
@@ -49,7 +47,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                         {
                             context.AddFailure("Somenthing went wrong");
                         }
-
+                        // TODO add check warehouse unit is member of issue warehouse
                         var warehouseUnitIdsResponse = warehouseUnit!.Select(x => x.WarehouseUnitId).ToArray();
                         var warehouseUnitIdsContained = warehouseUnitIds.Except(warehouseUnitIdsResponse);
 

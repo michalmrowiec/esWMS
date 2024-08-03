@@ -21,5 +21,33 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
 
         public WarehouseUnit? WarehouseUnit { get; set; }
         public Product? Product { get; set; }
+
+        public WarehouseUnitItem()
+        { }
+        public WarehouseUnitItem(
+            string warehouseUnitId,
+            string productId,
+            int quantity,
+            int blockedQuantity,
+            DateTime? bestBefore,
+            string? batchLot,
+            string? serialNumber,
+            decimal? price,
+            string? createdBy)
+        {
+            WarehouseUnitItemId = Guid.NewGuid().ToString();
+            WarehouseUnitId = warehouseUnitId;
+            ProductId = productId;
+            Quantity = quantity;
+            BlockedQuantity = blockedQuantity;
+            BestBefore = bestBefore;
+            BatchLot = batchLot;
+            SerialNumber = serialNumber;
+            Price = price;
+            CreatedAt = DateTime.Now;
+            CreatedBy = createdBy;
+            ModifiedAt = null;
+            ModifiedBy = null;
+        }
     }
 }

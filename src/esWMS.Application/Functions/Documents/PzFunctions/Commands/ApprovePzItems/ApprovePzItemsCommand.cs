@@ -6,10 +6,10 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
     public class ApprovePzItemsCommand : IRequest<BaseResponse<PzDto>>
     {
         public string DocumentId { get; set; } = null!;
-        public List<DocWithAssigment> DocumentItemsWithAssigment { get; set; } = null!;
+        public List<DocWithAssigment> DocumentItemsWithAssignment { get; set; } = null!;
 
-        public string? CreatedBy { get; set; }
+        public string? ModifiedBy { get; set; }
     }
 
-    public record DocWithAssigment(string DocumentItemId, string? WarehouseUnitId);
+    public record DocWithAssigment(string DocumentItemId, string WarehouseUnitId);
 }

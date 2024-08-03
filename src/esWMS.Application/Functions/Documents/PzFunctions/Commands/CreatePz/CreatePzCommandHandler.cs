@@ -9,10 +9,10 @@ using MediatR;
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 {
     internal class CreatePzCommandHandler
-        (IPzRepozitory repository, IMapper mapper, ITransactionManager transactionManager)
+        (IPzRepository repository, IMapper mapper, ITransactionManager transactionManager)
         : IRequestHandler<CreatePzCommand, BaseResponse<PzDto>>
     {
-        private readonly IPzRepozitory _repository = repository;
+        private readonly IPzRepository _repository = repository;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
 

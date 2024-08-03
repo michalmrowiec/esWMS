@@ -7,5 +7,6 @@ namespace esWMS.Application.Contracts.Persistence
     {
         Task<IList<WarehouseUnit>> GetWarehouseUnitWithItems(string warehouseUnitId);
         Task<IList<WarehouseUnit>> GetWarehouseUnitsByIds(params string[] warehouseUnitIds);
+        Task<IList<WarehouseUnit>> UpdateWarehouseUnitsAsync(params WarehouseUnit[] warehouseUnits);
     }
 }

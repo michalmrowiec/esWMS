@@ -31,7 +31,7 @@ namespace esWMS.Controllers
         public async Task<ActionResult<BaseResponse<PzDto>>> ApprovePzItems([FromBody] ApprovePzItemsCommand approvePzItemsCommand)
         {
             if (_userContextService.GetUserId is not null)
-                approvePzItemsCommand.CreatedBy = _userContextService.GetUserId.ToString();
+                approvePzItemsCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
             var result = await _mediator.Send(approvePzItemsCommand);
 

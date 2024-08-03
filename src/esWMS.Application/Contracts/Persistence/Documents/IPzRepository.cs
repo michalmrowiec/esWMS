@@ -2,7 +2,7 @@
 
 namespace esWMS.Application.Contracts.Persistence.Documents
 {
-    public interface IPzRepozitory
+    public interface IPzRepository
         : IBaseDocumentRepository<PZ>
     { }
 }

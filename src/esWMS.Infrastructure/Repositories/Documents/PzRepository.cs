@@ -5,6 +5,6 @@ using Microsoft.Extensions.Logging;
 namespace esWMS.Infrastructure.Repositories.Documents
 {
     internal class PzRepository(EsWmsDbContext context, ILogger<PzRepository> logger)
-                : BaseDocumentRepository<PZ>(context, logger), IPzRepozitory
+                : BaseDocumentRepository<PZ>(context, logger), IPzRepository
     { }
 }

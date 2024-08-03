@@ -1,4 +1,5 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+using System.ComponentModel;
 
 namespace esMWS.Domain.Entities.Documents
 {
@@ -11,6 +12,10 @@ namespace esMWS.Domain.Entities.Documents
         public string? EanCode { get; set; }
         public string ProductName { get; set; } = null!;
         public int Quantity { get; set; }
+        public DateTime? BestBefore { get; set; }
+        [DisplayName("Batch/Lot")]
+        public string? BatchLot { get; set; }
+        public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
         public string? WarehouseUnitItemId { get; set; }

@@ -29,5 +29,20 @@ namespace esWMS.Infrastructure.Repositories
         {
             throw new NotImplementedException();
         }
+
+        public async Task<IList<WarehouseUnit>> UpdateWarehouseUnitsAsync(params WarehouseUnit[] warehouseUnits)
+        {
+            try
+            {
+                _context.WarehouseUnits.UpdateRange(warehouseUnits);
+                await _context.SaveChangesAsync();
+                return warehouseUnits;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating warehouse units");
+                throw;
+            }
+        }
     }
 }
