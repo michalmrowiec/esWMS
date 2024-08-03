@@ -1,7 +1,6 @@
 ﻿using esMWS.Domain.Entities.Documents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.ComponentModel.DataAnnotations;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
@@ -44,6 +43,12 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
             builder.Property(di => di.Currency)
                 .HasMaxLength(5);
 
+            builder.Property(di => di.WarehouseUnitId)
+                .HasMaxLength(450);
+
+            builder.Property(di => di.WarehouseUnitItemId)
+                .HasMaxLength(450);
+
             builder.Property(di => di.IsApproved)
                 .IsRequired();
 
@@ -67,6 +72,18 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .WithMany(p => p.DocumentItems)
                 .HasForeignKey(di => di.ProductId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder
+                .HasOne(di => di.WarehouseUnit)
+                .WithMany()
+                .HasForeignKey(di => di.WarehouseUnitId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            builder
+                .HasOne(di => di.WarehouseUnitItem)
+                .WithMany()
+                .HasForeignKey(di => di.WarehouseUnitItemId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

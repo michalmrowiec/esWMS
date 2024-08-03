@@ -26,9 +26,15 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
 
             var document = await _repository.GetDocumentByIdWithItemsAsync(request.DocumentId);
 
-            foreach (var item in document.DocumentItems.Where(x => request.DocumentItemsId.Contains(x.DocumentItemId)))
+            foreach (var item in document.DocumentItems
+                .Where(x => request.DocumentItemsWithAssigment
+                .Select(d => d.DocumentItemId)
+                .Contains(x.DocumentItemId)))
             {
                 item.IsApproved = true;
+                item.WarehouseUnitItemId = request.DocumentItemsWithAssigment
+                                            .First(di => di.DocumentItemId == item.DocumentItemId)
+                                            .WarehouseUnitId;
             }
 
             PzDto mappedUpdatedDocument;

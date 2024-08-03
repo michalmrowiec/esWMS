@@ -494,7 +494,9 @@ namespace esWMS.Infrastructure.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Currency = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    WarehouseUnitItemId = table.Column<string>(type: "varchar(450)", nullable: true)
+                    WarehouseUnitItemId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    WarehouseUnitId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsApproved = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -521,7 +523,14 @@ namespace esWMS.Infrastructure.Migrations
                         name: "FK_DocumentItems_WarehouseUnitItems_WarehouseUnitItemId",
                         column: x => x.WarehouseUnitItemId,
                         principalTable: "WarehouseUnitItems",
-                        principalColumn: "WarehouseUnitItemId");
+                        principalColumn: "WarehouseUnitItemId",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_DocumentItems_WarehouseUnits_WarehouseUnitId",
+                        column: x => x.WarehouseUnitId,
+                        principalTable: "WarehouseUnits",
+                        principalColumn: "WarehouseUnitId",
+                        onDelete: ReferentialAction.SetNull);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -539,6 +548,11 @@ namespace esWMS.Infrastructure.Migrations
                 name: "IX_DocumentItems_ProductId",
                 table: "DocumentItems",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocumentItems_WarehouseUnitId",
+                table: "DocumentItems",
+                column: "WarehouseUnitId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DocumentItems_WarehouseUnitItemId",
