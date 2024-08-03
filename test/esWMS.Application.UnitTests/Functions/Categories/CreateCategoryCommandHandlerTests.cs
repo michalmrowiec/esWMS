@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
+using esWMS.Application.Functions.Categories.Queries.GetSortedFilteredCategories;
 using esWMS.Application.Responses;
 using FluentAssertions;
+using MediatR;
 using Moq;
 
 namespace esWMS.Application.UnitTests.Functions.Categories
@@ -48,7 +51,11 @@ namespace esWMS.Application.UnitTests.Functions.Categories
             mapperMock.Setup(m => m.Map<CategoryDto>(It.IsAny<Category>()))
                 .Returns(categoryDto);
 
-            var handler = new CreateCategoryCommandHandler(repositoryMock.Object, mapperMock.Object);
+            var mediatorMock = new Mock<IMediator>();
+            mediatorMock.Setup(m => m.Send(It.IsAny<GetSortedFilteredCategoriesQuery>(), new CancellationToken()))
+                .ReturnsAsync(new BaseResponse<PagedResult<CategoryDto>>(new PagedResult<CategoryDto>([], 1, 1, 1)));
+
+            var handler = new CreateCategoryCommandHandler(repositoryMock.Object, mapperMock.Object, mediatorMock.Object);
 
             BaseResponse<CategoryDto> response = await handler.Handle(categoryCommand, new CancellationToken());
 
