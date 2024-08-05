@@ -1,4 +1,5 @@
-﻿using esWMS.Application.Functions.Documents.BaseDocumentFunctions.Queries.GetDocumentById;
+﻿using esMWS.Domain.Entities.Documents;
+using esWMS.Application.Functions.Documents.BaseDocumentFunctions.Queries.GetDocumentById;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetWarehouseUnitsByIds;
 using FluentValidation;
 using MediatR;
@@ -15,7 +16,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
             RuleFor(x => x)
                 .CustomAsync(async (value, context, cancellationToken) =>
                 {
-                    var documentResponse = await _mediator.Send(new GetDocumentByIdQuery(value.DocumentId));
+                    var documentResponse = await _mediator.Send(new GetPzByIdQuery(value.DocumentId));
                     var document = documentResponse.ReturnedObj;
 
                     if (!documentResponse.Success || document == null)
@@ -23,7 +24,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                         context.AddFailure("DocumentId", $"The document by Id: {value} does not exist.");
                     }
 
-                    var documentItemIds = document!.DocumentItems.Select(x => x.DocumentItemsId).ToArray();
+                    var documentItemIds = document!.DocumentItems.Select(x => x.DocumentItemId).ToArray();
                     var contained = value.DocumentItemsWithAssignment.Select(x => x.DocumentItemId).Except(documentItemIds);
 
                     if (contained.Any())

@@ -7,6 +7,7 @@ using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
+using esWMS.Application.Functions.Documents.BaseDocumentFunctions;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.UpdateDocumentItems;

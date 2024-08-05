@@ -38,6 +38,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 
             foreach (var item in entity.DocumentItems)
             {
+                item.DocumentItemId = Guid.NewGuid().ToString();
                 item.DocumentId = entity.DocumentId;
             }
 

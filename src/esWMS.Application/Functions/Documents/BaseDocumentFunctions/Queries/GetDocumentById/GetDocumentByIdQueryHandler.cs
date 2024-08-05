@@ -6,16 +6,18 @@ using MediatR;
 
 namespace esWMS.Application.Functions.Documents.BaseDocumentFunctions.Queries.GetDocumentById
 {
-    internal class GetDocumentByIdQueryHandler
-        (IBaseDocumentRepository<BaseDocument> repository, IMapper mapper)
-        : IRequestHandler<GetDocumentByIdQuery, BaseResponse<BaseDocumentDto>>
+    internal class GetDocumentByIdQueryHandler<TDocument, TDocumentDto>
+        (IBaseDocumentRepository<TDocument> repository, IMapper mapper)
+        : IRequestHandler<GetDocumentByIdQuery<TDocument, TDocumentDto>, BaseResponse<TDocumentDto>>
+        where TDocument : BaseDocument
+        where TDocumentDto : BaseDocumentDto
     {
-        private readonly IBaseDocumentRepository<BaseDocument> _repository = repository;
+        private readonly IBaseDocumentRepository<TDocument> _repository = repository;
         private readonly IMapper _mapper = mapper;
 
-        public async Task<BaseResponse<BaseDocumentDto>> Handle(GetDocumentByIdQuery request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<TDocumentDto>> Handle(GetDocumentByIdQuery<TDocument, TDocumentDto> request, CancellationToken cancellationToken)
         {
-            BaseDocumentDto baseDocumentDto;
+            TDocumentDto baseDocumentDto;
 
             try
             {
@@ -23,17 +25,17 @@ namespace esWMS.Application.Functions.Documents.BaseDocumentFunctions.Queries.Ge
 
                 if (document == null)
                 {
-                    return new BaseResponse<BaseDocumentDto>(false, "The document does not exist.");
+                    return new BaseResponse<TDocumentDto>(false, "The document does not exist.");
                 }
 
-                baseDocumentDto = _mapper.Map<BaseDocumentDto>(document);
+                baseDocumentDto = _mapper.Map<TDocumentDto>(document);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new BaseResponse<BaseDocumentDto>(false, "Something went wrong.");
+                return new BaseResponse<TDocumentDto>(false, "Something went wrong.");
             }
 
-            return new BaseResponse<BaseDocumentDto>(baseDocumentDto);
+            return new BaseResponse<TDocumentDto>(baseDocumentDto);
         }
     }
 }

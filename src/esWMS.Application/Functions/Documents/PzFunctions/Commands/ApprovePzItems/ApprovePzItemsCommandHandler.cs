@@ -40,10 +40,10 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
             foreach (var itemAssignment in request.DocumentItemsWithAssignment)
             {
                 var docItem = document.DocumentItems
-                    .First(di => di.DocumentId.Equals(itemAssignment.DocumentItemId));
+                    .First(di => di.DocumentItemId.Equals(itemAssignment.DocumentItemId));
 
                 docItem.IsApproved = true;
-                docItem.WarehouseUnitItemId = itemAssignment.WarehouseUnitId;
+                //docItem.WarehouseUnitItemId = itemAssignment.WarehouseUnitId;
                 docItem.ModifiedBy = request.ModifiedBy;
                 docItem.ModifiedAt = DateTime.Now;
 
@@ -52,17 +52,20 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
 
                 warUnit.ModifiedBy = request.ModifiedBy;
                 warUnit.ModifiedAt = DateTime.Now;
-                warUnit.WarehouseUnitItems.Add(
-                    new WarehouseUnitItem(
-                        warehouseUnitId: warUnit.WarehouseId,
-                        productId: docItem.ProductId,
-                        quantity: docItem.Quantity,
-                        blockedQuantity: docItem.Quantity,
-                        bestBefore: docItem.BestBefore,
-                        batchLot: docItem.BatchLot,
-                        serialNumber: docItem.SerialNumber,
-                        price: docItem.Price,
-                        createdBy: request.ModifiedBy));
+                var newWarehouseUnitItem = new WarehouseUnitItem(
+                    warehouseUnitId: warUnit.WarehouseId,
+                    productId: docItem.ProductId,
+                    quantity: docItem.Quantity,
+                    blockedQuantity: docItem.Quantity,
+                    bestBefore: docItem.BestBefore,
+                    batchLot: docItem.BatchLot,
+                    serialNumber: docItem.SerialNumber,
+                    price: docItem.Price,
+                    createdBy: request.ModifiedBy);
+
+                warUnit.WarehouseUnitItems.Add(newWarehouseUnitItem);
+
+                docItem.WarehouseUnitItem = newWarehouseUnitItem;
             }
 
             PzDto mappedUpdatedDocument;
@@ -71,14 +74,14 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
             {
                 await _transactionManager.BeginTransactionAsync();
 
-                var updatedDocument = await _pzRepozitory.UpdateAsync(document);
                 var updatedWarehouseUnits = await _warehouseUnitRepository.UpdateWarehouseUnitsAsync(warehouseUnits.ToArray());
+                var updatedDocument = await _pzRepozitory.UpdateAsync(document);
 
                 await _transactionManager.CommitTransactionAsync();
 
                 mappedUpdatedDocument = _mapper.Map<PzDto>(updatedDocument);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
 

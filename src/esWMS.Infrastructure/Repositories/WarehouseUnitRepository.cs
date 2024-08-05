@@ -15,7 +15,7 @@ namespace esWMS.Infrastructure.Repositories
             try
             {
                 return await _context.WarehouseUnits
-                    .Where(wu => wu.Equals(warehouseUnitIds))
+                    .Where(wu => warehouseUnitIds.Contains(wu.WarehouseUnitId))
                     .ToListAsync();
             }
             catch (Exception ex)

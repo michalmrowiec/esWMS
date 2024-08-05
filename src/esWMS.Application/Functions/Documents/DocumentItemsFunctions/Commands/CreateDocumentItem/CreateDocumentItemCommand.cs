@@ -5,7 +5,7 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.
 {
     public class CreateDocumentItemCommand : IRequest<BaseResponse<DocumentItemDto>>
     {
-        public string DocumentId { get; set; } = null!;
+        public string? DocumentId { get; set; }
         public string ProductId { get; set; } = null!;
         public string ProductCode { get; set; } = null!;
         public string? EanCode { get; set; }
