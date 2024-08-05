@@ -1,12 +1,10 @@
-﻿using esWMS.Application.Functions.Categories.Commands.CreateCategory;
-using esWMS.Application.Functions.Categories;
+﻿using esWMS.Application.Functions.Documents.PzFunctions;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems;
-using esWMS.Application.Functions.Documents.PzFunctions;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
 
 namespace esWMS.Controllers
 {
