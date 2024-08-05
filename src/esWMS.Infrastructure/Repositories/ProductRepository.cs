@@ -14,7 +14,7 @@ namespace esWMS.Infrastructure.Repositories
         private readonly EsWmsDbContext _context = context;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
-        public async Task<PagedResult<Product>> GetSortedFilteredProductsAsync(SieveModel sieveModel)
+        public async Task<PagedResult<Product>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             var products = _context.Products
                 .Include(p => p.Category)

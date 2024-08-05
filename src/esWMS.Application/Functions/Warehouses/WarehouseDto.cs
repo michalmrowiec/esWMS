@@ -1,4 +1,6 @@
-﻿namespace esWMS.Application.Functions.Warehouses
+﻿using esWMS.Application.Functions.Zones;
+
+namespace esWMS.Application.Functions.Warehouses
 {
     public class WarehouseDto
     {
@@ -9,5 +11,7 @@
         public string? Region { get; set; }
         public string? PostalCode { get; set; }
         public string? Address { get; set; }
+
+        public IList<ZoneDto> Zones { get; set; } = [];
     }
 }

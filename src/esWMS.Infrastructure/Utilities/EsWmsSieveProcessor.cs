@@ -11,43 +11,68 @@ namespace esWMS.Infrastructure.Utilities
     {
         protected override SievePropertyMapper MapProperties(SievePropertyMapper mapper)
         {
-            mapper.Property<Product>(p => p.ProductCode)
+            mapper.Property<Product>(x => x.ProductCode)
                 .CanSort()
                 .CanFilter();
 
-            mapper.Property<Product>(p => p.ProductName)
+            mapper.Property<Product>(x => x.ProductName)
                 .CanSort()
                 .CanFilter();
 
-            mapper.Property<Product>(p => p.Category.CategoryName)
+            mapper.Property<Product>(x => x.Category.CategoryName)
                 .CanSort()
                 .CanFilter()
                 .HasName("CategoryName");
             
-            mapper.Property<Product>(p => p.Price)
+            mapper.Property<Product>(x => x.Price)
                 .CanSort()
                 .CanFilter();
 
-            mapper.Property<Product>(p => p.Unit)
+            mapper.Property<Product>(x => x.Unit)
                 .CanSort()
                 .CanFilter();
 
-            mapper.Property<Category>(p => p.CategoryId)
+            mapper.Property<Category>(x => x.CategoryId)
                 .CanSort()
                 .CanFilter();
 
-            mapper.Property<Category>(p => p.ParentCategoryId)
+            mapper.Property<Category>(x => x.ParentCategoryId)
                 .CanSort()
                 .CanFilter();
 
-            mapper.Property<Category>(p => p.CategoryName)
+            mapper.Property<Category>(x => x.CategoryName)
                 .CanSort()
                 .CanFilter();
 
-            mapper.Property<Category>(p => p.ParentCategory.CategoryName)
+            mapper.Property<Category>(x => x.ParentCategory.CategoryName)
                 .CanSort()
                 .CanFilter()
                 .HasName("ParentCategoryName");
+
+            mapper.Property<Warehouse>
+                (x => x.WarehouseId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Warehouse>(x => x.WarehouseName)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Warehouse>(x => x.City)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Warehouse>(x => x.Address)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Warehouse>(x => x.PostalCode)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Warehouse>(x => x.Region)
+                .CanSort()
+                .CanFilter();
 
             return mapper;
         }

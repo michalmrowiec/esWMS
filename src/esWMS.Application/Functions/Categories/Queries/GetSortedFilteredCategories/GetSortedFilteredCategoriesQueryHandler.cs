@@ -15,7 +15,7 @@ namespace esWMS.Application.Functions.Categories.Queries.GetSortedFilteredCatego
 
         public async Task<BaseResponse<PagedResult<CategoryDto>>> Handle(GetSortedFilteredCategoriesQuery request, CancellationToken cancellationToken)
         {
-            var pagedResult = await _repository.GetSortedFilteredProductsAsync(request.SieveModel);
+            var pagedResult = await _repository.GetSortedFilteredAsync(request.SieveModel);
 
             var mapped = _mapper.Map<PagedResult<CategoryDto>>(pagedResult);
 

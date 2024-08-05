@@ -19,7 +19,7 @@ namespace esWMS.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<PagedResult<Category>> GetSortedFilteredProductsAsync(SieveModel sieveModel)
+        public async Task<PagedResult<Category>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             var products = _context.Categories
                 .Include(p => p.ChildCategories)

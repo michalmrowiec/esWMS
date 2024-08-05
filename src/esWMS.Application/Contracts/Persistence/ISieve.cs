@@ -6,6 +6,6 @@ namespace esWMS.Application.Contracts.Persistence
     public interface ISieve<TEntity>
         where TEntity : class
     {
-        Task<PagedResult<TEntity>> GetSortedFilteredProductsAsync(SieveModel sieveModel);
+        Task<PagedResult<TEntity>> GetSortedFilteredAsync(SieveModel sieveModel);
     }
 }
