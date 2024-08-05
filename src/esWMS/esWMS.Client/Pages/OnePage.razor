@@ -1,0 +1,75 @@
+﻿@page "/one"
+@inject OnePageState onePageState
+
+<MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@onePageState.UserIndex"
+                CloseTab="@CloseTabCallback"
+                AddIconToolTip="Click to add a new tab" CloseIconToolTip="Close tab. All data will be lost"
+                PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+    @foreach (var tab in onePageState.UserTabs)
+    {
+        <MudTabPanel ID="@tab.Id" Text="@tab.Label"  ShowCloseIcon="true">
+            @GetRenderFragment(tab.Content.GetType())
+        </MudTabPanel>
+
+    }
+</MudDynamicTabs>
+<MudButton OnClick="@RestoreUserTabs">Restore</MudButton>
+
+@code {
+    public MudDynamicTabs DynamicTabs;
+    bool _stateHasChanged;
+    bool _showCloseIcon = false;
+
+    RenderFragment GetRenderFragment(Type type)
+    {
+        RenderFragment renderFragment = renderTreeBuilder =>
+        {
+            renderTreeBuilder.OpenComponent(0, type);
+            renderTreeBuilder.CloseComponent();
+        };
+        return renderFragment;
+    }
+
+    void RestoreUserTabs()
+    {
+        //onePageState.UserTabs.Clear();
+         onePageState.UserTabs.Add(new TabView("counter", new Counter(), Guid.NewGuid()));
+         onePageState.UserTabs.Add(new TabView("pogoda", new Weather(), Guid.NewGuid()));
+         onePageState.UserTabs.Add(new TabView("art", new ProductTable(), Guid.NewGuid()));
+         onePageState.UserTabs.Add(new TabView("kategorie", new CategoryTable(), Guid.NewGuid()));
+        //onePageState.UserIndex = 1;
+        _stateHasChanged = true;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        onePageState.OnAddTab += StateHasChanged;
+
+        RestoreUserTabs();
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (_stateHasChanged)
+        {
+            _stateHasChanged = false;
+            StateHasChanged();
+        }
+    }
+
+    public void RemoveTab(Guid id)
+    {
+        var tabView = onePageState.UserTabs.SingleOrDefault((t) => Equals(t.Id, id));
+        if (tabView is not null)
+        {
+            onePageState.UserTabs.Remove(tabView);
+            _stateHasChanged = true;
+        }
+    }
+
+    // void AddTabCallback() => AddTab(Guid.NewGuid());
+    void CloseTabCallback(MudTabPanel panel) => RemoveTab((Guid)panel.ID);
+}

@@ -1,3 +1,4 @@
+using esWMS.Client.Pages;
 using esWMS.Client.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
@@ -10,6 +11,7 @@ builder.Services.AddTransient(http => new HttpClient
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
 
+builder.Services.AddSingleton<OnePageState>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();
 builder.Services.AddMudServices();

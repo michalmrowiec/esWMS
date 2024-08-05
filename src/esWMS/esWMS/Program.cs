@@ -1,4 +1,5 @@
 using esWMS.Application;
+using esWMS.Client.Pages;
 using esWMS.Client.Services;
 using esWMS.Components;
 using esWMS.Infrastructure;
@@ -20,6 +21,7 @@ try
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
 
+    builder.Services.AddSingleton<OnePageState>();
     builder.Services.AddTransient<IProductService, ProductService>();
     builder.Services.AddTransient<ICategoryService, CategoryService>();
     builder.Services.AddHttpClient();

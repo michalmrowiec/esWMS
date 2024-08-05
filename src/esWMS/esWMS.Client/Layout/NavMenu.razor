@@ -1,8 +1,16 @@
-﻿
+﻿@using esWMS.Client.Pages
+@inject OnePageState onePageState
+
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <MudNavLink Href="counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Counter</MudNavLink>
     <MudNavLink Href="products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Artykuły</MudNavLink>
     <MudNavLink Href="categories" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Kategorie</MudNavLink>
     <MudNavLink Href="weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Weather</MudNavLink>
+    <MudNavLink Href="one" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">OnePage</MudNavLink>
+
+    <MudButton Icon="@Icons.Material.Filled.Add"
+        OnClick="@(() => onePageState.AddTab(new TabView("ART", new ProductTable(), Guid.NewGuid())))">Artykuły</MudButton>
+    <MudButton Icon="@Icons.Material.Filled.Add"
+               OnClick="@(() => onePageState.AddTab(new TabView("KAT", new CategoryTable(), Guid.NewGuid())))">Kategorie</MudButton>
 </MudNavMenu>
