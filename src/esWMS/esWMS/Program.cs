@@ -22,6 +22,7 @@ try
     builder.Host.UseNLog();
 
     builder.Services.AddSingleton<OnePageState>();
+    builder.Services.AddTransient<IWarehouseService, WarehouseService>();
     builder.Services.AddTransient<IProductService, ProductService>();
     builder.Services.AddTransient<ICategoryService, CategoryService>();
     builder.Services.AddHttpClient();

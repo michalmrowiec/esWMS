@@ -9,8 +9,22 @@
     <MudNavLink Href="weather" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Weather</MudNavLink>
     <MudNavLink Href="one" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">OnePage</MudNavLink>
 
-    <MudButton Icon="@Icons.Material.Filled.Add"
-        OnClick="@(() => onePageState.AddTab(new TabView("ART", new ProductTable(), Guid.NewGuid())))">Artykuły</MudButton>
-    <MudButton Icon="@Icons.Material.Filled.Add"
-               OnClick="@(() => onePageState.AddTab(new TabView("KAT", new CategoryTable(), Guid.NewGuid())))">Kategorie</MudButton>
+    <MudNavLink Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">
+        <MudButton Icon="@Icons.Material.Filled.Add"
+                   OnClick="@(() => onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid())))">
+            Artykuły
+        </MudButton>
+    </MudNavLink>
+    <MudNavLink Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Tag">
+        <MudButton Icon="@Icons.Material.Filled.Add"
+                   OnClick="@(() => onePageState.AddTab(new TabView("Kategorie", new CategoryTable(), Guid.NewGuid())))">
+            Kategorie
+        </MudButton>
+    </MudNavLink>
+    <MudNavLink Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Warehouse">
+        <MudButton Icon="@Icons.Material.Filled.Add"
+                   OnClick="@(() => onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid())))">
+            Magazyny
+        </MudButton>
+    </MudNavLink>
 </MudNavMenu>
