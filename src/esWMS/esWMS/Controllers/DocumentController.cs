@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems;
 using esWMS.Application.Functions.Documents.PzFunctions;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
 
 namespace esWMS.Controllers
 {
@@ -25,6 +26,28 @@ namespace esWMS.Controllers
             _mediator = mediator;
             _logger = logger;
             _userContextService = userContextService;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<BaseResponse<PzDto>>> CreatePz([FromBody] CreatePzCommand createPzCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                createPzCommand.CreatedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(createPzCommand);
+
+            if (result is BaseResponse<PzDto> r)
+            {
+                if (r.Success)
+                {
+                    return Created("", r.ReturnedObj);
+                }
+                else if (r.ValidationErrors?.Any() ?? false)
+                {
+                    return BadRequest(result.ValidationErrors);
+                }
+            }
+            return BadRequest();
         }
 
         [HttpPatch]

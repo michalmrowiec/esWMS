@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
@@ -8,16 +9,25 @@ using MediatR;
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
 {
     internal class ApprovePzCommandHanlder
-        (IPzRepository repository, IMapper mapper, ITransactionManager transactionManager)
+        (IPzRepository pzRepozitory,
+        IWarehouseUnitItemRepository warehouseUnitItemRepository,
+        IMapper mapper,
+        ITransactionManager transactionManager)
         : IRequestHandler<ApprovePzCommand, BaseResponse<PzDto>>
     {
-        private readonly IPzRepository _repository = repository;
+        private readonly IPzRepository _pzRepozitory = pzRepozitory;
+        private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
         public async Task<BaseResponse<PzDto>> Handle(ApprovePzCommand request, CancellationToken cancellationToken)
         {
-            var document = await _repository.GetDocumentByIdWithItemsAsync(request.DocumentId);
+            var document = await _pzRepozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
+            var warehouseUnitItems = await _warehouseUnitItemRepository.GetWarehouseUnitItemsByIdsAsync(
+                document.DocumentItems
+                .Select(x => x.WarehouseUnitItemId)
+                .OfType<string>()
+                .ToArray());
 
             if (document == null)
             {
@@ -34,13 +44,20 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
             document.ModifiedAt = DateTime.Now;
             document.ModifiedBy = request.ModifiedBy;
 
+            foreach (var warUnitItem in warehouseUnitItems)
+            {
+                warUnitItem.BlockedQuantity -= warUnitItem.BlockedQuantity;
+            }
+
             PzDto mappedUpdatedDocument;
 
             try
             {
                 await _transactionManager.BeginTransactionAsync();
 
-                var updatedDocument = await _repository.UpdateAsync(document);
+                var updatedDocument = await _pzRepozitory.UpdateAsync(document);
+                var updatedWarehouseUnitItems = await _warehouseUnitItemRepository
+                    .UpdateWarehouseUnitItemsAsync(warehouseUnitItems.ToArray());
 
                 await _transactionManager.CommitTransactionAsync();
 

@@ -32,7 +32,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
             }
 
             var document = await _pzRepozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
-            var warehouseUnits = await _warehouseUnitRepository.GetWarehouseUnitsByIds(
+            var warehouseUnits = await _warehouseUnitRepository.GetWarehouseUnitsByIdsAsync(
                 request.DocumentItemsWithAssignment
                 .Select(x => x.WarehouseUnitId)
                 .ToArray());
@@ -54,15 +54,15 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                 warUnit.ModifiedAt = DateTime.Now;
                 warUnit.WarehouseUnitItems.Add(
                     new WarehouseUnitItem(
-                        warUnit.WarehouseId,
-                        docItem.ProductId,
-                        docItem.Quantity,
-                        0,
-                        docItem.BestBefore,
-                        docItem.BatchLot,
-                        docItem.SerialNumber,
-                        docItem.Price,
-                        request.ModifiedBy));
+                        warehouseUnitId: warUnit.WarehouseId,
+                        productId: docItem.ProductId,
+                        quantity: docItem.Quantity,
+                        blockedQuantity: docItem.Quantity,
+                        bestBefore: docItem.BestBefore,
+                        batchLot: docItem.BatchLot,
+                        serialNumber: docItem.SerialNumber,
+                        price: docItem.Price,
+                        createdBy: request.ModifiedBy));
             }
 
             PzDto mappedUpdatedDocument;
@@ -72,7 +72,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                 await _transactionManager.BeginTransactionAsync();
 
                 var updatedDocument = await _pzRepozitory.UpdateAsync(document);
-                var updatedWarehouseUnit = await _warehouseUnitRepository.UpdateWarehouseUnitsAsync(warehouseUnits.ToArray());
+                var updatedWarehouseUnits = await _warehouseUnitRepository.UpdateWarehouseUnitsAsync(warehouseUnits.ToArray());
 
                 await _transactionManager.CommitTransactionAsync();
 

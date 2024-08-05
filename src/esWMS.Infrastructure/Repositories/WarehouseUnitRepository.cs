@@ -10,7 +10,7 @@ namespace esWMS.Infrastructure.Repositories
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ILogger<WarehouseUnitRepository> _logger = logger;
-        public async Task<IList<WarehouseUnit>> GetWarehouseUnitsByIds(params string[] warehouseUnitIds)
+        public async Task<IList<WarehouseUnit>> GetWarehouseUnitsByIdsAsync(params string[] warehouseUnitIds)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace esWMS.Infrastructure.Repositories
             }
         }
 
-        public Task<IList<WarehouseUnit>> GetWarehouseUnitWithItems(string warehouseUnitId)
+        public Task<IList<WarehouseUnit>> GetWarehouseUnitWithItemsAsync(string warehouseUnitId)
         {
             throw new NotImplementedException();
         }
