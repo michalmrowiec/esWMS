@@ -1,0 +1,34 @@
+﻿@using esWMS.Client.Pages
+@using esWMS.Client.Pages.Documents
+@inject OnePageState onePageState
+
+<MudNavMenu>
+    <MudNavGroup Title="Artykuły" Expanded="false" Icon="@Icons.Material.Filled.Category">
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.List"
+                    OnClick="@(() => onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+            Lista Artykułów
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.List"
+                    OnClick="@(() => onePageState.AddTab(new TabView("Kategorie", new CategoryTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+            Kategorie
+        </MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Magazyny" Expanded="false" Icon="@Icons.Material.Filled.Warehouse">
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.List"
+                    OnClick="@(() => onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+            Lista Magazynów
+        </MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Dokumenty" Expanded="false" Icon="@Icons.Material.Filled.LibraryBooks">
+        <MudNavGroup Title="PZ" Expanded="false" Icon="@Icons.Material.Filled.ArrowDownward">
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                Lista PZ
+            </MudNavLink>
+        </MudNavGroup>
+    </MudNavGroup>
+</MudNavMenu>

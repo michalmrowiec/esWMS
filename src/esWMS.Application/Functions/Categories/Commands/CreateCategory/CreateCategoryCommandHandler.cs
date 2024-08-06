@@ -11,19 +11,21 @@ namespace esWMS.Application.Functions.Categories.Commands.CreateCategory
     {
         private readonly ICategoryRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         public CreateCategoryCommandHandler
-            (ICategoryRepository repository, IMapper mapper)
+            (ICategoryRepository repository, IMapper mapper, IMediator mediator)
         {
             _repository = repository;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         public async Task<BaseResponse<CategoryDto>> Handle
             (CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var validationResult =
-                await new CreateCategoryValidator().ValidateAsync(request, cancellationToken);
+                await new CreateCategoryValidator(_mediator).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {

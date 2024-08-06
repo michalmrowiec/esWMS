@@ -1,0 +1,147 @@
+﻿@page "/warehouses"
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@rendermode InteractiveAuto
+@inject IWarehouseService warehouseService
+@inject OnePageState onePageState
+
+<PageTitle>Magazyny</PageTitle>
+
+<h3>Magazyny</h3>
+
+<MudTable T="WarehouseVM" ServerData="ServerReload" Dense="true" Hover="true" @ref="table"
+    RowClass="cursor-pointer" OnRowClick="RowClickEvent">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ProductCode" T="ProductVM">
+                Id
+            </MudTableSortLabel>
+            @*             <MudSelect T="string"  Label="Sign" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Contains")" />
+            <MudSelectItem Value="@("Equals")" />
+            </MudSelect> *@
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("WarehouseId", s))"></MudTextField>
+
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ProductName" T="ProductVM">
+                Nazwa
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("WarehouseName", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="CategoryName" T="ProductVM">
+                Kraj
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Country", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Price" T="ProductVM">
+                Miasto
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("City", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Unit" T="ProductVM">
+                Adres
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Address", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+        <MudTableSortLabel SortLabel="Unit" T="ProductVM">
+                Region
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Region", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Unit" T="ProductVM">
+                Kod Pocztowy
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("PostalCode", s))"></MudTextField>
+        </MudTh>
+
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.WarehouseId</MudTd>
+        <MudTd DataLabel="Nazwa">@context.WarehouseName</MudTd>
+        <MudTd DataLabel="Kraj">@context.Country</MudTd>
+        <MudTd DataLabel="Miasto">@context.City</MudTd>
+        <MudTd DataLabel="Adres">@context.Address</MudTd>
+        <MudTd DataLabel="Region">@context.Region</MudTd>
+        <MudTd DataLabel="Kod Pocztowy">@context.PostalCode</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<WarehouseVM> Products = [];
+
+    private IEnumerable<WarehouseVM> pagedData;
+    private MudTable<WarehouseVM> table;
+
+    private int totalItems;
+    private string searchString = null;
+    private Dictionary<string, string> searchString2 = new();
+
+    private async Task<TableData<WarehouseVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        //sm.Filters = string.Concat("productName", "@=", searchString);
+
+        foreach (var item in searchString2)
+        {
+            sm.Filters += item.Key + item.Value + ',';
+        }
+
+
+        var response = await warehouseService.GetWarehouse(sm);
+
+        return new TableData<WarehouseVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<WarehouseVM> tableRowClickEventArgs)
+    {
+        //onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid()));
+        //open warehouse details
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+
+    private void OnSearch2(string column, string text)
+    {
+        if (text == null || text == string.Empty)
+        {
+            text = "";
+            searchString2.Remove(column);
+            table.ReloadServerData();
+            return;
+        }
+        if (!searchString2.TryAdd(column, $"@={text}"))
+        {
+            searchString2[column] = $"@={text}";
+        }
+        table.ReloadServerData();
+    }
+}

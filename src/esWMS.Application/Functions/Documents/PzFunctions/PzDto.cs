@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Documents.BaseDocumentFunctions;
 
 namespace esWMS.Application.Functions.Documents.PzFunctions
@@ -8,6 +8,6 @@ namespace esWMS.Application.Functions.Documents.PzFunctions
         public DateTime? GoodsReceiptDate { get; set; }
         public string SupplierContractorId { get; set; } = null!;
 
-        public Contractor? SupplierContractor { get; set; }
+        public ContractorDto? SupplierContractor { get; set; }
     }
 }

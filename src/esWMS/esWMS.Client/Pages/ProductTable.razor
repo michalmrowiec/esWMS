@@ -1,0 +1,125 @@
+﻿@page "/products"
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@rendermode InteractiveAuto
+@inject IProductService productService
+
+<PageTitle>Artykuły</PageTitle>
+
+<h3>Artykuły</h3>
+
+<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ProductCode" T="ProductVM">
+                Code
+            </MudTableSortLabel>
+            @*             <MudSelect T="string"  Label="Sign" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Contains")" />
+            <MudSelectItem Value="@("Equals")" />
+            </MudSelect> *@
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("ProductCode", s))"></MudTextField>
+
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ProductName" T="ProductVM">
+                Name
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("ProductName", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="CategoryName" T="ProductVM">
+                Category
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("CategoryName", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Price" T="ProductVM">
+                Price
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Price", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Unit" T="ProductVM">
+                Unit
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Unit", s))"></MudTextField>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nr">@context.ProductCode</MudTd>
+        <MudTd DataLabel="Sign">@context.ProductName</MudTd>
+        <MudTd DataLabel="Name">@context.Category.CategoryName</MudTd>
+        <MudTd DataLabel="Position">@context.Price</MudTd>
+        <MudTd DataLabel="Position">@context.Unit</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<ProductVM> Products = [];
+
+    private IEnumerable<ProductVM> pagedData;
+    private MudTable<ProductVM> table;
+
+    private int totalItems;
+    private string searchString = null;
+    private Dictionary<string, string> searchString2 = new();
+
+
+    private async Task<TableData<ProductVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        //sm.Filters = string.Concat("productName", "@=", searchString);
+
+        foreach (var item in searchString2)
+        {
+            sm.Filters += item.Key + item.Value + ',';
+        }
+
+
+        var response = await productService.GetProduct(sm);
+
+        return new TableData<ProductVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+
+    private void OnSearch2(string column, string text)
+    {
+        if (text == null || text == string.Empty)
+        {
+            text = "";
+            searchString2.Remove(column);
+            table.ReloadServerData();
+            return;
+        }
+        if (!searchString2.TryAdd(column, $"@={text}"))
+        {
+            searchString2[column] = $"@={text}";
+        }
+        table.ReloadServerData();
+    }
+}

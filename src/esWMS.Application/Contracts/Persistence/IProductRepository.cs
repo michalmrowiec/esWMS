@@ -3,6 +3,7 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface IProductRepository
-        : IBaseRepository<Product>
-    { }
+        : IBaseRepository<Product>, ISieve<Product>
+    {
+    }
 }

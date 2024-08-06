@@ -101,6 +101,13 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("varchar(450)");
 
+                    b.Property<string>("BatchLot")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("BestBefore")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -154,7 +161,16 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
+                    b.Property<string>("SerialNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("WarehouseUnitId")
+                        .HasMaxLength(450)
+                        .HasColumnType("varchar(450)");
+
                     b.Property<string>("WarehouseUnitItemId")
+                        .HasMaxLength(450)
                         .HasColumnType("varchar(450)");
 
                     b.HasKey("DocumentItemId");
@@ -162,6 +178,8 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasIndex("DocumentId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("WarehouseUnitId");
 
                     b.HasIndex("WarehouseUnitItemId");
 
@@ -902,13 +920,21 @@ namespace esWMS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", "WarehouseUnit")
+                        .WithMany()
+                        .HasForeignKey("WarehouseUnitId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", "WarehouseUnitItem")
                         .WithMany()
-                        .HasForeignKey("WarehouseUnitItemId");
+                        .HasForeignKey("WarehouseUnitItemId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Document");
 
                     b.Navigation("Product");
+
+                    b.Navigation("WarehouseUnit");
 
                     b.Navigation("WarehouseUnitItem");
                 });

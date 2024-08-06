@@ -1,4 +1,5 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esMWS.Domain.Entities.SystemActors;
+using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Infrastructure;
 
 namespace esWMS.Services
@@ -15,6 +16,16 @@ namespace esWMS.Services
             if (!dbContext.Products.Any())
             {
                 dbContext.Products.AddRange(Products);
+            }
+
+            if (!dbContext.Warehouses.Any())
+            {
+                dbContext.Warehouses.AddRange(Warehouses);
+            }
+
+            if (!dbContext.Contractors.Any())
+            {
+                dbContext.Contractors.AddRange(Contractors);
             }
 
             dbContext.SaveChanges();
@@ -225,6 +236,56 @@ namespace esWMS.Services
                 Price = 70.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
+            }
+        };
+
+        public static List<Warehouse> Warehouses = new List<Warehouse>
+        {
+            new Warehouse
+            {
+                WarehouseId = "MWS",
+                WarehouseName = "Magazyn Wysokiego Składowania",
+                CreatedAt = DateTime.Now
+            },
+            new Warehouse
+            {
+                WarehouseId = "MPT",
+                WarehouseName = "Magazyn Przyjęcia Towaru",
+                CreatedAt = DateTime.Now
+            },
+            new Warehouse
+            {
+                WarehouseId = "MWT",
+                WarehouseName = "Magazyn Wydania Towaru",
+                CreatedAt = DateTime.Now
+            },
+            new Warehouse
+            {
+                WarehouseId = "MPR",
+                WarehouseName = "Magazyn Produkcji",
+                CreatedAt = DateTime.Now
+            }
+        };
+
+        public static List<Contractor> Contractors = new List<Contractor>
+        {
+            new Contractor
+            {
+                ContractorId = "PTK",
+                ContractorName = "Pierwszy Testowy Kontrahent",
+                IsSupplier = true,
+                IsRecipient = true,
+                IsActive = true,
+                CreatedAt= DateTime.Now
+            },
+            new Contractor
+            {
+                ContractorId = "DTK",
+                ContractorName = "Drugi Testowy Kontrahent",
+                IsSupplier = true,
+                IsRecipient = true,
+                IsActive = true,
+                CreatedAt= DateTime.Now
             }
         };
     }

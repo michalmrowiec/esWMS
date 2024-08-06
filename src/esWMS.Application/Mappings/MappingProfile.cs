@@ -2,10 +2,12 @@
 using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Entities.SystemActors;
 using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Models;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
+using esWMS.Application.Functions.Documents.BaseDocumentFunctions;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.UpdateDocumentItems;
@@ -31,10 +33,17 @@ namespace esWMS.Application.Mappings
         public MappingProfile()
         {
             CreateMap<CreateProductCommand, Product>();
-            CreateMap<Product, ProductDto>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
+
+            //CreateMap<PagedResult<Product>, PagedResult<ProductDto>>()
+            //    .ForMember(dto => dto.Items,
+            //               opt => opt.MapFrom(src => src.Items));
 
             CreateMap<CreateCategoryCommand, Category>();
             CreateMap<Category, CategoryDto>();
+
+            CreateMap<Contractor, ContractorDto>();
 
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<Warehouse, WarehouseDto>();
@@ -61,6 +70,9 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreatePzCommand, PZ>();
             CreateMap<PZ, PzDto>();
+
+            CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
+                .ForMember("Items", opt => opt.MapFrom("Items"));
         }
     }
 }

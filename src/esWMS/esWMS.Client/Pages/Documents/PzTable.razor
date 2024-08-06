@@ -1,0 +1,122 @@
+﻿@page "/pz"
+@using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Components.TableColumnsFilters.DefaultColumntFilter
+@rendermode InteractiveAuto
+@inject IDataService<PzVM> dataService
+@inject OnePageState onePageState
+
+<PageTitle>Magazyny</PageTitle>
+
+<h3>Magazyny</h3>
+
+<MudTable T="PzVM" ServerData="ServerReload" Dense="true" Hover="true" @ref="table"
+          RowClass="cursor-pointer" OnRowClick="RowClickEvent">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="DocumentId" T="ProductVM">
+                Id Dokumentu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="DocumentId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IssueWarehouseId" T="ProductVM">
+                Id Magazynu Wystawiającego
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="IssueWarehouseId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="DocumentIssueDate" T="ProductVM">
+                Data Wystawienia
+            </MudTableSortLabel>
+            <DateRangeColumnFilter SearchOptions="searchOptions" Column="DocumentIssueDate" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsApproved" T="ProductVM">
+                Zatwierdzony
+            </MudTableSortLabel>
+            <BoolColumnTableFilter SearchOptions="searchOptions" Column="IsApproved" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="SupplierContractorId" T="ProductVM">
+                Dostawca
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="SupplierContractorId" OnChangedAction="OnSearch" />
+        </MudTh>
+
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id Dokumentu">@context.DocumentId</MudTd>
+        <MudTd DataLabel="Id Magazynu Wystawiającego">@context.IssueWarehouseId</MudTd>
+        <MudTd DataLabel="Data Wystawienia">@context.DocumentIssueDate.Date.ToString("dd.MM.yyyy")</MudTd>
+        <MudTd DataLabel="Zatwierdzony">
+            <MudCheckBox @bind-Value="@context.IsApproved" Size="Size.Small" Disabled="true"></MudCheckBox>
+        </MudTd>
+        <MudTd DataLabel="Dostawca">@context.SupplierContractorId</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Brak pasujących elementów</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Pobieranie danych...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" RowsPerPageString="Elementy na stronę:" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<PzVM> Products = [];
+
+    private IEnumerable<PzVM> pagedData;
+    private MudTable<PzVM> table;
+
+    private int totalItems;
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "DocumentId", new("DocumentId") },
+        { "IssueWarehouseId", new("IssueWarehouseId") },
+        { "DocumentIssueDateStart", new("DateFilter", ">=") },
+        { "DocumentIssueDateEnd", new("DateFilter", "<=") },
+        { "IsApproved", new("IsApproved", "==", string.Empty) },
+        { "SupplierContractorId", new("SupplierContractorId") },
+    };
+
+    private async Task<TableData<PzVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await dataService.GetPagedResult(sm, @"api/v1/pz/get-filtered");
+
+        return new TableData<PzVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<PzVM> tableRowClickEventArgs)
+    {
+        //onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid()));
+        //open warehouse details
+    }
+
+    private void OnSearch()
+    {
+        table.ReloadServerData();
+    }
+}

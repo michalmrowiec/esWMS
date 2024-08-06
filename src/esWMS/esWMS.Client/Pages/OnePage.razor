@@ -1,0 +1,61 @@
+﻿@page "/"
+@inject OnePageState onePageState
+
+<MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@onePageState.UserIndex"
+                CloseTab="@CloseTabCallback"
+                AddIconToolTip="Click to add a new tab" CloseIconToolTip="Close tab. All data will be lost"
+                PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+    @foreach (var tab in onePageState.UserTabs)
+    {
+        <MudTabPanel ID="@tab.Id" Text="@tab.Label" Icon="@tab.Icon" ShowCloseIcon="true">
+            @GetRenderFragment(tab.Content.GetType())
+        </MudTabPanel>
+
+    }
+</MudDynamicTabs>
+
+@code {
+    public MudDynamicTabs DynamicTabs;
+    bool _stateHasChanged;
+    bool _showCloseIcon = false;
+
+    RenderFragment GetRenderFragment(Type type)
+    {
+        RenderFragment renderFragment = renderTreeBuilder =>
+        {
+            renderTreeBuilder.OpenComponent(0, type);
+            renderTreeBuilder.CloseComponent();
+        };
+        return renderFragment;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        onePageState.OnAddTab += StateHasChanged;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (_stateHasChanged)
+        {
+            _stateHasChanged = false;
+            StateHasChanged();
+        }
+    }
+
+    public void RemoveTab(Guid id)
+    {
+        var tabView = onePageState.UserTabs.SingleOrDefault((t) => Equals(t.Id, id));
+        if (tabView is not null)
+        {
+            onePageState.UserTabs.Remove(tabView);
+            _stateHasChanged = true;
+        }
+    }
+
+    // void AddTabCallback() => AddTab(Guid.NewGuid());
+    void CloseTabCallback(MudTabPanel panel) => RemoveTab((Guid)panel.ID);
+}

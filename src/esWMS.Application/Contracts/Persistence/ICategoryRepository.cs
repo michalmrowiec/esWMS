@@ -3,7 +3,7 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface ICategoryRepository
-        : IBaseRepository<Category>
+        : IBaseRepository<Category>, ISieve<Category>
     {
         Task<IList<Category>> GetCategoryWithChilds(string idParentCategory);
     }

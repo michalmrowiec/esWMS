@@ -1,11 +1,12 @@
 using esWMS.Application;
-using esWMS.Application.Functions.Categories.Commands;
+using esWMS.Client.Pages;
+using esWMS.Client.Services;
 using esWMS.Components;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
-using MediatR;
 using Microsoft.OpenApi.Models;
+using MudBlazor.Services;
 using NLog;
 using NLog.Web;
 
@@ -19,6 +20,15 @@ try
     builder.Logging.ClearProviders();
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
+
+    builder.Services.AddSingleton<OnePageState>();
+    builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
+    builder.Services.AddTransient<IWarehouseService, WarehouseService>();
+    builder.Services.AddTransient<IProductService, ProductService>();
+    builder.Services.AddTransient<ICategoryService, CategoryService>();
+    builder.Services.AddHttpClient();
+
+    builder.Services.AddMudServices();
 
     builder.Services.AddRazorComponents()
         .AddInteractiveServerComponents()

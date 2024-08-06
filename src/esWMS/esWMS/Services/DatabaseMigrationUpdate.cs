@@ -6,26 +6,28 @@ namespace esWMS.Services
     {
         internal static void UpdateDatabase(this DbContext dbContext, ILogger logger)
         {
-            var pendingMigrations = dbContext.Database.GetPendingMigrations();
-
-            if (pendingMigrations.Any())
+            try
             {
-                logger.LogInformation("Starting database migration. Pending migrations: {Count}", pendingMigrations.Count());
-                try
+                var pendingMigrations = dbContext.Database.GetPendingMigrations();
+
+                if (pendingMigrations.Any())
                 {
+                    logger.LogInformation("Starting database migration. Pending migrations: {Count}", pendingMigrations.Count());
+
                     dbContext.Database.Migrate();
                     logger.LogInformation("Database migration completed successfully.");
                 }
-                catch (Exception ex)
+                else
                 {
-                    logger.LogError(ex, "An error occurred while migrating the database.");
-                    throw;
+                    logger.LogInformation("No pending migrations.");
                 }
             }
-            else
+            catch (Exception ex)
             {
-                logger.LogInformation("No pending migrations.");
+                logger.LogError(ex, "An error occurred while migrating the database.");
+                throw;
             }
+
         }
     }
 }

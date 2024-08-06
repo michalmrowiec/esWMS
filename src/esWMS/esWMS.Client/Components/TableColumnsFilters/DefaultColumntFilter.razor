@@ -1,0 +1,23 @@
+﻿@using esWMS.Client.Pages.Documents
+<div class="d-flex">
+    <MudSelect T="string" @bind-Value="SearchOptions[Column].Operator" SelectedValuesChanged="@(() => OnChangedAction.Invoke())" Variant="Variant.Text" AnchorOrigin="Origin.BottomCenter" Style="width: 8%">
+        <MudSelectItem Value="@("@=")">=</MudSelectItem>
+        <MudSelectItem Value="@("!@=")">!=</MudSelectItem>
+        <MudSelectItem Value="@("==")">==</MudSelectItem>
+        <MudSelectItem Value="@("!=")">!==</MudSelectItem>
+    </MudSelect>
+    <MudTextField T="string"
+                  ValueChanged="@((s) => {SearchOptions[Column].Value = s; OnChangedAction.Invoke();})">
+    </MudTextField>
+</div>
+
+@code {
+    [Parameter]
+    public Dictionary<string, FilterOption> SearchOptions { get; set; }
+
+    [Parameter]
+    public string Column { get; set; }
+
+    [Parameter]
+    public Action OnChangedAction { get; set; }
+}
