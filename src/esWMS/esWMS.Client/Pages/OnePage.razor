@@ -1,4 +1,4 @@
-﻿@page "/one"
+﻿@page "/"
 @inject OnePageState onePageState
 
 <MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@onePageState.UserIndex"
@@ -7,13 +7,12 @@
                 PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
     @foreach (var tab in onePageState.UserTabs)
     {
-        <MudTabPanel ID="@tab.Id" Text="@tab.Label"  ShowCloseIcon="true">
+        <MudTabPanel ID="@tab.Id" Text="@tab.Label" Icon="@tab.Icon" ShowCloseIcon="true">
             @GetRenderFragment(tab.Content.GetType())
         </MudTabPanel>
 
     }
 </MudDynamicTabs>
-<MudButton OnClick="@RestoreUserTabs">Restore</MudButton>
 
 @code {
     public MudDynamicTabs DynamicTabs;
@@ -30,24 +29,11 @@
         return renderFragment;
     }
 
-    void RestoreUserTabs()
-    {
-        //onePageState.UserTabs.Clear();
-         onePageState.UserTabs.Add(new TabView("counter", new Counter(), Guid.NewGuid()));
-         onePageState.UserTabs.Add(new TabView("pogoda", new Weather(), Guid.NewGuid()));
-         onePageState.UserTabs.Add(new TabView("art", new ProductTable(), Guid.NewGuid()));
-         onePageState.UserTabs.Add(new TabView("kategorie", new CategoryTable(), Guid.NewGuid()));
-        //onePageState.UserIndex = 1;
-        _stateHasChanged = true;
-    }
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
         onePageState.OnAddTab += StateHasChanged;
-
-        RestoreUserTabs();
     }
 
     protected override void OnAfterRender(bool firstRender)

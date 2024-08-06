@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace esWMS.Client.Pages
 {
@@ -21,15 +22,17 @@ namespace esWMS.Client.Pages
 
     public class TabView
     {
-        public TabView(string label, ComponentBase content, Guid id)
+        public TabView(string label, ComponentBase content, Guid id, string icon = Icons.Material.Filled.CropSquare)
         {
             Label = label;
             Content = content;
             Id = id;
+            Icon = icon;
         }
 
         public string Label { get; set; }
         public ComponentBase Content { get; set; }
         public Guid Id { get; set; }
+        public string Icon { get; set; }
     }
 }
