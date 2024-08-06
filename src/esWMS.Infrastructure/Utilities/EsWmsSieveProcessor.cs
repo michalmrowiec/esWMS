@@ -7,8 +7,9 @@ using Sieve.Services;
 namespace esWMS.Infrastructure.Utilities
 {
     public class EsWmsSieveProcessor
-        (IOptions<SieveOptions> options)
-        : SieveProcessor(options)
+        (IOptions<SieveOptions> options,
+        ISieveCustomFilterMethods customFilterMethods)
+        : SieveProcessor(options, customFilterMethods)
     {
         protected override SievePropertyMapper MapProperties(SievePropertyMapper mapper)
         {
@@ -24,7 +25,7 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter()
                 .HasName("CategoryName");
-            
+
             mapper.Property<Product>(x => x.Price)
                 .CanSort()
                 .CanFilter();
@@ -96,6 +97,43 @@ namespace esWMS.Infrastructure.Utilities
                 .CanFilter();
 
             return mapper;
+        }
+    }
+
+    public class SieveCustomFilterMethods : ISieveCustomFilterMethods
+    {
+        public IQueryable<PZ> DateFilter(IQueryable<PZ> source, string op, string[] values)
+        {
+            if (values.Length != 1 || !DateTime.TryParse(values[0], out DateTime dateValue))
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(item => item.DocumentIssueDate.Date == dateValue.Date);
+                    break;
+                case "!=":
+                    source = source.Where(item => item.DocumentIssueDate.Date != dateValue.Date);
+                    break;
+                case ">":
+                    source = source.Where(item => item.DocumentIssueDate.Date > dateValue.Date);
+                    break;
+                case "<":
+                    source = source.Where(item => item.DocumentIssueDate.Date < dateValue.Date);
+                    break;
+                case ">=":
+                    source = source.Where(item => item.DocumentIssueDate.Date >= dateValue.Date);
+                    break;
+                case "<=":
+                    source = source.Where(item => item.DocumentIssueDate.Date <= dateValue.Date);
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
         }
     }
 }

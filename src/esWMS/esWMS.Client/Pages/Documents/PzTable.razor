@@ -2,6 +2,7 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Components.TableThFilters
 @rendermode InteractiveAuto
 @inject IDataService<PzVM> dataService
 @inject OnePageState onePageState
@@ -21,56 +22,73 @@
             <MudTableSortLabel SortLabel="DocumentId" T="ProductVM">
                 Id Dokumentu
             </MudTableSortLabel>
-            @*             <MudSelect T="string"  Label="Sign" AnchorOrigin="Origin.BottomCenter">
-            <MudSelectItem Value="@("Contains")" />
-            <MudSelectItem Value="@("Equals")" />
-            </MudSelect> *@
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("DocumentId", s))"></MudTextField>
+            <esWMS.Client.Components.TableThFilters SearchOptions="searchOptions" Column="DocumentId" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="IssueWarehouseId" T="ProductVM">
                 Id Magazynu Wystawiającego
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("IssueWarehouseId", s))"></MudTextField>
+            <esWMS.Client.Components.TableThFilters SearchOptions="searchOptions" Column="IssueWarehouseId" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="DocumentIssueDate" T="ProductVM">
                 Data Wystawienia
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("DocumentIssueDate", s))"></MudTextField>
+            <MudStack>
+                <MudDateRangePicker @ref="_picker" DateRangeChanged="@((dr) => {
+                                            searchOptions["DocumentIssueDateEnd"].Value = dr.End.Value.Date.ToString("yyyy-MM-dd"); OnSearch();
+                                            searchOptions["DocumentIssueDateStart"].Value = dr.Start.Value.Date.ToString("yyyy-MM-dd");})"
+                                    AutoClose="true"
+                                    Margin="Margin.None">
+                    <PickerActions>
+                        <MudButton Class="mr-auto align-self-start"
+                                   OnClick="@(() => {
+                                        _picker.ClearAsync();
+                                        searchOptions["DocumentIssueDateStart"].Value = "";
+                                        searchOptions["DocumentIssueDateEnd"].Value = "";
+                                        OnSearch();})">
+                            Wyczyść
+                        </MudButton>
+                        <MudButton OnClick="@(() => _picker.CloseAsync(false))">Zamknij</MudButton>
+                    </PickerActions>
+                </MudDateRangePicker>
+            </MudStack>
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="IsApproved" T="ProductVM">
                 Zatwierdzony
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("IsApproved", s))"></MudTextField>
+            <MudSelect T="string" ValueChanged="@((s) => {searchOptions["IsApproved"].Value = s; OnSearch();})" Variant="Variant.Text" AnchorOrigin="Origin.BottomCenter" Style="width: 8%">
+                <MudSelectItem Value="@(string.Empty)">Wszystkie</MudSelectItem>
+                <MudSelectItem Value="@("true")">Zatwierdzone</MudSelectItem>
+                <MudSelectItem Value="@("false")">Niezatwierdzone</MudSelectItem>
+            </MudSelect>
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="SupplierContractorId" T="ProductVM">
                 Dostawca
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("SupplierContractorId", s))"></MudTextField>
+            <esWMS.Client.Components.TableThFilters SearchOptions="searchOptions" Column="SupplierContractorId" OnChangedAction="OnSearch" />
         </MudTh>
-
 
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id Dokumentu">@context.DocumentId</MudTd>
         <MudTd DataLabel="Id Magazynu Wystawiającego">@context.IssueWarehouseId</MudTd>
-        <MudTd DataLabel="Data Wystawienia">@context.DocumentIssueDate</MudTd>
+        <MudTd DataLabel="Data Wystawienia">@context.DocumentIssueDate.Date.ToString("dd.MM.yyyy")</MudTd>
         <MudTd DataLabel="Zatwierdzony">
             <MudCheckBox @bind-Value="@context.IsApproved" Size="Size.Small" Disabled="true"></MudCheckBox>
         </MudTd>
         <MudTd DataLabel="Dostawca">@context.SupplierContractorId</MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <MudText>Brak pasujących elementów</MudText>
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <MudText>Pobieranie danych...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
+        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" RowsPerPageString="Elementy na stronę:" />
     </PagerContent>
 </MudTable>
 
@@ -81,8 +99,18 @@
     private MudTable<PzVM> table;
 
     private int totalItems;
-    private string searchString = null;
-    private Dictionary<string, string> searchString2 = new();
+
+    private MudDateRangePicker _picker;
+    private DateRange _dateRange { get; set; }
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "DocumentId", new("DocumentId") },
+        { "IssueWarehouseId", new("IssueWarehouseId") },
+        { "DocumentIssueDateStart", new("DateFilter", ">=") },
+        { "DocumentIssueDateEnd", new("DateFilter", "<=") },
+        { "IsApproved", new("IsApproved", "==", string.Empty) },
+        { "SupplierContractorId", new("SupplierContractorId") },
+    };
 
     private async Task<TableData<PzVM>> ServerReload(TableState state, CancellationToken token)
     {
@@ -93,13 +121,11 @@
 
         sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
 
-        //sm.Filters = string.Concat("productName", "@=", searchString);
-
-        foreach (var item in searchString2)
+        foreach (var searchOption in searchOptions)
         {
-            sm.Filters += item.Key + item.Value + ',';
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
         }
-
 
         var response = await dataService.GetPagedResult(sm, @"api/v1/pz/get-filtered");
 
@@ -112,25 +138,8 @@
         //open warehouse details
     }
 
-    private void OnSearch(string text)
+    private void OnSearch()
     {
-        searchString = text;
-        table.ReloadServerData();
-    }
-
-    private void OnSearch2(string column, string text)
-    {
-        if (text == null || text == string.Empty)
-        {
-            text = "";
-            searchString2.Remove(column);
-            table.ReloadServerData();
-            return;
-        }
-        if (!searchString2.TryAdd(column, $"@={text}"))
-        {
-            searchString2[column] = $"@={text}";
-        }
         table.ReloadServerData();
     }
 }

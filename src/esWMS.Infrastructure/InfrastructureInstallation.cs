@@ -56,6 +56,7 @@ namespace esWMS.Infrastructure
                     .UseMySql(configuration.GetConnectionString("ContainerDb"), serverVersion));
 
             services.AddScoped<ITransactionManager, EfTransactionManager>();
+            services.AddScoped<ISieveCustomFilterMethods, SieveCustomFilterMethods>();
             services.AddScoped<ISieveProcessor, EsWmsSieveProcessor>();
 
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
