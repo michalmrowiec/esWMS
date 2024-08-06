@@ -1,4 +1,5 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.WarehouseEnviroment;
 using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;
@@ -71,6 +72,26 @@ namespace esWMS.Infrastructure.Utilities
                 .CanFilter();
 
             mapper.Property<Warehouse>(x => x.Region)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<PZ>(x => x.DocumentId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<PZ>(x => x.IssueWarehouseId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<PZ>(x => x.DocumentIssueDate)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<PZ>(x => x.IsApproved)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<PZ>(x => x.SupplierContractorId)
                 .CanSort()
                 .CanFilter();
 

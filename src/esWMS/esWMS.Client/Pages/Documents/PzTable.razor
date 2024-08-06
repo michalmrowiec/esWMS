@@ -1,0 +1,136 @@
+﻿@page "/pz"
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@rendermode InteractiveAuto
+@inject IDataService<PzVM> dataService
+@inject OnePageState onePageState
+
+<PageTitle>Magazyny</PageTitle>
+
+<h3>Magazyny</h3>
+
+<MudTable T="PzVM" ServerData="ServerReload" Dense="true" Hover="true" @ref="table"
+          RowClass="cursor-pointer" OnRowClick="RowClickEvent">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="DocumentId" T="ProductVM">
+                Id Dokumentu
+            </MudTableSortLabel>
+            @*             <MudSelect T="string"  Label="Sign" AnchorOrigin="Origin.BottomCenter">
+            <MudSelectItem Value="@("Contains")" />
+            <MudSelectItem Value="@("Equals")" />
+            </MudSelect> *@
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("DocumentId", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IssueWarehouseId" T="ProductVM">
+                Id Magazynu Wystawiającego
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("IssueWarehouseId", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="DocumentIssueDate" T="ProductVM">
+                Data Wystawienia
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("DocumentIssueDate", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsApproved" T="ProductVM">
+                Zatwierdzony
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("IsApproved", s))"></MudTextField>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="SupplierContractorId" T="ProductVM">
+                Dostawca
+            </MudTableSortLabel>
+            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("SupplierContractorId", s))"></MudTextField>
+        </MudTh>
+
+
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id Dokumentu">@context.DocumentId</MudTd>
+        <MudTd DataLabel="Id Magazynu Wystawiającego">@context.IssueWarehouseId</MudTd>
+        <MudTd DataLabel="Data Wystawienia">@context.DocumentIssueDate</MudTd>
+        <MudTd DataLabel="Zatwierdzony">
+            <MudCheckBox @bind-Value="@context.IsApproved" Size="Size.Small" Disabled="true"></MudCheckBox>
+        </MudTd>
+        <MudTd DataLabel="Dostawca">@context.SupplierContractorId</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<PzVM> Products = [];
+
+    private IEnumerable<PzVM> pagedData;
+    private MudTable<PzVM> table;
+
+    private int totalItems;
+    private string searchString = null;
+    private Dictionary<string, string> searchString2 = new();
+
+    private async Task<TableData<PzVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        //sm.Filters = string.Concat("productName", "@=", searchString);
+
+        foreach (var item in searchString2)
+        {
+            sm.Filters += item.Key + item.Value + ',';
+        }
+
+
+        var response = await dataService.GetPagedResult(sm, @"api/v1/pz/get-filtered");
+
+        return new TableData<PzVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<PzVM> tableRowClickEventArgs)
+    {
+        //onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid()));
+        //open warehouse details
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        table.ReloadServerData();
+    }
+
+    private void OnSearch2(string column, string text)
+    {
+        if (text == null || text == string.Empty)
+        {
+            text = "";
+            searchString2.Remove(column);
+            table.ReloadServerData();
+            return;
+        }
+        if (!searchString2.TryAdd(column, $"@={text}"))
+        {
+            searchString2[column] = $"@={text}";
+        }
+        table.ReloadServerData();
+    }
+}
