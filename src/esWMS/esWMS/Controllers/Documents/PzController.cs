@@ -1,24 +1,27 @@
-﻿using esWMS.Application.Functions.Documents.PzFunctions;
+﻿using esMWS.Domain.Models;
+using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
+using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 
-namespace esWMS.Controllers
+namespace esWMS.Controllers.Documents
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class DocumentController : ControllerBase
+    public class PzController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<DocumentController> _logger;
+        private readonly ILogger<PzController> _logger;
         private readonly IUserContextService _userContextService;
 
-        public DocumentController(
-            ILogger<DocumentController> logger,
+        public PzController(
+            ILogger<PzController> logger,
             IMediator mediator,
             IUserContextService userContextService)
         {
@@ -88,6 +91,25 @@ namespace esWMS.Controllers
                 else if (r.ValidationErrors?.Any() ?? false)
                 {
                     return BadRequest(result.ValidationErrors);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("get-filtered")]
+        public async Task<ActionResult<PagedResult<PzDto>>> GetSortedAndFilteredPz([FromBody] SieveModel sieveModel)
+        {
+            var result = await _mediator.Send(new GetSortedFilteredPzQuery(sieveModel));
+
+            if (result is BaseResponse<PagedResult<PzDto>> r)
+            {
+                if (r.Success)
+                {
+                    return Ok(r.ReturnedObj);
+                }
+                else
+                {
+                    return BadRequest(r.Message);
                 }
             }
             return BadRequest();

@@ -1,5 +1,4 @@
 ﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.WarehouseEnviroment;
 using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence.Documents;
 using Microsoft.EntityFrameworkCore;
@@ -63,7 +62,7 @@ namespace esWMS.Infrastructure.Repositories.Documents
             throw new NotImplementedException();
         }
 
-        public async Task<PagedResult<TDocument>> GetSortedFilteredAsync(SieveModel sieveModel)
+        public virtual async Task<PagedResult<TDocument>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             var documents = _context
                 .Set<TDocument>()
