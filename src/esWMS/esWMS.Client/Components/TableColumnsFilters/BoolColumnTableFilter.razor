@@ -1,0 +1,16 @@
+﻿<MudSelect T="string" ValueChanged="@((s) => {SearchOptions[Column].Value = s; OnChangedAction.Invoke();})" Variant="Variant.Text" AnchorOrigin="Origin.BottomCenter" Style="width: 8%">
+    <MudSelectItem Value="@(string.Empty)">Wszystkie</MudSelectItem>
+    <MudSelectItem Value="@("true")">Zatwierdzone</MudSelectItem>
+    <MudSelectItem Value="@("false")">Niezatwierdzone</MudSelectItem>
+</MudSelect>
+
+@code {
+    [Parameter]
+    public Dictionary<string, FilterOption> SearchOptions { get; set; }
+
+    [Parameter]
+    public string Column { get; set; }
+
+    [Parameter]
+    public Action OnChangedAction { get; set; }
+}
