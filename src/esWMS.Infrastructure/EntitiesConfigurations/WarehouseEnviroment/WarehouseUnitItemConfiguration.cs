@@ -12,15 +12,15 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 
             builder.Property(wui => wui.WarehouseUnitItemId)
                 .IsRequired()
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(wui => wui.WarehouseUnitId)
                 .IsRequired()
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(wui => wui.ProductId)
                 .IsRequired()
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(wui => wui.Quantity)
                 .IsRequired()
@@ -58,6 +58,12 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .HasOne(wui => wui.Product)
                 .WithMany(p => p.WarehouseUnitItems)
                 .HasForeignKey(wui => wui.ProductId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder
+                .HasMany(wui => wui.DocumentWarehouseUnitItems)
+                .WithOne(dwui => dwui.WarehouseUnitItem)
+                .HasForeignKey(dwui => dwui.WarehouseUnitItemId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }

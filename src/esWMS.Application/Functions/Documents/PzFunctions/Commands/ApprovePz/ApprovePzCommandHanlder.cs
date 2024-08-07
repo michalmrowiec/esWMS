@@ -23,11 +23,11 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
         public async Task<BaseResponse<PzDto>> Handle(ApprovePzCommand request, CancellationToken cancellationToken)
         {
             var document = await _pzRepozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
-            var warehouseUnitItems = await _warehouseUnitItemRepository.GetWarehouseUnitItemsByIdsAsync(
-                document.DocumentItems
-                .Select(x => x.WarehouseUnitItemId)
-                .OfType<string>()
-                .ToArray());
+            //var warehouseUnitItems = await _warehouseUnitItemRepository.GetWarehouseUnitItemsByIdsAsync(
+            //    document.DocumentItems
+            //    .Select(x => x.WarehouseUnitItemId)
+            //    .OfType<string>()
+            //    .ToArray());
 
             if (document == null)
             {
@@ -44,9 +44,12 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
             document.ModifiedAt = DateTime.Now;
             document.ModifiedBy = request.ModifiedBy;
 
-            foreach (var warUnitItem in warehouseUnitItems)
+            foreach (var documentItem in document.DocumentItems)
             {
-                warUnitItem.BlockedQuantity -= warUnitItem.BlockedQuantity;
+                foreach (var warUnitItem in documentItem.DocumentWarehouseUnitItems)
+                {
+                    warUnitItem.WarehouseUnitItem.BlockedQuantity -= warUnitItem.WarehouseUnitItem.BlockedQuantity;
+                }
             }
 
             PzDto mappedUpdatedDocument;
@@ -56,8 +59,8 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
                 await _transactionManager.BeginTransactionAsync();
 
                 var updatedDocument = await _pzRepozitory.UpdateAsync(document);
-                var updatedWarehouseUnitItems = await _warehouseUnitItemRepository
-                    .UpdateWarehouseUnitItemsAsync(warehouseUnitItems.ToArray());
+                //var updatedWarehouseUnitItems = await _warehouseUnitItemRepository
+                    //.UpdateWarehouseUnitItemsAsync(warehouseUnitItems.ToArray());
 
                 await _transactionManager.CommitTransactionAsync();
 

@@ -1,4 +1,8 @@
-﻿namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions
+﻿using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Application.Functions.WarehouseUnitItems;
+
+namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions
 {
     public class DocumentItemDto
     {
@@ -13,5 +17,8 @@
         public string? Currency { get; set; }
         public string? WarehouseUnitItemId { get; set; }
         public bool IsApproved { get; set; }
+
+        public IList<WarehouseUnitItemDto> WarehouseUnitItems { get; set; } = [];
+        public IList<DocumentWarehouseUnitItemDto> DocumentWarehouseUnitItems { get; set; } = [];
     }
 }

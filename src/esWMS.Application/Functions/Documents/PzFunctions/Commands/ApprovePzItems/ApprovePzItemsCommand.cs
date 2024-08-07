@@ -11,5 +11,5 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
         public string? ModifiedBy { get; set; }
     }
 
-    public record DocWithAssigment(string DocumentItemId, string WarehouseUnitId);
+    public record DocWithAssigment(string DocumentItemId, string WarehouseUnitId, int Quantity);
 }

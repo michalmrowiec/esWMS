@@ -98,8 +98,8 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.Documents.DocumentItem", b =>
                 {
                     b.Property<string>("DocumentItemId")
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("BatchLot")
                         .HasMaxLength(50)
@@ -148,8 +148,8 @@ namespace esWMS.Infrastructure.Migrations
 
                     b.Property<string>("ProductId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
@@ -165,25 +165,45 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
-                    b.Property<string>("WarehouseUnitId")
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
-
-                    b.Property<string>("WarehouseUnitItemId")
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
-
                     b.HasKey("DocumentItemId");
 
                     b.HasIndex("DocumentId");
 
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("WarehouseUnitId");
+                    b.ToTable("DocumentItems");
+                });
+
+            modelBuilder.Entity("esMWS.Domain.Entities.Documents.DocumentWarehouseUnitItem", b =>
+                {
+                    b.Property<string>("DocumentItemId")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("WarehouseUnitItemId")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("DocumentItemId", "WarehouseUnitItemId");
 
                     b.HasIndex("WarehouseUnitItemId");
 
-                    b.ToTable("DocumentItems");
+                    b.ToTable("DocumentWarehouseUnitItems");
                 });
 
             modelBuilder.Entity("esMWS.Domain.Entities.SystemActors.Contractor", b =>
@@ -202,8 +222,8 @@ namespace esWMS.Infrastructure.Migrations
 
                     b.Property<string>("ContractorName")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Country")
                         .HasMaxLength(100)
@@ -335,8 +355,8 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.Category", b =>
                 {
                     b.Property<string>("CategoryId")
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
@@ -358,8 +378,8 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(60)");
 
                     b.Property<string>("ParentCategoryId")
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("CategoryId");
 
@@ -395,7 +415,7 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(60)");
 
                     b.Property<string>("DefaultMediaTypeId")
-                        .HasColumnType("varchar(450)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<bool>("IsBusy")
                         .ValueGeneratedOnAdd()
@@ -444,13 +464,13 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.Product", b =>
                 {
                     b.Property<string>("ProductId")
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("CategoryId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -578,8 +598,8 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", b =>
                 {
                     b.Property<string>("WarehouseUnitId")
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<bool?>("CanBeStacked")
                         .HasColumnType("tinyint(1)");
@@ -595,7 +615,7 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(11)");
 
                     b.Property<string>("MediaId")
-                        .HasColumnType("varchar(450)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
@@ -605,7 +625,7 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(60)");
 
                     b.Property<string>("StackOnId")
-                        .HasColumnType("varchar(450)");
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int?>("TotalHeight")
                         .HasColumnType("int");
@@ -641,8 +661,8 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", b =>
                 {
                     b.Property<string>("WarehouseUnitItemId")
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("BatchLot")
                         .HasMaxLength(50)
@@ -675,8 +695,8 @@ namespace esWMS.Infrastructure.Migrations
 
                     b.Property<string>("ProductId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<int>("Quantity")
                         .ValueGeneratedOnAdd()
@@ -689,8 +709,8 @@ namespace esWMS.Infrastructure.Migrations
 
                     b.Property<string>("WarehouseUnitId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("varchar(450)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.HasKey("WarehouseUnitItemId");
 
@@ -920,21 +940,26 @@ namespace esWMS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", "WarehouseUnit")
-                        .WithMany()
-                        .HasForeignKey("WarehouseUnitId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", "WarehouseUnitItem")
-                        .WithMany()
-                        .HasForeignKey("WarehouseUnitItemId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.Navigation("Document");
 
                     b.Navigation("Product");
+                });
 
-                    b.Navigation("WarehouseUnit");
+            modelBuilder.Entity("esMWS.Domain.Entities.Documents.DocumentWarehouseUnitItem", b =>
+                {
+                    b.HasOne("esMWS.Domain.Entities.Documents.DocumentItem", "DocumentItem")
+                        .WithMany("DocumentWarehouseUnitItems")
+                        .HasForeignKey("DocumentItemId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", "WarehouseUnitItem")
+                        .WithMany("DocumentWarehouseUnitItems")
+                        .HasForeignKey("WarehouseUnitItemId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("DocumentItem");
 
                     b.Navigation("WarehouseUnitItem");
                 });
@@ -1096,6 +1121,11 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("DocumentItems");
                 });
 
+            modelBuilder.Entity("esMWS.Domain.Entities.Documents.DocumentItem", b =>
+                {
+                    b.Navigation("DocumentWarehouseUnitItems");
+                });
+
             modelBuilder.Entity("esMWS.Domain.Entities.SystemActors.Contractor", b =>
                 {
                     b.Navigation("PZDocuments");
@@ -1142,6 +1172,11 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", b =>
                 {
                     b.Navigation("WarehouseUnitItems");
+                });
+
+            modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", b =>
+                {
+                    b.Navigation("DocumentWarehouseUnitItems");
                 });
 
             modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.Zone", b =>

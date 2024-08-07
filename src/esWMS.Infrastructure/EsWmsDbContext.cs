@@ -16,6 +16,7 @@ namespace esWMS.Infrastructure
         public DbSet<RW> RW { get; set; }
         public DbSet<MMM> MMM { get; set; }
         public DbSet<DocumentItem> DocumentItems { get; set; }
+        public DbSet<DocumentWarehouseUnitItem> DocumentWarehouseUnitItems { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Zone> Zones { get; set; }
         public DbSet<Location> Locations { get; set; }

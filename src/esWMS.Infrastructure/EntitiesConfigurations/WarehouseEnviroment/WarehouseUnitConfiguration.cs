@@ -12,7 +12,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 
             builder.Property(wu => wu.WarehouseUnitId)
                 .IsRequired()
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(wu => wu.WarehouseId)
                 .IsRequired()

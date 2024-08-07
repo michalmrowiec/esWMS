@@ -26,6 +26,8 @@ namespace esWMS.Infrastructure.Repositories.Documents
                 var result = await _context
                     .Set<TDocument>()
                     .Include(x => x.DocumentItems)
+                        .ThenInclude(x => x.DocumentWarehouseUnitItems)
+                            .ThenInclude(x => x.WarehouseUnitItem)
                     .FirstOrDefaultAsync(x => x.DocumentId == id);
 
                 return result ?? throw new KeyNotFoundException("The object with the given id was not found.");
