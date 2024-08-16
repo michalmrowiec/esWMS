@@ -1,9 +1,7 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
+﻿using esMWS.Domain.Models;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Categories.Queries.GetSortedFilteredCategories;
-using esWMS.Application.Functions.Products;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
@@ -31,7 +29,7 @@ namespace esWMS.Controllers
         }
 
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<BaseResponse<PagedResult<CategoryDto>>>> GetSortedAndFilteredCategories([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<CategoryDto>>> GetSortedAndFilteredCategories([FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredCategoriesQuery(sieveModel));
 
@@ -50,7 +48,7 @@ namespace esWMS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<BaseResponse<CategoryDto>>> CreateCategory([FromBody] CreateCategoryCommand createCategoryCommand)
+        public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CreateCategoryCommand createCategoryCommand)
         {
             if (_userContextService.GetUserId is not null)
                 createCategoryCommand.CreatedBy = _userContextService.GetUserId.ToString();

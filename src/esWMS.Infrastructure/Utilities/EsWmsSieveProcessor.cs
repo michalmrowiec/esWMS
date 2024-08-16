@@ -1,8 +1,10 @@
 ﻿using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.SystemActors;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;
+using System.Diagnostics.Contracts;
 
 namespace esWMS.Infrastructure.Utilities
 {
@@ -50,6 +52,34 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter()
                 .HasName("ParentCategoryName");
+
+            mapper.Property<Contractor>(x => x.ContractorId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.VatId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.ContractorName)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.City)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.Address)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.PostalCode)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.Region)
+                .CanSort()
+                .CanFilter();
 
             mapper.Property<Warehouse>
                 (x => x.WarehouseId)

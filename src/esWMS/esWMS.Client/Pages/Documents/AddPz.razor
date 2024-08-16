@@ -4,7 +4,8 @@
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IWarehouseService warehouseService
-@inject IDataService<CreatePzVM> dataService
+@inject IDataService<CreatePzVM> createPzDataService
+@inject IDataService<ContractorVM> contractorDataService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
@@ -12,10 +13,6 @@
          @ref="@form"
          Validation="@(validator.ValidateValue)"
          ValidationDelay="0" Spacing="4">
-    @*         <MudTextField @bind-Value="model.Comment"
-    For="@(() => model.Comment)"
-    Immediate="true"
-    Label="Uwagi" /> *@
 
     <MudSelect T="string"
                @bind-Value="model.IssueWarehouseId"
@@ -56,15 +53,12 @@
                Label="Dostawca"
                AnchorOrigin="Origin.BottomCenter"
                For="@(() => model.SupplierContractorId)">
-        @*         @foreach (var warehouse in warehouses)
+        @foreach (var contractor in contractors)
         {
-        <MudSelectItem Value="@warehouse.WarehouseId">
-        [@warehouse.WarehouseId] @warehouse.WarehouseName
-        </MudSelectItem>
-        } *@
-        <MudSelectItem Value="@(new string("DTK"))">
-            DTK
-        </MudSelectItem>
+            <MudSelectItem Value="@contractor.ContractorId">
+                [@contractor.ContractorId] @contractor.ContractorName
+            </MudSelectItem>
+        }
     </MudSelect>
 
 
@@ -112,12 +106,18 @@
     private MudForm form;
     private CreatePzVMValidator validator = new();
     private List<WarehouseVM> warehouses = new();
+    private List<ContractorVM> contractors = new();
     private List<string> responseErrors = new();
+    [Parameter]
+    public List<EventCallback>? EventCallbacks { get; set; }
+    public Guid tabId;
 
     protected override async Task OnInitializedAsync()
     {
-        var res = await warehouseService.GetWarehouse(new SieveModelVM(1, 500, "", ""));
-        warehouses = res.Items.ToList();
+        var warehouseResponse = await warehouseService.GetWarehouse(new SieveModelVM(1, 500, "", ""));
+        var contractorResponse = await contractorDataService.GetPagedResult(@"api/v1/Contractor/get-filtered", new SieveModelVM(1, 500, "", ""));
+        warehouses = warehouseResponse.Items.ToList();
+        contractors = contractorResponse.Items.ToList();
     }
 
     private Task OpenDialogAsync()
@@ -138,7 +138,7 @@
 
         if (form.IsValid)
         {
-            var response = await dataService.Create(@"api/v1/Pz", model);
+            var response = await createPzDataService.Create(@"api/v1/Pz", model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 model = new();
@@ -147,6 +147,8 @@
 
                 Snackbar.Configuration.PositionClass = "Bottom-End";
                 Snackbar.Add(new MarkupString($"Utworzono <strong>{responseObj?.DocumentId}</strong>"), Severity.Success);
+
+                EventCallbacks?.ForEach(async x => await x.InvokeAsync());
             }
             else //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {

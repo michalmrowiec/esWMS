@@ -8,7 +8,7 @@
     @foreach (var tab in onePageState.UserTabs)
     {
         <MudTabPanel ID="@tab.Id" Text="@tab.Label" Icon="@tab.Icon" ShowCloseIcon="true">
-            @GetRenderFragment(tab.Content.GetType())
+            @GetRenderFragment(tab.Content.GetType(), tab.ComponentParameters)
         </MudTabPanel>
 
     }
@@ -16,14 +16,23 @@
 
 @code {
     public MudDynamicTabs DynamicTabs;
-    bool _stateHasChanged;
-    bool _showCloseIcon = false;
 
-    RenderFragment GetRenderFragment(Type type)
+    RenderFragment GetRenderFragment(Type type, Dictionary<string, object> parameters = null)
     {
         RenderFragment renderFragment = renderTreeBuilder =>
         {
             renderTreeBuilder.OpenComponent(0, type);
+
+            if (parameters != null)
+            {
+                int parNumber = 1;
+                foreach (var param in parameters)
+                {
+                    renderTreeBuilder.AddAttribute(parNumber, param.Key, param.Value);
+                    parNumber++;
+                }
+            }
+
             renderTreeBuilder.CloseComponent();
         };
         return renderFragment;
@@ -39,23 +48,12 @@
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        if (_stateHasChanged)
+        if (onePageState.StateHasChanged)
         {
-            _stateHasChanged = false;
+            onePageState.StateHasChanged = false;
             StateHasChanged();
         }
     }
 
-    public void RemoveTab(Guid id)
-    {
-        var tabView = onePageState.UserTabs.SingleOrDefault((t) => Equals(t.Id, id));
-        if (tabView is not null)
-        {
-            onePageState.UserTabs.Remove(tabView);
-            _stateHasChanged = true;
-        }
-    }
-
-    // void AddTabCallback() => AddTab(Guid.NewGuid());
-    void CloseTabCallback(MudTabPanel panel) => RemoveTab((Guid)panel.ID);
+    void CloseTabCallback(MudTabPanel panel) => onePageState.RemoveTab((Guid)panel.ID);
 }

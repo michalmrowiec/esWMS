@@ -12,7 +12,9 @@
 
 <h3>Magazyny</h3>
 
-<MudButton @onclick="@(() => onePageState.AddTab(new TabView("Tworzenie PZ", new AddPz(), Guid.NewGuid(), Icons.Material.Filled.NoteAdd)))" Variant="Variant.Filled" Color="Color.Primary">
+<MudButton @onclick="OpenCreatePzTab"
+           Variant="Variant.Filled"
+           Color="Color.Primary">
     Utwórz PZ
 </MudButton>
 
@@ -92,6 +94,21 @@
         { "IsApproved", new("IsApproved", "==", string.Empty) },
         { "SupplierContractorId", new("SupplierContractorId") },
     };
+
+    private List<EventCallback> callbacksOnAddPz = new();
+
+    private void OpenCreatePzTab()
+    {
+        var tabId = Guid.NewGuid();
+
+        callbacksOnAddPz = new List<EventCallback>
+        {
+            EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
+            EventCallback.Factory.Create(this, table.ReloadServerData)
+        };
+
+        onePageState.AddTab(new TabView("Tworzenie PZ", new AddPz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
+    }
 
     private async Task<TableData<PzVM>> ServerReload(TableState state, CancellationToken token)
     {

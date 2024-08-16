@@ -3,6 +3,6 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface IContractorRepository
-        : IBaseRepository<Contractor>
+        : IBaseRepository<Contractor>, ISieve<Contractor>
     { }
 }
