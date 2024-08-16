@@ -31,7 +31,7 @@ namespace esWMS.Controllers.Documents
         }
 
         [HttpPost]
-        public async Task<ActionResult<BaseResponse<PzDto>>> CreatePz([FromBody] CreatePzCommand createPzCommand)
+        public async Task<ActionResult<PzDto>> CreatePz([FromBody] CreatePzCommand createPzCommand)
         {
             if (_userContextService.GetUserId is not null)
                 createPzCommand.CreatedBy = _userContextService.GetUserId.ToString();

@@ -26,6 +26,8 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             }
 
             var entity = _mapper.Map<PZ>(request);
+            
+            entity.CreatedAt = DateTime.Now;
 
             if (entity == null)
             {
@@ -43,9 +45,18 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
                 item.IsApproved = false;
             }
 
-            var createdEntity = await _repository.CreateAsync(entity);
+            PzDto entityDto;
 
-            var entityDto = _mapper.Map<PzDto>(createdEntity);
+            try
+            {
+                var createdEntity = await _repository.CreateAsync(entity);
+
+                entityDto = _mapper.Map<PzDto>(createdEntity);
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<PzDto>(false, "Something went wrong.");
+            }
 
             return new BaseResponse<PzDto>(entityDto);
         }

@@ -1,8 +1,10 @@
-﻿@using esWMS.Client.Pages.Documents
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Documents
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IWarehouseService warehouseService
+@inject IDataService<CreatePzVM> dataService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
@@ -60,8 +62,8 @@
         [@warehouse.WarehouseId] @warehouse.WarehouseName
         </MudSelectItem>
         } *@
-        <MudSelectItem Value="@(new string("Test1"))">
-            Test1
+        <MudSelectItem Value="@(new string("DTK"))">
+            DTK
         </MudSelectItem>
     </MudSelect>
 
@@ -90,7 +92,9 @@
 
 </MudForm>
 
-@* @if (responseErrors.Any())
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+
+@if (responseErrors.Any())
 {
     <MudItem xs="12" sm="5">
         <MudPaper Class="pa-4 mud-height-full">
@@ -101,13 +105,14 @@
             }
         </MudPaper>
     </MudItem>
-} *@
+}
 
 @code {
     private CreatePzVM model = new();
     private MudForm form;
     private CreatePzVMValidator validator = new();
     private List<WarehouseVM> warehouses = new();
+    private List<string> responseErrors = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,5 +129,30 @@
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
         };
         return DialogService.ShowAsync<AddPzItemDialogForm>(null, parameters, options);
+    }
+
+    private async Task Submit()
+    {
+        responseErrors = new();
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var response = await dataService.Create(@"api/v1/Pz", model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                model = new();
+                var json = await response.Content.ReadAsStringAsync();
+                var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
+
+                Snackbar.Configuration.PositionClass = "Bottom-End";
+                Snackbar.Add(new MarkupString($"Utworzono <strong>{responseObj?.DocumentId}</strong>"), Severity.Success);
+            }
+            else //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            }
+        }
     }
 }

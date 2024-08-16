@@ -108,7 +108,7 @@
                 sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
         }
 
-        var response = await dataService.GetPagedResult(sm, @"api/v1/pz/get-filtered");
+        var response = await dataService.GetPagedResult(@"api/v1/pz/get-filtered", sm);
 
         return new TableData<PzVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
