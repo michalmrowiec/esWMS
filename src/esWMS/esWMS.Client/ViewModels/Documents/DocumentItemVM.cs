@@ -13,5 +13,15 @@
         public string? Currency { get; set; }
         public string? WarehouseUnitItemId { get; set; }
         public bool IsApproved { get; set; }
+
+        public List<DocumentItemWithAssignmentVM> DocumentItemsWithAssignment { get; set; } = [];
+    }
+
+    public class DocumentItemWithAssignmentVM
+    {
+        public string? DocumentItemId { get; set; }
+        public string? WarehouseUnitId { get; set; }
+        public string? WarehouseUnitItemId { get; set; }
+        public int Quantity { get; set; }
     }
 }

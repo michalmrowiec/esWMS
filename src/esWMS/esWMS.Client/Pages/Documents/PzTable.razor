@@ -12,6 +12,10 @@
 
 <h3>Magazyny</h3>
 
+<MudButton @onclick="@(() => onePageState.AddTab(new TabView("Tworzenie PZ", new AddPz(), Guid.NewGuid(), Icons.Material.Filled.NoteAdd)))" Variant="Variant.Filled" Color="Color.Primary">
+    Utwórz PZ
+</MudButton>
+
 <MudTable T="PzVM" ServerData="ServerReload" Dense="true" Hover="true" @ref="table"
           RowClass="cursor-pointer" OnRowClick="RowClickEvent">
     <ToolBarContent>

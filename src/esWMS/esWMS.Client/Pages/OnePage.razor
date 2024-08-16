@@ -3,7 +3,7 @@
 
 <MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@onePageState.UserIndex"
                 CloseTab="@CloseTabCallback"
-                AddIconToolTip="Click to add a new tab" CloseIconToolTip="Close tab. All data will be lost"
+                CloseIconToolTip="Close tab. All data will be lost"
                 PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
     @foreach (var tab in onePageState.UserTabs)
     {
