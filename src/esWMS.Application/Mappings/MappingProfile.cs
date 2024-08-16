@@ -13,6 +13,8 @@ using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.Crea
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.UpdateDocumentItems;
 using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
+using esWMS.Application.Functions.Documents.WzFunctions;
+using esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 using esWMS.Application.Functions.Products;
@@ -72,6 +74,9 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreatePzCommand, PZ>();
             CreateMap<PZ, PzDto>();
+
+            CreateMap<CreateWzCommand, WZ>();
+            CreateMap<WZ, WzDto>();
 
             CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
                 .ForMember("Items", opt => opt.MapFrom("Items"));

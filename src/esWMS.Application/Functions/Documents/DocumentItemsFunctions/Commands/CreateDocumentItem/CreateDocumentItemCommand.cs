@@ -13,8 +13,9 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.
         public int Quantity { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
-        public string? WarehouseUnitItemId { get; set; }
         public bool IsApproved { get; set; }
         public string? CreatedBy { get; set; }
+
+        public List<DocumentItemWithAssignment> DocumentItemsWithAssignment { get; set; } = [];
     }
 }

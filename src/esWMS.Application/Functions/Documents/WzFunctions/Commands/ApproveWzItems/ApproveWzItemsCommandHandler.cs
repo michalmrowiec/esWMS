@@ -1,38 +1,36 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
-using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems
+namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzItems
 {
-    internal class ApprovePzItemsCommandHandler
-        (IPzRepository pzRepozitory,
+    internal class ApproveWzItemsCommandHandler
+        (IWzRepository wzRepozitory,
         IWarehouseUnitRepository warehouseUnitRepository,
         IMapper mapper,
         ITransactionManager transactionManager,
         IMediator mediator)
-        : IRequestHandler<ApprovePzItemsCommand, BaseResponse<PzDto>>
+        : IRequestHandler<ApproveWzItemsCommand, BaseResponse<WzDto>>
     {
-        private readonly IPzRepository _pzRepozitory = pzRepozitory;
+        private readonly IWzRepository _wzRepozitory = wzRepozitory;
         private readonly IWarehouseUnitRepository _warehouseUnitRepository = warehouseUnitRepository;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
         private readonly IMediator _mediator = mediator;
 
-        public async Task<BaseResponse<PzDto>> Handle(ApprovePzItemsCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<WzDto>> Handle(ApproveWzItemsCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await new ApprovePzItemsValidator(_mediator).ValidateAsync(request, cancellationToken);
+            var validationResult = await new ApproveWzItemsValidator(_mediator).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
-                return new BaseResponse<PzDto>(validationResult);
+                return new BaseResponse<WzDto>(validationResult);
             }
 
-            var document = await _pzRepozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
+            var document = await _wzRepozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
             var warehouseUnits = await _warehouseUnitRepository.GetWarehouseUnitsWithItemsByIdAsync(
                 request.DocumentItemsWithAssignment
                 .Select(x => x.WarehouseUnitId)
@@ -43,36 +41,31 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                 var docItem = document.DocumentItems
                     .First(di => di.DocumentItemId.Equals(itemAssignment.DocumentItemId));
 
-                //docItem.IsApproved = true;
-                //docItem.ModifiedBy = request.ModifiedBy;
-                //docItem.ModifiedAt = DateTime.Now;
+                if(docItem.DocumentWarehouseUnitItems.Any())
+                {
+                    if (docItem.DocumentWarehouseUnitItems.Sum(x => x.Quantity) < docItem.Quantity)
+                    {
 
-                var warUnit = warehouseUnits
-                    .First(wu => wu.WarehouseUnitId.Equals(itemAssignment.WarehouseUnitId));
+                        //...
+                    }
+                }
 
-                //warUnit.ModifiedBy = request.ModifiedBy;
-                //warUnit.ModifiedAt = DateTime.Now;
-                var newWarehouseUnitItem = new WarehouseUnitItem(
-                    warehouseUnitId: warUnit.WarehouseId,
-                    productId: docItem.ProductId,
-                    quantity: itemAssignment.Quantity,
-                    blockedQuantity: itemAssignment.Quantity,
-                    bestBefore: docItem.BestBefore,
-                    batchLot: docItem.BatchLot,
-                    serialNumber: docItem.SerialNumber,
-                    price: docItem.Price,
-                    createdBy: request.ModifiedBy);
+                var warUnitItem = warehouseUnits
+                    .First(wu => wu.WarehouseUnitId.Equals(itemAssignment.WarehouseUnitId))
+                    .WarehouseUnitItems
+                    .First(wui => wui.WarehouseUnitItemId.Equals(itemAssignment.WarehouseUnitItemId));
+
+                warUnitItem.BlockedQuantity += itemAssignment.Quantity;
 
                 var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
                 {
                     DocumentItemId = docItem.DocumentItemId,
-                    WarehouseUnitItemId = newWarehouseUnitItem.WarehouseUnitItemId,
+                    WarehouseUnitItemId = itemAssignment.WarehouseUnitItemId!,
                     Quantity = itemAssignment.Quantity,
                     CreatedAt = DateTime.Now,
                     CreatedBy = request.ModifiedBy
                 };
 
-                warUnit.WarehouseUnitItems.Add(newWarehouseUnitItem);
                 docItem.DocumentWarehouseUnitItems.Add(newDocumentWarehouseUnitItem);
             }
 
@@ -88,27 +81,27 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                 }
             }
 
-            PzDto mappedUpdatedDocument;
+            WzDto mappedUpdatedDocument;
 
             try
             {
                 await _transactionManager.BeginTransactionAsync();
 
                 var updatedWarehouseUnits = await _warehouseUnitRepository.UpdateWarehouseUnitsAsync(warehouseUnits.ToArray());
-                var updatedDocument = await _pzRepozitory.UpdateAsync(document);
+                var updatedDocument = await _wzRepozitory.UpdateAsync(document);
 
                 await _transactionManager.CommitTransactionAsync();
 
-                mappedUpdatedDocument = _mapper.Map<PzDto>(updatedDocument);
+                mappedUpdatedDocument = _mapper.Map<WzDto>(updatedDocument);
             }
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<PzDto>(false, "Something went wrong.");
+                return new BaseResponse<WzDto>(false, "Something went wrong.");
             }
 
-            return new BaseResponse<PzDto>(mappedUpdatedDocument);
+            return new BaseResponse<WzDto>(mappedUpdatedDocument);
         }
     }
 }

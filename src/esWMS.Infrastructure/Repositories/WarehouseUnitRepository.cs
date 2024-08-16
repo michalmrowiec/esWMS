@@ -10,12 +10,13 @@ namespace esWMS.Infrastructure.Repositories
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ILogger<WarehouseUnitRepository> _logger = logger;
-        public async Task<IList<WarehouseUnit>> GetWarehouseUnitsByIdsAsync(params string[] warehouseUnitIds)
+        public async Task<IList<WarehouseUnit>> GetWarehouseUnitsWithItemsByIdAsync(params string[] warehouseUnitIds)
         {
             try
             {
                 return await _context.WarehouseUnits
                     .Where(wu => warehouseUnitIds.Contains(wu.WarehouseUnitId))
+                    .Include(wu => wu.WarehouseUnitItems)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -23,11 +24,6 @@ namespace esWMS.Infrastructure.Repositories
                 _logger.LogError(ex, "Error retrieving warehouse units");
                 throw;
             }
-        }
-
-        public Task<IList<WarehouseUnit>> GetWarehouseUnitWithItemsAsync(string warehouseUnitId)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<IList<WarehouseUnit>> UpdateWarehouseUnitsAsync(params WarehouseUnit[] warehouseUnits)

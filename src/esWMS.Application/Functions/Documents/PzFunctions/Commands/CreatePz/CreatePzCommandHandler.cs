@@ -40,6 +40,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             {
                 item.DocumentItemId = Guid.NewGuid().ToString();
                 item.DocumentId = entity.DocumentId;
+                item.IsApproved = false;
             }
 
             var createdEntity = await _repository.CreateAsync(entity);

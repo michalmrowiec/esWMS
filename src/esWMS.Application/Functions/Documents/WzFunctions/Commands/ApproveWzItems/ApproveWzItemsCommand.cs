@@ -2,14 +2,13 @@
 using esWMS.Application.Responses;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems
+namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzItems
 {
-    public class ApprovePzItemsCommand : IRequest<BaseResponse<PzDto>>
+    public class ApproveWzItemsCommand : IRequest<BaseResponse<WzDto>>
     {
         public string DocumentId { get; set; } = null!;
         public List<DocumentItemWithAssignment> DocumentItemsWithAssignment { get; set; } = null!;
 
         public string? ModifiedBy { get; set; }
     }
-
 }

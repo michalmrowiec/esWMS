@@ -1,28 +1,27 @@
 ﻿using AutoMapper;
 using esWMS.Application.Contracts.Persistence;
-using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
 using FluentValidation.Results;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
+namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWz
 {
-    internal class ApprovePzCommandHanlder
-        (IPzRepository pzRepozitory,
+    internal class ApproveWzCommandHandler
+        (IWzRepository wzRepozitory,
         IWarehouseUnitItemRepository warehouseUnitItemRepository,
         IMapper mapper,
         ITransactionManager transactionManager)
-        : IRequestHandler<ApprovePzCommand, BaseResponse<PzDto>>
+        : IRequestHandler<ApproveWzCommand, BaseResponse<WzDto>>
     {
-        private readonly IPzRepository _pzRepozitory = pzRepozitory;
+        private readonly IWzRepository _wzRepozitory = wzRepozitory;
         private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
-        public async Task<BaseResponse<PzDto>> Handle(ApprovePzCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<WzDto>> Handle(ApproveWzCommand request, CancellationToken cancellationToken)
         {
-            var document = await _pzRepozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
+            var document = await _wzRepozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
             //var warehouseUnitItems = await _warehouseUnitItemRepository.GetWarehouseUnitItemsByIdsAsync(
             //    document.DocumentItems
             //    .Select(x => x.WarehouseUnitItemId)
@@ -35,7 +34,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
                     new List<ValidationFailure>() {
                         new("DocumentId", $"The document by Id: {request.DocumentId} does not exist.") });
 
-                return new BaseResponse<PzDto>(vr);
+                return new BaseResponse<WzDto>(vr);
             }
 
             document.ApprovingEmployeeId = request.ModifiedBy;
@@ -48,33 +47,34 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
             {
                 foreach (var warUnitItem in documentItem.DocumentWarehouseUnitItems)
                 {
+                    warUnitItem.WarehouseUnitItem.Quantity -= warUnitItem.Quantity;
                     warUnitItem.WarehouseUnitItem.BlockedQuantity -= warUnitItem.WarehouseUnitItem.BlockedQuantity;
                 }
             }
 
-            PzDto mappedUpdatedDocument;
+            WzDto mappedUpdatedDocument;
 
             try
             {
                 await _transactionManager.BeginTransactionAsync();
 
-                var updatedDocument = await _pzRepozitory.UpdateAsync(document);
+                var updatedDocument = await _wzRepozitory.UpdateAsync(document);
                 //var updatedWarehouseUnitItems = await _warehouseUnitItemRepository
-                    //.UpdateWarehouseUnitItemsAsync(warehouseUnitItems.ToArray());
+                //.UpdateWarehouseUnitItemsAsync(warehouseUnitItems.ToArray());
 
                 await _transactionManager.CommitTransactionAsync();
 
-                mappedUpdatedDocument = _mapper.Map<PzDto>(updatedDocument);
+                mappedUpdatedDocument = _mapper.Map<WzDto>(updatedDocument);
 
             }
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<PzDto>(false, "Something went wrong.");
+                return new BaseResponse<WzDto>(false, "Something went wrong.");
             }
 
-            return new BaseResponse<PzDto>(mappedUpdatedDocument);
+            return new BaseResponse<WzDto>(mappedUpdatedDocument);
         }
     }
 }
