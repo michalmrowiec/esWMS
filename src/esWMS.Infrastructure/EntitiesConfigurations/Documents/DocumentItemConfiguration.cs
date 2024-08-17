@@ -12,7 +12,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 
             builder.Property(di => di.DocumentItemId)
                 .IsRequired()
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(di => di.DocumentId)
                 .IsRequired()
@@ -20,7 +20,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 
             builder.Property(di => di.ProductId)
                 .IsRequired()
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(di => di.ProductCode)
                 .IsRequired()
@@ -49,11 +49,11 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
             builder.Property(di => di.Currency)
                 .HasMaxLength(5);
 
-            builder.Property(di => di.WarehouseUnitId)
-                .HasMaxLength(450);
+            //builder.Property(di => di.WarehouseUnitId)
+            //    .HasMaxLength(50);
 
-            builder.Property(di => di.WarehouseUnitItemId)
-                .HasMaxLength(450);
+            //builder.Property(di => di.WarehouseUnitItemId)
+            //    .HasMaxLength(50);
 
             builder.Property(di => di.IsApproved)
                 .IsRequired();
@@ -80,16 +80,21 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder
-                .HasOne(di => di.WarehouseUnit)
-                .WithMany()
-                .HasForeignKey(di => di.WarehouseUnitId)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasMany(di => di.DocumentWarehouseUnitItems)
+                .WithOne(dwui => dwui.DocumentItem)
+                .HasForeignKey(dwui => dwui.DocumentItemId)
+                .OnDelete(DeleteBehavior.NoAction);
 
-            builder
-                .HasOne(di => di.WarehouseUnitItem)
-                .WithMany()
-                .HasForeignKey(di => di.WarehouseUnitItemId)
-                .OnDelete(DeleteBehavior.SetNull);
+            //builder
+            //    .HasOne(di => di.WarehouseUnitItem)
+            //    .WithMany()
+            //    .HasForeignKey(di => di.WarehouseUnitItemId)
+            //    .OnDelete(DeleteBehavior.SetNull);
+
+            //builder
+            //    .HasMany(di => di.WarehouseUnitItems)
+            //    .WithMany(wui => wui.DocumentItems)
+            //    .UsingEntity<DocumentWarehouseUnitItem>();
         }
     }
 }

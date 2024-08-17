@@ -16,7 +16,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.SystemActors
 
             builder.Property(c => c.ContractorName)
                 .IsRequired()
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(c => c.VatId)
                 .HasMaxLength(30);

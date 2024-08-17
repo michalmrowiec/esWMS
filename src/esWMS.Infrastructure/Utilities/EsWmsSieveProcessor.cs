@@ -1,8 +1,11 @@
 ﻿using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.SystemActors;
 using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Models;
 using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;
+using System.Diagnostics.Contracts;
 
 namespace esWMS.Infrastructure.Utilities
 {
@@ -51,6 +54,34 @@ namespace esWMS.Infrastructure.Utilities
                 .CanFilter()
                 .HasName("ParentCategoryName");
 
+            mapper.Property<Contractor>(x => x.ContractorId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.VatId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.ContractorName)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.City)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.Address)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.PostalCode)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<Contractor>(x => x.Region)
+                .CanSort()
+                .CanFilter();
+
             mapper.Property<Warehouse>
                 (x => x.WarehouseId)
                 .CanSort()
@@ -80,6 +111,18 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter();
 
+            mapper.Property<WarehouseUnit>(x => x.WarehouseId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<WarehouseUnit>(x => x.WarehouseUnitId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<WarehouseUnit>(x => x.WarehouseUnitItems)
+                .CanFilter()
+                .HasName("FilterByWarehouseUnitItemIds");
+
             mapper.Property<PZ>(x => x.IssueWarehouseId)
                 .CanSort()
                 .CanFilter();
@@ -95,6 +138,32 @@ namespace esWMS.Infrastructure.Utilities
             mapper.Property<PZ>(x => x.SupplierContractorId)
                 .CanSort()
                 .CanFilter();
+
+
+
+            mapper.Property<WarehouseStock>(x => x.ProductId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.ProductName)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.CategoryId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.CategoryName)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.Quantity)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.Value)
+                .CanFilter()
+                .CanSort();
 
             return mapper;
         }
@@ -128,6 +197,25 @@ namespace esWMS.Infrastructure.Utilities
                     break;
                 case "<=":
                     source = source.Where(item => item.DocumentIssueDate.Date <= dateValue.Date);
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
+        public IQueryable<WarehouseUnit> FilterByWarehouseUnitItemIds(IQueryable<WarehouseUnit> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(unit => unit.WarehouseUnitItems.Any(item => values.Contains(item.WarehouseUnitItemId)));
                     break;
                 default:
                     break;

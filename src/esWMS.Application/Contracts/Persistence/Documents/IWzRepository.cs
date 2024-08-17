@@ -3,7 +3,7 @@ using esWMS.Application.Contracts.Persistence.Documents;
 
 namespace esWMS.Application.Contracts.Persistence
 {
-    public interface IWzRepozitory
+    public interface IWzRepository
         : IBaseDocumentRepository<WZ>
     { }
 }

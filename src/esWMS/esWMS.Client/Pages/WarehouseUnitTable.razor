@@ -1,0 +1,96 @@
+﻿@page "/warehouseunit"
+@using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@rendermode InteractiveAuto
+@inject IDataService<WarehouseUnitVM> warehouseUnitService
+@inject OnePageState onePageState
+
+<MudTable T="WarehouseUnitVM"
+          ServerData="ServerReload"
+          Dense="true"
+          Hover="true"
+          @ref="table"
+          RowClass="cursor-pointer"
+          OnRowClick="RowClickEvent">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Jednostki magazynowe</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="WarehouseUnitId" T="WarehouseUnitVM">
+                Id
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseUnitId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="WarehouseId" T="WarehouseUnitVM">
+                Id magazynu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseId" OnChangedAction="OnSearch" />
+        </MudTh>
+
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
+        <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public EventCallback<WarehouseUnitVM> SelectedWarehoseUnit { get; set; }
+
+    private IEnumerable<WarehouseUnitVM> Products = [];
+
+    private IEnumerable<WarehouseUnitVM> pagedData;
+    private MudTable<WarehouseUnitVM> table;
+
+    private int totalItems;
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "WarehouseUnitId", new("WarehouseUnitId") },
+        { "WarehouseId", new("WarehouseId") }
+    };
+
+    private async Task<TableData<WarehouseUnitVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await warehouseUnitService.GetPagedResult(@"api/v1/WarehouseUnit/get-filtered", sm);
+
+        return new TableData<WarehouseUnitVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch()
+    {
+        table.ReloadServerData();
+    }
+
+    private async Task RowClickEvent(TableRowClickEventArgs<WarehouseUnitVM> tableRowClickEventArgs)
+    {
+        await SelectedWarehoseUnit.InvokeAsync(tableRowClickEventArgs.Item);
+    }
+}

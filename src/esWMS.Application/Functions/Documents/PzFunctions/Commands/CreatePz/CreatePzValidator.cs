@@ -7,12 +7,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
     {
         public CreatePzValidator()
         {
-            RuleForEach(x => x.DocumentItems)
-                .ChildRules(di =>
-                {
-                    di.RuleFor(x => x.WarehouseUnitItemId)
-                    .Null();
-                });
+
         }
     }
 }

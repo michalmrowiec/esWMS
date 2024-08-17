@@ -1,7 +1,6 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
 using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
-using esWMS.Infrastructure.Repositories.Documents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Models;
@@ -37,9 +36,61 @@ namespace esWMS.Infrastructure.Repositories
             return new PagedResult<Warehouse>(filteredWarehouses, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
         }
 
-        public Task<IList<WarehouseStock>> GetWarehouseStocks(string warehouseId)
+        public async Task<PagedResult<WarehouseStock>> GetWarehouseStocks(SieveModel sieveModel, string? warehouseId = null)
         {
-            throw new NotImplementedException();
+            try
+            {
+                // Tworzenie zapytania z grupowaniem
+                var stockQuery = _context.WarehouseUnitItems
+                    .Include(x => x.WarehouseUnit)
+                    .Include(x => x.Product)
+                        .ThenInclude(x => x.Category)
+                    .AsQueryable();
+
+                // Filtrowanie po WarehouseId, jeśli jest podane
+                if (!string.IsNullOrWhiteSpace(warehouseId))
+                {
+                    stockQuery = stockQuery.Where(x => x.WarehouseUnit.WarehouseId.Equals(warehouseId));
+                }
+
+                var srockQuery2 = stockQuery
+                    .GroupBy(x => new
+                    {
+                        x.ProductId,
+                        x.Product.ProductName,
+                        x.Product.CategoryId,
+                        x.Product.Category.CategoryName,
+                    })
+                    .Select(g => new WarehouseStock
+                    {
+                        ProductId = g.Key.ProductId,
+                        ProductName = g.Key.ProductName,
+                        CategoryId = g.Key.CategoryId,
+                        CategoryName = g.Key.CategoryName,
+                        Quantity = g.Sum(x => x.Quantity),
+                        Value = g.Sum(x => (x.Price ?? 0) * x.Quantity)
+                    })
+                    .AsNoTracking()
+                    .AsQueryable();
+
+                // Zastosowanie Sieve na wynikowym zapytaniu
+                var filteredWarehouseStocks = await _sieveProcessor
+                    .Apply(sieveModel, srockQuery2)
+                    .ToListAsync();
+
+                // Liczenie całkowitej liczby elementów przed paginacją
+                var totalCount = await _sieveProcessor
+                    .Apply(sieveModel, srockQuery2, applyPagination: false, applySorting: false)
+                    .CountAsync();
+
+                // Zwracanie wyników z paginacją
+                return new PagedResult<WarehouseStock>(filteredWarehouseStocks, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving warehouse stocks");
+                throw;
+            }
         }
     }
 }
