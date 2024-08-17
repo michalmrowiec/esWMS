@@ -123,6 +123,10 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter()
                 .HasName("ProductName");
+            mapper.Property<WarehouseUnitItem>(x => x.WarehouseUnit.WarehouseId)
+                .CanSort()
+                .CanFilter()
+                .HasName("WarehouseId");
             mapper.Property<WarehouseUnitItem>(x => x.Price)
                 .CanSort()
                 .CanFilter();

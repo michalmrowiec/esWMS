@@ -55,6 +55,8 @@ namespace esWMS.Application.Mappings
                 .ForMember(dto => dto.WarehouseUnitItems,
                            opt => opt.MapFrom(src => src.WarehouseUnitItems));
 
+            CreateMap<WarehouseUnit, FlatWarehouseUnitDto>();
+
             CreateMap<CreateWarehouseUnitItemCommand, WarehouseUnitItem>();
             CreateMap<WarehouseUnitItem, WarehouseUnitItemDto>();
 

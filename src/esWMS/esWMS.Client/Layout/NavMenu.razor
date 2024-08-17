@@ -4,7 +4,7 @@
 @inject OnePageState onePageState
 
 <MudNavMenu>
-    <MudNavGroup Title="Artykuły" Expanded="false" Icon="@Icons.Material.Filled.Category">
+    <MudNavGroup Title="Artykuły" Expanded="false" Icon="@Icons.Material.Outlined.Category">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
                     OnClick="@(() => onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
@@ -16,7 +16,7 @@
             Lista Kategorii
         </MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Magazyny" Expanded="false" Icon="@Icons.Material.Filled.Warehouse">
+    <MudNavGroup Title="Magazyny" Expanded="false" Icon="@Icons.Material.Outlined.Warehouse">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
                     OnClick="@(() => onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
@@ -28,12 +28,17 @@
             Jednostki Magazynowe
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.Segment"
+                    OnClick="@(() => onePageState.AddTab(new TabView("Pozycje Magazynowe", new WarehouseUnitItemTable(), Guid.NewGuid(), Icons.Material.Filled.Segment)))">
+            Pozycje Magazynowe
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.Warehouse"
                     OnClick="@(() => onePageState.AddTab(new TabView("Stany Magazynowe", new WarehouseStockTable(), Guid.NewGuid(), Icons.Material.Filled.Warehouse)))">
             Stany Magazynowe
         </MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Dokumenty" Expanded="false" Icon="@Icons.Material.Filled.LibraryBooks">
+    <MudNavGroup Title="Dokumenty" Expanded="false" Icon="@Icons.Material.Outlined.LibraryBooks">
         <MudNavGroup Title="PZ" Expanded="false" Icon="@Icons.Material.Filled.ArrowDownward">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"

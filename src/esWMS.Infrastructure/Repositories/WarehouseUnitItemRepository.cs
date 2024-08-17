@@ -42,23 +42,31 @@ namespace esWMS.Infrastructure.Repositories
 
         public async Task<PagedResult<WarehouseUnitItem>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
-            var items = _context
-                .WarehouseUnitItems
-                .Include(x => x.Product)
-                .Include(x => x.WarehouseUnit)
-                .Include(x => x.DocumentWarehouseUnitItems)
-                .AsNoTracking()
-                .AsQueryable();
+            try
+            {
+                var items = _context
+                    .WarehouseUnitItems
+                    .Include(x => x.Product)
+                    .Include(x => x.WarehouseUnit)
+                    .Include(x => x.DocumentWarehouseUnitItems)
+                    .AsNoTracking()
+                    .AsQueryable();
 
-            var filteredItems = await _sieveProcessor
-                .Apply(sieveModel, items)
-                .ToListAsync();
+                var filteredItems = await _sieveProcessor
+                    .Apply(sieveModel, items)
+                    .ToListAsync();
 
-            var totalCount = await _sieveProcessor
-                .Apply(sieveModel, items, applyPagination: false, applySorting: false)
-                .CountAsync();
+                var totalCount = await _sieveProcessor
+                    .Apply(sieveModel, items, applyPagination: false, applySorting: false)
+                    .CountAsync();
 
-            return new PagedResult<WarehouseUnitItem>(filteredItems, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
+                return new PagedResult<WarehouseUnitItem>(filteredItems, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving warehouse stocks");
+                throw;
+            }
         }
 
         public async Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync

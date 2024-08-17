@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using esWMS.Client.ViewModels.Documents;
+using System.ComponentModel;
 
 namespace esWMS.Client.ViewModels
 {
@@ -16,5 +17,7 @@ namespace esWMS.Client.ViewModels
         public decimal? Price { get; set; }
 
         public WarehouseUnitVM? WarehouseUnit { get; set; }
+        public ProductVM? Product { get; set; }
+        public List<DocumentItemWithAssignmentVM> DocumentWarehouseUnitItems { get; set; } = [];
     }
 }

@@ -1,0 +1,133 @@
+﻿@page "/warehouseunititem"
+@using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@rendermode InteractiveAuto
+@inject IDataService<WarehouseUnitItemVM> warehouseUnitItemService
+
+<MudTable T="WarehouseUnitItemVM"
+          ServerData="ServerReload"
+          Dense="true"
+          Hover="true"
+          @ref="table"
+          RowClass="cursor-pointer"
+          OnRowClick="RowClickEvent">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Pozycje magazynowe</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="WarehouseUnitItemId" T="WarehouseUnitItemVM">
+                Id pozycji
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseUnitItemId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="WarehouseUnitId" T="WarehouseUnitItemVM">
+                Id jednostki
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseUnitId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="WarehouseId" T="WarehouseUnitItemVM">
+                Id magazynu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ProductId" T="WarehouseUnitItemVM">
+                Id produktu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ProductId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ProductName" T="WarehouseUnitItemVM">
+                Nazwa produktu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ProductName" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Quantity" T="WarehouseUnitItemVM">
+                Ilość
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="Quantity" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="BlockedQuantity" T="WarehouseUnitItemVM">
+                Zablokowane
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="BlockedQuantity" OnChangedAction="OnSearch" />
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id pozycji">@context.WarehouseUnitItemId</MudTd>
+        <MudTd DataLabel="Id jednostki">@context.WarehouseUnitId</MudTd>
+        <MudTd DataLabel="Id magazynu">@context.WarehouseUnit.WarehouseId</MudTd>
+        <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
+        <MudTd DataLabel="Nazwa produktu">@context.Product.ProductName</MudTd>
+        <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
+        <MudTd DataLabel="Zablokowane">@context.BlockedQuantity</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public EventCallback<WarehouseUnitItemVM> SelectedWarehoseUnit { get; set; }
+
+    private IEnumerable<WarehouseUnitItemVM> Products = [];
+    private IEnumerable<WarehouseUnitItemVM> pagedData;
+    private MudTable<WarehouseUnitItemVM> table;
+
+    private int totalItems;
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "WarehouseUnitItemId", new("WarehouseUnitItemId") },
+        { "WarehouseUnitId", new("WarehouseUnitId") },
+        { "WarehouseId", new("WarehouseId") },
+        { "ProductId", new("ProductId") },
+        { "ProductName", new("ProductName") },
+        { "Quantity", new("Quantity") },
+        { "BlockedQuantity", new("BlockedQuantity") }
+    };
+
+    private async Task<TableData<WarehouseUnitItemVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await warehouseUnitItemService.GetPagedResult(@"api/v1/WarehouseUnitItem/get-filtered", sm);
+
+        return new TableData<WarehouseUnitItemVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch()
+    {
+        table.ReloadServerData();
+    }
+
+    private async Task RowClickEvent(TableRowClickEventArgs<WarehouseUnitItemVM> tableRowClickEventArgs)
+    {
+
+    }
+}

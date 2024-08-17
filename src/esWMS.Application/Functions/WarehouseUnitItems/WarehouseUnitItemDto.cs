@@ -1,4 +1,9 @@
-﻿using System.ComponentModel;
+﻿using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
+using esWMS.Application.Functions.Products;
+using esWMS.Application.Functions.WarehouseUnits;
+using System.ComponentModel;
 
 namespace esWMS.Application.Functions.WarehouseUnitItems
 {
@@ -14,5 +19,9 @@ namespace esWMS.Application.Functions.WarehouseUnitItems
         public string? BatchLot { get; set; }
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
+
+        public FlatWarehouseUnitDto? WarehouseUnit { get; set; }
+        public ProductDto? Product { get; set; }
+        public List<DocumentWarehouseUnitItemDto> DocumentWarehouseUnitItems { get; set; } = [];
     }
 }
