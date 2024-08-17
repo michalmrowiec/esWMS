@@ -31,7 +31,7 @@ namespace esWMS.Controllers.Documents
         }
 
         [HttpPost]
-        public async Task<ActionResult<BaseResponse<PzDto>>> CreatePz([FromBody] CreatePzCommand createPzCommand)
+        public async Task<ActionResult<PzDto>> CreatePz([FromBody] CreatePzCommand createPzCommand)
         {
             if (_userContextService.GetUserId is not null)
                 createPzCommand.CreatedBy = _userContextService.GetUserId.ToString();
@@ -52,7 +52,7 @@ namespace esWMS.Controllers.Documents
             return BadRequest();
         }
 
-        [HttpPatch("/approve-pz-items")]
+        [HttpPatch("approve-pz-items")]
         public async Task<ActionResult<BaseResponse<PzDto>>> ApprovePzItems([FromBody] ApprovePzItemsCommand approvePzItemsCommand)
         {
             if (_userContextService.GetUserId is not null)
@@ -74,7 +74,7 @@ namespace esWMS.Controllers.Documents
             return BadRequest();
         }
 
-        [HttpPatch("/approve-pz")]
+        [HttpPatch("approve-pz")]
         public async Task<ActionResult<BaseResponse<PzDto>>> ApprovePz([FromBody] ApprovePzCommand approvePzCommand)
         {
             if (_userContextService.GetUserId is not null)

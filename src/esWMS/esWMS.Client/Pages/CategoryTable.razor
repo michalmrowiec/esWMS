@@ -16,17 +16,25 @@
     }
 </style>
 
-<PageTitle>Kategorie</PageTitle>
-
-<h3>Kategorie</h3>
-
-<MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
-    Utwórz kategorię
-</MudButton>
-
-<MudTable ServerData="ServerReload" Dense="true" Hover="true" @ref="table"
-          GroupBy="@_groupDefinition" GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
-          GroupFooterClass="mb-4" Height="500px" FixedHeader="true">
+<MudTable T="CategoryVM"
+          ServerData="ServerReload"
+          Dense="true"
+          Hover="true"
+          @ref="table"
+          GroupBy="@_groupDefinition"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          Height="500px"
+          FixedHeader="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Kategorie</MudText>
+        <MudSpacer />
+        <MudButton @onclick="OpenDialogAsync"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Utwórz kategorię
+        </MudButton>
+    </ToolBarContent>
     <ColGroup>
         <col style="width: 60px;" />
         <col />

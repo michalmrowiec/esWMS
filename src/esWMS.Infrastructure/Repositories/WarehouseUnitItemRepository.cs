@@ -10,7 +10,31 @@ namespace esWMS.Infrastructure.Repositories
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ILogger<WarehouseUnitItemRepository> _logger = logger;
-        public async Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync(params string[] warehouseUnitItemsIds)
+
+        public async Task<IList<WarehouseUnitItem>> BlockWarehouseUnitItemsQuantityAsync
+            (Dictionary<string, int> warehouseUnitItemIdQuantity)
+        {
+            try
+            {
+                var warehouseUnitItems = await GetWarehouseUnitItemsByIdsAsync(warehouseUnitItemIdQuantity.Keys.ToArray());
+
+                foreach (var item in warehouseUnitItems)
+                {
+                    item.BlockedQuantity += warehouseUnitItemIdQuantity[item.WarehouseUnitItemId];
+                }
+
+                await _context.SaveChangesAsync();
+                return warehouseUnitItems;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error blocking warehouse unit items quantity");
+                throw;
+            }
+        }
+
+        public async Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync
+            (params string[] warehouseUnitItemsIds)
         {
             try
             {
@@ -25,7 +49,8 @@ namespace esWMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<IList<WarehouseUnitItem>> UpdateWarehouseUnitItemsAsync(params WarehouseUnitItem[] warehouseUnitItems)
+        public async Task<IList<WarehouseUnitItem>> UpdateWarehouseUnitItemsAsync
+            (params WarehouseUnitItem[] warehouseUnitItems)
         {
             try
             {

@@ -12,14 +12,14 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 
             builder.Property(c => c.CategoryId)
                 .IsRequired()
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(c => c.CategoryName)
                 .IsRequired()
                 .HasMaxLength(50);
 
             builder.Property(c => c.ParentCategoryId)
-                .HasMaxLength(450);
+                .HasMaxLength(50);
 
             builder.Property(c => c.CreatedAt)
                 .IsRequired();

@@ -1,0 +1,57 @@
+﻿@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+
+<MudDialog>
+    <TitleContent>
+        Wybieranie jednostki magazynowej
+    </TitleContent>
+    <DialogContent>
+
+        <MudTextField @bind-Value="selected"
+                      Label="Wybrana jednostka"
+                      Disabled />
+
+        <WarehouseUnitTable SelectedWarehoseUnit="OnSelected" />
+
+        <MudNumericField Label="Ilość"
+                         @bind-Value="quantity" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Dodaj</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnAdded { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<(string, int)> WarehouseUnitId { get; set; }
+
+    private string? selected;
+    private int quantity = 0;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        if (selected != null ||
+            quantity <= 0)
+        {
+            WarehouseUnitId.InvokeAsync((selected, quantity));
+        }
+
+        FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void OnSelected(WarehouseUnitVM warehouseUnit)
+    {
+        selected = warehouseUnit.WarehouseUnitId;
+        StateHasChanged();
+    }
+}

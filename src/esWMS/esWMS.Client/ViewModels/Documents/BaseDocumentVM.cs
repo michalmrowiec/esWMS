@@ -13,5 +13,7 @@
         public string? ApprovingEmployeeId { get; set; }
 
         public IList<DocumentItemVM> DocumentItems { get; set; } = [];
+        public WarehouseVM? IssueWarehouse { get; set; }
+
     }
 }

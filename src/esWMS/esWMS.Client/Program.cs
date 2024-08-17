@@ -13,6 +13,7 @@ builder.Services.AddTransient(http => new HttpClient
 
 builder.Services.AddSingleton<OnePageState>();
 builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
+builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();
 builder.Services.AddTransient<IWarehouseService, WarehouseService>();
 builder.Services.AddTransient<IProductService, ProductService>();
 builder.Services.AddTransient<ICategoryService, CategoryService>();

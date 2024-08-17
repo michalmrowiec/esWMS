@@ -18,11 +18,11 @@ namespace esWMS.Infrastructure.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    CategoryId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    CategoryId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CategoryName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ParentCategoryId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: true)
+                    ParentCategoryId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
@@ -49,7 +49,7 @@ namespace esWMS.Infrastructure.Migrations
                 {
                     ContractorId = table.Column<string>(type: "varchar(3)", maxLength: 3, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ContractorName = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    ContractorName = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     VatId = table.Column<string>(type: "varchar(30)", maxLength: 30, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -160,7 +160,7 @@ namespace esWMS.Infrastructure.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    ProductId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    ProductId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ProductCode = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -170,7 +170,7 @@ namespace esWMS.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ProductDescription = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    CategoryId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    CategoryId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Unit = table.Column<string>(type: "varchar(10)", maxLength: 10, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -335,6 +335,55 @@ namespace esWMS.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "DocumentItems",
+                columns: table => new
+                {
+                    DocumentItemId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DocumentId = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProductId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProductCode = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    EanCode = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ProductName = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Quantity = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    BestBefore = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    BatchLot = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SerialNumber = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Currency = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    IsApproved = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    ModifiedBy = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DocumentItems", x => x.DocumentItemId);
+                    table.ForeignKey(
+                        name: "FK_DocumentItems_Documents_DocumentId",
+                        column: x => x.DocumentId,
+                        principalTable: "Documents",
+                        principalColumn: "DocumentId");
+                    table.ForeignKey(
+                        name: "FK_DocumentItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ProductId");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Locations",
                 columns: table => new
                 {
@@ -353,7 +402,7 @@ namespace esWMS.Infrastructure.Migrations
                     MaxHeight = table.Column<int>(type: "int", nullable: false),
                     MaxWeight = table.Column<int>(type: "int", nullable: false),
                     IsBusy = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
-                    DefaultMediaTypeId = table.Column<string>(type: "varchar(450)", nullable: true)
+                    DefaultMediaTypeId = table.Column<string>(type: "varchar(50)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
@@ -384,11 +433,11 @@ namespace esWMS.Infrastructure.Migrations
                 name: "WarehouseUnits",
                 columns: table => new
                 {
-                    WarehouseUnitId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    WarehouseUnitId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     WarehouseId = table.Column<string>(type: "varchar(3)", maxLength: 3, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    MediaId = table.Column<string>(type: "varchar(450)", nullable: true)
+                    MediaId = table.Column<string>(type: "varchar(50)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     LocationId = table.Column<string>(type: "varchar(11)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -397,7 +446,7 @@ namespace esWMS.Infrastructure.Migrations
                     TotalWidth = table.Column<int>(type: "int", nullable: true),
                     TotalHeight = table.Column<int>(type: "int", nullable: true),
                     CanBeStacked = table.Column<bool>(type: "tinyint(1)", nullable: true),
-                    StackOnId = table.Column<string>(type: "varchar(450)", nullable: true)
+                    StackOnId = table.Column<string>(type: "varchar(50)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
@@ -437,11 +486,11 @@ namespace esWMS.Infrastructure.Migrations
                 name: "WarehouseUnitItems",
                 columns: table => new
                 {
-                    WarehouseUnitItemId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    WarehouseUnitItemId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    WarehouseUnitId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    WarehouseUnitId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProductId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    ProductId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Quantity = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
                     BlockedQuantity = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
@@ -475,67 +524,34 @@ namespace esWMS.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "DocumentItems",
+                name: "DocumentWarehouseUnitItems",
                 columns: table => new
                 {
-                    DocumentItemId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
+                    DocumentItemId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DocumentId = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: false)
+                    WarehouseUnitItemId = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProductId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProductCode = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    EanCode = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ProductName = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Quantity = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
-                    BestBefore = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    BatchLot = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    SerialNumber = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Currency = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    WarehouseUnitItemId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    WarehouseUnitId = table.Column<string>(type: "varchar(450)", maxLength: 450, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    IsApproved = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    CreatedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    ModifiedBy = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
+                    ModifiedBy = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DocumentItems", x => x.DocumentItemId);
+                    table.PrimaryKey("PK_DocumentWarehouseUnitItems", x => new { x.DocumentItemId, x.WarehouseUnitItemId });
                     table.ForeignKey(
-                        name: "FK_DocumentItems_Documents_DocumentId",
-                        column: x => x.DocumentId,
-                        principalTable: "Documents",
-                        principalColumn: "DocumentId");
+                        name: "FK_DocumentWarehouseUnitItems_DocumentItems_DocumentItemId",
+                        column: x => x.DocumentItemId,
+                        principalTable: "DocumentItems",
+                        principalColumn: "DocumentItemId");
                     table.ForeignKey(
-                        name: "FK_DocumentItems_Products_ProductId",
-                        column: x => x.ProductId,
-                        principalTable: "Products",
-                        principalColumn: "ProductId");
-                    table.ForeignKey(
-                        name: "FK_DocumentItems_WarehouseUnitItems_WarehouseUnitItemId",
+                        name: "FK_DocumentWarehouseUnitItems_WarehouseUnitItems_WarehouseUnitI~",
                         column: x => x.WarehouseUnitItemId,
                         principalTable: "WarehouseUnitItems",
-                        principalColumn: "WarehouseUnitItemId",
-                        onDelete: ReferentialAction.SetNull);
-                    table.ForeignKey(
-                        name: "FK_DocumentItems_WarehouseUnits_WarehouseUnitId",
-                        column: x => x.WarehouseUnitId,
-                        principalTable: "WarehouseUnits",
-                        principalColumn: "WarehouseUnitId",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "WarehouseUnitItemId");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -553,16 +569,6 @@ namespace esWMS.Infrastructure.Migrations
                 name: "IX_DocumentItems_ProductId",
                 table: "DocumentItems",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DocumentItems_WarehouseUnitId",
-                table: "DocumentItems",
-                column: "WarehouseUnitId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DocumentItems_WarehouseUnitItemId",
-                table: "DocumentItems",
-                column: "WarehouseUnitItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Documents_ApprovingEmployeeId",
@@ -608,6 +614,11 @@ namespace esWMS.Infrastructure.Migrations
                 name: "IX_Documents_ToWarehouseId",
                 table: "Documents",
                 column: "ToWarehouseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DocumentWarehouseUnitItems_WarehouseUnitItemId",
+                table: "DocumentWarehouseUnitItems",
+                column: "WarehouseUnitItemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Locations_DefaultMediaTypeId",
@@ -670,19 +681,22 @@ namespace esWMS.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DocumentItems");
+                name: "DocumentWarehouseUnitItems");
 
             migrationBuilder.DropTable(
-                name: "Documents");
+                name: "DocumentItems");
 
             migrationBuilder.DropTable(
                 name: "WarehouseUnitItems");
 
             migrationBuilder.DropTable(
-                name: "Employees");
+                name: "Documents");
 
             migrationBuilder.DropTable(
                 name: "WarehouseUnits");
+
+            migrationBuilder.DropTable(
+                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "Locations");

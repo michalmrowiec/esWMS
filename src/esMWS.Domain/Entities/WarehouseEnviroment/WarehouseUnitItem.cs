@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using esMWS.Domain.Entities.Documents;
+using System.ComponentModel;
 
 namespace esMWS.Domain.Entities.WarehouseEnviroment
 {
@@ -21,6 +22,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
 
         public WarehouseUnit? WarehouseUnit { get; set; }
         public Product? Product { get; set; }
+        public IList<DocumentWarehouseUnitItem> DocumentWarehouseUnitItems { get; set; } = [];
 
         public WarehouseUnitItem()
         { }
