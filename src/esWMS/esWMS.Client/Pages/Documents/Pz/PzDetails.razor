@@ -1,0 +1,56 @@
+﻿@using esWMS.Client.ViewModels.Documents
+<h3>PzDetails</h3>
+
+<MudText Typo="Typo.body1"><strong>Numer dokumentu:</strong> @PzVM.DocumentId</MudText>
+
+<MudText Typo="Typo.body1">
+    <strong>Magazyn wydania:</strong>
+    [@PzVM.IssueWarehouseId] @PzVM.IssueWarehouse?.WarehouseName
+</MudText>
+
+<MudText Typo="Typo.body1"><strong>Komentarz:</strong> @PzVM.Comment</MudText>
+
+<MudText Typo="Typo.body1">
+    <strong>Data wydania dokumentu:</strong>
+    @PzVM.DocumentIssueDate.ToString("dd-MM-yyyy")
+</MudText>
+
+<MudText Typo="Typo.body1">
+    <strong>Zatwierdzono: </strong>
+    @if (PzVM.IsApproved)
+    {
+        <span>TAK</span>
+    }
+    else
+    {
+        <span>NIE</span>
+    }
+</MudText>
+
+<MudText Typo="Typo.body1">
+    <strong>Data przyjęcia towaru:</strong>
+    @PzVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")
+</MudText>
+
+<MudText Typo="Typo.body1">
+    <strong>Kontrahent:</strong>
+    [@PzVM.SupplierContractorId] @PzVM.SupplierContractor?.ContractorName
+</MudText>
+
+
+<MudDataGrid T="DocumentItemVM" Items="@PzVM.DocumentItems" EditMode="DataGridEditMode.Cell">
+    <Columns>
+        <PropertyColumn Property="x => x.ProductId" />
+        <PropertyColumn Property="x => x.ProductCode" />
+        <PropertyColumn Property="x => x.ProductName" />
+        <PropertyColumn Property="x => x.Quantity" />
+    </Columns>
+</MudDataGrid>
+
+@code {
+    [Parameter]
+    public PzVM PzVM { get; set; } = new();
+
+    [Parameter]
+    public List<EventCallback>? EventCallbacks { get; set; }
+}

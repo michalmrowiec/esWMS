@@ -132,8 +132,12 @@
 
     private void RowClickEvent(TableRowClickEventArgs<PzVM> tableRowClickEventArgs)
     {
-        //onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid()));
-        //open warehouse details
+        onePageState.AddTab(
+            new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ", 
+            new PzDetails(),
+            Guid.NewGuid(),
+            Icons.Material.Filled.Info,
+            new() { { "PzVM", tableRowClickEventArgs?.Item ?? new() } }));
     }
 
     private void OnSearch()
