@@ -1,24 +1,31 @@
-﻿@using esWMS.Client.Services
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
 @inject IDataService<PzVM> pzDataService
+@inject IDocumentDataService documentDataService
+@inject ISnackbar Snackbar
 
-<MudText Typo="Typo.body1"><strong>Numer dokumentu:</strong> @PzVM.DocumentId</MudText>
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Numer dokumentu:</strong> @PzVM.DocumentId
+</MudText>
 
-<MudText Typo="Typo.body1">
+<MudText Typo="Typo.body1" Class="mb-3">
     <strong>Magazyn wydania:</strong>
     [@PzVM.IssueWarehouseId] @PzVM.IssueWarehouse?.WarehouseName
 </MudText>
 
-<MudText Typo="Typo.body1"><strong>Komentarz:</strong> @PzVM.Comment</MudText>
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Komentarz:</strong> @PzVM.Comment
+</MudText>
 
-<MudText Typo="Typo.body1">
+<MudText Typo="Typo.body1" Class="mb-3">
     <strong>Data wydania dokumentu:</strong>
     @PzVM.DocumentIssueDate.ToString("dd-MM-yyyy")
 </MudText>
 
-<MudText Typo="Typo.body1">
+<MudText Typo="Typo.body1" Class="mb-3">
     <strong>Zatwierdzono: </strong>
     @if (PzVM.IsApproved)
     {
@@ -30,18 +37,23 @@
     }
 </MudText>
 
-<MudText Typo="Typo.body1">
+<MudText Typo="Typo.body1" Class="mb-3">
     <strong>Data przyjęcia towaru:</strong>
     @PzVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")
 </MudText>
 
-<MudText Typo="Typo.body1">
+<MudText Typo="Typo.body1" Class="mb-3">
     <strong>Kontrahent:</strong>
     [@PzVM.SupplierContractorId] @PzVM.SupplierContractor?.ContractorName
 </MudText>
 
-
-<MudDataGrid T="DocumentItemVM" Items="@PzVM.DocumentItems" EditMode="DataGridEditMode.Cell">
+<MudDataGrid T="DocumentItemVM"
+             Items="@PzVM.DocumentItems"
+             EditMode="DataGridEditMode.Cell"
+             Class="mb-3"
+             Dense
+             Hover
+             Bordered>
     <Columns>
         <PropertyColumn Property="x => x.ProductId" Title="Id" />
         <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
@@ -66,12 +78,59 @@
     </Columns>
 </MudDataGrid>
 
+@if (PzVM.DocumentItems.All(x => x.IsApproved) &&
+!PzVM.IsApproved)
+{
+    <MudButton OnClick="@(() => ApprovePz())"
+               Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Class="mb-3">
+        Zatwierdź
+    </MudButton>
+}
+else if (PzVM.IsApproved)
+{
+    <MudButton Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled
+               Class="mb-3">
+        Zatwierdzono
+    </MudButton>
+}
+else
+{
+    <MudButton Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled
+               Class="mb-3">
+        Zatwierdź
+    </MudButton>
+}
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5" Class="mb-3">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
 @code {
     [Parameter]
     public PzVM PzVM { get; set; } = new();
 
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+
+    private List<string> responseErrors = new();
 
     private Task OpenDialogAsync(DocumentItemVM documentItem)
     {
@@ -101,5 +160,30 @@
         }
 
         StateHasChanged();
+    }
+
+    public async Task ApprovePz()
+    {
+        var response = await documentDataService.ApproveDocument(@"api/v1/Pz/approve-pz", new { DocumentId = PzVM.DocumentId });
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
+
+            if (responseObj != null)
+            {
+                PzVM = responseObj;
+            }
+
+            Snackbar.Configuration.PositionClass = "Bottom-End";
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{PzVM.DocumentId}</strong>"), Severity.Success);
+
+        }
+        else
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        }
     }
 }

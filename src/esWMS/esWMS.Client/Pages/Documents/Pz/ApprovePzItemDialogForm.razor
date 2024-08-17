@@ -12,6 +12,7 @@
         Zatwierdzanie pozycji
     </TitleContent>
     <DialogContent>
+        <MudText Typo="Typo.subtitle1"><strong>Id pozycji dokumentu:</strong> @DocumentItemVM.DocumentItemId</MudText>
 
         <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
 
@@ -23,13 +24,15 @@
 
         <MudDataGrid T="DocumentItemWithAssignmentVM"
                      Items="@documentItemWithAssignments"
-                     EditMode="DataGridEditMode.Cell">
+                     EditMode="DataGridEditMode.Cell"
+                     Dense
+                     Bordered
+                     Hover>
             <ToolBarContent>
                 <MudText Typo="Typo.subtitle1">Nowe przypisania</MudText>
                 <MudSpacer />
             </ToolBarContent>
             <Columns>
-                <PropertyColumn Property="x => x.DocumentItemId" />
                 <PropertyColumn Property="x => x.WarehouseUnitId" />
                 <PropertyColumn Property="x => x.Quantity" />
                 <TemplateColumn CellClass="d-flex justify-end">
@@ -48,13 +51,15 @@
                      Items="@DocumentItemVM.DocumentWarehouseUnitItems"
                      EditMode="DataGridEditMode.Cell"
                      Filterable="false"
-                     SortMode="SortMode.None">
+                     SortMode="SortMode.None"
+                     Dense
+                     Bordered
+                     Hover>
             <ToolBarContent>
                 <MudText Typo="Typo.subtitle1">Przypisane</MudText>
                 <MudSpacer />
             </ToolBarContent>
             <Columns>
-                <PropertyColumn Property="x => x.DocumentItemId" Title="Id pozycji dokumentu" />
                 <PropertyColumn Property="x => x.WarehouseUnitItemId" Title="Id pozycji magazynowej" />
                 <TemplateColumn CellClass="d-flex justify-end" Title="Id jednostki magazynowej">
                     <CellTemplate Context="item">

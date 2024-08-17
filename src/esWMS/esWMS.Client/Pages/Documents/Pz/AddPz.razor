@@ -70,7 +70,8 @@
 
     <MudDataGrid T="DocumentItemVM"
                  Items="@model.DocumentItems"
-                 EditMode="DataGridEditMode.Cell">
+                 EditMode="DataGridEditMode.Cell"
+                 Dense>
         <Columns>
             <PropertyColumn Property="x => x.ProductId" />
             <PropertyColumn Property="x => x.ProductCode" />
