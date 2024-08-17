@@ -1,8 +1,10 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Application.Functions.Categories;
+using esWMS.Application.Functions.Products;
 
-namespace esMWS.Domain.Models
+namespace esWMS.Application.Functions.Warehouses
 {
-    public class WarehouseStock
+    public class WarehouseStockDto
     {
         public string ProductId { get; set; } = null!;
         public string ProductName { get; set; } = null!;

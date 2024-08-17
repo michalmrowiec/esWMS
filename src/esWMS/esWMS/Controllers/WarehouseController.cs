@@ -1,6 +1,7 @@
 ﻿using esMWS.Domain.Models;
 using esWMS.Application.Functions.Warehouses;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
+using esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouseStocks;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
@@ -33,6 +34,26 @@ namespace esWMS.Controllers
             var result = await _mediator.Send(new GetSortedFilteredWarehousesQuery(sieveModel));
 
             if (result is BaseResponse<PagedResult<WarehouseDto>> r)
+            {
+                if (r.Success)
+                {
+                    return Ok(r.ReturnedObj);
+                }
+                else
+                {
+                    return BadRequest(r.Message);
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("get-filtered-stocks")]
+        public async Task<ActionResult<PagedResult<WarehouseStockDto>>> GetSortedAndFilteredWarehouseStocks
+            ([FromBody] SieveModel sieveModel, [FromQuery] string? warehouseId = null)
+        {
+            var result = await _mediator.Send(new GetSortedFilteredWarehouseStocksQuery(sieveModel, warehouseId));
+
+            if (result is BaseResponse<PagedResult<WarehouseStockDto>> r)
             {
                 if (r.Success)
                 {

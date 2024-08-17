@@ -1,6 +1,7 @@
 ﻿using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Entities.SystemActors;
 using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Models;
 using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;
@@ -137,6 +138,32 @@ namespace esWMS.Infrastructure.Utilities
             mapper.Property<PZ>(x => x.SupplierContractorId)
                 .CanSort()
                 .CanFilter();
+
+
+
+            mapper.Property<WarehouseStock>(x => x.ProductId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.ProductName)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.CategoryId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.CategoryName)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.Quantity)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<WarehouseStock>(x => x.Value)
+                .CanFilter()
+                .CanSort();
 
             return mapper;
         }

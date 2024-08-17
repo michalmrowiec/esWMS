@@ -80,6 +80,9 @@ namespace esWMS.Application.Mappings
 
             CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
                 .ForMember("Items", opt => opt.MapFrom("Items"));
+
+            CreateMap<WarehouseStock, WarehouseStockDto>()
+                .ReverseMap();
         }
     }
 }
