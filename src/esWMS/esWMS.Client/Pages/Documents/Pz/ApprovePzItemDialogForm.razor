@@ -5,6 +5,7 @@
 @inject IDocumentDataService documentService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject IDataService<WarehouseUnitVM> warehouseUnitDataService
 
 <MudDialog>
     <TitleContent>
@@ -12,7 +13,7 @@
     </TitleContent>
     <DialogContent>
 
-        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity-(DocumentItemVM.DocumentWarehouseUnitItems.Sum(x=> x.Quantity)+documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
+        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
 
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
@@ -45,14 +46,23 @@
 
         <MudDataGrid T="DocumentItemWithAssignmentVM"
                      Items="@DocumentItemVM.DocumentWarehouseUnitItems"
-                     EditMode="DataGridEditMode.Cell">
+                     EditMode="DataGridEditMode.Cell"
+                     Filterable="false"
+                     SortMode="SortMode.None">
             <ToolBarContent>
                 <MudText Typo="Typo.subtitle1">Przypisane</MudText>
                 <MudSpacer />
             </ToolBarContent>
             <Columns>
-                <PropertyColumn Property="x => x.DocumentItemId" />
-                <PropertyColumn Property="x => x.WarehouseUnitId" />
+                <PropertyColumn Property="x => x.DocumentItemId" Title="Id pozycji dokumentu" />
+                <PropertyColumn Property="x => x.WarehouseUnitItemId" Title="Id pozycji magazynowej" />
+                <TemplateColumn CellClass="d-flex justify-end" Title="Id jednostki magazynowej">
+                    <CellTemplate Context="item">
+                        <MudStack Row>
+                            <MudText>@warehouseUnitVMs.FirstOrDefault(x => x.WarehouseUnitItems.Any(x => x.WarehouseUnitItemId.Equals(item.Item.WarehouseUnitItemId)))?.WarehouseUnitId</MudText>
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
                 <PropertyColumn Property="x => x.Quantity" />
             </Columns>
         </MudDataGrid>
@@ -90,6 +100,8 @@
     private string? selectedWarehouseUnitId = "";
     private List<DocumentItemWithAssignmentVM> documentItemWithAssignments = new();
     private List<string> responseErrors = new();
+
+    private List<WarehouseUnitVM> warehouseUnitVMs = new();
 
     private Task OpenDialogAsync()
     {
@@ -139,4 +151,22 @@
     }
 
     private void Cancel() => MudDialog.Cancel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = 1;
+        sm.PageSize = 100;
+
+        var warehouseUnitItemIds = string.Join(",", DocumentItemVM.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId));
+
+        sm.Filters = $"FilterByWarehouseUnitItemIds=={warehouseUnitItemIds}";
+
+        var response = await warehouseUnitDataService.GetPagedResult(@"api/v1/WarehouseUnit/get-filtered", sm);
+
+        warehouseUnitVMs = response.Items.ToList();
+
+        StateHasChanged();
+    }
 }

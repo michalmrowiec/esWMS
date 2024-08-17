@@ -35,5 +35,8 @@
         public string? WarehouseUnitId { get; set; }
         public string? WarehouseUnitItemId { get; set; }
         public int Quantity { get; set; }
+
+        public WarehouseUnitItemVM? WarehouseUnitItem { get; set; }
+
     }
 }

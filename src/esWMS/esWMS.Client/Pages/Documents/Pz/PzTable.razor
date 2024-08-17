@@ -8,15 +8,15 @@
 @inject IDataService<PzVM> dataService
 @inject OnePageState onePageState
 
-<PageTitle>Magazyny</PageTitle>
-
-<h3>Magazyny</h3>
-
 <MudButton @onclick="OpenCreatePzTab"
            Variant="Variant.Filled"
            Color="Color.Primary">
     Utwórz PZ
 </MudButton>
+
+
+<MudIconButton Icon="@Icons.Material.Filled.Refresh"
+               OnClick="OnSearch" />
 
 <MudTable T="PzVM"
           ServerData="ServerReload"

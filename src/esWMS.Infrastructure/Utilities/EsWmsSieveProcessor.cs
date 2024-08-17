@@ -118,6 +118,10 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter();
 
+            mapper.Property<WarehouseUnit>(x => x.WarehouseUnitItems)
+                .CanFilter()
+                .HasName("FilterByWarehouseUnitItemIds");
+
             mapper.Property<PZ>(x => x.IssueWarehouseId)
                 .CanSort()
                 .CanFilter();
@@ -166,6 +170,25 @@ namespace esWMS.Infrastructure.Utilities
                     break;
                 case "<=":
                     source = source.Where(item => item.DocumentIssueDate.Date <= dateValue.Date);
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
+        public IQueryable<WarehouseUnit> FilterByWarehouseUnitItemIds(IQueryable<WarehouseUnit> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(unit => unit.WarehouseUnitItems.Any(item => values.Contains(item.WarehouseUnitItemId)));
                     break;
                 default:
                     break;

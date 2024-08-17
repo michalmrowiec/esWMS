@@ -1,7 +1,8 @@
-﻿@using esWMS.Client.ViewModels.Documents
+﻿@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
-
-<h3>PzDetails</h3>
+@inject IDataService<PzVM> pzDataService
 
 <MudText Typo="Typo.body1"><strong>Numer dokumentu:</strong> @PzVM.DocumentId</MudText>
 
@@ -74,12 +75,31 @@
 
     private Task OpenDialogAsync(DocumentItemVM documentItem)
     {
+        InvokeAsync(RefreshPz);
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
         var parameters = new DialogParameters<ApprovePzItemDialogForm>
         {
             { x => x.DocumentItemVM, documentItem},
-            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPz) } }
         };
         return DialogService.ShowAsync<ApprovePzItemDialogForm>(null, parameters, options);
+    }
+
+    private async Task RefreshPz()
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = 1;
+        sm.PageSize = 1;
+        sm.Filters = $"DocumentId=={PzVM.DocumentId}";
+
+        var response = await pzDataService.GetPagedResult(@"api/v1/pz/get-filtered", sm);
+
+        if (response.Items.FirstOrDefault() != null)
+        {
+            PzVM = response.Items.First();
+        }
+
+        StateHasChanged();
     }
 }

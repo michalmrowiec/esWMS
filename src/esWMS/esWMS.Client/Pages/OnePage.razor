@@ -1,6 +1,8 @@
 ﻿@page "/"
 @inject OnePageState onePageState
 
+<PageTitle>esWMS</PageTitle>
+
 <MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@onePageState.UserIndex"
                 CloseTab="@CloseTabCallback"
                 CloseIconToolTip="Close tab. All data will be lost"
