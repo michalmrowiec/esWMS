@@ -1,9 +1,6 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
-using esWMS.Application.Functions.Warehouses;
-using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
-using esWMS.Application.Functions.WarehouseUnits;
-using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
+﻿using esMWS.Domain.Models;
+using esWMS.Application.Functions.WarehouseUnitItems;
+using esWMS.Application.Functions.WarehouseUnitItems.Queries.GetSortedFilteredWarehouseUnitItems;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
@@ -14,14 +11,14 @@ namespace esWMS.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class WarehouseUnitController : ControllerBase
+    public class WarehouseUnitItemController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly ILogger<WarehouseUnitController> _logger;
+        private readonly ILogger<WarehouseUnitItemController> _logger;
         private readonly IUserContextService _userContextService;
 
-        public WarehouseUnitController(
-            ILogger<WarehouseUnitController> logger,
+        public WarehouseUnitItemController(
+            ILogger<WarehouseUnitItemController> logger,
             IMediator mediator,
             IUserContextService userContextService)
         {
@@ -31,11 +28,12 @@ namespace esWMS.Controllers
         }
 
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<PagedResult<WarehouseUnitDto>>> GetSortedAndFilteredWarehouseUnits([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<WarehouseUnitItemDto>>> GetSortedAndFilteredWarehouseUnitItems
+            ([FromBody] SieveModel sieveModel)
         {
-            var result = await _mediator.Send(new GetSortedFilteredWarehouseUnitsQuery(sieveModel));
+            var result = await _mediator.Send(new GetSortedFilteredWarehouseUnitItemsQuery(sieveModel));
 
-            if (result is BaseResponse<PagedResult<WarehouseUnitDto>> r)
+            if (result is BaseResponse<PagedResult<WarehouseUnitItemDto>> r)
             {
                 if (r.Success)
                 {

@@ -1,15 +1,22 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Sieve.Models;
+using Sieve.Services;
 
 namespace esWMS.Infrastructure.Repositories
 {
-    internal class WarehouseUnitItemRepository(EsWmsDbContext context, ILogger<WarehouseUnitItemRepository> logger)
-                : BaseRepository<WarehouseUnitItem>(context, logger), IWarehouseUnitItemRepository
+    internal class WarehouseUnitItemRepository
+        (EsWmsDbContext context,
+        ILogger<WarehouseUnitItemRepository> logger,
+        ISieveProcessor sieveProcessor)
+        : BaseRepository<WarehouseUnitItem>(context, logger), IWarehouseUnitItemRepository
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ILogger<WarehouseUnitItemRepository> _logger = logger;
+        private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
         public async Task<IList<WarehouseUnitItem>> BlockWarehouseUnitItemsQuantityAsync
             (Dictionary<string, int> warehouseUnitItemIdQuantity)
@@ -31,6 +38,27 @@ namespace esWMS.Infrastructure.Repositories
                 _logger.LogError(ex, "Error blocking warehouse unit items quantity");
                 throw;
             }
+        }
+
+        public async Task<PagedResult<WarehouseUnitItem>> GetSortedFilteredAsync(SieveModel sieveModel)
+        {
+            var items = _context
+                .WarehouseUnitItems
+                .Include(x => x.Product)
+                .Include(x => x.WarehouseUnit)
+                .Include(x => x.DocumentWarehouseUnitItems)
+                .AsNoTracking()
+                .AsQueryable();
+
+            var filteredItems = await _sieveProcessor
+                .Apply(sieveModel, items)
+                .ToListAsync();
+
+            var totalCount = await _sieveProcessor
+                .Apply(sieveModel, items, applyPagination: false, applySorting: false)
+                .CountAsync();
+
+            return new PagedResult<WarehouseUnitItem>(filteredItems, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
         }
 
         public async Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync

@@ -22,7 +22,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
 
         public WarehouseUnit? WarehouseUnit { get; set; }
         public Product? Product { get; set; }
-        public IList<DocumentWarehouseUnitItem> DocumentWarehouseUnitItems { get; set; } = [];
+        public List<DocumentWarehouseUnitItem> DocumentWarehouseUnitItems { get; set; } = [];
 
         public WarehouseUnitItem()
         { }
