@@ -110,6 +110,14 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter();
 
+            mapper.Property<WarehouseUnit>(x => x.WarehouseId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<WarehouseUnit>(x => x.WarehouseUnitId)
+                .CanSort()
+                .CanFilter();
+
             mapper.Property<PZ>(x => x.IssueWarehouseId)
                 .CanSort()
                 .CanFilter();

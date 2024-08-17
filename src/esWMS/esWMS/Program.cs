@@ -30,10 +30,6 @@ try
 
     builder.Services.AddMudServices();
 
-    builder.Services.AddRazorComponents()
-        .AddInteractiveServerComponents()
-        .AddInteractiveWebAssemblyComponents();
-
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -76,6 +72,10 @@ try
             }
         });
     });
+
+    builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents()
+    .AddInteractiveWebAssemblyComponents();
 
     var app = builder.Build();
 
