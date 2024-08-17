@@ -1,6 +1,7 @@
 ﻿@using esWMS.Client.Pages
 @using esWMS.Client.Pages.Documents
 @using esWMS.Client.Pages.Documents.Pz
+@using esWMS.Client.Pages.Documents.Wz
 @inject OnePageState onePageState
 
 <MudNavMenu>
@@ -44,6 +45,13 @@
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
                 Lista PZ
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="WZ" Expanded="false" Icon="@Icons.Material.Filled.ArrowUpward">
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("WZ", new WzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                Lista WZ
             </MudNavLink>
         </MudNavGroup>
     </MudNavGroup>

@@ -1,11 +1,14 @@
-﻿using esWMS.Application.Functions.Documents.WzFunctions;
+﻿using esMWS.Domain.Models;
+using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWz;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzItems;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz;
+using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetSortedFilteredWz;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 
 namespace esWMS.Controllers.Documents
 {
@@ -93,23 +96,23 @@ namespace esWMS.Controllers.Documents
             return BadRequest();
         }
 
-        //[HttpPost("get-filtered")]
-        //public async Task<ActionResult<PagedResult<WzDto>>> GetSortedAndFilteredPz([FromBody] SieveModel sieveModel)
-        //{
-        //    var result = await _mediator.Send(new GetSortedFilteredPzQuery(sieveModel));
+        [HttpPost("get-filtered")]
+        public async Task<ActionResult<PagedResult<WzDto>>> GetSortedAndFilteredWz([FromBody] SieveModel sieveModel)
+        {
+            var result = await _mediator.Send(new GetSortedFilteredWzQuery(sieveModel));
 
-        //    if (result is BaseResponse<PagedResult<WzDto>> r)
-        //    {
-        //        if (r.Success)
-        //        {
-        //            return Ok(r.ReturnedObj);
-        //        }
-        //        else
-        //        {
-        //            return BadRequest(r.Message);
-        //        }
-        //    }
-        //    return BadRequest();
-        //}
+            if (result is BaseResponse<PagedResult<WzDto>> r)
+            {
+                if (r.Success)
+                {
+                    return Ok(r.ReturnedObj);
+                }
+                else
+                {
+                    return BadRequest(r.Message);
+                }
+            }
+            return BadRequest();
+        }
     }
 }
