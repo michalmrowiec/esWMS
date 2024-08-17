@@ -1,4 +1,6 @@
 ﻿@using esWMS.Client.ViewModels.Documents
+@inject IDialogService DialogService
+
 <h3>PzDetails</h3>
 
 <MudText Typo="Typo.body1"><strong>Numer dokumentu:</strong> @PzVM.DocumentId</MudText>
@@ -40,17 +42,22 @@
 
 <MudDataGrid T="DocumentItemVM" Items="@PzVM.DocumentItems" EditMode="DataGridEditMode.Cell">
     <Columns>
-        <PropertyColumn Property="x => x.ProductId" Title="Id"/>
-        <PropertyColumn Property="x => x.ProductCode" Title="Kod"/>
-        <PropertyColumn Property="x => x.ProductName" Title="Nazwa"/>
+        <PropertyColumn Property="x => x.ProductId" Title="Id" />
+        <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
+        <PropertyColumn Property="x => x.ProductName" Title="Nazwa" />
         <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
         <TemplateColumn CellClass="d-flex" Title="Zatwierdzony">
             <CellTemplate>
                 <MudStack Row>
                     <MudCheckBox Value="@context.Item.IsApproved" Disabled />
-                    @if(!context.Item.IsApproved)
+                    @if (!context.Item.IsApproved)
                     {
-                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Zatwierdź</MudButton>
+                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                                   Size="@Size.Small"
+                                   Variant="@Variant.Filled"
+                                   Color="@Color.Primary">
+                            Zatwierdź
+                        </MudButton>
                     }
                 </MudStack>
             </CellTemplate>
@@ -64,4 +71,15 @@
 
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+
+    private Task OpenDialogAsync(DocumentItemVM documentItem)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<ApprovePzItemDialogForm>
+        {
+            { x => x.DocumentItemVM, documentItem},
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
+        };
+        return DialogService.ShowAsync<ApprovePzItemDialogForm>(null, parameters, options);
+    }
 }

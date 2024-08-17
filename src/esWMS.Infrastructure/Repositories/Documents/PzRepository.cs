@@ -21,6 +21,7 @@ namespace esWMS.Infrastructure.Repositories.Documents
                 .Set<PZ>()
                 .Include(x => x.IssueWarehouse)
                 .Include(x => x.DocumentItems)
+                .ThenInclude(x => x.DocumentWarehouseUnitItems)
                 .Include(x => x.SupplierContractor)
                 .AsNoTracking()
                 .AsQueryable();

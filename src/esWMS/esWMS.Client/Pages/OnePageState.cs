@@ -9,8 +9,8 @@ namespace esWMS.Client.Pages
         public int UserIndex;
         public event Action? OnAddTab;
         public bool StateHasChanged { get; set; }
-        private void NotifyStateChanged() => OnAddTab?.Invoke();
 
+        private void NotifyStateChanged() => OnAddTab?.Invoke();
 
         public void AddTab(TabView tabView)
         {

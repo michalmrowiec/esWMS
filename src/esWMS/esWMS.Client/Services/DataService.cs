@@ -1,6 +1,7 @@
 ﻿using esWMS.Client.ViewModels;
 using Newtonsoft.Json;
 using System.Text;
+using static MudBlazor.CategoryTypes;
 
 namespace esWMS.Client.Services
 {
@@ -9,8 +10,13 @@ namespace esWMS.Client.Services
     {
         Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel);
         Task<HttpResponseMessage> Create(string uri, T item);
-
     }
+
+    public interface IDocumentDataService
+    {
+        Task<HttpResponseMessage> ApproveDocument(string uri, object obj);
+    }
+
     public class DataService<T>(HttpClient httpClient)
         : IDataService<T>
         where T : class
@@ -42,6 +48,24 @@ namespace esWMS.Client.Services
             var responseObj = JsonConvert.DeserializeObject<PagedResultVM<T>>(json);
 
             return responseObj;
+        }
+    }
+
+    public class DocumentDataService(HttpClient httpClient)
+        : IDocumentDataService
+    {
+        private readonly HttpClient _httpClient = httpClient;
+
+        public async Task<HttpResponseMessage> ApproveDocument(string uri, object obj)
+        {
+            var postJson = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
+
+            using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
+            request.Content = postJson;
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
         }
     }
 }

@@ -14,11 +14,23 @@
         public string? WarehouseUnitItemId { get; set; }
         public bool IsApproved { get; set; }
 
-        public List<DocumentItemWithAssignmentVM> DocumentItemsWithAssignment { get; set; } = [];
+        public List<DocumentItemWithAssignmentVM> DocumentWarehouseUnitItems { get; set; } = [];
     }
 
     public class DocumentItemWithAssignmentVM
     {
+        public DocumentItemWithAssignmentVM
+            (string? documentItemId,
+            string? warehouseUnitId,
+            int quantity,
+            string? warehouseUnitItemId = null)
+        {
+            DocumentItemId = documentItemId;
+            WarehouseUnitId = warehouseUnitId;
+            WarehouseUnitItemId = warehouseUnitItemId;
+            Quantity = quantity;
+        }
+
         public string? DocumentItemId { get; set; }
         public string? WarehouseUnitId { get; set; }
         public string? WarehouseUnitItemId { get; set; }

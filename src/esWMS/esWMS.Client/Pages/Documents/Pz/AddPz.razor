@@ -62,11 +62,15 @@
     </MudSelect>
 
 
-    <MudButton @onclick="OpenDialogAsync" Variant="Variant.Filled" Color="Color.Primary">
+    <MudButton @onclick="OpenDialogAsync"
+               Variant="Variant.Filled"
+               Color="Color.Primary">
         Dodaj pozycję
     </MudButton>
 
-    <MudDataGrid T="DocumentItemVM" Items="@model.DocumentItems" EditMode="DataGridEditMode.Cell">
+    <MudDataGrid T="DocumentItemVM"
+                 Items="@model.DocumentItems"
+                 EditMode="DataGridEditMode.Cell">
         <Columns>
             <PropertyColumn Property="x => x.ProductId" />
             <PropertyColumn Property="x => x.ProductCode" />

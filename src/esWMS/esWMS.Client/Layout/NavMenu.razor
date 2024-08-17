@@ -8,7 +8,7 @@
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
                     OnClick="@(() => onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-            Lista Artykułów
+            Artykuły
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
@@ -20,7 +20,12 @@
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
                     OnClick="@(() => onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-            Lista Magazynów
+            Magazyny
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.List"
+                    OnClick="@(() => onePageState.AddTab(new TabView("Jednostki Magazynowe", new WarehouseUnitTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+            Jednostki Magazynowe
         </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Dokumenty" Expanded="false" Icon="@Icons.Material.Filled.LibraryBooks">
@@ -28,7 +33,7 @@
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista PZ
+                PZ
             </MudNavLink>
         </MudNavGroup>
     </MudNavGroup>
