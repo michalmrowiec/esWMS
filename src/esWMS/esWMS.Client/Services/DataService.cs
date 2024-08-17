@@ -8,7 +8,7 @@ namespace esWMS.Client.Services
     public interface IDataService<T>
         where T : class
     {
-        Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel);
+        Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel, Dictionary<string, string>? queryParams = null);
         Task<HttpResponseMessage> Create(string uri, T item);
     }
 
@@ -35,8 +35,14 @@ namespace esWMS.Client.Services
             return response;
         }
 
-        public async Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel)
+        public async Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel, Dictionary<string, string>? queryParams = null)
         {
+            if (queryParams != null && queryParams.Count > 0)
+            {
+                var query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
+                uri = $"{uri}?{query}";
+            }
+
             var postJson = new StringContent(JsonConvert.SerializeObject(sieveModel), Encoding.UTF8, "application/json");
 
             using var request = new HttpRequestMessage(HttpMethod.Post, uri);

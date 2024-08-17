@@ -27,6 +27,11 @@
                     OnClick="@(() => onePageState.AddTab(new TabView("Jednostki Magazynowe", new WarehouseUnitTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
             Jednostki Magazynowe
         </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.Warehouse"
+                    OnClick="@(() => onePageState.AddTab(new TabView("Stany Magazynowe", new WarehouseStockTable(), Guid.NewGuid(), Icons.Material.Filled.Warehouse)))">
+            Stany Magazynowe
+        </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Dokumenty" Expanded="false" Icon="@Icons.Material.Filled.LibraryBooks">
         <MudNavGroup Title="PZ" Expanded="false" Icon="@Icons.Material.Filled.ArrowDownward">
