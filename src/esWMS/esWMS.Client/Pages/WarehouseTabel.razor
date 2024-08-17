@@ -7,17 +7,19 @@
 
 <PageTitle>Magazyny</PageTitle>
 
-<h3>Magazyny</h3>
-
-<MudTable T="WarehouseVM" ServerData="ServerReload" Dense="true" Hover="true" @ref="table"
-    RowClass="cursor-pointer" OnRowClick="RowClickEvent">
+<MudTable T="WarehouseVM"
+          ServerData="ServerReload"
+          Dense="true" Hover="true"
+          @ref="table"
+          RowClass="cursor-pointer"
+          OnRowClick="RowClickEvent">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudText Typo="Typo.h6">Magazyny</MudText>
         <MudSpacer />
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
-            <MudTableSortLabel SortLabel="ProductCode" T="ProductVM">
+            <MudTableSortLabel SortLabel="WarehouseId" T="WarehouseVM">
                 Id
             </MudTableSortLabel>
             @*             <MudSelect T="string"  Label="Sign" AnchorOrigin="Origin.BottomCenter">
@@ -28,37 +30,37 @@
 
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="ProductName" T="ProductVM">
+            <MudTableSortLabel SortLabel="WarehouseName" T="WarehouseVM">
                 Nazwa
             </MudTableSortLabel>
             <MudTextField T="string" ValueChanged="@(s=>OnSearch2("WarehouseName", s))"></MudTextField>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="CategoryName" T="ProductVM">
+            <MudTableSortLabel SortLabel="Country" T="WarehouseVM">
                 Kraj
             </MudTableSortLabel>
             <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Country", s))"></MudTextField>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="Price" T="ProductVM">
+            <MudTableSortLabel SortLabel="City" T="WarehouseVM">
                 Miasto
             </MudTableSortLabel>
             <MudTextField T="string" ValueChanged="@(s=>OnSearch2("City", s))"></MudTextField>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="Unit" T="ProductVM">
+            <MudTableSortLabel SortLabel="Address" T="WarehouseVM">
                 Adres
             </MudTableSortLabel>
             <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Address", s))"></MudTextField>
         </MudTh>
         <MudTh>
-        <MudTableSortLabel SortLabel="Unit" T="ProductVM">
+            <MudTableSortLabel SortLabel="Region" T="WarehouseVM">
                 Region
             </MudTableSortLabel>
             <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Region", s))"></MudTextField>
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="Unit" T="ProductVM">
+            <MudTableSortLabel SortLabel="PostalCode" T="WarehouseVM">
                 Kod Pocztowy
             </MudTableSortLabel>
             <MudTextField T="string" ValueChanged="@(s=>OnSearch2("PostalCode", s))"></MudTextField>
