@@ -40,10 +40,21 @@
 
 <MudDataGrid T="DocumentItemVM" Items="@PzVM.DocumentItems" EditMode="DataGridEditMode.Cell">
     <Columns>
-        <PropertyColumn Property="x => x.ProductId" />
-        <PropertyColumn Property="x => x.ProductCode" />
-        <PropertyColumn Property="x => x.ProductName" />
-        <PropertyColumn Property="x => x.Quantity" />
+        <PropertyColumn Property="x => x.ProductId" Title="Id"/>
+        <PropertyColumn Property="x => x.ProductCode" Title="Kod"/>
+        <PropertyColumn Property="x => x.ProductName" Title="Nazwa"/>
+        <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
+        <TemplateColumn CellClass="d-flex" Title="Zatwierdzony">
+            <CellTemplate>
+                <MudStack Row>
+                    <MudCheckBox Value="@context.Item.IsApproved" Disabled />
+                    @if(!context.Item.IsApproved)
+                    {
+                        <MudButton Size="@Size.Small" Variant="@Variant.Filled" Color="@Color.Primary">Zatwierdź</MudButton>
+                    }
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
     </Columns>
 </MudDataGrid>
 
