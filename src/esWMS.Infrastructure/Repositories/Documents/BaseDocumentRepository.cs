@@ -19,6 +19,22 @@ namespace esWMS.Infrastructure.Repositories.Documents
         private readonly ILogger<BaseDocumentRepository<TDocument>> _logger = logger;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
+        private readonly Dictionary<Type, Func<IQueryable<TDocument>, IQueryable<TDocument>>> _queryStrategies =
+            new()
+            {
+                { typeof(WZ), (query) => (IQueryable<TDocument>)((IQueryable<WZ>)query)
+                    .Include(x => x.RecipientContractor)
+                },
+                { typeof(PZ), (query) => (IQueryable<TDocument>)((IQueryable<PZ>)query)
+                    .Include(x => x.SupplierContractor)
+                },
+                { typeof(BaseDocument), (query) => query
+                    .Include(x => x.IssueWarehouse)
+                    .Include(x => x.DocumentItems)
+                        .ThenInclude(x => x.DocumentWarehouseUnitItems)
+                }
+            };
+
         public async Task<TDocument> GetDocumentByIdWithItemsAsync(string id)
         {
             try
@@ -68,10 +84,14 @@ namespace esWMS.Infrastructure.Repositories.Documents
         {
             var documents = _context
                 .Set<TDocument>()
-                .Include(x => x.IssueWarehouse)
-                .Include(x => x.DocumentItems)
-                .AsNoTracking()
-                .AsQueryable();
+                .AsNoTracking();
+
+            if (_queryStrategies.TryGetValue(typeof(TDocument), out var strategy))
+            {
+                documents = strategy(documents);
+            }
+
+            documents = _queryStrategies[typeof(BaseDocument)](documents);
 
             var filteredDocuments = await _sieveProcessor
                 .Apply(sieveModel, documents)

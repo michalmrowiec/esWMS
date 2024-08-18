@@ -6,12 +6,13 @@ using MudBlazor.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
+builder.Services.AddSingleton<OnePageState>();
+
 builder.Services.AddTransient(http => new HttpClient
 {
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
 
-builder.Services.AddSingleton<OnePageState>();
 builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
 builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();
 builder.Services.AddTransient<IWarehouseService, WarehouseService>();
