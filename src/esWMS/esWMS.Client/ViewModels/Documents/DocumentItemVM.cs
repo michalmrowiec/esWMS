@@ -14,7 +14,7 @@
         public string? WarehouseUnitItemId { get; set; }
         public bool IsApproved { get; set; }
 
-        public List<DocumentItemWithAssignmentVM> DocumentWarehouseUnitItems { get; set; } = [];
+        public List<DocumentItemWithAssignmentVM> DocumentItemsWithAssignment { get; set; } = [];
     }
 
     public class DocumentItemWithAssignmentVM

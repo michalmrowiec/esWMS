@@ -113,7 +113,7 @@
             EventCallback.Factory.Create(this, table.ReloadServerData)
         };
 
-        //onePageState.AddTab(new TabView("Tworzenie PZ", new AddPz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
+        onePageState.AddTab(new TabView("Tworzenie WZ", new AddWz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
     }
 
     private async Task<TableData<WzVM>> ServerReload(TableState state, CancellationToken token)

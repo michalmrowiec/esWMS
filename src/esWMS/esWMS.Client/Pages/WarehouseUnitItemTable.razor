@@ -82,7 +82,14 @@
 
 @code {
     [Parameter]
-    public EventCallback<WarehouseUnitItemVM> SelectedWarehoseUnit { get; set; }
+    public EventCallback<WarehouseUnitItemVM> SelectedWarehoseUnitItem { get; set; }
+
+    [Parameter]
+    public string? ProductIdFilter { get; set; }
+    [Parameter]
+    public string? WarehouseIdFilter { get; set; }
+    [Parameter]
+    public HashSet<string>? ExceptWarehouseUnitItem { get; set; }
 
     private IEnumerable<WarehouseUnitItemVM> Products = [];
     private IEnumerable<WarehouseUnitItemVM> pagedData;
@@ -92,6 +99,7 @@
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
+        { "Except", new("Except") },
         { "WarehouseUnitItemId", new("WarehouseUnitItemId") },
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") },
@@ -100,6 +108,30 @@
         { "Quantity", new("Quantity") },
         { "BlockedQuantity", new("BlockedQuantity") }
     };
+
+    protected override void OnInitialized()
+    {
+        if (ProductIdFilter != null)
+        {
+            searchOptions["ProductId"].Operator = "==";
+            searchOptions["ProductId"].Value = ProductIdFilter;
+        }
+
+        if (WarehouseIdFilter != null)
+        {
+            searchOptions["WarehouseId"].Operator = "==";
+            searchOptions["WarehouseId"].Value = WarehouseIdFilter;
+        }
+
+        if (ExceptWarehouseUnitItem != null)
+        {
+            if (ExceptWarehouseUnitItem.Count > 0)
+            {
+                searchOptions["Except"].Operator = "!=";
+                searchOptions["Except"].Value = string.Join("|", ExceptWarehouseUnitItem);
+            }
+        }
+    }
 
     private async Task<TableData<WarehouseUnitItemVM>> ServerReload(TableState state, CancellationToken token)
     {
@@ -128,6 +160,6 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<WarehouseUnitItemVM> tableRowClickEventArgs)
     {
-
+        await SelectedWarehoseUnitItem.InvokeAsync(tableRowClickEventArgs.Item);
     }
 }

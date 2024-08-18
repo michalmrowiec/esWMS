@@ -14,7 +14,7 @@
     <DialogContent>
         <MudText Typo="Typo.subtitle1"><strong>Id pozycji dokumentu:</strong> @DocumentItemVM.DocumentItemId</MudText>
 
-        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
+        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentItemsWithAssignment.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
 
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
@@ -48,7 +48,7 @@
         </MudDataGrid>
 
         <MudDataGrid T="DocumentItemWithAssignmentVM"
-                     Items="@DocumentItemVM.DocumentWarehouseUnitItems"
+                     Items="@DocumentItemVM.DocumentItemsWithAssignment"
                      EditMode="DataGridEditMode.Cell"
                      Filterable="false"
                      SortMode="SortMode.None"
@@ -122,6 +122,7 @@
     private void OnGet((string warehouseUnitId, int quantity) item)
     {
         documentItemWithAssignments.Add(new(DocumentItemVM.DocumentItemId, item.warehouseUnitId, item.quantity));
+        StateHasChanged();
     }
 
     private async Task Submit()
@@ -164,7 +165,7 @@
         sm.Page = 1;
         sm.PageSize = 100;
 
-        var warehouseUnitItemIds = string.Join(",", DocumentItemVM.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId));
+        var warehouseUnitItemIds = string.Join("|", DocumentItemVM.DocumentItemsWithAssignment.Select(x => x.WarehouseUnitItemId));
 
         sm.Filters = $"FilterByWarehouseUnitItemIds=={warehouseUnitItemIds}";
 

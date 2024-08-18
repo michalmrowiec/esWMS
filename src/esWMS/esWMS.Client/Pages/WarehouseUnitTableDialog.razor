@@ -38,15 +38,15 @@
 
     private void Submit()
     {
-        if (selected != null ||
-            quantity <= 0)
+        if (selected != null &&
+            quantity > 0)
         {
             WarehouseUnitId.InvokeAsync((selected, quantity));
+
+            FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+            MudDialog.Close(DialogResult.Ok(true));
         }
-
-        FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
-
-        MudDialog.Close(DialogResult.Ok(true));
     }
 
     private void OnSelected(WarehouseUnitVM warehouseUnit)
