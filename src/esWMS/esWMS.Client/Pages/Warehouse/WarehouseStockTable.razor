@@ -75,6 +75,9 @@
 </MudTable>
 
 @code {
+    [Parameter]
+    public EventCallback<WarehouseStockVM> SelectedStock { get; set; }
+
     private IEnumerable<WarehouseStockVM> Products = [];
 
     private IEnumerable<WarehouseStockVM> pagedData;
@@ -128,6 +131,6 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<WarehouseStockVM> tableRowClickEventArgs)
     {
-        //await SelectedWarehoseUnit.InvokeAsync(tableRowClickEventArgs.Item);
+        await SelectedStock.InvokeAsync(tableRowClickEventArgs.Item);
     }
 }

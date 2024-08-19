@@ -44,7 +44,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                         if (docItem.IsApproved)
                         {
                             context.AddFailure(
-                                "DocumentItemsWithAssignment",
+                                "DocumentWarehouseUnitItems",
                                 $"The document item by ID: {docItem.DocumentItemId} is already  approved");
                         }
                     }
@@ -94,7 +94,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                         if(totalQuantitySoFar + newAssignmentQuantity > docItem.Quantity)
                         {
                             context.AddFailure(
-                                "DocumentItemsWithAssignment",
+                                "DocumentWarehouseUnitItems",
                                 $"The quantity being assigned ({totalQuantitySoFar + newAssignmentQuantity}) exceeds the available quantity ({docItem.Quantity}) for the Document Item ID: {docItemId}. Warehouse Unit IDs involved: {string.Join("; ", warehouseUnitItemIdsContained)}");
                         }
                     }

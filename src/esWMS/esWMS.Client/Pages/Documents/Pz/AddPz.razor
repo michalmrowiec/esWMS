@@ -154,10 +154,11 @@
 
                 EventCallbacks?.ForEach(async x => await x.InvokeAsync());
             }
-            else //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            else
             {
                 var json = await response.Content.ReadAsStringAsync();
                 responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                StateHasChanged();
             }
         }
     }

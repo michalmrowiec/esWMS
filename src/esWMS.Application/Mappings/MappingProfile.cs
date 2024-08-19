@@ -72,6 +72,7 @@ namespace esWMS.Application.Mappings
             CreateMap<CreateDocumentItemCommand, DocumentItem>();
             CreateMap<DocumentItem, DocumentItemDto>();
 
+            CreateMap<CreateDocumentWarehouseUnitItemCommand, DocumentWarehouseUnitItem>();
             CreateMap<DocumentWarehouseUnitItem, DocumentWarehouseUnitItemDto>();
 
             CreateMap<CreatePzCommand, PZ>();

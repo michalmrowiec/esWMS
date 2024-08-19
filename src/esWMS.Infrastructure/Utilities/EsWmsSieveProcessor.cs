@@ -222,6 +222,25 @@ namespace esWMS.Infrastructure.Utilities
             return source;
         }
 
+        public IQueryable<Product> ProductId(IQueryable<Product> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(item => values.Contains(item.ProductId));
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
         public IQueryable<WarehouseUnitItem> Except(IQueryable<WarehouseUnitItem> source, string op, string[] values)
         {
             if (values == null || values.Length == 0)

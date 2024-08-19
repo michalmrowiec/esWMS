@@ -7,7 +7,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
     public class ApprovePzItemsCommand : IRequest<BaseResponse<PzDto>>
     {
         public string DocumentId { get; set; } = null!;
-        public List<DocumentItemWithAssignment> DocumentItemsWithAssignment { get; set; } = null!;
+        public List<CreateDocumentWarehouseUnitItemCommand> DocumentItemsWithAssignment { get; set; } = null!;
 
         public string? ModifiedBy { get; set; }
     }

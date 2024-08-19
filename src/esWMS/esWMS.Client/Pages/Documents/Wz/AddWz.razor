@@ -159,6 +159,7 @@
             {
                 var json = await response.Content.ReadAsStringAsync();
                 responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                StateHasChanged();
             }
         }
     }

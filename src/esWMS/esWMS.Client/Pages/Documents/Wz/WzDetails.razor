@@ -71,11 +71,6 @@
                                    Color="@Color.Primary">
                             Zatwierdź
                         </MudButton>
-                        <MudButton Size="@Size.Small"
-                                   Variant="@Variant.Filled"
-                                   Color="@Color.Primary">
-                            Zatwierdź
-                        </MudButton>
                     }
                 </MudStack>
             </CellTemplate>
@@ -84,7 +79,7 @@
 </MudDataGrid>
 
 @if (WzVM.DocumentItems.All(x => x.IsApproved) &&
-  !WzVM.IsApproved)
+ !WzVM.IsApproved)
 {
     <MudButton OnClick="@(() => ApprovePz())"
                Size="@Size.Small"

@@ -1,4 +1,5 @@
-﻿@using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
+﻿@using esWMS.Client.Pages.Warehouse
+@using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
@@ -13,7 +14,7 @@
                       Label="Wybrany produkt"
                       Disabled />
 
-        <ProductTable SelectedProduct="OnProductSelected" />
+        <WarehouseStockTable SelectedStock="OnStockProductSelected" />
 
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />
@@ -78,7 +79,7 @@
     [Parameter]
     public string? WarehouseId { get; set; }
 
-    private ProductVM? selectedProduct;
+    private WarehouseStockVM? selectedStockProduct;
     private int quantity = 0;
     private decimal price = 0;
     private string currency = "PLN";
@@ -87,14 +88,14 @@
 
     private void Submit()
     {
-        if (selectedProduct != null)
+        if (selectedStockProduct != null)
         {
             DocumentItemVMs.Add(new DocumentItemVM()
                 {
-                    ProductId = selectedProduct.ProductId,
-                    ProductCode = selectedProduct.ProductCode,
-                    EanCode = selectedProduct.EanCode,
-                    ProductName = selectedProduct.ProductName,
+                    ProductId = selectedStockProduct.ProductId,
+                    ProductCode = "",//selectedStockProduct.ProductCode,
+                    EanCode = "",//selectedStockProduct.EanCode,
+                    ProductName = selectedStockProduct.ProductName,
                     Quantity = quantity,
                     Price = price,
                     Currency = currency,
@@ -109,10 +110,10 @@
 
     private void Cancel() => MudDialog.Cancel();
 
-    private void OnProductSelected(ProductVM product)
+    private void OnStockProductSelected(WarehouseStockVM stockProduct)
     {
-        selectedProduct = product;
-        test = product.ProductName;
+        selectedStockProduct = stockProduct;
+        test = stockProduct.ProductName;
         StateHasChanged();
     }
 
@@ -123,7 +124,7 @@
         {
             { x => x.WarehouseUnitItem, EventCallback.Factory.Create<(WarehouseUnitItemVM, int)>(this, OnGet) },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
-            { x => x.ProductIdFilter, selectedProduct?.ProductId ?? "" },
+            { x => x.ProductIdFilter, selectedStockProduct?.ProductId ?? "" },
             { x => x.WarehouseIdFilter, WarehouseId ?? "" },
             { x => x.ExceptWarehouseUnitItem, documentItemWithAssignments?.Select(x => x.WarehouseUnitItemId)?.ToHashSet() ?? null }
         };

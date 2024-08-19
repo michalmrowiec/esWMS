@@ -45,7 +45,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
                         if (docItem.IsApproved)
                         {
                             context.AddFailure(
-                                "DocumentItemsWithAssignment",
+                                "DocumentWarehouseUnitItems",
                                 $"The document item by ID: {docItem.DocumentItemId} is already  approved");
                         }
                     }
@@ -80,7 +80,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
 
                     // TODO fix this and add validation for warehouseUnitItems
 
-                    //foreach (var docItemId in value.DocumentItemWithAssignment.Select(x => x.DocumentItemId))
+                    //foreach (var docItemId in value.CreateDocumentWarehouseUnitItemCommand.Select(x => x.DocumentItemId))
                     //{
                     //    var docItem = document.DocumentItems.First(x => x.DocumentItemId.Equals(docItemId));
 
@@ -88,14 +88,14 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
 
                     //    var warehouseUnitItemIdsContained = docItem.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId);
 
-                    //    var newAssignmentQuantity = value.DocumentItemWithAssignment
+                    //    var newAssignmentQuantity = value.CreateDocumentWarehouseUnitItemCommand
                     //        .Where(x => x.DocumentItemId.Equals(docItemId))
                     //        .Sum(x => x.Quantity);
 
                     //    if (totalQuantitySoFar + newAssignmentQuantity > docItem.Quantity)
                     //    {
                     //        context.AddFailure(
-                    //            "DocumentItemsWithAssignment",
+                    //            "DocumentWarehouseUnitItems",
                     //            $"The quantity being assigned ({totalQuantitySoFar + newAssignmentQuantity}) exceeds the available quantity ({docItem.Quantity}) for the Document Item ID: {docItemId}. Warehouse Unit IDs involved: {string.Join("; ", warehouseUnitItemIdsContained)}");
                     //    }
                     //}
