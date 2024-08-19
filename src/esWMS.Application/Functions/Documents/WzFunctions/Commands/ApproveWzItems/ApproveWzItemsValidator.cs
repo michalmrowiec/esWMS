@@ -36,8 +36,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
                     }
 
 
-                    // TODO already  approve check add
-
+                    // already approve check add
                     foreach (var item in value.DocumentItemsWithAssignment)
                     {
                         var docItem = document.DocumentItems.First(x => x.DocumentItemId.Equals(item.DocumentItemId));
@@ -50,33 +49,33 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
                         }
                     }
 
+                    // TODO zmienić sprawdzanie warehouseUnitIds na sprawdzanie warehouseUnitItemsIds
+                    //string[] warehouseUnitIds = value.DocumentItemsWithAssignment
+                    //                                .Select(x => x.WarehouseUnitId)
+                    //                                .ToArray();
 
-                    string[] warehouseUnitIds = value.DocumentItemsWithAssignment
-                                                    .Select(x => x.WarehouseUnitId)
-                                                    .ToArray();
+                    //if (warehouseUnitIds.Length != 0)
+                    //{
+                    //    var warehouseUnitResponse = await _mediator.Send(
+                    //        new GetWarehouseUnitsByIdsQuery(warehouseUnitIds));
+                    //    var warehouseUnit = warehouseUnitResponse.ReturnedObj;
 
-                    if (warehouseUnitIds.Length != 0)
-                    {
-                        var warehouseUnitResponse = await _mediator.Send(
-                            new GetWarehouseUnitsByIdsQuery(warehouseUnitIds));
-                        var warehouseUnit = warehouseUnitResponse.ReturnedObj;
+                    //    if (!warehouseUnitResponse.Success || warehouseUnit == null)
+                    //    {
+                    //        context.AddFailure("Somenthing went wrong");
+                    //    }
+                    //    // TODO add check warehouse unit is member of issue warehouse
+                    //    var warehouseUnitItemIdsResponse = warehouseUnit!.Select(x => x.WarehouseUnitId).ToArray();
 
-                        if (!warehouseUnitResponse.Success || warehouseUnit == null)
-                        {
-                            context.AddFailure("Somenthing went wrong");
-                        }
-                        // TODO add check warehouse unit is member of issue warehouse
-                        var warehouseUnitItemIdsResponse = warehouseUnit!.Select(x => x.WarehouseUnitId).ToArray();
+                    //    var warehouseUnitIdsContained = warehouseUnitIds.Except(warehouseUnitItemIdsResponse);
 
-                        var warehouseUnitIdsContained = warehouseUnitIds.Except(warehouseUnitItemIdsResponse);
-
-                        if (warehouseUnitIdsContained.Any())
-                        {
-                            context.AddFailure(
-                                "WarehouseUnitIds",
-                                $"There are no warehouse unit with identifiers: {string.Join("; ", warehouseUnitIdsContained)}");
-                        }
-                    }
+                    //    if (warehouseUnitIdsContained.Any())
+                    //    {
+                    //        context.AddFailure(
+                    //            "WarehouseUnitIds",
+                    //            $"There are no warehouse unit with identifiers: {string.Join("; ", warehouseUnitIdsContained)}");
+                    //    }
+                    //}
 
                     // TODO fix this and add validation for warehouseUnitItems
 

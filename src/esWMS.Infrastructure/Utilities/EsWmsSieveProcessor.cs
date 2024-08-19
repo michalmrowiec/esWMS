@@ -144,6 +144,22 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter();
 
+            mapper.Property<WZ>(x => x.DocumentId)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<WZ>(x => x.IssueWarehouseId)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<WZ>(x => x.DocumentIssueDate)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<WZ>(x => x.IsApproved)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<WZ>(x => x.RecipientContractorId)
+                .CanSort()
+                .CanFilter();
+
             mapper.Property<WarehouseStock>(x => x.ProductId)
                 .CanFilter()
                 .CanSort();

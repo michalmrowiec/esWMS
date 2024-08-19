@@ -81,7 +81,7 @@
 @if (WzVM.DocumentItems.All(x => x.IsApproved) &&
  !WzVM.IsApproved)
 {
-    <MudButton OnClick="@(() => ApprovePz())"
+    <MudButton OnClick="@(() => ApproveWz())"
                Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
@@ -162,7 +162,7 @@ else
         StateHasChanged();
     }
 
-    public async Task ApprovePz()
+    public async Task ApproveWz()
     {
         var response = await documentDataService.ApproveDocument(@"api/v1/Wz/approve", new { DocumentId = WzVM.DocumentId });
 
@@ -171,10 +171,7 @@ else
             var json = await response.Content.ReadAsStringAsync();
             var responseObj = JsonConvert.DeserializeObject<WzVM>(json);
 
-            if (responseObj != null)
-            {
-                WzVM = responseObj;
-            }
+            await RefreshWz();
 
             Snackbar.Configuration.PositionClass = "Bottom-End";
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{WzVM.DocumentId}</strong>"), Severity.Success);

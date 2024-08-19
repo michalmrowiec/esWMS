@@ -12,6 +12,12 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
         {
             _mediator = mediator;
 
+            RuleForEach(x => x.DocumentItemsWithAssignment)
+                .ChildRules(itemsASsignment =>
+                    itemsASsignment.RuleFor(x => x.WarehouseUnitId)
+                    .NotEmpty()
+                    .NotNull());
+
             RuleFor(x => x)
                 .CustomAsync(async (value, context, cancellationToken) =>
                 {
@@ -91,7 +97,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                             .Where(x => x.DocumentItemId.Equals(docItemId))
                             .Sum(x => x.Quantity);
 
-                        if(totalQuantitySoFar + newAssignmentQuantity > docItem.Quantity)
+                        if (totalQuantitySoFar + newAssignmentQuantity > docItem.Quantity)
                         {
                             context.AddFailure(
                                 "DocumentWarehouseUnitItems",

@@ -171,10 +171,7 @@ else
             var json = await response.Content.ReadAsStringAsync();
             var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
 
-            if (responseObj != null)
-            {
-                PzVM = responseObj;
-            }
+            await RefreshPz();
 
             Snackbar.Configuration.PositionClass = "Bottom-End";
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{PzVM.DocumentId}</strong>"), Severity.Success);
