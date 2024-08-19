@@ -1,4 +1,4 @@
-using esWMS.Client.Pages;
+using esWMS.Client.Pages.OnePage;
 using esWMS.Client.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
