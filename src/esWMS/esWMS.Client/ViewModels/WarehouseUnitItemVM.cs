@@ -18,6 +18,6 @@ namespace esWMS.Client.ViewModels
 
         public WarehouseUnitVM? WarehouseUnit { get; set; }
         public ProductVM? Product { get; set; }
-        public List<DocumentItemWithAssignmentVM> DocumentWarehouseUnitItems { get; set; } = [];
+        public List<DocumentWarehouseUnitItemVM> DocumentWarehouseUnitItems { get; set; } = [];
     }
 }

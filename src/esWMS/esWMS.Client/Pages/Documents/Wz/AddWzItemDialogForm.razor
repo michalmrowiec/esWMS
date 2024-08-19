@@ -38,7 +38,7 @@
             Dodaj pozycję
         </MudButton>
 
-        <MudDataGrid T="DocumentItemWithAssignmentVM"
+        <MudDataGrid T="DocumentWarehouseUnitItemVM"
                      Items="@documentItemWithAssignments"
                      EditMode="DataGridEditMode.Cell"
                      Dense>
@@ -82,7 +82,7 @@
     private decimal price = 0;
     private string currency = "PLN";
     private string test = "";
-    private HashSet<DocumentItemWithAssignmentVM> documentItemWithAssignments = new();
+    private HashSet<DocumentWarehouseUnitItemVM> documentItemWithAssignments = new();
 
     private void Submit()
     {
@@ -97,7 +97,7 @@
                     Quantity = quantity,
                     Price = price,
                     Currency = currency,
-                    DocumentItemsWithAssignment = documentItemWithAssignments.ToList()
+                    DocumentWarehouseUnitItems = documentItemWithAssignments.ToList()
                 });
         }
 

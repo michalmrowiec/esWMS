@@ -14,7 +14,7 @@
     <DialogContent>
         <MudText Typo="Typo.subtitle1"><strong>Id pozycji dokumentu:</strong> @DocumentItemVM.DocumentItemId</MudText>
 
-        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentItemsWithAssignment.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
+        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
 
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
@@ -22,7 +22,7 @@
             Dodaj pozycję
         </MudButton>
 
-        <MudDataGrid T="DocumentItemWithAssignmentVM"
+        <MudDataGrid T="DocumentWarehouseUnitItemVM"
                      Items="@documentItemWithAssignments"
                      EditMode="DataGridEditMode.Cell"
                      Dense
@@ -47,8 +47,8 @@
             </Columns>
         </MudDataGrid>
 
-        <MudDataGrid T="DocumentItemWithAssignmentVM"
-                     Items="@DocumentItemVM.DocumentItemsWithAssignment"
+        <MudDataGrid T="DocumentWarehouseUnitItemVM"
+                     Items="@DocumentItemVM.DocumentWarehouseUnitItems"
                      EditMode="DataGridEditMode.Cell"
                      Filterable="false"
                      SortMode="SortMode.None"
@@ -103,7 +103,7 @@
     public DocumentItemVM DocumentItemVM { get; set; }
 
     private string? selectedWarehouseUnitId = "";
-    private List<DocumentItemWithAssignmentVM> documentItemWithAssignments = new();
+    private List<DocumentWarehouseUnitItemVM> documentItemWithAssignments = new();
     private List<string> responseErrors = new();
 
     private List<WarehouseUnitVM> warehouseUnitVMs = new();
@@ -165,7 +165,7 @@
         sm.Page = 1;
         sm.PageSize = 100;
 
-        var warehouseUnitItemIds = string.Join("|", DocumentItemVM.DocumentItemsWithAssignment.Select(x => x.WarehouseUnitItemId));
+        var warehouseUnitItemIds = string.Join("|", DocumentItemVM.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId));
 
         sm.Filters = $"FilterByWarehouseUnitItemIds=={warehouseUnitItemIds}";
 

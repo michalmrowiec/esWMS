@@ -14,12 +14,12 @@
         public string? WarehouseUnitItemId { get; set; }
         public bool IsApproved { get; set; }
 
-        public List<DocumentItemWithAssignmentVM> DocumentItemsWithAssignment { get; set; } = [];
+        public List<DocumentWarehouseUnitItemVM> DocumentWarehouseUnitItems { get; set; } = [];
     }
 
-    public class DocumentItemWithAssignmentVM
+    public class DocumentWarehouseUnitItemVM
     {
-        public DocumentItemWithAssignmentVM
+        public DocumentWarehouseUnitItemVM
             (string? documentItemId,
             string? warehouseUnitId,
             int quantity,

@@ -65,12 +65,12 @@
                     <MudCheckBox Value="@context.Item.IsApproved" Disabled />
                     @if (!context.Item.IsApproved)
                     {
-                        @*                         <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
-                    Size="@Size.Small"
-                    Variant="@Variant.Filled"
-                    Color="@Color.Primary">
-                    Zatwierdź
-                    </MudButton> *@
+                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                                   Size="@Size.Small"
+                                   Variant="@Variant.Filled"
+                                   Color="@Color.Primary">
+                            Zatwierdź
+                        </MudButton>
                         <MudButton Size="@Size.Small"
                                    Variant="@Variant.Filled"
                                    Color="@Color.Primary">
@@ -84,7 +84,7 @@
 </MudDataGrid>
 
 @if (WzVM.DocumentItems.All(x => x.IsApproved) &&
-    !WzVM.IsApproved)
+  !WzVM.IsApproved)
 {
     <MudButton OnClick="@(() => ApprovePz())"
                Size="@Size.Small"
@@ -137,17 +137,17 @@ else
 
     private List<string> responseErrors = new();
 
-    // private Task OpenDialogAsync(DocumentItemVM documentItem)
-    // {
-    //     InvokeAsync(RefreshPz);
-    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-    //     var parameters = new DialogParameters<ApprovePzItemDialogForm>
-    //     {
-    //         { x => x.DocumentItemVM, documentItem},
-    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPz) } }
-    //     };
-    //     return DialogService.ShowAsync<ApprovePzItemDialogForm>(null, parameters, options);
-    // }
+    private Task OpenDialogAsync(DocumentItemVM documentItem)
+    {
+        InvokeAsync(RefreshWz);
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<ApproveWzItemDialogForm>
+        {
+            { x => x.DocumentItemVM, documentItem},
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
+        };
+        return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
+    }
 
     private async Task RefreshWz()
     {
