@@ -54,7 +54,7 @@
             DocumentItemsWithAssignment = DocumentItemVM.DocumentWarehouseUnitItems
     };
 
-        var response = await documentService.ApproveDocument(@"api/v1/Wz/approve-wz-items", requestBody);
+        var response = await documentService.ApproveDocument(@"api/v1/Wz/approve-items", requestBody);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var json = await response.Content.ReadAsStringAsync();

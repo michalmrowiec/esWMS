@@ -7,6 +7,7 @@
         public string CategoryId { get; set; } = null!;
         public string CategoryName { get; set; } = null!;
         public int Quantity { get; set; }
+        public int BlockedQuantity { get; set; }
         public decimal Value { get; set; }
     }
 }

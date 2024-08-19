@@ -164,7 +164,7 @@ else
 
     public async Task ApprovePz()
     {
-        var response = await documentDataService.ApproveDocument(@"api/v1/Pz/approve-pz", new { DocumentId = PzVM.DocumentId });
+        var response = await documentDataService.ApproveDocument(@"api/v1/Pz/approve", new { DocumentId = PzVM.DocumentId });
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {

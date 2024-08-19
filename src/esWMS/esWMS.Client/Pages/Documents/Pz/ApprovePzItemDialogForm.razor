@@ -136,7 +136,7 @@
                 DocumentItemsWithAssignment = documentItemWithAssignments
             };
 
-            var response = await documentService.ApproveDocument(@"api/v1/Pz/approve-pz-items", requestBody);
+            var response = await documentService.ApproveDocument(@"api/v1/Pz/approve-items", requestBody);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var json = await response.Content.ReadAsStringAsync();

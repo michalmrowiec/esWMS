@@ -52,7 +52,7 @@ namespace esWMS.Controllers.Documents
             return BadRequest();
         }
 
-        [HttpPatch("/approve-wz-items")]
+        [HttpPatch("approve-items")]
         public async Task<ActionResult<BaseResponse<WzDto>>> ApprovePzItems([FromBody] ApproveWzItemsCommand approveWzItemsCommand)
         {
             if (_userContextService.GetUserId is not null)
@@ -74,7 +74,7 @@ namespace esWMS.Controllers.Documents
             return BadRequest();
         }
 
-        [HttpPatch("/approve-wz")]
+        [HttpPatch("approve")]
         public async Task<ActionResult<BaseResponse<WzDto>>> ApprovePz([FromBody] ApproveWzCommand approveWzCommand)
         {
             if (_userContextService.GetUserId is not null)

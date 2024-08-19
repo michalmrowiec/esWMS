@@ -40,14 +40,12 @@ namespace esWMS.Infrastructure.Repositories
         {
             try
             {
-                // Tworzenie zapytania z grupowaniem
                 var stockQuery = _context.WarehouseUnitItems
                     .Include(x => x.WarehouseUnit)
                     .Include(x => x.Product)
                         .ThenInclude(x => x.Category)
                     .AsQueryable();
 
-                // Filtrowanie po WarehouseId, jeśli jest podane
                 if (!string.IsNullOrWhiteSpace(warehouseId))
                 {
                     stockQuery = stockQuery.Where(x => x.WarehouseUnit.WarehouseId.Equals(warehouseId));
@@ -68,22 +66,20 @@ namespace esWMS.Infrastructure.Repositories
                         CategoryId = g.Key.CategoryId,
                         CategoryName = g.Key.CategoryName,
                         Quantity = g.Sum(x => x.Quantity),
+                        BlockedQuantity = g.Sum(x => x.BlockedQuantity),
                         Value = g.Sum(x => (x.Price ?? 0) * x.Quantity)
                     })
                     .AsNoTracking()
                     .AsQueryable();
 
-                // Zastosowanie Sieve na wynikowym zapytaniu
                 var filteredWarehouseStocks = await _sieveProcessor
                     .Apply(sieveModel, srockQuery2)
                     .ToListAsync();
 
-                // Liczenie całkowitej liczby elementów przed paginacją
                 var totalCount = await _sieveProcessor
                     .Apply(sieveModel, srockQuery2, applyPagination: false, applySorting: false)
                     .CountAsync();
 
-                // Zwracanie wyników z paginacją
                 return new PagedResult<WarehouseStock>(filteredWarehouseStocks, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
             }
             catch (Exception ex)

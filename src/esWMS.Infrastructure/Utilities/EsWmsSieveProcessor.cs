@@ -159,6 +159,9 @@ namespace esWMS.Infrastructure.Utilities
             mapper.Property<WarehouseStock>(x => x.Quantity)
                 .CanFilter()
                 .CanSort();
+            mapper.Property<WarehouseStock>(x => x.BlockedQuantity)
+                .CanFilter()
+                .CanSort();
             mapper.Property<WarehouseStock>(x => x.Value)
                 .CanFilter()
                 .CanSort();
@@ -264,6 +267,40 @@ namespace esWMS.Infrastructure.Utilities
         }
 
         public IQueryable<WarehouseUnitItem> Available(IQueryable<WarehouseUnitItem> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0 || !int.TryParse(values[0], out int intValue))
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) == intValue);
+                    break;
+                case "!=":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) != intValue);
+                    break;
+                case ">":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) > intValue);
+                    break;
+                case "<":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) < intValue);
+                    break;
+                case ">=":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) >= intValue);
+                    break;
+                case "<=":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) <= intValue);
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
+        public IQueryable<WarehouseStock> Available(IQueryable<WarehouseStock> source, string op, string[] values)
         {
             if (values == null || values.Length == 0 || !int.TryParse(values[0], out int intValue))
             {

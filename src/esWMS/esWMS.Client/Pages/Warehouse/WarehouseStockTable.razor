@@ -55,7 +55,19 @@
             <MudTableSortLabel SortLabel="Quantity" T="WarehouseStockVM">
                 Ilość
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="Quantity" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Quantity" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="BlockedQuantity" T="WarehouseStockVM">
+                Zablokowane
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="BlockedQuantity" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Available" T="WarehouseStockVM">
+                Dostępne
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Available" OnChangedAction="OnSearch" />
         </MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -63,6 +75,8 @@
         <MudTd DataLabel="Nazwa artykułu">@context.ProductName</MudTd>
         <MudTd DataLabel="Kategoria">@context.CategoryName</MudTd>
         <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
+        <MudTd DataLabel="Zablokowane">@context.BlockedQuantity</MudTd>
+        <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -95,7 +109,9 @@
          { "ProductId", new("ProductId") },
          { "ProductName", new("ProductName") },
          { "CategoryName", new("CategoryName") },
-         { "Quantity", new("Quantity") }
+         { "Quantity", new("Quantity", ">") },
+         { "BlockedQuantity", new("BlockedQuantity", ">") },
+         { "Available", new("Available", ">") }
     };
 
     protected override async Task OnInitializedAsync()
