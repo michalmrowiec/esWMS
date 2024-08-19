@@ -51,13 +51,19 @@
             <MudTableSortLabel SortLabel="Quantity" T="WarehouseUnitItemVM">
                 Ilość
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="Quantity" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Quantity" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="BlockedQuantity" T="WarehouseUnitItemVM">
                 Zablokowane
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="BlockedQuantity" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="BlockedQuantity" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Available" T="WarehouseUnitItemVM">
+                Dostępne
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Available" OnChangedAction="OnSearch" />
         </MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -68,6 +74,7 @@
         <MudTd DataLabel="Nazwa produktu">@context.Product.ProductName</MudTd>
         <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
         <MudTd DataLabel="Zablokowane">@context.BlockedQuantity</MudTd>
+        <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -105,8 +112,9 @@
         { "WarehouseId", new("WarehouseId") },
         { "ProductId", new("ProductId") },
         { "ProductName", new("ProductName") },
-        { "Quantity", new("Quantity") },
-        { "BlockedQuantity", new("BlockedQuantity") }
+        { "Quantity", new("Quantity", ">") },
+        { "BlockedQuantity", new("BlockedQuantity", ">") },
+        { "Available", new("Available", ">") }
     };
 
     protected override void OnInitialized()

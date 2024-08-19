@@ -262,5 +262,39 @@ namespace esWMS.Infrastructure.Utilities
 
             return source;
         }
+
+        public IQueryable<WarehouseUnitItem> Available(IQueryable<WarehouseUnitItem> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0 || !int.TryParse(values[0], out int intValue))
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) == intValue);
+                    break;
+                case "!=":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) != intValue);
+                    break;
+                case ">":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) > intValue);
+                    break;
+                case "<":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) < intValue);
+                    break;
+                case ">=":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) >= intValue);
+                    break;
+                case "<=":
+                    source = source.Where(item => (item.Quantity - item.BlockedQuantity) <= intValue);
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
     }
 }

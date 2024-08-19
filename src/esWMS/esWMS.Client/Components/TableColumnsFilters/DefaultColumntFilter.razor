@@ -1,8 +1,18 @@
 ﻿@using esWMS.Client.Pages.Documents
 <div class="d-flex">
     <MudSelect T="string" @bind-Value="SearchOptions[Column].Operator" SelectedValuesChanged="@(() => OnChangedAction.Invoke())" Variant="Variant.Text" AnchorOrigin="Origin.BottomCenter" Style="width: 8%">
-        <MudSelectItem Value="@("@=")">=</MudSelectItem>
-        <MudSelectItem Value="@("!@=")">!=</MudSelectItem>
+        @if(TypeOfField == TypeOfFIlterField.Text)
+        {
+            <MudSelectItem Value="@("@=")">=</MudSelectItem>
+            <MudSelectItem Value="@("!@=")">!=</MudSelectItem>
+        }
+        else if(TypeOfField == TypeOfFIlterField.Numeric)
+        {
+            <MudSelectItem Value="@(">")">@string.Concat(">")</MudSelectItem>
+            <MudSelectItem Value="@(">=")">@string.Concat(">=")</MudSelectItem>
+            <MudSelectItem Value="@("<")">@string.Concat("<")</MudSelectItem>
+            <MudSelectItem Value="@("<=")">@string.Concat("<=")</MudSelectItem>
+        }
         <MudSelectItem Value="@("==")">==</MudSelectItem>
         <MudSelectItem Value="@("!=")">!==</MudSelectItem>
     </MudSelect>
@@ -20,4 +30,13 @@
 
     [Parameter]
     public Action OnChangedAction { get; set; }
+
+    [Parameter]
+    public TypeOfFIlterField TypeOfField { get; set; } = TypeOfFIlterField.Text;
+
+    public enum TypeOfFIlterField
+    {
+        Text,
+        Numeric
+    }
 }
