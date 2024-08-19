@@ -67,7 +67,7 @@
     private void OnSelected(WarehouseUnitItemVM warehouseUnitItem)
     {
         selected = warehouseUnitItem;
-        quantity = warehouseUnitItem.Quantity;
+        quantity = warehouseUnitItem.Quantity - warehouseUnitItem.BlockedQuantity;
         StateHasChanged();
     }
 }

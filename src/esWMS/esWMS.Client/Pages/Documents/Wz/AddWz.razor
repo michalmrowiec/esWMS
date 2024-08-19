@@ -64,7 +64,8 @@
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
-               Color="Color.Primary">
+               Color="Color.Primary"
+               Disabled="@(model.IssueWarehouseId == null)">
         Dodaj pozycję
     </MudButton>
 

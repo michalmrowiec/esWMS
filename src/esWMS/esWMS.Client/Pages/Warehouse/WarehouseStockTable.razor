@@ -11,7 +11,8 @@
            SelectedValuesChanged="OnSearch"
            Label="Magazyn"
            AnchorOrigin="Origin.BottomCenter"
-           Immediate="true">
+           Immediate="true"
+           Disabled="@(WarehouseId != null)">
     @foreach (var warehouse in warehouses)
     {
         <MudSelectItem Value="@warehouse.WarehouseId">
@@ -77,6 +78,8 @@
 @code {
     [Parameter]
     public EventCallback<WarehouseStockVM> SelectedStock { get; set; }
+    [Parameter]
+    public string? WarehouseId { get; set; }
 
     private IEnumerable<WarehouseStockVM> Products = [];
 
@@ -98,8 +101,15 @@
     protected override async Task OnInitializedAsync()
     {
         var warehouseResponse = await warehouseService
-            .GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500, "", ""));
+            .GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
         warehouses.AddRange(warehouseResponse.Items.ToList());
+
+        if (WarehouseId != null)
+        {
+            warehouseId = WarehouseId;
+        }
+
+        StateHasChanged();
     }
 
     private async Task<TableData<WarehouseStockVM>> ServerReload(TableState state, CancellationToken token)

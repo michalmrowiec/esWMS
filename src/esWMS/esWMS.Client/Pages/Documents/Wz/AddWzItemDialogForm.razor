@@ -14,9 +14,13 @@
                       Label="Wybrany produkt"
                       Disabled />
 
-        <WarehouseStockTable SelectedStock="OnStockProductSelected" />
+        @if (documentItemWithAssignments.Count == 0)
+        {
+            <WarehouseStockTable SelectedStock="OnStockProductSelected" WarehouseId="@WarehouseId" />
+        }
 
         <MudNumericField Label="Ilość"
+                         Disabled
                          @bind-Value="quantity" />
 
         <MudNumericField Label="Cena"
@@ -54,7 +58,7 @@
                         <MudStack Row>
                             <MudIconButton Size="@Size.Small"
                                            Icon="@Icons.Material.Outlined.Delete"
-                                           OnClick="@(() => { documentItemWithAssignments.Remove(item.Item); StateHasChanged(); })" />
+                                           OnClick="@(() => { documentItemWithAssignments.Remove(item.Item); quantity -= item.Item.Quantity; StateHasChanged(); })" />
                         </MudStack>
                     </CellTemplate>
                 </TemplateColumn>
@@ -138,6 +142,8 @@
                 item.warehouseUnitItem.WarehouseUnitId,
                 item.quantity,
                 item.warehouseUnitItem.WarehouseUnitItemId));
+
+        quantity += item.quantity;
 
         StateHasChanged();
     }
