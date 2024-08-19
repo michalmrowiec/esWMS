@@ -33,7 +33,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                     {
                         context.AddFailure(
                             "DocumentItems",
-                            $"There are no products with the given ids: {string.Join(", ", missingProductIds)}");
+                            $"There are no products with the given IDs: {string.Join(", ", missingProductIds)}");
                     }
                 });
 
@@ -78,6 +78,14 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                                 context.AddFailure(
                                     "DocumentWarehouseUnitItems",
                                     $"Available quantity for unit {itemAssignment.WarehouseUnitItemId} is {availableQuantity} but trying to lock value {allWantQuantity}. Value exceeds by {allWantQuantity - availableQuantity}.");
+                            }
+
+                            if(documentItem.ProductId != wui.ProductId)
+                            {
+                                context.AddFailure(
+                                    "DocumentWarehouseUnitItems",
+                                    $"Warehouse unit item with ID {wui.WarehouseUnitItemId} cannot be linked to document item because they do not contain the same product. " +
+                                    $"The document item contains product with ID {documentItem.ProductId}, while the warehouse unit item contains product with ID {wui.ProductId}.");
                             }
                         }
                     }
