@@ -44,7 +44,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                 return new BaseResponse<WzDto>(false, "Something went wrong.");
             }
 
-            var validationResult = await new CreateWzValidator(products).ValidateAsync(request, cancellationToken);
+            var validationResult = await new CreateWzValidator(products, _mediator).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -83,22 +83,6 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                     itemAssignment.CreatedAt = DateTime.Now;
                     itemAssignment.CreatedBy = request.CreatedBy;
                 }
-
-                //foreach (var itemAssignment in
-                //    request.DocumentItems.First(x => x.ProductId.Equals(item.ProductId)).DocumentWarehouseUnitItems)
-                //{
-                //    var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
-                //    {
-                //        DocumentItemId = item.DocumentItemId,
-                //        WarehouseUnitItemId = itemAssignment.WarehouseUnitItemId!,
-                //        Quantity = itemAssignment.Quantity,
-                //        CreatedAt = DateTime.Now,
-                //        CreatedBy = request.CreatedBy,
-                //        DocumentItem = null
-                //    };
-
-                //    item.DocumentWarehouseUnitItems.Add(newDocumentWarehouseUnitItem);
-                //}
             }
 
             Dictionary<string, int> warehouseUnitItemsQuantityToBlock = new();

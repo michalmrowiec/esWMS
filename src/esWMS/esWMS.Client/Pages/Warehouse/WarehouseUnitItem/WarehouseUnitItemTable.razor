@@ -127,8 +127,8 @@
         {
             if (ExceptWarehouseUnitItem.Count > 0)
             {
-                searchOptions["Except"].Operator = "!=";
-                searchOptions["Except"].Value = string.Join("|", ExceptWarehouseUnitItem);
+                searchOptions["WarehouseUnitItemId"].Operator = "!=";
+                searchOptions["WarehouseUnitItemId"].Value = string.Join("|", ExceptWarehouseUnitItem);
             }
         }
     }

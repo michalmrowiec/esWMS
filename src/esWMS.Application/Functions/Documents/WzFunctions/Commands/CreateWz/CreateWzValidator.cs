@@ -1,14 +1,19 @@
 ﻿using esWMS.Application.Functions.Documents.BaseDocumentFunctions.Command;
 using esWMS.Application.Functions.Products;
+using esWMS.Application.Functions.WarehouseUnitItems.Queries.GetSortedFilteredWarehouseUnitItems;
 using FluentValidation;
 using MediatR;
+using Sieve.Models;
 
 namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 {
     internal class CreateWzValidator : CreateBaseDocumentValidator<CreateWzCommand>
     {
-        public CreateWzValidator(IList<ProductDto> productsFromDocumentItems)
+        private readonly IMediator _mediator;
+        public CreateWzValidator(IList<ProductDto> productsFromDocumentItems, IMediator mediator)
         {
+            _mediator = mediator;
+
             RuleForEach(x => x.DocumentItems)
                 .ChildRules(items => items.RuleForEach(x => x.DocumentWarehouseUnitItems)
                     .ChildRules(itemsASsignment =>
@@ -16,10 +21,10 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                         .NotEmpty()
                         .NotNull()));
 
-            RuleFor(x => x)
+            RuleFor(x => x.DocumentItems)
                 .Custom((value, context) =>
                 {
-                    var requestedProductIds = value.DocumentItems.Select(x => x.ProductId).Distinct().ToList();
+                    var requestedProductIds = value.Select(x => x.ProductId).Distinct().ToList();
                     var foundProductIds = productsFromDocumentItems?.Select(x => x.ProductId).Distinct().ToList() ?? new List<string>();
 
                     var missingProductIds = requestedProductIds.Except(foundProductIds).ToList();
@@ -27,8 +32,54 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                     if (missingProductIds.Any())
                     {
                         context.AddFailure(
-                            "ProductId",
+                            "DocumentItems",
                             $"There are no products with the given ids: {string.Join(", ", missingProductIds)}");
+                    }
+                });
+
+            RuleFor(x => x.DocumentItems)
+                .CustomAsync(async (value, context, cancellationToken) =>
+                {
+                    var allWarehouseUnitItemIds = value
+                                                    .SelectMany(x => x.DocumentWarehouseUnitItems)
+                                                    .Select(x => x.WarehouseUnitItemId)
+                                                    .Distinct()
+                                                    .ToList() ?? [];
+
+                    var warehouseUnitItemsResponse = await _mediator.Send(
+                        new GetSortedFilteredWarehouseUnitItemsQuery(
+                            new SieveModel()
+                            {
+                                Page = 1,
+                                PageSize = 500,
+                                Filters = "WarehouseUnitItemId==" + string.Join('|', allWarehouseUnitItemIds)
+                            }));
+
+                    var warehouseUnitItems = warehouseUnitItemsResponse.ReturnedObj?.Items ?? [];
+
+                    if (!warehouseUnitItemsResponse.Success)
+                    {
+                        context.AddFailure("DocumentItems", "Something went wrong.");
+                    }
+
+                    foreach (var documentItem in value)
+                    {
+                        foreach (var itemAssignment in documentItem.DocumentWarehouseUnitItems.DistinctBy(x => x.WarehouseUnitItemId))
+                        {
+                            var wui = warehouseUnitItems.First(x => x.WarehouseUnitItemId.Equals(itemAssignment.WarehouseUnitItemId));
+                            var availableQuantity = wui.Quantity - wui.BlockedQuantity;
+
+                            var allWantQuantity = documentItem.DocumentWarehouseUnitItems
+                                                    .Where(x => x.WarehouseUnitItemId!.Equals(itemAssignment.WarehouseUnitItemId))
+                                                    .Sum(x => x.Quantity);
+
+                            if (availableQuantity < allWantQuantity)
+                            {
+                                context.AddFailure(
+                                    "DocumentWarehouseUnitItems",
+                                    $"Available quantity for unit {itemAssignment.WarehouseUnitItemId} is {availableQuantity} but trying to lock value {allWantQuantity}. Value exceeds by {allWantQuantity - availableQuantity}.");
+                            }
+                        }
                     }
                 });
         }

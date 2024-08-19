@@ -87,7 +87,7 @@ namespace esWMS.Infrastructure.Utilities
             mapper.Property<Warehouse>(x => x.Region)
                 .CanSort()
                 .CanFilter();
-            
+
             mapper.Property<WarehouseUnit>(x => x.WarehouseId)
                 .CanSort()
                 .CanFilter();
@@ -241,7 +241,7 @@ namespace esWMS.Infrastructure.Utilities
             return source;
         }
 
-        public IQueryable<WarehouseUnitItem> Except(IQueryable<WarehouseUnitItem> source, string op, string[] values)
+        public IQueryable<WarehouseUnitItem> WarehouseUnitItemId(IQueryable<WarehouseUnitItem> source, string op, string[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -250,6 +250,9 @@ namespace esWMS.Infrastructure.Utilities
 
             switch (op)
             {
+                case "==":
+                    source = source.Where(item => values.Contains(item.WarehouseUnitItemId));
+                    break;
                 case "!=":
                     source = source.Where(item => !values.Contains(item.WarehouseUnitItemId));
                     break;
