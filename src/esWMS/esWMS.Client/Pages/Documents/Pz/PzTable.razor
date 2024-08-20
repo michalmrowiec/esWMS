@@ -8,16 +8,6 @@
 @inject IDataService<PzVM> dataService
 @inject OnePageState onePageState
 
-<MudButton @onclick="OpenCreatePzTab"
-           Variant="Variant.Filled"
-           Color="Color.Primary">
-    Utwórz PZ
-</MudButton>
-
-
-<MudIconButton Icon="@Icons.Material.Filled.Refresh"
-               OnClick="OnSearch" />
-
 <MudTable T="PzVM"
           ServerData="ServerReload"
           Dense
@@ -29,6 +19,14 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Dokumenty PZ</MudText>
         <MudSpacer />
+        <MudButton @onclick="OpenCreatePzTab"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Utwórz PZ
+        </MudButton>
+
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
     </ToolBarContent>
     <HeaderContent>
         <MudTh>

@@ -46,6 +46,7 @@ namespace esWMS.Infrastructure.Repositories
                         .ThenInclude(x => x.Category)
                     .AsQueryable();
 
+                // TODO refactoring the below to a sieve filter
                 if (!string.IsNullOrWhiteSpace(warehouseId))
                 {
                     stockQuery = stockQuery.Where(x => x.WarehouseUnit.WarehouseId.Equals(warehouseId));

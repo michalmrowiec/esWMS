@@ -6,21 +6,6 @@
 @inject IDataService<WarehouseStockVM> warehouseUnitService
 @inject IDataService<WarehouseVM> warehouseService
 
-<MudSelect T="string"
-           @bind-Value="warehouseId"
-           SelectedValuesChanged="OnSearch"
-           Label="Magazyn"
-           AnchorOrigin="Origin.BottomCenter"
-           Immediate="true"
-           Disabled="@(WarehouseId != null)">
-    @foreach (var warehouse in warehouses)
-    {
-        <MudSelectItem Value="@warehouse.WarehouseId">
-            [@warehouse.WarehouseId] @warehouse.WarehouseName
-        </MudSelectItem>
-    }
-</MudSelect>
-
 <MudTable T="WarehouseStockVM"
           ServerData="ServerReload"
           Dense="true"
@@ -30,7 +15,35 @@
           OnRowClick="RowClickEvent">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Stany magazynowe</MudText>
+        <MudSelect T="string"
+                   Class="ps-5"
+                   @bind-Value="warehouseId"
+                   SelectedValuesChanged="OnSearch"
+                   Label="Magazyn"
+                   AnchorOrigin="Origin.BottomCenter"
+                   Immediate="true"
+                   Disabled="@(WarehouseId != null)">
+            @foreach (var warehouse in warehouses)
+            {
+                <MudSelectItem Value="@warehouse.WarehouseId">
+                    @if (warehouse.WarehouseId == " ")
+                    {
+                        <span>
+                            @warehouse.WarehouseName
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            [@warehouse.WarehouseId] @warehouse.WarehouseName
+                        </span>
+                    }
+                </MudSelectItem>
+            }
+        </MudSelect>
         <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
     </ToolBarContent>
     <HeaderContent>
         <MudTh>

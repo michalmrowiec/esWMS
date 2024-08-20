@@ -19,7 +19,8 @@
                Label="Magazyn wydający"
                AnchorOrigin="Origin.BottomCenter"
                For="@(() => model.IssueWarehouseId)"
-               Immediate="true">
+               Immediate="true"
+               Disabled="@(model.DocumentItems.Count > 0)">
         @foreach (var warehouse in warehouses)
         {
             <MudSelectItem Value="@warehouse.WarehouseId">
@@ -61,7 +62,6 @@
         }
     </MudSelect>
 
-
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
                Color="Color.Primary"
@@ -90,9 +90,13 @@
         </Columns>
     </MudDataGrid>
 
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary" Class="ml-auto"
+               OnClick="@(async () => await Submit())"
+               Disabled="@(model.DocumentItems.Count == 0)">
+        Utwórz
+    </MudButton>
 </MudForm>
-
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
 
 @if (responseErrors.Any())
 {

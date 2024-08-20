@@ -1,8 +1,9 @@
 ﻿@page "/categories"
+@using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @rendermode InteractiveAuto
-@inject ICategoryService categoryService
+@inject IDataService<CategoryVM> dataService
 @inject IDialogService DialogService
 
 <style>
@@ -34,6 +35,8 @@
                    Color="Color.Primary">
             Utwórz kategorię
         </MudButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
     </ToolBarContent>
     <ColGroup>
         <col style="width: 60px;" />
@@ -46,25 +49,25 @@
             <MudTableSortLabel SortLabel="CategoryName" T="CategoryVM">
                 Nazwa
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s => OnSearch("CategoryName", s))"></MudTextField>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="CategoryName" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="ParentCategoryName" T="CategoryVM">
                 Nadkategoria Nazwa
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s => OnSearch("ParentCategoryName", s))"></MudTextField>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ParentCategoryName" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="CategoryId" T="CategoryVM">
                 Id
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s => OnSearch("CategoryId", s))"></MudTextField>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="CategoryId" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="ParentCategoryId" T="CategoryVM">
                 Id Nadkategoria
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s => OnSearch("ParentCategoryId", s))"></MudTextField>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ParentCategoryId" OnChangedAction="OnSearch" />
         </MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -83,7 +86,7 @@
         <MudText>Loading...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager PageSizeOptions="new int[] {500}" />
+        <MudTablePager PageSizeOptions="new int[] {100,500}" />
     </PagerContent>
 </MudTable>
 
@@ -102,34 +105,36 @@
             Selector = (category) => category.ParentCategory?.CategoryName ?? "Brak"
         };
 
-    private Dictionary<string, string> searchString = new();
-
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "CategoryName", new("CategoryName") },
+        { "ParentCategoryName", new("ParentCategoryName") },
+        { "CategoryId", new("CategoryId") },
+        { "DocumentIssueDateEnd", new("DateFilter") },
+        { "ParentCategoryId", new("ParentCategoryId") }
+    };
     private async Task<TableData<CategoryVM>> ServerReload(TableState state, CancellationToken token)
     {
-        var sm = new SieveModelVM
-            {
-                Page = state.Page + 1,
-                PageSize = state.PageSize,
-                Sorts = state.SortLabel != null ? (state.SortDirection == SortDirection.Descending ? "-" : "") + state.SortLabel : null
-            };
+        var sm = new SieveModelVM();
 
-        sm.Filters = string.Join(",", searchString.Select(f => $"{f.Key}@={f.Value}"));
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
 
-        var response = await categoryService.GetCategory(sm);
-        return new TableData<CategoryVM> { TotalItems = response.TotalItems, Items = response.Items };
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await dataService.GetPagedResult(@"api/v1/Category/get-filtered", sm);
+
+        return new TableData<CategoryVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
 
-    private void OnSearch(string column, string text)
+    private void OnSearch()
     {
-        if (string.IsNullOrEmpty(text))
-        {
-            searchString.Remove(column);
-        }
-        else
-        {
-            searchString[column] = text;
-        }
-
         table.ReloadServerData();
     }
 

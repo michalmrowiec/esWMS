@@ -8,16 +8,6 @@
 @inject IDataService<WzVM> dataService
 @inject OnePageState onePageState
 
-<MudButton @onclick="OpenCreateWzTab"
-           Variant="Variant.Filled"
-           Color="Color.Primary">
-    Utwórz WZ
-</MudButton>
-
-
-<MudIconButton Icon="@Icons.Material.Filled.Refresh"
-               OnClick="OnSearch" />
-
 <MudTable T="WzVM"
           ServerData="ServerReload"
           Dense
@@ -29,6 +19,14 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Dokumenty WZ</MudText>
         <MudSpacer />
+        <MudButton @onclick="OpenCreateWzTab"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Utwórz WZ
+        </MudButton>
+
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
@@ -98,7 +96,7 @@
         { "DocumentIssueDateStart", new("DateFilter", ">=") },
         { "DocumentIssueDateEnd", new("DateFilter", "<=") },
         { "IsApproved", new("IsApproved", "==", string.Empty) },
-        { "RecipientContractorId", new("RecipientContractorId") },
+        { "RecipientContractorId", new("RecipientContractorId") }
     };
 
     private List<EventCallback> callbacksOnAddPz = new();
