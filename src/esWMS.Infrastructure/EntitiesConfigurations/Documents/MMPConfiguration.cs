@@ -12,12 +12,21 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .IsRequired()
                 .HasMaxLength(3);
 
+            builder.Property(d => d.RelatedMmmId)
+                .IsRequired()
+                .HasMaxLength(25);
+
             builder
                 .HasOne(d => d.FromWarehouse)
                 .WithMany(w => w.MMPDocuments)
                 .HasForeignKey(d => d.FromWarehouseId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder
+                .HasOne(d => d.RelatedMmm)
+                .WithOne(d => d.RelatedMmp)
+                .HasForeignKey<MMP>(d => d.RelatedMmmId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

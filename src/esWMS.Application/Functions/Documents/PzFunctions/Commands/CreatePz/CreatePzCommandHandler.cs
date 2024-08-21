@@ -54,7 +54,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 
             if (entity == null)
             {
-                return new BaseResponse<PzDto>(false, "");
+                return new BaseResponse<PzDto>(false, "Something went wrong.");
             }
 
             var lastNumber = await _repository.GetAllDocumentIdForDay(entity.DocumentIssueDate);

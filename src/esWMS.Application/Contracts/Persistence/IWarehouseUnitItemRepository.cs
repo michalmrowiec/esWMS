@@ -7,6 +7,6 @@ namespace esWMS.Application.Contracts.Persistence
     {
         Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync(params string[] warehouseUnitItemsIds);
         Task<IList<WarehouseUnitItem>> UpdateWarehouseUnitItemsAsync(params WarehouseUnitItem[] warehouseUnitItems);
-        Task<IList<WarehouseUnitItem>> BlockWarehouseUnitItemsQuantityAsync(Dictionary<string, int> warehouseUnitItemIdQuantity);
+        Task<IList<WarehouseUnitItem>> BlockExistWarehouseUnitItemsQuantityAsync(Dictionary<string, int> warehouseUnitItemIdQuantity);
     }
 }

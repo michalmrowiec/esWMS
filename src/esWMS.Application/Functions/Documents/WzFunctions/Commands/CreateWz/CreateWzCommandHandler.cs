@@ -3,8 +3,6 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Documents.PzFunctions;
-using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
 using MediatR;
@@ -55,7 +53,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 
             if (entity == null)
             {
-                return new BaseResponse<WzDto>(false, "");
+                return new BaseResponse<WzDto>(false, "Something went wrong.");
             }
 
             var lastNumber = await _wzRepository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
@@ -106,7 +104,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                 var createdEntity = await _wzRepository.CreateAsync(entity);
 
                 var warehouseUnitItems = await _warehouseUnitItemRepository
-                      .BlockWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlock);
+                      .BlockExistWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlock);
 
                 await _transactionManager.CommitTransactionAsync();
 

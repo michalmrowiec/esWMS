@@ -18,6 +18,11 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .HasForeignKey(d => d.ToWarehouseId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder
+                .HasOne(d => d.RelatedMmp)
+                .WithOne(d => d.RelatedMmm)
+                .HasForeignKey<MMP>(d => d.RelatedMmmId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

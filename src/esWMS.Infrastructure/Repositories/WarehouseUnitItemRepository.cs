@@ -18,7 +18,7 @@ namespace esWMS.Infrastructure.Repositories
         private readonly ILogger<WarehouseUnitItemRepository> _logger = logger;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
-        public async Task<IList<WarehouseUnitItem>> BlockWarehouseUnitItemsQuantityAsync
+        public async Task<IList<WarehouseUnitItem>> BlockExistWarehouseUnitItemsQuantityAsync
             (Dictionary<string, int> warehouseUnitItemIdQuantity)
         {
             try
@@ -27,6 +27,8 @@ namespace esWMS.Infrastructure.Repositories
 
                 foreach (var item in warehouseUnitItems)
                 {
+                    // TODO check the blocked quantity???
+
                     item.BlockedQuantity += warehouseUnitItemIdQuantity[item.WarehouseUnitItemId];
                 }
 
