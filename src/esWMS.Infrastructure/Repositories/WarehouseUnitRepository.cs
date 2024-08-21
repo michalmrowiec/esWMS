@@ -9,7 +9,7 @@ using Sieve.Services;
 namespace esWMS.Infrastructure.Repositories
 {
     internal class WarehouseUnitRepository
-        (EsWmsDbContext context, 
+        (EsWmsDbContext context,
         ILogger<WarehouseUnitRepository> logger,
         ISieveProcessor sieveProcessor)
                 : BaseRepository<WarehouseUnit>(context, logger), IWarehouseUnitRepository
@@ -17,6 +17,21 @@ namespace esWMS.Infrastructure.Repositories
         private readonly EsWmsDbContext _context = context;
         private readonly ILogger<WarehouseUnitRepository> _logger = logger;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
+
+        public async Task<IList<WarehouseUnit>> CreateRangeAsync(IEnumerable<WarehouseUnit> warehouseUnits)
+        {
+            try
+            {
+                await _context.WarehouseUnits.AddRangeAsync(warehouseUnits);
+                await _context.SaveChangesAsync();
+                return warehouseUnits.ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating entities");
+                throw;
+            }
+        }
 
         public async Task<PagedResult<WarehouseUnit>> GetSortedFilteredAsync(SieveModel sieveModel)
         {

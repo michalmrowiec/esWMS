@@ -42,10 +42,6 @@ namespace esWMS.Application.Mappings
             CreateMap<Product, ProductDto>()
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
 
-            //CreateMap<PagedResult<Product>, PagedResult<ProductDto>>()
-            //    .ForMember(dto => dto.Items,
-            //               opt => opt.MapFrom(src => src.Items));
-
             CreateMap<CreateCategoryCommand, Category>();
             CreateMap<Category, CategoryDto>();
 
@@ -63,6 +59,16 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreateWarehouseUnitItemCommand, WarehouseUnitItem>();
             CreateMap<WarehouseUnitItem, WarehouseUnitItemDto>();
+            CreateMap<WarehouseUnitItem, DocumentItem>()
+                .ForMember(di => di.ProductId, opt => opt.MapFrom(wui => wui.ProductId))
+                .ForMember(di => di.ProductCode, opt => opt.MapFrom(wui => wui.Product.ProductCode))
+                .ForMember(di => di.EanCode, opt => opt.MapFrom(wui => wui.Product.EanCode))
+                .ForMember(di => di.Quantity, opt => opt.MapFrom(wui => wui.Quantity))
+                .ForMember(di => di.BestBefore, opt => opt.MapFrom(wui => wui.BestBefore))
+                .ForMember(di => di.BatchLot, opt => opt.MapFrom(wui => wui.BatchLot))
+                .ForMember(di => di.SerialNumber, opt => opt.MapFrom(wui => wui.SerialNumber))
+                .ForMember(di => di.Price, opt => opt.MapFrom(wui => wui.Price))
+                .ForMember(di => di.Currency, opt => opt.MapFrom(wui => wui.Currency));
 
             CreateMap<CreateZoneCommand, Zone>();
             CreateMap<Zone, ZoneDto>();

@@ -1,22 +1,21 @@
 ﻿using AutoMapper;
+using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz;
-using esWMS.Application.Functions.Documents.WzFunctions;
+using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
 using MediatR;
-using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Services;
-using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using Sieve.Models;
-using esMWS.Domain.Entities.WarehouseEnviroment;
 
 namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
 {
     internal class CreateMmmCommandHandler
         (IMmmRepository mmmRepository,
         IMmpRepository mmpRepository,
+        IWarehouseUnitRepository warehouseUnitRepository,
         IWarehouseUnitItemRepository warehouseUnitItemRepository,
         IMediator mediator,
         IMapper mapper,
@@ -25,6 +24,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
     {
         private readonly IMmmRepository _mmmRepository = mmmRepository;
         private readonly IMmpRepository _mmpRepository = mmpRepository;
+        private readonly IWarehouseUnitRepository _warehouseUnitRepository = warehouseUnitRepository;
         private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
         private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
@@ -37,11 +37,11 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                     new SieveModel()
                     {
                         Page = 1,
-                        PageSize = 500,
-                        Filters = "ProductId==" + string.Join('|', request.DocumentItems.Select(x => x.ProductId).Distinct())
+                        PageSize = 1000,
+                        Filters = "ProductId==" + string.Join('|', request.WarehouseUnits.SelectMany(wu => wu.WarehouseUnitItems).Select(wui => wui.ProductId).Distinct())
                     }));
 
-            var products = productResponse.ReturnedObj?.Items ?? [];
+            var products = _mapper.Map<List<Product>>(productResponse.ReturnedObj?.Items) ?? [];
 
             if (!productResponse.Success)
             {
@@ -62,14 +62,31 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                 return new BaseResponse<MmmDto>(false, "Something went wrong.");
             }
 
-            Dictionary<string, int> warehouseUnitItemsQuantityToBlock = new();
-
             var lastNumberMmm = await _mmmRepository.GetAllDocumentIdForDay(entityMmm.DocumentIssueDate);
-            var lastNumberMmp = await _mmpRepository.GetAllDocumentIdForDay(entityMmm.DocumentIssueDate);
 
             entityMmm.DocumentId = entityMmm.GenerateDocumentId(lastNumberMmm);
             entityMmm.CreatedAt = DateTime.Now;
             entityMmm.CreatedBy = request.CreatedBy;
+
+            Dictionary<string, int> warehouseUnitItemsQuantityToBlockSubstract =
+                request.WarehouseUnits
+                .SelectMany(wu => wu.WarehouseUnitItems)
+                .ToDictionary(key => key.WarehouseUnitItemId, item => item.Quantity);
+
+            foreach (var wui in request.WarehouseUnits.SelectMany(wu => wu.WarehouseUnitItems))
+            {
+                wui.Product = products.First(p => p.ProductId.Equals(wui.ProductId));
+
+                var documentItem = _mapper.Map<DocumentItem>(wui);
+                documentItem.CreatedAt = DateTime.Now;
+                documentItem.IsApproved = true;
+
+                entityMmm.DocumentItems.Add(documentItem);
+            }
+
+            // creating MM-
+
+            var lastNumberMmp = await _mmpRepository.GetAllDocumentIdForDay(entityMmm.DocumentIssueDate);
 
             var entityMmp = new MMP
                 ("",
@@ -90,60 +107,25 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                 modifiedBy: null);
 
             entityMmp.DocumentId = entityMmp.GenerateDocumentId(lastNumberMmp);
+            entityMmp.DocumentItems = entityMmm.DocumentItems.ToList();
 
-            foreach (var item in entityMmm.DocumentItems)
+            var warehouseUnitsToCreateInTargetWarehosue = request.WarehouseUnits.ToList();
+            warehouseUnitsToCreateInTargetWarehosue.ForEach(wu =>
             {
-                item.DocumentItemId = Guid.NewGuid().ToString();
-                item.DocumentId = entityMmm.DocumentId;
+                var newWuId = Guid.NewGuid().ToString();
 
-                if (request.DocumentItemsAreApproved)
+                wu.WarehouseId = newWuId;
+                wu.WarehouseId = request.ToWarehouseId;
+                wu.LocationId = null;
+                wu.Location = null;
+
+                foreach (var wui in wu.WarehouseUnitItems)
                 {
-                    item.IsApproved = request.DocumentItemsAreApproved;
+                    wui.WarehouseUnitItemId = Guid.NewGuid().ToString();
+                    wui.WarehouseUnitId = newWuId;
+                    wui.BlockedQuantity = wui.Quantity;
                 }
-                else
-                {
-                    item.IsApproved = item.IsApproved;
-                }
-
-                var product = products!.First(x => x.ProductId.Equals(item.ProductId));
-                item.ProductCode = product.ProductCode;
-                item.EanCode = product.EanCode;
-                item.ProductName = product.ProductName;
-
-                foreach (var itemAssignment in item.DocumentWarehouseUnitItems)
-                {
-                    itemAssignment.DocumentItemId = item.DocumentItemId;
-                    //itemAssignment.WarehouseUnitItemId = itemAssignment.WarehouseUnitItemId!;
-                    itemAssignment.Quantity = itemAssignment.Quantity;
-                    itemAssignment.CreatedAt = DateTime.Now;
-                    itemAssignment.CreatedBy = request.CreatedBy;
-
-                    warehouseUnitItemsQuantityToBlock
-                        .Add(itemAssignment.WarehouseUnitItemId!, itemAssignment.Quantity);
-                }
-            }
-
-            entityMmp.DocumentItems = entityMmm.DocumentItems; // ???
-
-            var listOfNewWarehouseUnitItemsForTargetWarehouse = new List<WarehouseUnitItem>();
-
-            foreach (var documentItem in entityMmp.DocumentItems)
-            {
-                if (request.DocumentItemsAreApproved)
-                {
-                    documentItem.IsApproved = request.DocumentItemsAreApproved;
-                }
-                else
-                {
-                    documentItem.IsApproved = false;
-                }
-
-                foreach (var unitItems in documentItem.DocumentWarehouseUnitItems)
-                {
-                    //listOfNewWarehouseUnitItemsForTargetWarehouse
-                        //.Add(new())
-                }
-            }
+            });
 
             MmmDto entityDto;
 
@@ -151,16 +133,18 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
             {
                 await _transactionManager.BeginTransactionAsync();
 
-                var createdEntity = await _mmmRepository.CreateAsync(entityMmm);
+                var createdMmm = await _mmmRepository.CreateAsync(entityMmm);
 
                 var warehouseUnitItems = await _warehouseUnitItemRepository
-                      .BlockExistWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlock);
+                      .BlockExistWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlockSubstract);
 
+                var createdMmp = await _mmpRepository.CreateAsync(entityMmp);
 
+                var addedWarehouseUnits = await _warehouseUnitRepository.CreateRangeAsync(warehouseUnitsToCreateInTargetWarehosue);
 
                 await _transactionManager.CommitTransactionAsync();
 
-                entityDto = _mapper.Map<MmmDto>(createdEntity);
+                entityDto = _mapper.Map<MmmDto>(createdMmm);
             }
             catch (Exception ex)
             {
