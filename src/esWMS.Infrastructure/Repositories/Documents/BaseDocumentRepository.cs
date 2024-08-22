@@ -28,6 +28,13 @@ namespace esWMS.Infrastructure.Repositories.Documents
                 { typeof(PZ), (query) => (IQueryable<TDocument>)((IQueryable<PZ>)query)
                     .Include(x => x.SupplierContractor)
                 },
+                { typeof(MMM), (query) => (IQueryable<TDocument>)((IQueryable<MMM>)query)
+                    .Include(x => x.ToWarehouse)
+                },
+                { typeof(MMP), (query) => (IQueryable<TDocument>)((IQueryable<MMP>)query)
+                    .Include(x => x.FromWarehouse)
+                    .Include(x => x.RelatedMmm)
+                },
                 { typeof(BaseDocument), (query) => query
                     .Include(x => x.IssueWarehouse)
                     .Include(x => x.DocumentItems)
