@@ -14,7 +14,6 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
 {
     internal class CreateMmmCommandHandler
         (IMmmRepository mmmRepository,
-        IMmpRepository mmpRepository,
         IWarehouseUnitRepository warehouseUnitRepository,
         IWarehouseUnitItemRepository warehouseUnitItemRepository,
         IMediator mediator,
@@ -23,14 +22,14 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
         : IRequestHandler<CreateMmmCommand, BaseResponse<MmmDto>>
     {
         private readonly IMmmRepository _mmmRepository = mmmRepository;
-        private readonly IMmpRepository _mmpRepository = mmpRepository;
         private readonly IWarehouseUnitRepository _warehouseUnitRepository = warehouseUnitRepository;
         private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
         private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
-        public async Task<BaseResponse<MmmDto>> Handle(CreateMmmCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<MmmDto>> Handle
+            (CreateMmmCommand request, CancellationToken cancellationToken)
         {
             var productResponse = await _mediator.Send(
                 new GetSortedFilteredProductsQuery(
@@ -78,54 +77,21 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                 wui.Product = products.First(p => p.ProductId.Equals(wui.ProductId));
 
                 var documentItem = _mapper.Map<DocumentItem>(wui);
+                documentItem.DocumentItemId = Guid.NewGuid().ToString();
                 documentItem.CreatedAt = DateTime.Now;
                 documentItem.IsApproved = true;
 
+                documentItem.DocumentWarehouseUnitItems = request.WarehouseUnits
+                    .Select(wu => new DocumentWarehouseUnitItem()
+                    {
+                        DocumentItemId = documentItem.DocumentItemId,
+                        WarehouseUnitItemId = wui.WarehouseUnitItemId,
+                        Quantity = wui.Quantity,
+                        CreatedAt = DateTime.Now
+                    }).ToList();
+
                 entityMmm.DocumentItems.Add(documentItem);
             }
-
-            // creating MM-
-
-            var lastNumberMmp = await _mmpRepository.GetAllDocumentIdForDay(entityMmm.DocumentIssueDate);
-
-            var entityMmp = new MMP
-                ("",
-                issueWarehouseId: entityMmm.ToWarehouseId,
-                comment: entityMmm.Comment,
-                documentIssueDate: entityMmm.DocumentIssueDate,
-                issuingEmployeeId: null,
-                assignedEmployeeId: null,
-                isApproved: false,
-                aprovedDate: null,
-                approvingEmployeeId: null,
-                goodsReceiptDate: null,
-                fromWarehouseId: entityMmm.IssueWarehouseId,
-                relatedMmmId: entityMmm.DocumentId,
-                createdAt: entityMmm.CreatedAt,
-                createdBy: null,
-                modifiedAt: null,
-                modifiedBy: null);
-
-            entityMmp.DocumentId = entityMmp.GenerateDocumentId(lastNumberMmp);
-            entityMmp.DocumentItems = entityMmm.DocumentItems.ToList();
-
-            var warehouseUnitsToCreateInTargetWarehosue = request.WarehouseUnits.ToList();
-            warehouseUnitsToCreateInTargetWarehosue.ForEach(wu =>
-            {
-                var newWuId = Guid.NewGuid().ToString();
-
-                wu.WarehouseId = newWuId;
-                wu.WarehouseId = request.ToWarehouseId;
-                wu.LocationId = null;
-                wu.Location = null;
-
-                foreach (var wui in wu.WarehouseUnitItems)
-                {
-                    wui.WarehouseUnitItemId = Guid.NewGuid().ToString();
-                    wui.WarehouseUnitId = newWuId;
-                    wui.BlockedQuantity = wui.Quantity;
-                }
-            });
 
             MmmDto entityDto;
 
@@ -134,13 +100,6 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                 await _transactionManager.BeginTransactionAsync();
 
                 var createdMmm = await _mmmRepository.CreateAsync(entityMmm);
-
-                var warehouseUnitItems = await _warehouseUnitItemRepository
-                      .BlockExistWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlockSubstract);
-
-                var createdMmp = await _mmpRepository.CreateAsync(entityMmp);
-
-                var addedWarehouseUnits = await _warehouseUnitRepository.CreateRangeAsync(warehouseUnitsToCreateInTargetWarehosue);
 
                 await _transactionManager.CommitTransactionAsync();
 

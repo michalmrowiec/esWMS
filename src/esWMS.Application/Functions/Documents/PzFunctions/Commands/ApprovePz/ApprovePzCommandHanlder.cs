@@ -9,13 +9,13 @@ using MediatR;
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
 {
     internal class ApprovePzCommandHanlder
-        (IPzRepository pzRepozitory,
+        (IPzRepository pzRepository,
         IWarehouseUnitItemRepository warehouseUnitItemRepository,
         IMapper mapper,
         ITransactionManager transactionManager)
         : IRequestHandler<ApprovePzCommand, BaseResponse<PzDto>>
     {
-        private readonly IPzRepository _pzRepozitory = pzRepozitory;
+        private readonly IPzRepository _pzRepozitory = pzRepository;
         private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
