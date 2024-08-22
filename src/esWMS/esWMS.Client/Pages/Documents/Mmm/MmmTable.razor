@@ -1,0 +1,151 @@
+﻿@page "/mmm"
+@using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Pages.OnePage
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@rendermode InteractiveAuto
+@inject IDataService<MmmVM> dataService
+@inject OnePageState onePageState
+
+<MudTable T="MmmVM"
+          ServerData="ServerReload"
+          Dense
+          Hover
+          Bordered
+          @ref="table"
+          RowClass="cursor-pointer"
+          OnRowClick="RowClickEvent">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Dokumenty MM-</MudText>
+        <MudSpacer />
+        <MudButton @onclick="OpenCreateMmmTab"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Utwórz MM
+        </MudButton>
+
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="DocumentId" T="MmmVM">
+                Id Dokumentu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="DocumentId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IssueWarehouseId" T="MmmVM">
+                Id Magazynu Wystawiającego
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="IssueWarehouseId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="DocumentIssueDate" T="MmmVM">
+                Data Wystawienia
+            </MudTableSortLabel>
+            <DateRangeColumnFilter SearchOptions="searchOptions" Column="DocumentIssueDate" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsApproved" T="MmmVM">
+                Zatwierdzony
+            </MudTableSortLabel>
+            <BoolColumnTableFilter SearchOptions="searchOptions" Column="IsApproved" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ToWarehouseId" T="MmmVM">
+                Magazyn Odbiorca
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ToWarehouseId" OnChangedAction="OnSearch" />
+        </MudTh>
+
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id Dokumentu">@context.DocumentId</MudTd>
+        <MudTd DataLabel="Id Magazynu Wystawiającego">@context.IssueWarehouseId</MudTd>
+        <MudTd DataLabel="Data Wystawienia">@context.DocumentIssueDate.Date.ToString("dd.MM.yyyy")</MudTd>
+        <MudTd DataLabel="Zatwierdzony">
+            <MudCheckBox @bind-Value="@context.IsApproved" Size="Size.Small" Disabled="true"></MudCheckBox>
+        </MudTd>
+        <MudTd DataLabel="Odbiorca">@context.ToWarehouseId</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Brak pasujących elementów</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Pobieranie danych...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager RowsPerPageString="Elementy na stronę:" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private IEnumerable<MmmVM> Products = [];
+
+    private IEnumerable<MmmVM> pagedData;
+    private MudTable<MmmVM> table;
+
+    private int totalItems;
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "DocumentId", new("DocumentId") },
+        { "IssueWarehouseId", new("IssueWarehouseId") },
+        { "DocumentIssueDateStart", new("DateFilter", ">=") },
+        { "DocumentIssueDateEnd", new("DateFilter", "<=") },
+        { "IsApproved", new("IsApproved", "==", string.Empty) },
+        { "ToWarehouseId", new("ToWarehouseId") }
+    };
+
+    private List<EventCallback> callbacksOnAddMmm = new();
+
+    private void OpenCreateMmmTab()
+    {
+        var tabId = Guid.NewGuid();
+
+        callbacksOnAddMmm = new List<EventCallback>
+        {
+            EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
+            EventCallback.Factory.Create(this, table.ReloadServerData)
+        };
+
+        //onePageState.AddTab(new TabView("Tworzenie WZ", new AddWz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
+    }
+
+    private async Task<TableData<MmmVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await dataService.GetPagedResult(@"api/v1/Mmm/get-filtered", sm);
+
+        return new TableData<MmmVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<MmmVM> tableRowClickEventArgs)
+    {
+        // onePageState.AddTab(
+        //     new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
+        //     new WzDetails(),
+        //     Guid.NewGuid(),
+        //     Icons.Material.Filled.Info,
+        //     new() { { "MmmVM", tableRowClickEventArgs?.Item ?? new() } }));
+    }
+
+    private void OnSearch()
+    {
+        table.ReloadServerData();
+    }
+}
