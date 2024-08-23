@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.WarehouseEnviroment;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
@@ -68,41 +67,49 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
             entityMmm.CreatedAt = DateTime.Now;
             entityMmm.CreatedBy = request.CreatedBy;
 
-            foreach (var wui in request.WarehouseUnits.SelectMany(wu => wu.WarehouseUnitItems))
+            foreach (var wu in request.WarehouseUnits)
             {
-                //wui.Product = products.First(p => p.ProductId.Equals(wui.ProductId));
-                var prod = products.First(p => p.ProductId.Equals(wui.ProductId));
-                //var documentItem = _mapper.Map<DocumentItem>(wui);
-                var documentItem = new DocumentItem()
+                foreach (var wui in wu.WarehouseUnitItems)
                 {
-                    ProductId = prod.ProductId,
-                    ProductCode = prod.ProductCode,
-                    EanCode = prod.EanCode,
-                    ProductName = prod.ProductName,
-                    Quantity = wui.Quantity,
-                    BestBefore = wui.BestBefore,
-                    BatchLot = wui.BatchLot,
-                    SerialNumber = wui.SerialNumber,
-                    Price = wui.Price,
-                    Currency = wui.Currency,
-                    DocumentItemId = Guid.NewGuid().ToString(),
-                    CreatedAt = DateTime.Now,
-                    IsApproved = true
-                };
-                //documentItem.DocumentItemId = Guid.NewGuid().ToString();
-                //documentItem.CreatedAt = DateTime.Now;
-                //documentItem.IsApproved = true;
+                    var prod = products.First(p => p.ProductId.Equals(wui.ProductId));
 
-                documentItem.DocumentWarehouseUnitItems = request.WarehouseUnits
-                    .Select(wu => new DocumentWarehouseUnitItem()
+                    var documentItem = new DocumentItem()
+                    {
+                        ProductId = prod.ProductId,
+                        ProductCode = prod.ProductCode,
+                        EanCode = prod.EanCode,
+                        ProductName = prod.ProductName,
+                        Quantity = wui.Quantity,
+                        BestBefore = wui.BestBefore,
+                        BatchLot = wui.BatchLot,
+                        SerialNumber = wui.SerialNumber,
+                        Price = wui.Price,
+                        Currency = wui.Currency,
+                        DocumentItemId = Guid.NewGuid().ToString(),
+                        CreatedAt = DateTime.Now,
+                        IsApproved = true,
+                        Document = null,
+                        DocumentWarehouseUnitItems = []
+                    };
+
+                    documentItem.DocumentWarehouseUnitItems.Add(new DocumentWarehouseUnitItem()
                     {
                         DocumentItemId = documentItem.DocumentItemId,
                         WarehouseUnitItemId = wui.WarehouseUnitItemId,
                         Quantity = wui.Quantity,
-                        CreatedAt = DateTime.Now
-                    }).ToList();
+                        CreatedAt = DateTime.Now,
+                        
+                        DocumentItem = null,
+                        WarehouseUnitItem = null
+                    });
 
-                entityMmm.DocumentItems.Add(documentItem);
+                    entityMmm.DocumentItems.Add(documentItem);
+                }
+            }
+
+            foreach (var di in entityMmm.DocumentItems)
+            {
+                di.Document = null;
             }
 
             MmmDto entityDto;

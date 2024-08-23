@@ -5,6 +5,7 @@ using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
+using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
 using esWMS.Application.Responses;
@@ -84,8 +85,9 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
 
             entityMmp.DocumentId = entityMmp.GenerateDocumentId(lastNumberMmp);
 
-            var newDocumentItmesForMmp = mmmDocument.DocumentItems
-                .Select(di => new DocumentItem
+            foreach (var di in mmmDocument.DocumentItems)
+            {
+                var newDocumentItem = new DocumentItem
                 {
                     DocumentItemId = Guid.NewGuid().ToString(),
                     DocumentId = entityMmp.DocumentId,
@@ -104,21 +106,24 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
                     CreatedBy = di.CreatedBy,
                     ModifiedAt = DateTime.Now,
                     ModifiedBy = di.ModifiedBy,
-                    Document = di.Document,
-                    Product = di.Product,
-                    DocumentWarehouseUnitItems = di.DocumentWarehouseUnitItems.Select(dwu => new DocumentWarehouseUnitItem
-                    {
-                        DocumentItemId = Guid.NewGuid().ToString(),
-                        WarehouseUnitItemId = dwu.WarehouseUnitItemId,
-                        Quantity = dwu.Quantity,
-                        CreatedAt = DateTime.Now,
-                        CreatedBy = dwu.CreatedBy,
-                        ModifiedAt = DateTime.Now,
-                        ModifiedBy = dwu.ModifiedBy
-                    }).ToList()
-                }).ToList();
+                    Document = null,
+                    Product = null,
+                    DocumentWarehouseUnitItems = []
+                };
 
-            entityMmp.DocumentItems = newDocumentItmesForMmp;
+                foreach (var dwui in di.DocumentWarehouseUnitItems)
+                {
+                    newDocumentItem.DocumentWarehouseUnitItems.Add(new DocumentWarehouseUnitItem
+                    {
+                        DocumentItemId = newDocumentItem.DocumentItemId,
+                        WarehouseUnitItemId = dwui.WarehouseUnitItemId,
+                        Quantity = dwui.Quantity,
+                        CreatedAt = DateTime.Now
+                    });
+                }
+
+                entityMmp.DocumentItems.Add(newDocumentItem);
+            }
 
             //var warehouseUnitsResponse = await _mediator.Send(
             //    new GetSortedFilteredWarehouseUnitsQuery(

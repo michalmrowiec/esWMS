@@ -13,7 +13,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
         public CreateWzValidator(IList<ProductDto> productsFromDocumentItems, IMediator mediator)
         {
             _mediator = mediator;
-
+            // TODO add WarehouseUnit is no blocked check
             RuleForEach(x => x.DocumentItems)
                 .ChildRules(items => items.RuleForEach(x => x.DocumentWarehouseUnitItems)
                     .ChildRules(itemsASsignment =>
