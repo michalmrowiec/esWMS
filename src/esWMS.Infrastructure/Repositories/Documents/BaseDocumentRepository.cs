@@ -51,9 +51,15 @@ namespace esWMS.Infrastructure.Repositories.Documents
                     .Include(x => x.DocumentItems)
                         .ThenInclude(x => x.DocumentWarehouseUnitItems)
                             .ThenInclude(x => x.WarehouseUnitItem)
-                    .FirstOrDefaultAsync(x => x.DocumentId == id);
+                                .ThenInclude(x => x.WarehouseUnit)
+                    .FirstOrDefaultAsync(x => x.DocumentId.Equals(id));
 
                 return result ?? throw new KeyNotFoundException("The object with the given id was not found.");
+            }
+            catch (KeyNotFoundException)
+            {
+                _logger.LogWarning("Document with Id: {DocumentId} was not found.", id);
+                throw;
             }
             catch (Exception ex)
             {
@@ -80,11 +86,6 @@ namespace esWMS.Infrastructure.Repositories.Documents
                 _logger.LogError(ex, "Error retrieving document for date: {Date}", date.Date);
                 throw;
             }
-        }
-
-        public Task<BaseDocument> UpdateDocumentAsync(BaseDocument document)
-        {
-            throw new NotImplementedException();
         }
 
         public virtual async Task<PagedResult<TDocument>> GetSortedFilteredAsync(SieveModel sieveModel)

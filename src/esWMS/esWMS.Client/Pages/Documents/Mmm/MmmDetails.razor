@@ -44,7 +44,7 @@
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Magazyn odbierający: </strong>
-    [@MmmVM.ToWarehouse] @MmmVM.ToWarehouse?.WarehouseName
+    [@MmmVM.ToWarehouseId] @MmmVM.ToWarehouse?.WarehouseName
 </MudText>
 
 <MudDataGrid T="DocumentItemVM"
@@ -170,7 +170,7 @@ else
 
     public async Task ApproveWz()
     {
-        var response = await documentDataService.ApproveDocument(@"api/v1/Wz/approve", new { DocumentId = MmmVM.DocumentId });
+        var response = await documentDataService.ApproveDocument(@"api/v1/Mmm/approve", new { DocumentId = MmmVM.DocumentId });
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {

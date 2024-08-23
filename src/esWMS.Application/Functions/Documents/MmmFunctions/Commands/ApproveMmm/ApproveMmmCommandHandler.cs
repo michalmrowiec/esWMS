@@ -5,6 +5,7 @@ using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
+using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
 using esWMS.Application.Responses;
 using FluentValidation.Results;
@@ -34,15 +35,25 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
         public async Task<BaseResponse<MmmDto>> Handle
             (ApproveMmmCommand request, CancellationToken cancellationToken)
         {
-            var mmmDocument = await _mmmRepository.GetDocumentByIdWithItemsAsync(request.DocumentId);
-
-            if (mmmDocument == null)
+            MMM mmmDocument;
+            try
+            {
+                mmmDocument = await _mmmRepository.GetDocumentByIdWithItemsAsync(request.DocumentId);
+                //.Include(x => x.DocumentItems)
+                //  .ThenInclude(x => x.DocumentWarehouseUnitItems)
+                //      .ThenInclude(x => x.WarehouseUnitItem)
+            }
+            catch (KeyNotFoundException ex)
             {
                 var vr = new ValidationResult(
                     new List<ValidationFailure>() {
                         new("DocumentId", $"The Document by Id: {request.DocumentId} does not exist.") });
 
                 return new BaseResponse<MmmDto>(vr);
+            }
+            catch (Exception ex)
+            {
+                throw;
             }
 
             mmmDocument.IsApproved = true;
@@ -72,22 +83,71 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
                 modifiedBy: null);
 
             entityMmp.DocumentId = entityMmp.GenerateDocumentId(lastNumberMmp);
-            var documentItmesForMmp = mmmDocument.DocumentItems.ToList();
-            documentItmesForMmp.ForEach(di => di.DocumentId = Guid.NewGuid().ToString());
-            entityMmp.DocumentItems = documentItmesForMmp;
 
-            var warehouseUnitsResponse = await _mediator.Send(
-                new GetSortedFilteredWarehouseUnitsQuery(
-                    new SieveModel()
+            var newDocumentItmesForMmp = mmmDocument.DocumentItems
+                .Select(di => new DocumentItem
+                {
+                    DocumentItemId = Guid.NewGuid().ToString(),
+                    DocumentId = entityMmp.DocumentId,
+                    ProductId = di.ProductId,
+                    ProductCode = di.ProductCode,
+                    EanCode = di.EanCode,
+                    ProductName = di.ProductName,
+                    Quantity = di.Quantity,
+                    BestBefore = di.BestBefore,
+                    BatchLot = di.BatchLot,
+                    SerialNumber = di.SerialNumber,
+                    Price = di.Price,
+                    Currency = di.Currency,
+                    IsApproved = di.IsApproved,
+                    CreatedAt = DateTime.Now,
+                    CreatedBy = di.CreatedBy,
+                    ModifiedAt = DateTime.Now,
+                    ModifiedBy = di.ModifiedBy,
+                    Document = di.Document,
+                    Product = di.Product,
+                    DocumentWarehouseUnitItems = di.DocumentWarehouseUnitItems.Select(dwu => new DocumentWarehouseUnitItem
                     {
-                        Page = 1,
-                        PageSize = 1000,
-                        Filters = "FilterByWarehouseUnitItemIds==" + string.Join('|', mmmDocument.DocumentItems.SelectMany(di => di.DocumentWarehouseUnitItems).Select(wui => wui.WarehouseUnitItemId).Distinct())
-                    }));
+                        DocumentItemId = Guid.NewGuid().ToString(),
+                        WarehouseUnitItemId = dwu.WarehouseUnitItemId,
+                        Quantity = dwu.Quantity,
+                        CreatedAt = DateTime.Now,
+                        CreatedBy = dwu.CreatedBy,
+                        ModifiedAt = DateTime.Now,
+                        ModifiedBy = dwu.ModifiedBy
+                    }).ToList()
+                }).ToList();
 
-            var warehouseUnitsToMove = _mapper.Map<List<WarehouseUnit>>(warehouseUnitsResponse.ReturnedObj?.Items) ?? [];
+            entityMmp.DocumentItems = newDocumentItmesForMmp;
 
-            if (!warehouseUnitsResponse.Success || !warehouseUnitsToMove.Any())
+            //var warehouseUnitsResponse = await _mediator.Send(
+            //    new GetSortedFilteredWarehouseUnitsQuery(
+            //        new SieveModel()
+            //        {
+            //            Page = 1,
+            //            PageSize = 1000,
+            //            Filters = "FilterByWarehouseUnitItemIds==" + string.Join('|', mmmDocument.DocumentItems.SelectMany(di => di.DocumentWarehouseUnitItems).Select(wui => wui.WarehouseUnitItemId).Distinct())
+            //        }));
+
+            //List<WarehouseUnitDto> warehouseUnitsToMoveDto = warehouseUnitsResponse.ReturnedObj?.Items.ToList() ?? [];
+            List<WarehouseUnit> warehouseUnitsToMove;
+            try
+            {
+                //warehouseUnitsToMove = _mapper.Map<List<WarehouseUnit>>(warehouseUnitsToMoveDto) ?? [];
+                warehouseUnitsToMove = mmmDocument
+                    .DocumentItems
+                    .SelectMany(di => di.DocumentWarehouseUnitItems)
+                    .Select(dwui => dwui.WarehouseUnitItem)
+                    .Select(wui => wui!.WarehouseUnit).ToList()!;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            if (/*!warehouseUnitsResponse.Success ||*/ !warehouseUnitsToMove.Any())
             {
                 return new BaseResponse<MmmDto>(false, "Something went wrong.");
             }
@@ -110,7 +170,8 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
 
                 var createdMmp = await _mmpRepository.CreateAsync(entityMmp);
 
-                var movedWArehouseUnits = await _warehouseUnitRepository.UpdateWarehouseUnitsAsync(warehouseUnitsToMove.ToArray());
+                var movedWarehouseUnits = await _warehouseUnitRepository
+                    .UpdateWarehouseUnitsAsync(warehouseUnitsToMove.ToArray());
 
                 await _transactionManager.CommitTransactionAsync();
 

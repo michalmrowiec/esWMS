@@ -59,10 +59,28 @@ namespace esWMS.Application.Mappings
                 .ForMember(dto => dto.WarehouseUnitItems,
                            opt => opt.MapFrom(src => src.WarehouseUnitItems));
 
+            CreateMap<WarehouseUnitDto, WarehouseUnit>()
+                .ForMember(dest => dest.Warehouse, opt => opt.Ignore())
+                .ForMember(dest => dest.Location, opt => opt.Ignore())
+                .ForMember(dest => dest.Media, opt => opt.Ignore())
+                .ForMember(dest => dest.StackOn, opt => opt.Ignore())
+                .ForMember(dest => dest.WarehouseUnitItems, opt => opt.MapFrom(src => src.WarehouseUnitItems));
+
             CreateMap<WarehouseUnit, FlatWarehouseUnitDto>();
 
             CreateMap<CreateWarehouseUnitItemCommand, WarehouseUnitItem>();
             CreateMap<WarehouseUnitItem, WarehouseUnitItemDto>();
+            CreateMap<WarehouseUnitItemDto, WarehouseUnitItem>()
+                .ForMember(dest => dest.WarehouseUnit, opt => opt.MapFrom(src => src.WarehouseUnit));
+
+            CreateMap<FlatWarehouseUnitDto, WarehouseUnit>()
+                .ForMember(dest => dest.Warehouse, opt => opt.Ignore())
+                .ForMember(dest => dest.Location, opt => opt.Ignore())
+                .ForMember(dest => dest.Media, opt => opt.Ignore())
+                .ForMember(dest => dest.StackOn, opt => opt.Ignore())
+                .ForMember(dest => dest.WarehouseUnitItems, opt => opt.Ignore()); // Dodaj ignorowanie lub właściwe mapowanie
+
+
             //CreateMap<WarehouseUnitItem, DocumentItem>()
             //    .ForMember(di => di.ProductId, opt => opt.MapFrom(wui => wui.ProductId))
             //    .ForMember(di => di.ProductCode, opt => opt.MapFrom(wui => wui.Product.ProductCode))
@@ -99,9 +117,11 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreateMmmCommand, MMM>();
             CreateMap<MMM, MmmDto>();
+            CreateMap<MMM, FlatMmmDto>();
 
             CreateMap<CreateMmpCommand, MMP>();
             CreateMap<MMP, MmpDto>();
+            CreateMap<MMP, FlatMmpDto>();
 
             CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
                 .ForMember("Items", opt => opt.MapFrom("Items"));
