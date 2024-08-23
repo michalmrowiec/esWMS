@@ -160,6 +160,41 @@ namespace esWMS.Infrastructure.Utilities
                 .CanSort()
                 .CanFilter();
 
+            mapper.Property<MMM>(x => x.DocumentId)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMM>(x => x.IssueWarehouseId)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMM>(x => x.DocumentIssueDate)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMM>(x => x.IsApproved)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMM>(x => x.IssueWarehouseId)
+                .CanSort()
+                .CanFilter();
+
+            mapper.Property<MMP>(x => x.DocumentId)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMP>(x => x.IssueWarehouseId)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMP>(x => x.DocumentIssueDate)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMP>(x => x.IsApproved)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMP>(x => x.FromWarehouseId)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<MMP>(x => x.RelatedMmmId)
+                .CanSort()
+                .CanFilter();
+
             mapper.Property<WarehouseStock>(x => x.ProductId)
                 .CanFilter()
                 .CanSort();
