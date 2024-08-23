@@ -3,31 +3,31 @@
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
-@inject IDataService<PzVM> pzDataService
+@inject IDataService<MmmVM> mmmDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Numer dokumentu:</strong> @PzVM.DocumentId
+    <strong>Numer dokumentu:</strong> @MmmVM.DocumentId
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Magazyn wydający:</strong>
-    [@PzVM.IssueWarehouseId] @PzVM.IssueWarehouse?.WarehouseName
+    [@MmmVM.IssueWarehouseId] @MmmVM.IssueWarehouse?.WarehouseName
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Komentarz:</strong> @PzVM.Comment
+    <strong>Komentarz:</strong> @MmmVM.Comment
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Data wydania dokumentu:</strong>
-    @PzVM.DocumentIssueDate.ToString("dd-MM-yyyy")
+    @MmmVM.DocumentIssueDate.ToString("dd-MM-yyyy")
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Zatwierdzono: </strong>
-    @if (PzVM.IsApproved)
+    @if (MmmVM.IsApproved)
     {
         <span>TAK</span>
     }
@@ -38,17 +38,17 @@
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Data przyjęcia towaru:</strong>
-    @PzVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")
+    <strong>Data wydania towaru:</strong>
+    @MmmVM.GoodsReleaseDate?.ToString("dd-MM-yyyy")
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Kontrahent:</strong>
-    [@PzVM.SupplierContractorId] @PzVM.SupplierContractor?.ContractorName
+    <strong>Magazyn odbierający: </strong>
+    [@MmmVM.ToWarehouse] @MmmVM.ToWarehouse?.WarehouseName
 </MudText>
 
 <MudDataGrid T="DocumentItemVM"
-             Items="@PzVM.DocumentItems"
+             Items="@MmmVM.DocumentItems"
              EditMode="DataGridEditMode.Cell"
              Class="mb-3"
              Dense
@@ -65,7 +65,13 @@
                     <MudCheckBox Value="@context.Item.IsApproved" Disabled />
                     @if (!context.Item.IsApproved)
                     {
-                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                        @* <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                    Size="@Size.Small"
+                    Variant="@Variant.Filled"
+                    Color="@Color.Primary">
+                    Zatwierdź
+                    </MudButton> *@
+                        <MudButton Disabled
                                    Size="@Size.Small"
                                    Variant="@Variant.Filled"
                                    Color="@Color.Primary">
@@ -78,10 +84,10 @@
     </Columns>
 </MudDataGrid>
 
-@if (PzVM.DocumentItems.All(x => x.IsApproved) &&
-!PzVM.IsApproved)
+@if (MmmVM.DocumentItems.All(x => x.IsApproved) &&
+!MmmVM.IsApproved)
 {
-    <MudButton OnClick="@(() => ApprovePz())"
+    <MudButton OnClick="@(() => ApproveWz())"
                Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
@@ -89,7 +95,7 @@
         Zatwierdź
     </MudButton>
 }
-else if (PzVM.IsApproved)
+else if (MmmVM.IsApproved)
 {
     <MudButton Size="@Size.Small"
                Variant="@Variant.Filled"
@@ -125,56 +131,56 @@ else
 
 @code {
     [Parameter]
-    public PzVM PzVM { get; set; } = new();
+    public MmmVM MmmVM { get; set; } = new();
 
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
 
     private List<string> responseErrors = new();
 
-    private Task OpenDialogAsync(DocumentItemVM documentItem)
-    {
-        InvokeAsync(RefreshPz);
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApprovePzItemDialogForm>
-        {
-            { x => x.DocumentItemVM, documentItem},
-            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPz) } }
-        };
-        return DialogService.ShowAsync<ApprovePzItemDialogForm>(null, parameters, options);
-    }
+    // private Task OpenDialogAsync(DocumentItemVM documentItem)
+    // {
+    //     InvokeAsync(RefreshWz);
+    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+    //     var parameters = new DialogParameters<ApproveWzItemDialogForm>
+    //     {
+    //         { x => x.DocumentItemVM, documentItem},
+    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
+    //     };
+    //     return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
+    // }
 
-    private async Task RefreshPz()
+    private async Task RefreshMmm()
     {
         var sm = new SieveModelVM();
 
         sm.Page = 1;
         sm.PageSize = 1;
-        sm.Filters = $"DocumentId=={PzVM.DocumentId}";
+        sm.Filters = $"DocumentId=={MmmVM.DocumentId}";
 
-        var response = await pzDataService.GetPagedResult(@"api/v1/pz/get-filtered", sm);
+        var response = await mmmDataService.GetPagedResult(@"api/v1/Mmm/get-filtered", sm);
 
         if (response.Items.FirstOrDefault() != null)
         {
-            PzVM = response.Items.First();
+            MmmVM = response.Items.First();
         }
 
         StateHasChanged();
     }
 
-    public async Task ApprovePz()
+    public async Task ApproveWz()
     {
-        var response = await documentDataService.ApproveDocument(@"api/v1/Pz/approve", new { DocumentId = PzVM.DocumentId });
+        var response = await documentDataService.ApproveDocument(@"api/v1/Wz/approve", new { DocumentId = MmmVM.DocumentId });
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var json = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
+            var responseObj = JsonConvert.DeserializeObject<WzVM>(json);
 
-            await RefreshPz();
+            await RefreshMmm();
 
             Snackbar.Configuration.PositionClass = "Bottom-End";
-            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{PzVM.DocumentId}</strong>"), Severity.Success);
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{MmmVM.DocumentId}</strong>"), Severity.Success);
 
         }
         else
