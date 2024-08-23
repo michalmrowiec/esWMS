@@ -5,19 +5,44 @@
 @rendermode InteractiveAuto
 @inject IDataService<WarehouseUnitItemVM> warehouseUnitItemService
 
+<style>
+    .mud-table-cell-custom-group {
+        font-weight: 500;
+    }
+
+    .mud-table-cell-custom-group-footer {
+        padding-bottom: 50px;
+        text-align: right;
+    }
+</style>
+
 <MudTable T="WarehouseUnitItemVM"
           ServerData="ServerReload"
           Dense="true"
           Hover="true"
           @ref="table"
           RowClass="cursor-pointer"
-          OnRowClick="RowClickEvent">
+          OnRowClick="RowClickEvent"
+          GroupBy="@_groupDefinition"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          GroupFooterClass="mb-4"
+          FixedHeader="true">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Pozycje magazynowe</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>
+    <ColGroup>
+        <col style="width: 60px;" />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+    </ColGroup>
     <HeaderContent>
         <MudTh>
             <MudTableSortLabel SortLabel="WarehouseUnitItemId" T="WarehouseUnitItemVM">
@@ -78,6 +103,9 @@
         <MudTd DataLabel="Zablokowane">@context.BlockedQuantity</MudTd>
         <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
     </RowTemplate>
+    <GroupHeaderTemplate>
+        <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"{context.GroupName}: {context.Key}")</MudTh>
+    </GroupHeaderTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
     </NoRecordsContent>
@@ -88,6 +116,9 @@
         <MudTablePager />
     </PagerContent>
 </MudTable>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3" OnClick="@((args) => table.ExpandAllGroups())">Expand all groups</MudButton>
+<MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mt-3 ml-3" OnClick="@((args) => table.CollapseAllGroups())">Collapse all groups</MudButton>
 
 @code {
     [Parameter]
@@ -118,6 +149,15 @@
         { "BlockedQuantity", new("BlockedQuantity", ">") },
         { "Available", new("Available", ">") }
     };
+
+    private TableGroupDefinition<WarehouseUnitItemVM> _groupDefinition = new()
+        {
+            GroupName = "Jednoska",
+            Indentation = false,
+            Expandable = true,
+            IsInitiallyExpanded = true,
+            Selector = (wui) => wui.WarehouseUnitId
+        };
 
     protected override void OnInitialized()
     {

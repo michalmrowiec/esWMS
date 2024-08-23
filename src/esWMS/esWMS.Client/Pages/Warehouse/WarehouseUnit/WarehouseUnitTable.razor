@@ -59,7 +59,9 @@
     <RowTemplate>
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
-        <MudTd DataLabel="Zablokowana">@context.IsBlocked</MudTd>
+        <MudTd DataLabel="Zablokowana">
+            <MudCheckBox @bind-Value="@context.IsBlocked" Size="Size.Small" Disabled="true"></MudCheckBox>
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
