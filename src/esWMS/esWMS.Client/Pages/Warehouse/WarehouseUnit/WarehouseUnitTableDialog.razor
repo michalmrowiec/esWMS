@@ -11,7 +11,7 @@
                       Label="Wybrana jednostka"
                       Disabled />
 
-        <WarehouseUnitTable SelectedWarehoseUnit="OnSelected" />
+        <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Single" SelectedWarehouseUnits="OnSelected" />
 
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />
@@ -49,9 +49,9 @@
         }
     }
 
-    private void OnSelected(WarehouseUnitVM warehouseUnit)
+    private void OnSelected(HashSet<WarehouseUnitVM> warehouseUnits)
     {
-        selected = warehouseUnit.WarehouseUnitId;
+        selected = warehouseUnits.FirstOrDefault()?.WarehouseUnitId;
         StateHasChanged();
     }
 }

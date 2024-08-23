@@ -19,12 +19,6 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Dokumenty MM-</MudText>
         <MudSpacer />
-        <MudButton @onclick="OpenCreateMmmTab"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary">
-            Utwórz MM
-        </MudButton>
-
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>
@@ -100,19 +94,6 @@
     };
 
     private List<EventCallback> callbacksOnAddMmm = new();
-
-    private void OpenCreateMmmTab()
-    {
-        var tabId = Guid.NewGuid();
-
-        callbacksOnAddMmm = new List<EventCallback>
-        {
-            EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
-            EventCallback.Factory.Create(this, table.ReloadServerData)
-        };
-
-        //onePageState.AddTab(new TabView("Tworzenie WZ", new AddWz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
-    }
 
     private async Task<TableData<MmmVM>> ServerReload(TableState state, CancellationToken token)
     {

@@ -1,0 +1,169 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Documents
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IDataService<CreateMmmVM> createMmmDataService
+@inject IDataService<WarehouseVM> warehouseDataService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudForm Model="@model"
+         @ref="@form"
+         Validation="@(validator.ValidateValue)"
+         ValidationDelay="0" Spacing="4">
+
+    <MudSelect T="string"
+               @bind-Value="model.IssueWarehouseId"
+               Label="Magazyn wydający"
+               AnchorOrigin="Origin.BottomCenter"
+               For="@(() => model.IssueWarehouseId)"
+               Immediate="true"
+               Disabled="@(model.WarehouseUnits.Count > 0)">
+        @foreach (var warehouse in warehouses)
+        {
+            <MudSelectItem Value="@warehouse.WarehouseId">
+                [@warehouse.WarehouseId] @warehouse.WarehouseName
+            </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudDatePicker Label="Data wydania dokumentu"
+                   @bind-Date="model.DocumentIssueDate"
+                   For="@(() => model.DocumentIssueDate)" />
+
+    <MudTextField T="string"
+                  @bind-Value="model.Comment"
+                  For="@(() => model.Comment)"
+                  Immediate="true"
+                  Label="Uwagi"
+                  Lines="3" />
+
+    <MudTextField @bind-Value="model.AssignedEmployeeId"
+                  For="@(() => model.AssignedEmployeeId)"
+                  Label="Przypisany pracownik"
+                  Disabled />
+
+    <MudDatePicker Label="Data wydania"
+                   @bind-Date="model.GoodsReleaseDate"
+                   For="@(() => model.GoodsReleaseDate)" />
+
+    <MudSelect T="string"
+               @bind-Value="model.ToWarehouseId"
+               Label="Odbiorca"
+               AnchorOrigin="Origin.BottomCenter"
+               For="@(() => model.ToWarehouseId)">
+        @foreach (var warehouse in warehouses)
+        {
+            <MudSelectItem Value="@warehouse.WarehouseId">
+                [@warehouse.WarehouseId] @warehouse.WarehouseName
+            </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudButton @onclick="OpenDialogAsync"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(model.IssueWarehouseId == null)">
+        Dodaj pozycje
+    </MudButton>
+
+    <MudDataGrid T="WarehouseUnitVM"
+                 Items="@model.WarehouseUnits"
+                 Dense>
+        <Columns>
+            <PropertyColumn Title="Id jednostki magazynowej" Property="x => x.WarehouseUnitId" />
+            <PropertyColumn Title="Id magazynu" Property="x => x.WarehouseId" />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate Context="item">
+                    <MudStack Row>
+                        <MudIconButton Size="@Size.Small"
+                                       Icon="@Icons.Material.Outlined.Delete"
+                                       OnClick="@(() => { model.WarehouseUnits.Remove(item.Item); StateHasChanged(); })" />
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary" Class="ml-auto"
+               OnClick="@(async () => await Submit())"
+               Disabled="@(model.WarehouseUnits.Count == 0 || model.ToWarehouseId == null)">
+        Utwórz
+    </MudButton>
+</MudForm>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    private CreateMmmVM model = new();
+    private MudForm form;
+    private CreateMmmVMValidator validator = new();
+    private List<WarehouseVM> warehouses = new();
+    private List<string> responseErrors = new();
+    [Parameter]
+    public List<EventCallback>? EventCallbacks { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var warehouseResponse = await warehouseDataService.GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500, "", ""));
+        warehouses = warehouseResponse.Items.ToList();
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+        var parameters = new DialogParameters<AddMmmItemDialogForm>
+        {
+            { x => x.WarehouseUnitVMs, EventCallback.Factory.Create<List<WarehouseUnitVM>>(this, OnGet) },
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
+            { x => x.WarehouseId, model.IssueWarehouseId }
+        };
+        return DialogService.ShowAsync<AddMmmItemDialogForm>(null, parameters, options);
+    }
+
+    private void OnGet(List<WarehouseUnitVM> warehouseUnitVMs)
+    {
+        model.WarehouseUnits = warehouseUnitVMs;
+    }
+
+    private async Task Submit()
+    {
+        responseErrors = new();
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var response = await createMmmDataService.Create(@"api/v1/Mmm", model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                model = new();
+                var json = await response.Content.ReadAsStringAsync();
+                var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
+
+                Snackbar.Configuration.PositionClass = "Bottom-End";
+                Snackbar.Add(new MarkupString($"Utworzono <strong>{responseObj?.DocumentId}</strong>"), Severity.Success);
+
+                EventCallbacks?.ForEach(async x => await x.InvokeAsync());
+            }
+            else
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                StateHasChanged();
+            }
+        }
+    }
+}

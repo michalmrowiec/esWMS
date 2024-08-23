@@ -82,20 +82,20 @@
 @code {
     private void OpenCreateMmTab()
     {
-        // var tabId = Guid.NewGuid();
+        var tabId = Guid.NewGuid();
 
-        // var callbacksOnAddMm = new List<EventCallback>
-        // {
-        //     EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
-        //     EventCallback.Factory.Create(this, () => onePageState.AddTab(new TabView("MM-", new MmmTable(), Guid.NewGuid(), Icons.Material.Filled.List)))
-        // };
+        var callbacksOnAddMm = new List<EventCallback>
+        {
+            EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
+            EventCallback.Factory.Create(this, () => onePageState.AddTab(new TabView("MM-", new MmmTable(), Guid.NewGuid(), Icons.Material.Filled.List)))
+        };
 
-        // onePageState.AddTab(
-        //     new TabView(
-        //         "Tworzenie MM",
-        //         new AddMm(),
-        //         tabId,
-        //         Icons.Material.Filled.NoteAdd,
-        //         new() { { "EventCallbacks", callbacksOnAddMm } }));
+        onePageState.AddTab(
+            new TabView(
+                "Tworzenie MM",
+                new AddMmm(),
+                tabId,
+                Icons.Material.Filled.NoteAdd,
+                new() { { "EventCallbacks", callbacksOnAddMm } }));
     }
 }

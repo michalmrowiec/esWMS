@@ -1,6 +1,4 @@
 ﻿using esMWS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Application.Functions.Documents.BaseDocumentFunctions.Command;
-using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
 using esWMS.Application.Responses;
 using MediatR;
 

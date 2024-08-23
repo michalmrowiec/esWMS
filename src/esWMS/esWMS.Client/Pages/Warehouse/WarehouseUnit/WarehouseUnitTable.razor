@@ -14,13 +14,16 @@
           Hover="true"
           @ref="table"
           RowClass="cursor-pointer"
-          OnRowClick="RowClickEvent">
+          OnRowClick="RowClickEvent"
+          MultiSelection="@(TypeOfSelection == SelectionType.Multi)"
+          @bind-SelectedItems="selectedWarehouseUnits">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Jednostki magazynowe</MudText>
         <MudSpacer />
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
-                   Color="Color.Primary">
+                   Color="Color.Primary"
+                   hidden="@(TypeOfSelection == SelectionType.Multi)">
             Utwórz jednostkę
         </MudButton>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
@@ -31,13 +34,17 @@
             <MudTableSortLabel SortLabel="WarehouseUnitId" T="WarehouseUnitVM">
                 Id
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseUnitId" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="WarehouseUnitId"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="WarehouseId" T="WarehouseUnitVM">
                 Id magazynu
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseId" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter Disabled="@(WarehouseIdFilter != null)"
+                                  SearchOptions="searchOptions" Column="WarehouseId"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
 
     </HeaderContent>
@@ -56,12 +63,25 @@
     </PagerContent>
 </MudTable>
 
+@if (TypeOfSelection == SelectionType.Multi)
+{
+    <MudButton @onclick="SubmitSelection"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               hidden="@(TypeOfSelection != SelectionType.Multi)">
+        Potwierdź
+    </MudButton>
+}
+
 @code {
     [Parameter]
-    public EventCallback<WarehouseUnitVM> SelectedWarehoseUnit { get; set; }
+    public SelectionType TypeOfSelection { get; set; }
+    [Parameter]
+    public string? WarehouseIdFilter { get; set; }
+    [Parameter]
+    public EventCallback<HashSet<WarehouseUnitVM>> SelectedWarehouseUnits { get; set; }
 
-    private IEnumerable<WarehouseUnitVM> Products = [];
-
+    private HashSet<WarehouseUnitVM> selectedWarehouseUnits { get; set; } = new();
     private IEnumerable<WarehouseUnitVM> pagedData;
     private MudTable<WarehouseUnitVM> table;
 
@@ -72,6 +92,15 @@
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") }
     };
+
+    protected override void OnInitialized()
+    {
+        if (WarehouseIdFilter != null)
+        {
+            searchOptions["WarehouseId"].Operator = "==";
+            searchOptions["WarehouseId"].Value = WarehouseIdFilter;
+        }
+    }
 
     private async Task<TableData<WarehouseUnitVM>> ServerReload(TableState state, CancellationToken token)
     {
@@ -100,7 +129,23 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<WarehouseUnitVM> tableRowClickEventArgs)
     {
-        await SelectedWarehoseUnit.InvokeAsync(tableRowClickEventArgs.Item);
+        if (TypeOfSelection == SelectionType.Single)
+        {
+            if (tableRowClickEventArgs.Item != null)
+            {
+                selectedWarehouseUnits.Add(tableRowClickEventArgs.Item);
+            }
+            await SelectedWarehouseUnits.InvokeAsync(selectedWarehouseUnits);
+        }
+        else if (TypeOfSelection == SelectionType.None) // im not sure about that <-
+        {
+            // open details tab
+        }
+    }
+
+    private async Task SubmitSelection()
+    {
+        await SelectedWarehouseUnits.InvokeAsync(selectedWarehouseUnits);
     }
 
     private Task OpenDialogAsync()
@@ -111,5 +156,12 @@
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddWarehouseUnitDialogForm>(null, parameters, options);
+    }
+
+    public enum SelectionType
+    {
+        Single,
+        Multi,
+        None
     }
 }

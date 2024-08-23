@@ -40,10 +40,14 @@ namespace esWMS.Application.Mappings
         {
             CreateMap<CreateProductCommand, Product>();
             CreateMap<Product, ProductDto>()
-                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                .ReverseMap();
+
+            //CreateMap<ProductDto, Product>();
 
             CreateMap<CreateCategoryCommand, Category>();
-            CreateMap<Category, CategoryDto>();
+            CreateMap<Category, CategoryDto>()
+                .ReverseMap();
 
             CreateMap<Contractor, ContractorDto>();
 
@@ -59,22 +63,24 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreateWarehouseUnitItemCommand, WarehouseUnitItem>();
             CreateMap<WarehouseUnitItem, WarehouseUnitItemDto>();
-            CreateMap<WarehouseUnitItem, DocumentItem>()
-                .ForMember(di => di.ProductId, opt => opt.MapFrom(wui => wui.ProductId))
-                .ForMember(di => di.ProductCode, opt => opt.MapFrom(wui => wui.Product.ProductCode))
-                .ForMember(di => di.EanCode, opt => opt.MapFrom(wui => wui.Product.EanCode))
-                .ForMember(di => di.Quantity, opt => opt.MapFrom(wui => wui.Quantity))
-                .ForMember(di => di.BestBefore, opt => opt.MapFrom(wui => wui.BestBefore))
-                .ForMember(di => di.BatchLot, opt => opt.MapFrom(wui => wui.BatchLot))
-                .ForMember(di => di.SerialNumber, opt => opt.MapFrom(wui => wui.SerialNumber))
-                .ForMember(di => di.Price, opt => opt.MapFrom(wui => wui.Price))
-                .ForMember(di => di.Currency, opt => opt.MapFrom(wui => wui.Currency));
+            //CreateMap<WarehouseUnitItem, DocumentItem>()
+            //    .ForMember(di => di.ProductId, opt => opt.MapFrom(wui => wui.ProductId))
+            //    .ForMember(di => di.ProductCode, opt => opt.MapFrom(wui => wui.Product.ProductCode))
+            //    .ForMember(di => di.EanCode, opt => opt.MapFrom(wui => wui.Product.EanCode))
+            //    .ForMember(di => di.ProductName, opt => opt.MapFrom(wui => wui.Product.ProductName))
+            //    .ForMember(di => di.Quantity, opt => opt.MapFrom(wui => wui.Quantity))
+            //    .ForMember(di => di.BestBefore, opt => opt.MapFrom(wui => wui.BestBefore))
+            //    .ForMember(di => di.BatchLot, opt => opt.MapFrom(wui => wui.BatchLot))
+            //    .ForMember(di => di.SerialNumber, opt => opt.MapFrom(wui => wui.SerialNumber))
+            //    .ForMember(di => di.Price, opt => opt.MapFrom(wui => wui.Price))
+            //    .ForMember(di => di.Currency, opt => opt.MapFrom(wui => wui.Currency));
 
             CreateMap<CreateZoneCommand, Zone>();
             CreateMap<Zone, ZoneDto>();
 
             CreateMap<CreateLocationCommand, Location>();
-            CreateMap<Location, LocationDto>();
+            CreateMap<Location, LocationDto>()
+                .ReverseMap();
 
             CreateMap<CreateContractorCommand, Contractor>();
             CreateMap<Contractor, ContractorDto>();
