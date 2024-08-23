@@ -1,5 +1,4 @@
-﻿using esWMS.Application.Functions.WarehouseUnitItems;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
 {
@@ -26,16 +25,23 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
             RuleFor(x => x.WarehouseUnits)
                 .Custom((value, context) =>
                 {
+                    if (value.Any(wu => wu.IsBlocked))
+                    {
+                        context.AddFailure(
+                            "WarehouseUnits",
+                            $"The following warehouse units are blocked: {string.Join(", ", value.Where(wu => wu.IsBlocked))}.");
+                    }
+
                     var wuis = value.SelectMany(wu => wu.WarehouseUnitItems).ToList();
 
                     foreach (var wui in wuis)
                     {
-                        if(wui.Quantity <= 0)
+                        if (wui.Quantity <= 0)
                         {
 
                         }
 
-                        if(wui.BlockedQuantity != 0)
+                        if (wui.BlockedQuantity != 0)
                         {
                             context.AddFailure(
                                 "WarehouseUnits",

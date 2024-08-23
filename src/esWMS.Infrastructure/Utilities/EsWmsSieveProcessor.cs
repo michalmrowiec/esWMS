@@ -94,6 +94,9 @@ namespace esWMS.Infrastructure.Utilities
             mapper.Property<WarehouseUnit>(x => x.WarehouseUnitId)
                 .CanSort()
                 .CanFilter();
+            mapper.Property<WarehouseUnit>(x => x.IsBlocked)
+                .CanSort()
+                .CanFilter();
 
             mapper.Property<WarehouseUnitItem>(x => x.WarehouseUnitItemId)
                 .CanSort()

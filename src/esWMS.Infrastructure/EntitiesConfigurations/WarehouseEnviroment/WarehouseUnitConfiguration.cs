@@ -18,6 +18,10 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .IsRequired()
                 .HasMaxLength(3);
 
+            builder.Property(wu => wu.IsBlocked)
+                .HasDefaultValue(false)
+                .IsRequired();
+
             builder.Property(wu => wu.CreatedAt)
                 .IsRequired();
 

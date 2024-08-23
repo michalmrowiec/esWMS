@@ -46,11 +46,20 @@
                                   SearchOptions="searchOptions" Column="WarehouseId"
                                   OnChangedAction="OnSearch" />
         </MudTh>
-
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsBlocked" T="WarehouseUnitVM">
+                Zablokowana
+            </MudTableSortLabel>
+            <BoolColumnTableFilter Disabled="ShowOnlyUnblocked"
+                                   SearchOptions="searchOptions"
+                                   Column="IsBlocked"
+                                   OnChangedAction="OnSearch" />
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
+        <MudTd DataLabel="Zablokowana">@context.IsBlocked</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -79,6 +88,8 @@
     [Parameter]
     public string? WarehouseIdFilter { get; set; }
     [Parameter]
+    public bool ShowOnlyUnblocked { get; set; } = false;
+    [Parameter]
     public EventCallback<HashSet<WarehouseUnitVM>> SelectedWarehouseUnits { get; set; }
 
     private HashSet<WarehouseUnitVM> selectedWarehouseUnits { get; set; } = new();
@@ -90,7 +101,8 @@
     private Dictionary<string, FilterOption> searchOptions = new()
     {
         { "WarehouseUnitId", new("WarehouseUnitId") },
-        { "WarehouseId", new("WarehouseId") }
+        { "WarehouseId", new("WarehouseId") },
+        { "IsBlocked", new("IsBlocked", "==", string.Empty) }
     };
 
     protected override void OnInitialized()
@@ -99,6 +111,11 @@
         {
             searchOptions["WarehouseId"].Operator = "==";
             searchOptions["WarehouseId"].Value = WarehouseIdFilter;
+        }
+        if (ShowOnlyUnblocked)
+        {
+            searchOptions["IsBlocked"].Operator = "==";
+            searchOptions["IsBlocked"].Value = "false";
         }
     }
 

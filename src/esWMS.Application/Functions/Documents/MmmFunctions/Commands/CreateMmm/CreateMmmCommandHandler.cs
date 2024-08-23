@@ -68,11 +68,6 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
             entityMmm.CreatedAt = DateTime.Now;
             entityMmm.CreatedBy = request.CreatedBy;
 
-            Dictionary<string, int> warehouseUnitItemsQuantityToBlockSubstract =
-                request.WarehouseUnits
-                .SelectMany(wu => wu.WarehouseUnitItems)
-                .ToDictionary(key => key.WarehouseUnitItemId, item => item.Quantity);
-
             foreach (var wui in request.WarehouseUnits.SelectMany(wu => wu.WarehouseUnitItems))
             {
                 //wui.Product = products.First(p => p.ProductId.Equals(wui.ProductId));
@@ -118,8 +113,8 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
 
                 var createdMmm = await _mmmRepository.CreateAsync(entityMmm);
 
-                var warehouseUnitItems = await _warehouseUnitItemRepository
-                      .BlockExistWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlockSubstract);
+                var warehouseUnits = await _warehouseUnitRepository
+                    .BlockWarehouseUnitsWithAllItemsAsync(request.WarehouseUnits.Select(wu => wu.WarehouseUnitId).ToArray());
 
                 await _transactionManager.CommitTransactionAsync();
 
