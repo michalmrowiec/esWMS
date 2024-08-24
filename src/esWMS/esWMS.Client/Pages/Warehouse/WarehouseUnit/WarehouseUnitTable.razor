@@ -29,7 +29,14 @@
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>
+    <ColGroup>
+        <col style="width:auto;" />
+        <col />
+        <col />
+        <col />
+    </ColGroup>
     <HeaderContent>
+        <MudTh></MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="WarehouseUnitId" T="WarehouseUnitVM">
                 Id
@@ -57,12 +64,72 @@
         </MudTh>
     </HeaderContent>
     <RowTemplate>
+        <MudTd>
+            <MudButton Variant="Variant.Outlined"
+                       Size="Size.Small"
+                       OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">@((wuIdShow[context.WarehouseUnitId] == true) ? $"Ukryj pozycje ({context.WarehouseUnitItems.Count})" : $"Pokaż pozycje ({context.WarehouseUnitItems.Count})")</MudButton>
+        </MudTd>
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
         <MudTd DataLabel="Zablokowana">
             <MudCheckBox @bind-Value="@context.IsBlocked" Size="Size.Small" Disabled="true"></MudCheckBox>
         </MudTd>
     </RowTemplate>
+    <ChildRowContent>
+        @if (wuIdShow[context.WarehouseUnitId] == true)
+        {
+            <MudTr>
+                <td colspan="4">
+                    <MudCard Elevation="0" Style="margin-left:50px;">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body2">Pozycje jednostki: <strong>@context.WarehouseUnitId</strong></MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent Class="pa-0">
+                            <MudTable Items="@context.WarehouseUnitItems.OrderBy(x => x.ProductId)"
+                                      Context="WuiContext"
+                                      Hover="true"
+                                      Breakpoint="Breakpoint.Sm"
+                                      Elevation="0"
+                                      Dense
+                                      Bordered
+                                      Striped>
+                                <ColGroup>
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                </ColGroup>
+                                <HeaderContent>
+                                    <MudTh>Id pozycji</MudTh>
+                                    <MudTh>Id magazynu</MudTh>
+                                    <MudTh>Id produktu</MudTh>
+                                    <MudTh>Nazwa produktu</MudTh>
+                                    <MudTh>Ilość</MudTh>
+                                    <MudTh>Zablokowane</MudTh>
+                                    <MudTh>Dostępne</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
+                                    <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
+                                    <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                                    <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
+                                    <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
+                                    <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
+                                    <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudCardContent>
+                    </MudCard>
+                </td>
+            </MudTr>
+            <MudDivider />
+        }
+    </ChildRowContent>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
     </NoRecordsContent>
@@ -97,6 +164,7 @@
     private HashSet<WarehouseUnitVM> selectedWarehouseUnits { get; set; } = new();
     private IEnumerable<WarehouseUnitVM> pagedData;
     private MudTable<WarehouseUnitVM> table;
+    private Dictionary<string, bool> wuIdShow = new();
 
     private int totalItems;
 
@@ -106,6 +174,11 @@
         { "WarehouseId", new("WarehouseId") },
         { "IsBlocked", new("IsBlocked", "==", string.Empty) }
     };
+
+    private void ShowBtnPress(string id)
+    {
+        wuIdShow[id] = !wuIdShow[id];
+    }
 
     protected override void OnInitialized()
     {
@@ -137,6 +210,8 @@
         }
 
         var response = await warehouseUnitService.GetPagedResult(@"api/v1/WarehouseUnit/get-filtered", sm);
+
+        wuIdShow = response.Items.ToDictionary(key => key.WarehouseUnitId, value => false);
 
         return new TableData<WarehouseUnitVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }

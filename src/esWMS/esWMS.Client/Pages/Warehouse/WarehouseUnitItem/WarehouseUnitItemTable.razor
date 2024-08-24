@@ -104,7 +104,9 @@
         <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
     </RowTemplate>
     <GroupHeaderTemplate>
-        <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"{context.GroupName}: {context.Key}")</MudTh>
+        <MudTh onclick="@(() => OnClickGroup(context.Key))"
+               Class="mud-table-cell-custom-group"
+               colspan="3">@($"{context.GroupName}: {context.Key}")</MudTh>
     </GroupHeaderTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -211,5 +213,10 @@
     private async Task RowClickEvent(TableRowClickEventArgs<WarehouseUnitItemVM> tableRowClickEventArgs)
     {
         await SelectedWarehoseUnitItem.InvokeAsync(tableRowClickEventArgs.Item);
+    }
+
+    private void OnClickGroup(object? item)
+    {
+        //Console.WriteLine($"Clicked on item gropu: {item?.ToString()} type: {item?.GetType()}");
     }
 }

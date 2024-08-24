@@ -65,6 +65,7 @@ namespace esWMS.Infrastructure.Repositories
             var items = _context
                 .WarehouseUnits
                 .Include(x => x.WarehouseUnitItems)
+                    .ThenInclude(x => x.Product)
                 .AsNoTracking()
                 .AsQueryable();
 
