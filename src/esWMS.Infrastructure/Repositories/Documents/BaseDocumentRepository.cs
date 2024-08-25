@@ -30,6 +30,7 @@ namespace esWMS.Infrastructure.Repositories.Documents
                 },
                 { typeof(MMM), (query) => (IQueryable<TDocument>)((IQueryable<MMM>)query)
                     .Include(x => x.ToWarehouse)
+                    .Include(x => x.RelatedMmp)
                 },
                 { typeof(MMP), (query) => (IQueryable<TDocument>)((IQueryable<MMP>)query)
                     .Include(x => x.FromWarehouse)

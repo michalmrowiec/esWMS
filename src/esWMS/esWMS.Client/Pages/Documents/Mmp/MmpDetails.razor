@@ -3,31 +3,35 @@
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
-@inject IDataService<WzVM> wzDataService
+@inject IDataService<MmpVM> mmpDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Numer dokumentu:</strong> @WzVM.DocumentId
+    <strong>Numer dokumentu:</strong> @MmpVM.DocumentId
+</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Numer powiązanego dokumentu MM-:</strong> @MmpVM.RelatedMmmId
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Magazyn wydający:</strong>
-    [@WzVM.IssueWarehouseId] @WzVM.IssueWarehouse?.WarehouseName
+    [@MmpVM.IssueWarehouseId] @MmpVM.IssueWarehouse?.WarehouseName
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Komentarz:</strong> @WzVM.Comment
+    <strong>Komentarz:</strong> @MmpVM.Comment
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Data wystawienia dokumentu:</strong>
-    @WzVM.DocumentIssueDate.ToString("dd-MM-yyyy")
+    @MmpVM.DocumentIssueDate.ToString("dd-MM-yyyy")
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Zatwierdzono: </strong>
-    @if (WzVM.IsApproved)
+    @if (MmpVM.IsApproved)
     {
         <span>TAK</span>
     }
@@ -38,24 +42,26 @@
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Data wydania towaru:</strong>
-    @WzVM.GoodsReleaseDate?.ToString("dd-MM-yyyy")
+    <strong>Data przyjęcia towaru:</strong>
+    @MmpVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Kontrahent:</strong>
-    [@WzVM.RecipientContractorId] @WzVM.RecipientContractor?.ContractorName
+    <strong>Magazyn wysyłający: </strong>
+    [@MmpVM.FromWarehouseId] @MmpVM.FromWarehouse?.WarehouseName
 </MudText>
 
 <MudDataGrid T="DocumentItemVM"
-             Items="@WzVM.DocumentItems"
+             Items="@MmpVM.DocumentItems"
              EditMode="DataGridEditMode.Cell"
              Class="mb-3"
              Dense
              Hover
              Bordered>
     <Columns>
-        <PropertyColumn Property="x => x.ProductId" Title="Id" />
+        <PropertyColumn Property="x => x.DocumentItemId" Title="Id" />
+        <PropertyColumn Property="x => x.DocumentId" Title="Id dokumentu" />
+        <PropertyColumn Property="x => x.ProductId" Title="Id produktu" />
         <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
         <PropertyColumn Property="x => x.ProductName" Title="Nazwa" />
         <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
@@ -65,7 +71,13 @@
                     <MudCheckBox Value="@context.Item.IsApproved" Disabled />
                     @if (!context.Item.IsApproved)
                     {
-                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                        @* <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                    Size="@Size.Small"
+                    Variant="@Variant.Filled"
+                    Color="@Color.Primary">
+                    Zatwierdź
+                    </MudButton> *@
+                        <MudButton Disabled
                                    Size="@Size.Small"
                                    Variant="@Variant.Filled"
                                    Color="@Color.Primary">
@@ -78,10 +90,10 @@
     </Columns>
 </MudDataGrid>
 
-@if (WzVM.DocumentItems.All(x => x.IsApproved) &&
- !WzVM.IsApproved)
+@if (MmpVM.DocumentItems.All(x => x.IsApproved) &&
+!MmpVM.IsApproved)
 {
-    <MudButton OnClick="@(() => ApproveWz())"
+    <MudButton OnClick="@(() => ApproveMmp())"
                Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
@@ -89,7 +101,7 @@
         Zatwierdź
     </MudButton>
 }
-else if (WzVM.IsApproved)
+else if (MmpVM.IsApproved)
 {
     <MudButton Size="@Size.Small"
                Variant="@Variant.Filled"
@@ -125,62 +137,62 @@ else
 
 @code {
     [Parameter]
-    public WzVM WzVM { get; set; } = new();
+    public MmpVM MmpVM { get; set; } = new();
 
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
 
     private List<string> responseErrors = new();
 
-    private Task OpenDialogAsync(DocumentItemVM documentItem)
-    {
-        InvokeAsync(RefreshWz);
-        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApproveWzItemDialogForm>
-        {
-            { x => x.DocumentItemVM, documentItem},
-            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
-        };
-        return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
-    }
+    // private Task OpenDialogAsync(DocumentItemVM documentItem)
+    // {
+    //     InvokeAsync(RefreshWz);
+    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+    //     var parameters = new DialogParameters<ApproveWzItemDialogForm>
+    //     {
+    //         { x => x.DocumentItemVM, documentItem},
+    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
+    //     };
+    //     return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
+    // }
 
-    private async Task RefreshWz()
+    private async Task RefreshMmp()
     {
         var sm = new SieveModelVM();
 
         sm.Page = 1;
         sm.PageSize = 1;
-        sm.Filters = $"DocumentId=={WzVM.DocumentId}";
+        sm.Filters = $"DocumentId=={MmpVM.DocumentId}";
 
-        var response = await wzDataService.GetPagedResult(@"api/v1/Wz/get-filtered", sm);
+        var response = await mmpDataService.GetPagedResult(@"api/v1/Mmp/get-filtered", sm);
 
         if (response.Items.FirstOrDefault() != null)
         {
-            WzVM = response.Items.First();
+            MmpVM = response.Items.First();
         }
 
         StateHasChanged();
     }
 
-    public async Task ApproveWz()
+    public async Task ApproveMmp()
     {
-        var response = await documentDataService.ApproveDocument(@"api/v1/Wz/approve", new { DocumentId = WzVM.DocumentId });
+        // var response = await documentDataService.ApproveDocument(@"api/v1/Mmp/approve", new { DocumentId = MmpVM.DocumentId });
 
-        if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        {
-            var json = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<WzVM>(json);
+        // if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        // {
+        //     var json = await response.Content.ReadAsStringAsync();
+        //     var responseObj = JsonConvert.DeserializeObject<WzVM>(json);
 
-            await RefreshWz();
+        //     await RefreshMmp();
 
-            Snackbar.Configuration.PositionClass = "Bottom-End";
-            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{WzVM.DocumentId}</strong>"), Severity.Success);
+        //     Snackbar.Configuration.PositionClass = "Bottom-End";
+        //     Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{MmpVM.DocumentId}</strong>"), Severity.Success);
 
-        }
-        else
-        {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
-        }
+        // }
+        // else
+        // {
+        //     var json = await response.Content.ReadAsStringAsync();
+        //     responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        // }
     }
 }

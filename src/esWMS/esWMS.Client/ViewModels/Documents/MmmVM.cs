@@ -8,6 +8,7 @@ namespace esWMS.Client.ViewModels.Documents
         public string ToWarehouseId { get; set; } = null!;
 
         public WarehouseVM? ToWarehouse { get; set; }
+        public MmpVM? RelatedMmp { get; set; }
     }
 
     public class CreateMmmVM

@@ -12,6 +12,10 @@
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Numer powiązanego dokumentu MM+:</strong> @MmmVM.RelatedMmp?.DocumentId
+</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-3">
     <strong>Magazyn wydający:</strong>
     [@MmmVM.IssueWarehouseId] @MmmVM.IssueWarehouse?.WarehouseName
 </MudText>
@@ -21,7 +25,7 @@
 </MudText>
 
 <MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Data wydania dokumentu:</strong>
+    <strong>Data wystawienia dokumentu:</strong>
     @MmmVM.DocumentIssueDate.ToString("dd-MM-yyyy")
 </MudText>
 
@@ -89,7 +93,7 @@
 @if (MmmVM.DocumentItems.All(x => x.IsApproved) &&
 !MmmVM.IsApproved)
 {
-    <MudButton OnClick="@(() => ApproveWz())"
+    <MudButton OnClick="@(() => ApproveMmm())"
                Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
@@ -170,7 +174,7 @@ else
         StateHasChanged();
     }
 
-    public async Task ApproveWz()
+    public async Task ApproveMmm()
     {
         var response = await documentDataService.ApproveDocument(@"api/v1/Mmm/approve", new { DocumentId = MmmVM.DocumentId });
 
