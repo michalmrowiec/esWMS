@@ -87,8 +87,8 @@
     {
         { "DocumentId", new("DocumentId") },
         { "IssueWarehouseId", new("IssueWarehouseId") },
-        { "DocumentIssueDateStart", new("DateFilter", ">=") },
-        { "DocumentIssueDateEnd", new("DateFilter", "<=") },
+        { "DocumentIssueDateStart", new("DocumentIssueDate", ">=") },
+        { "DocumentIssueDateEnd", new("DocumentIssueDate", "<=") },
         { "IsApproved", new("IsApproved", "==", string.Empty) },
         { "FromWarehouseId", new("FromWarehouseId") }
     };

@@ -5,6 +5,8 @@ using esWMS.Application.Contracts.Utilities;
 using esWMS.Infrastructure.Repositories;
 using esWMS.Infrastructure.Repositories.Documents;
 using esWMS.Infrastructure.Utilities;
+using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
+using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
