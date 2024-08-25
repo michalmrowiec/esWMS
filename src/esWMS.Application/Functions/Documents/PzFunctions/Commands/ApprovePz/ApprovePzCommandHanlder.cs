@@ -71,7 +71,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<PzDto>(false, "Something went wrong.");
+                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<PzDto>(mappedUpdatedDocument);

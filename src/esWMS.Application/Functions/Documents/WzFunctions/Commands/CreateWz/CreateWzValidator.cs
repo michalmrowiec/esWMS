@@ -57,7 +57,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 
                     var warehouseUnitItems = warehouseUnitItemsResponse.ReturnedObj?.Items ?? [];
 
-                    if (!warehouseUnitItemsResponse.Success)
+                    if (!warehouseUnitItemsResponse.IsSuccess())
                     {
                         context.AddFailure("DocumentItems", "Something went wrong.");
                     }

@@ -24,7 +24,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                     var documentResponse = await _mediator.Send(new GetPzByIdQuery(value.DocumentId));
                     var document = documentResponse.ReturnedObj;
 
-                    if (!documentResponse.Success || document == null)
+                    if (!documentResponse.IsSuccess() || document == null)
                     {
                         context.AddFailure("DocumentId", $"The document by Id: {value} does not exist.");
                     }
@@ -68,7 +68,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                             new GetWarehouseUnitsByIdsQuery(warehouseUnitIds));
                         var warehouseUnit = warehouseUnitResponse.ReturnedObj;
 
-                        if (!warehouseUnitResponse.Success || warehouseUnit == null)
+                        if (!warehouseUnitResponse.IsSuccess() || warehouseUnit == null)
                         {
                             context.AddFailure("Somenthing went wrong");
                         }

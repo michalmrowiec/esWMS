@@ -24,14 +24,14 @@ namespace esWMS.Application.Functions.Documents.BaseDocumentFunctions.Queries.Ge
 
                 if (document == null)
                 {
-                    return new BaseResponse<PzDto>(false, "The document does not exist.");
+                    return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.NotFound, "The document does not exist.");
                 }
 
                 baseDocumentDto = _mapper.Map<PzDto>(document);
             }
             catch (Exception ex)
             {
-                return new BaseResponse<PzDto>(false, "Something went wrong.");
+                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<PzDto>(baseDocumentDto);

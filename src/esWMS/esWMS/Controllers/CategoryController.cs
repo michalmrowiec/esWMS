@@ -33,18 +33,21 @@ namespace esWMS.Controllers
         {
             var result = await _mediator.Send(new GetSortedFilteredCategoriesQuery(sieveModel));
 
-            if (result is BaseResponse<PagedResult<CategoryDto>> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else
-                {
-                    return BadRequest(r.Message);
-                }
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
 
         [HttpPost]
@@ -55,18 +58,21 @@ namespace esWMS.Controllers
 
             var result = await _mediator.Send(createCategoryCommand);
 
-            if (result is BaseResponse<CategoryDto> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Created("", r.ReturnedObj);
-                }
-                else if (r.ValidationErrors?.Any() ?? false)
-                {
+                case BaseResponse.ResponseStatus.Success:
+                    return Created("", result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
-                }
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
     }
 }

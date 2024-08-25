@@ -38,62 +38,71 @@ namespace esWMS.Controllers.Documents
 
             var result = await _mediator.Send(createPzCommand);
 
-            if (result is BaseResponse<PzDto> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Created("", r.ReturnedObj);
-                }
-                else if (r.ValidationErrors?.Any() ?? false)
-                {
+                case BaseResponse.ResponseStatus.Success:
+                    return Created("", result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
-                }
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
 
         [HttpPatch("approve-items")]
-        public async Task<ActionResult<BaseResponse<PzDto>>> ApprovePzItems([FromBody] ApprovePzItemsCommand approvePzItemsCommand)
+        public async Task<ActionResult<PzDto>> ApprovePzItems([FromBody] ApprovePzItemsCommand approvePzItemsCommand)
         {
             if (_userContextService.GetUserId is not null)
                 approvePzItemsCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
             var result = await _mediator.Send(approvePzItemsCommand);
 
-            if (result is BaseResponse<PzDto> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else if (r.ValidationErrors?.Any() ?? false)
-                {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
-                }
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
 
         [HttpPatch("approve")]
-        public async Task<ActionResult<BaseResponse<PzDto>>> ApprovePz([FromBody] ApprovePzCommand approvePzCommand)
+        public async Task<ActionResult<PzDto>> ApprovePz([FromBody] ApprovePzCommand approvePzCommand)
         {
             if (_userContextService.GetUserId is not null)
                 approvePzCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
             var result = await _mediator.Send(approvePzCommand);
 
-            if (result is BaseResponse<PzDto> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else if (r.ValidationErrors?.Any() ?? false)
-                {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
-                }
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
 
         [HttpPost("get-filtered")]
@@ -101,18 +110,21 @@ namespace esWMS.Controllers.Documents
         {
             var result = await _mediator.Send(new GetSortedFilteredPzQuery(sieveModel));
 
-            if (result is BaseResponse<PagedResult<PzDto>> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else
-                {
-                    return BadRequest(r.Message);
-                }
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
     }
 }

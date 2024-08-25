@@ -1,14 +1,12 @@
 ﻿using esMWS.Domain.Models;
-using esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm;
-using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Documents.MmpFunctions;
+using esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetSortedFilteredMmp;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp;
 
 namespace esWMS.Controllers.Documents
 {
@@ -36,22 +34,25 @@ namespace esWMS.Controllers.Documents
         {
             var result = await _mediator.Send(new GetSortedFilteredMmpQuery(sieveModel));
 
-            if (result is BaseResponse<PagedResult<MmpDto>> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else
-                {
-                    return BadRequest(r.Message);
-                }
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
 
         [HttpPatch("approve")]
-        public async Task<ActionResult<BaseResponse<MmpDto>>> ApproveMmp(
+        public async Task<ActionResult<MmpDto>> ApproveMmp(
             [FromBody] ApproveMmpCommand approveMmpCommand)
         {
             if (_userContextService.GetUserId is not null)
@@ -59,18 +60,21 @@ namespace esWMS.Controllers.Documents
 
             var result = await _mediator.Send(approveMmpCommand);
 
-            if (result is BaseResponse<MmpDto> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else if (r.ValidationErrors?.Any() ?? false)
-                {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
-                }
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
     }
 }

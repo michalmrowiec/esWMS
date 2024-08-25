@@ -23,14 +23,14 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById
 
                 if (document == null)
                 {
-                    return new BaseResponse<WzDto>(false, "The document does not exist.");
+                    return new BaseResponse<WzDto>(BaseResponse.ResponseStatus.NotFound, "The document does not exist.");
                 }
 
                 baseDocumentDto = _mapper.Map<WzDto>(document);
             }
             catch (Exception ex)
             {
-                return new BaseResponse<WzDto>(false, "Something went wrong.");
+                return new BaseResponse<WzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<WzDto>(baseDocumentDto);

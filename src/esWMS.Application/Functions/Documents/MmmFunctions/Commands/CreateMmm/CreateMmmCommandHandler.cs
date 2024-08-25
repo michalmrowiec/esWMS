@@ -42,9 +42,9 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
 
             List<ProductDto> products = productResponse.ReturnedObj?.Items.ToList() ?? [];
 
-            if (!productResponse.Success || products.Count == 0)
+            if (!productResponse.IsSuccess() || products.Count == 0)
             {
-                return new BaseResponse<MmmDto>(false, "Something went wrong.");
+                return new BaseResponse<MmmDto>(productResponse.Status, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
             }
 
             var validationResult = await new CreateMmmValidator().ValidateAsync(request, cancellationToken);
@@ -58,7 +58,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
 
             if (entityMmm == null)
             {
-                return new BaseResponse<MmmDto>(false, "Something went wrong.");
+                return new BaseResponse<MmmDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             var lastNumberMmm = await _mmmRepository.GetAllDocumentIdForDay(entityMmm.DocumentIssueDate);
@@ -131,7 +131,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<MmmDto>(false, "Something went wrong.");
+                return new BaseResponse<MmmDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<MmmDto>(entityDto);

@@ -34,18 +34,21 @@ namespace esWMS.Controllers
         {
             var result = await _mediator.Send(new GetSortedFilteredProductsQuery(sieveModel));
 
-            if (result is BaseResponse<PagedResult<ProductDto>> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else
-                {
-                    return BadRequest(r.Message);
-                }
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
     }
 }

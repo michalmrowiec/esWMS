@@ -73,7 +73,7 @@ namespace esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp
 
             if (/*!warehouseUnitsResponse.Success ||*/ !warehouseUnitsToUnblock.Any())
             {
-                return new BaseResponse<MmpDto>(false, "Something went wrong.");
+                return new BaseResponse<MmpDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             MmpDto updatedMmpDto;
@@ -95,7 +95,7 @@ namespace esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<MmpDto>(false, "Something went wrong.");
+                return new BaseResponse<MmpDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<MmpDto>(updatedMmpDto);

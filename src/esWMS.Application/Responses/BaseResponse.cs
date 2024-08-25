@@ -2,36 +2,34 @@
 {
     public class BaseResponse
     {
-        public bool Success { get; set; }
+        public ResponseStatus Status { get; set; }
         public string? Message { get; set; }
         public List<string>? ValidationErrors { get; set; }
-        public ResponseStatus Status { get; set; }
 
         public BaseResponse()
         {
-            Success = true;
-            ValidationErrors = new();
             Status = ResponseStatus.Success;
+            ValidationErrors = new();
         }
 
-        public BaseResponse(bool status, string message)
+        public BaseResponse(ResponseStatus status, string message)
         {
-            Success = status;
+            Status = status;
             Message = message;
             ValidationErrors = new();
         }
 
         public BaseResponse(FluentValidation.Results.ValidationResult validationResult)
         {
-            Success = false;
+            Status = ResponseStatus.ValidationError;
             ValidationErrors = new();
             validationResult.Errors
                 .ForEach(e => ValidationErrors.Add(e.ErrorMessage));
         }
 
-        public BaseResponse(bool success, string? message, FluentValidation.Results.ValidationResult validationResult)
+        public BaseResponse(ResponseStatus status, string? message, FluentValidation.Results.ValidationResult validationResult)
         {
-            Success = success;
+            Status = status;
             Message = message;
             ValidationErrors = new();
             validationResult.Errors
@@ -43,9 +41,11 @@
             Success = 0,
             NotFound = 1,
             BadQuery = 2,
-            Error = 3,
+            ServerError = 3,
             ValidationError = 4
         }
+
+        public bool IsSuccess() => Status == ResponseStatus.Success;
     }
 
     public class BaseResponse<T> : BaseResponse where T : class
@@ -54,13 +54,13 @@
 
         public BaseResponse(T obj)
         {
-            Success = true;
+            Status = ResponseStatus.Success;
             ValidationErrors = [];
             ReturnedObj = obj;
         }
 
         public BaseResponse(FluentValidation.Results.ValidationResult validationResult) : base(validationResult) { }
 
-        public BaseResponse(bool status, string message) : base(status, message) { }
+        public BaseResponse(ResponseStatus status, string message) : base(status, message) { }
     }
 }

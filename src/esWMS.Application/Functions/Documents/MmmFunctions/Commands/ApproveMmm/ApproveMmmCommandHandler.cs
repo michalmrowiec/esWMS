@@ -150,7 +150,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
 
             if (/*!warehouseUnitsResponse.Success ||*/ !warehouseUnitsToMove.Any())
             {
-                return new BaseResponse<MmmDto>(false, "Something went wrong.");
+                return new BaseResponse<MmmDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             warehouseUnitsToMove.ForEach(wu =>
@@ -182,7 +182,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<MmmDto>(false, "Something went wrong.");
+                return new BaseResponse<MmmDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<MmmDto>(updatedMmmDto);

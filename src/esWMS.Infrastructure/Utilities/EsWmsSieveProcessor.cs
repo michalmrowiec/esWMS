@@ -226,7 +226,7 @@ namespace esWMS.Infrastructure.Utilities
 
     public class SieveCustomFilterMethods : ISieveCustomFilterMethods
     {
-        public IQueryable<BaseDocument> DateFilter(IQueryable<BaseDocument> source, string op, string[] values)
+        private IQueryable<T> DateFilter<T>(IQueryable<T> source, string op, string[] values) where T : BaseDocument
         {
             if (values.Length != 1 || !DateTime.TryParse(values[0], out DateTime dateValue))
             {
@@ -259,6 +259,13 @@ namespace esWMS.Infrastructure.Utilities
 
             return source;
         }
+
+        public IQueryable<PZ> DateFilter(IQueryable<PZ> source, string op, string[] values) =>
+            DateFilter<PZ>(source, op, values);
+
+
+        public IQueryable<MMP> DateFilter(IQueryable<MMP> source, string op, string[] values) =>
+            DateFilter<MMP>(source, op, values);
 
         public IQueryable<WarehouseUnit> FilterByWarehouseUnitItemIds(IQueryable<WarehouseUnit> source, string op, string[] values)
         {

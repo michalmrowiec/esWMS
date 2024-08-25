@@ -3,6 +3,7 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
+using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
@@ -36,9 +37,9 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 
             var products = productResponse.ReturnedObj?.Items ?? [];
 
-            if (!productResponse.Success)
+            if (!productResponse.IsSuccess() || products.Count == 0)
             {
-                return new BaseResponse<PzDto>(false, "Something went wrong.");
+                return new BaseResponse<PzDto>(productResponse.Status, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
             }
 
             var validationResult = await new CreatePzValidator(products).ValidateAsync(request, cancellationToken);
@@ -54,7 +55,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 
             if (entity == null)
             {
-                return new BaseResponse<PzDto>(false, "Something went wrong.");
+                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             var lastNumber = await _repository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
@@ -83,7 +84,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             }
             catch (Exception ex)
             {
-                return new BaseResponse<PzDto>(false, "Something went wrong.");
+                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<PzDto>(entityDto);

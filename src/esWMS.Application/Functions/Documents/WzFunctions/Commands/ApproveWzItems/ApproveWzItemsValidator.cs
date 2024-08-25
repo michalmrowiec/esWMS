@@ -18,7 +18,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
                     var documentResponse = await _mediator.Send(new GetWzByIdQuery(value.DocumentId));
                     var document = documentResponse.ReturnedObj;
 
-                    if (!documentResponse.Success || document == null)
+                    if (!documentResponse.IsSuccess() || document == null)
                     {
                         context.AddFailure("DocumentId", $"The document by Id: {value} does not exist.");
                     }
