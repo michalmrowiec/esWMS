@@ -5,11 +5,13 @@
         public bool Success { get; set; }
         public string? Message { get; set; }
         public List<string>? ValidationErrors { get; set; }
+        public ResponseStatus Status { get; set; }
 
         public BaseResponse()
         {
             Success = true;
             ValidationErrors = new();
+            Status = ResponseStatus.Success;
         }
 
         public BaseResponse(bool status, string message)
@@ -34,6 +36,15 @@
             ValidationErrors = new();
             validationResult.Errors
                 .ForEach(e => ValidationErrors.Add(e.ErrorMessage));
+        }
+
+        public enum ResponseStatus
+        {
+            Success = 0,
+            NotFound = 1,
+            BadQuery = 2,
+            Error = 3,
+            ValidationError = 4
         }
     }
 

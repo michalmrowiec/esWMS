@@ -10,7 +10,10 @@
 @inject OnePageState onePageState
 
 <MudNavMenu>
-    <MudNavGroup Title="Artykuły" Expanded="false" Icon="@Icons.Material.Outlined.Category">
+    <MudButton OnClick="@(() => _allGroupsExpanded = !_allGroupsExpanded)">
+        @(_allGroupsExpanded ? "Zwiń" : "Rozwiń")
+    </MudButton>
+    <MudNavGroup Title="Artykuły" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Category">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
                     OnClick="@(() => onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
@@ -22,7 +25,7 @@
             Lista Kategorii
         </MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Magazyny" Expanded="false" Icon="@Icons.Material.Outlined.Warehouse">
+    <MudNavGroup Title="Magazyny" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
                     OnClick="@(() => onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
@@ -44,22 +47,22 @@
             Stany Magazynowe
         </MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Dokumenty" Expanded="false" Icon="@Icons.Material.Outlined.LibraryBooks">
-        <MudNavGroup Title="PZ" Expanded="false" Icon="@Icons.Material.Filled.ArrowDownward">
+    <MudNavGroup Title="Dokumenty" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.LibraryBooks">
+        <MudNavGroup Title="PZ" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
                 Lista PZ
             </MudNavLink>
         </MudNavGroup>
-        <MudNavGroup Title="WZ" Expanded="false" Icon="@Icons.Material.Filled.ArrowUpward">
+        <MudNavGroup Title="WZ" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("WZ", new WzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
                 Lista WZ
             </MudNavLink>
         </MudNavGroup>
-        <MudNavGroup Title="MM" Expanded="false" Icon="@Icons.Material.Filled.CompareArrows">
+        <MudNavGroup Title="MM" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.CompareArrows">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.Add"
                         OnClick="@(() => OpenCreateMmTab())">
@@ -80,6 +83,8 @@
 </MudNavMenu>
 
 @code {
+    private bool _allGroupsExpanded = true;
+
     private void OpenCreateMmTab()
     {
         var tabId = Guid.NewGuid();
