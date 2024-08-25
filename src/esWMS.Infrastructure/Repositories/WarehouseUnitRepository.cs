@@ -18,21 +18,22 @@ namespace esWMS.Infrastructure.Repositories
         private readonly ILogger<WarehouseUnitRepository> _logger = logger;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
-        public async Task<IList<WarehouseUnit>> BlockWarehouseUnitsWithAllItemsAsync(params string[] warehouseUnitIds)
+        public async Task<IList<WarehouseUnit>> SetWarehouseUnitsBlockedStatusAsync(bool block, params string[] warehouseUnitIds)
         {
             try
             {
-                var warehouseUnits =
-                    await GetWarehouseUnitsWithItemsByIdAsync(warehouseUnitIds);
+                var warehouseUnits = await GetWarehouseUnitsWithItemsByIdAsync(warehouseUnitIds);
 
                 foreach (var wu in warehouseUnits)
                 {
                     foreach (var wui in wu.WarehouseUnitItems)
                     {
-                        wui.BlockedQuantity = wui.Quantity;
+                        // Jeśli blokujemy, ustaw BlockedQuantity na ilość. Jeśli odblokowujemy, ustaw na 0.
+                        wui.BlockedQuantity = block ? wui.Quantity : 0;
                     }
 
-                    wu.IsBlocked = true;
+                    // Ustawienie statusu IsBlocked na podstawie parametru block.
+                    wu.IsBlocked = block;
                 }
 
                 await _context.SaveChangesAsync();
@@ -40,10 +41,11 @@ namespace esWMS.Infrastructure.Repositories
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error blocking warehouse units with items");
+                _logger.LogError(ex, "Error setting warehouse units blocked status");
                 throw;
             }
         }
+
 
         public async Task<IList<WarehouseUnit>> CreateRangeAsync(IEnumerable<WarehouseUnit> warehouseUnits)
         {

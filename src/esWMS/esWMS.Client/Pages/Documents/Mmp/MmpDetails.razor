@@ -176,23 +176,23 @@ else
 
     public async Task ApproveMmp()
     {
-        // var response = await documentDataService.ApproveDocument(@"api/v1/Mmp/approve", new { DocumentId = MmpVM.DocumentId });
+        var response = await documentDataService.ApproveDocument(@"api/v1/Mmp/approve", new { DocumentId = MmpVM.DocumentId });
 
-        // if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        // {
-        //     var json = await response.Content.ReadAsStringAsync();
-        //     var responseObj = JsonConvert.DeserializeObject<WzVM>(json);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<WzVM>(json);
 
-        //     await RefreshMmp();
+            await RefreshMmp();
 
-        //     Snackbar.Configuration.PositionClass = "Bottom-End";
-        //     Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{MmpVM.DocumentId}</strong>"), Severity.Success);
+            Snackbar.Configuration.PositionClass = "Bottom-End";
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{MmpVM.DocumentId}</strong>"), Severity.Success);
 
-        // }
-        // else
-        // {
-        //     var json = await response.Content.ReadAsStringAsync();
-        //     responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
-        // }
+        }
+        else
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        }
     }
 }

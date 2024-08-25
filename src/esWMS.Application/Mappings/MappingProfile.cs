@@ -12,7 +12,6 @@ using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.Crea
 using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm;
 using esWMS.Application.Functions.Documents.MmpFunctions;
-using esWMS.Application.Functions.Documents.MmpFunctions.Commands.CreateMmp;
 using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
 using esWMS.Application.Functions.Documents.WzFunctions;
@@ -117,7 +116,6 @@ namespace esWMS.Application.Mappings
             CreateMap<MMM, MmmDto>();
             CreateMap<MMM, FlatMmmDto>();
 
-            CreateMap<CreateMmpCommand, MMP>();
             CreateMap<MMP, MmpDto>();
             CreateMap<MMP, FlatMmpDto>();
 

@@ -5,13 +5,9 @@ using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
-using esWMS.Application.Functions.WarehouseUnits;
-using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
 using esWMS.Application.Responses;
 using FluentValidation.Results;
 using MediatR;
-using Sieve.Models;
 
 namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
 {

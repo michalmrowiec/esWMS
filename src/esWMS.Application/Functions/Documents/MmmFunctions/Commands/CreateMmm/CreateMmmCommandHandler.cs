@@ -121,7 +121,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                 var createdMmm = await _mmmRepository.CreateAsync(entityMmm);
 
                 var warehouseUnits = await _warehouseUnitRepository
-                    .BlockWarehouseUnitsWithAllItemsAsync(request.WarehouseUnits.Select(wu => wu.WarehouseUnitId).ToArray());
+                    .SetWarehouseUnitsBlockedStatusAsync(true, request.WarehouseUnits.Select(wu => wu.WarehouseUnitId).ToArray());
 
                 await _transactionManager.CommitTransactionAsync();
 
