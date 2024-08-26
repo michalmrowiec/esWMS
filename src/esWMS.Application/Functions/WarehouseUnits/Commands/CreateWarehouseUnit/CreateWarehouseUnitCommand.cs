@@ -4,7 +4,13 @@ using MediatR;
 
 namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit
 {
-    public class CreateWarehouseUnitCommand : IRequest<BaseResponse<WarehouseUnitDto>>
+    public class CreateWarehouseUnitCommand
+        : CreateFlatWarehouseUnitCommand, IRequest<BaseResponse<WarehouseUnitDto>>
+    {
+        public IList<CreateWarehouseUnitItemCommand> WarehouseUnitItems { get; set; } = [];
+    }
+
+    public class CreateFlatWarehouseUnitCommand
     {
         public string WarehouseId { get; set; } = null!;
         public string? MediaId { get; set; }
@@ -13,10 +19,9 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUni
         public int? TotalLength { get; set; }
         public int? TotalWidth { get; set; }
         public int? TotalHeight { get; set; }
+        public bool IsBlocked { get; set; }
         public bool? CanBeStacked { get; set; }
         public string? StackOnId { get; set; }
         public string? CreatedBy { get; set; }
-
-        public IList<CreateWarehouseUnitItemCommand> WarehouseUnitItems { get; set; } = [];
     }
 }

@@ -76,6 +76,7 @@ namespace esWMS.Infrastructure
             services.AddScoped<IWzRepository, WzRepository>();
             services.AddScoped<IMmmRepository, MmmRepository>();
             services.AddScoped<IMmpRepository, MmpRepository>();
+            services.AddScoped<IPwRepository, PwRepository>();
         }
     }
 }

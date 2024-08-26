@@ -59,7 +59,7 @@ namespace esWMS.Application.UnitTests.Functions.Categories
 
             BaseResponse<CategoryDto> response = await handler.Handle(categoryCommand, new CancellationToken());
 
-            response.Success.Should().BeTrue();
+            response.IsSuccess().Should().BeTrue();
             response.Message.Should().BeNull();
             response.ValidationErrors.Should().BeEmpty();
             response.ReturnedObj.Should().BeEquivalentTo(categoryDto);

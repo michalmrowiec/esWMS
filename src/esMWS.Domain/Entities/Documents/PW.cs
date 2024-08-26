@@ -3,5 +3,6 @@
     public class PW : BaseDocument
     {
         public DateTime? GoodsReceiptDate { get; set; }
+        public string? DepartmentName { get; set; }
     }
 }

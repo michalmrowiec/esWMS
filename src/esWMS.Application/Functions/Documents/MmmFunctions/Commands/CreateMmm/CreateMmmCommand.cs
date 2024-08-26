@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
 using esWMS.Application.Responses;
 using MediatR;
 
@@ -16,6 +16,6 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
         public DateTime? GoodsReleaseDate { get; set; }
         public string ToWarehouseId { get; set; } = null!;
 
-        public List<WarehouseUnit> WarehouseUnits { get; set; } = [];
+        public List<UpdateWarehouseUnitCommand> WarehouseUnits { get; set; } = [];
     }
 }

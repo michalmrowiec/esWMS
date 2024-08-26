@@ -24,8 +24,10 @@ using esWMS.Application.Functions.Warehouses;
 using esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse;
 using esWMS.Application.Functions.WarehouseUnitItems;
 using esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehouseUnitItem;
+using esWMS.Application.Functions.WarehouseUnitItems.Commands.UpdateWarehouseUnitItem;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
+using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
 using esWMS.Application.Functions.Zones;
 using esWMS.Application.Functions.Zones.Commands.CreateZone;
 
@@ -52,6 +54,8 @@ namespace esWMS.Application.Mappings
             CreateMap<Warehouse, WarehouseDto>();
 
             CreateMap<CreateWarehouseUnitCommand, WarehouseUnit>();
+            CreateMap<CreateFlatWarehouseUnitCommand, WarehouseUnit>();
+            CreateMap<UpdateWarehouseUnitCommand, WarehouseUnit>();
             CreateMap<WarehouseUnit, WarehouseUnitDto>()
                 .ForMember(dto => dto.WarehouseUnitItems,
                            opt => opt.MapFrom(src => src.WarehouseUnitItems));
@@ -66,6 +70,7 @@ namespace esWMS.Application.Mappings
             CreateMap<WarehouseUnit, FlatWarehouseUnitDto>();
 
             CreateMap<CreateWarehouseUnitItemCommand, WarehouseUnitItem>();
+            CreateMap<UpdateWarehouseUnitItemCommand, WarehouseUnitItem>();
             CreateMap<WarehouseUnitItem, WarehouseUnitItemDto>();
             CreateMap<WarehouseUnitItemDto, WarehouseUnitItem>()
                 .ForMember(dest => dest.WarehouseUnit, opt => opt.MapFrom(src => src.WarehouseUnit));
