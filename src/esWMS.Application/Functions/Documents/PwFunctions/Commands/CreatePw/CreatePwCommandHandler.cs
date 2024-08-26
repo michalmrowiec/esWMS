@@ -4,7 +4,7 @@ using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.PwFunctions.CreatePw
+namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw
 {
     internal class CreatePwCommandHandler
         (IPwRepository repository,

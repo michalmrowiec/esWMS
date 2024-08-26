@@ -2,7 +2,7 @@
 using esWMS.Application.Responses;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.PwFunctions.CreatePw
+namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw
 {
     public class CreatePwCommand
         : CreateBaseDocumentCommand, IRequest<BaseResponse<PwDto>>

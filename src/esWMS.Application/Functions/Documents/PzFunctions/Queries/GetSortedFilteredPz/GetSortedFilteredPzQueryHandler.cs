@@ -8,7 +8,7 @@ using MediatR;
 
 namespace esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouses
 {
-    internal class GetSortedFilteredMmmQueryHandler
+    internal class GetSortedFilteredPzQueryHandler
         (IPzRepository pzRepository, IMapper mapper)
         : IRequestHandler<GetSortedFilteredPzQuery, BaseResponse<PagedResult<PzDto>>>
     {
