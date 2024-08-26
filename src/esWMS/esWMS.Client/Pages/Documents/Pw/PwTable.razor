@@ -19,11 +19,11 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Dokumenty PZ</MudText>
         <MudSpacer />
-@*         <MudButton @onclick="OpenCreatePwTab"
+        <MudButton @onclick="OpenCreatePwTab"
                    Variant="Variant.Filled"
                    Color="Color.Primary">
             Utwórz PZ
-        </MudButton> *@
+        </MudButton>
 
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
@@ -100,18 +100,18 @@
 
     private List<EventCallback> callbacksOnAddPz = new();
 
-    // private void OpenCreatePwTab()
-    // {
-    //     var tabId = Guid.NewGuid();
+    private void OpenCreatePwTab()
+    {
+        var tabId = Guid.NewGuid();
 
-    //     callbacksOnAddPz = new List<EventCallback>
-    //     {
-    //         EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
-    //         EventCallback.Factory.Create(this, table.ReloadServerData)
-    //     };
+        callbacksOnAddPz = new List<EventCallback>
+        {
+            EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
+            EventCallback.Factory.Create(this, table.ReloadServerData)
+        };
 
-    //     onePageState.AddTab(new TabView("Tworzenie PZ", new AddPw(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
-    // }
+        onePageState.AddTab(new TabView("Tworzenie PW", new AddPw(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
+    }
 
     private async Task<TableData<PwVM>> ServerReload(TableState state, CancellationToken token)
     {

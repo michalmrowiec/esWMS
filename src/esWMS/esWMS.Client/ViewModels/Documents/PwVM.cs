@@ -7,7 +7,7 @@ namespace esWMS.Client.ViewModels.Documents
         public DateTime? GoodsReceiptDate { get; set; }
         public string? DepartmentName { get; set; }
     }
-    public class CreatePwCommand
+    public class CreatePwVM
     {
         public string? IssueWarehouseId { get; set; }
         public string? Comment { get; set; }
@@ -17,7 +17,7 @@ namespace esWMS.Client.ViewModels.Documents
         public string? DepartmentName { get; set; }
         public IList<DocumentItemVM> DocumentItems { get; set; } = [];
     }
-    public class CreatePwVMValidator : AbstractValidator<CreatePwCommand>
+    public class CreatePwVMValidator : AbstractValidator<CreatePwVM>
     {
         public CreatePwVMValidator()
         {
@@ -26,7 +26,7 @@ namespace esWMS.Client.ViewModels.Documents
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<CreatePwCommand>.CreateWithOptions((CreatePwCommand)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<CreatePwVM>.CreateWithOptions((CreatePwVM)model, x => x.IncludeProperties(propertyName)));
             if (result.IsValid)
                 return Array.Empty<string>();
             return result.Errors.Select(e => e.ErrorMessage);
