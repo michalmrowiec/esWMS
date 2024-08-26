@@ -8,6 +8,10 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
     {
         public CreatePzValidator(IList<ProductDto> productsFromDocumentItems)
         {
+            RuleFor(x => x.DocumentItems)
+                .NotEmpty()
+                .WithMessage("DocumentItems cannot be empty");
+
             RuleFor(x => x)
                 .Custom((value, context) =>
                 {

@@ -49,24 +49,13 @@
                    For="@(() => model.GoodsReceiptDate)" />
 
     <MudTextField T="string"
-                  @bind-Value="model.Comment"
-                  For="@(() => model.Comment)"
-                  Immediate="true"
-                  Label="Uwagi"
-                  Lines="3" />
-
-    <MudTextField T="string"
                   @bind-Value="model.DepartmentName"
                   For="@(() => model.DepartmentName)"
                   Immediate="true"
                   Label="Źródło" />
 
-    @*     <MudButton @onclick="OpenDialogAsync"
-    Variant="Variant.Filled"
-    Color="Color.Primary">
-    Dodaj pozycję
-    </MudButton> *@
-    <MudButton Variant="Variant.Filled"
+    <MudButton @onclick="OpenDialogAsync"
+               Variant="Variant.Filled"
                Color="Color.Primary">
         Dodaj pozycję
     </MudButton>
@@ -129,16 +118,16 @@
         warehouses = warehouseResponse.Items.ToList();
     }
 
-    // private Task OpenDialogAsync()
-    // {
-    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-    //     var parameters = new DialogParameters<AddPzItemDialogForm>
-    //     {
-    //         { x => x.DocumentItemVMs, model.DocumentItems },
-    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
-    //     };
-    //     return DialogService.ShowAsync<AddPzItemDialogForm>(null, parameters, options);
-    // }
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+        var parameters = new DialogParameters<AddPwItemDialogForm>
+        {
+            { x => x.DocumentItemVMs, model.DocumentItems },
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
+        };
+        return DialogService.ShowAsync<AddPwItemDialogForm>(null, parameters, options);
+    }
 
     private async Task Submit()
     {

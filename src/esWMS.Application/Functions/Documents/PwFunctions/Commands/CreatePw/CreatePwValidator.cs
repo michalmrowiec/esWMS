@@ -8,6 +8,10 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw
     {
         public CreatePwValidator(IList<ProductDto> productsFromDocumentItems)
         {
+            RuleFor(x => x.DocumentItems)
+                .NotEmpty()
+                .WithMessage("DocumentItems cannot be empty");
+
             RuleFor(x => x)
                 .Custom((value, context) =>
                 {
