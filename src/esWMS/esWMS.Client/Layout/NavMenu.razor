@@ -1,6 +1,7 @@
 ﻿@using esWMS.Client.Pages
 @using esWMS.Client.Pages.Documents.Mmm
 @using esWMS.Client.Pages.Documents.Mmp
+@using esWMS.Client.Pages.Documents.Pw
 @using esWMS.Client.Pages.Documents.Pz
 @using esWMS.Client.Pages.Documents.Wz
 @using esWMS.Client.Pages.OnePage
@@ -60,6 +61,13 @@
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("WZ", new WzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
                 Lista WZ
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="PW" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDropDown">
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("PW", new PwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                Lista PW
             </MudNavLink>
         </MudNavGroup>
         <MudNavGroup Title="MM" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.CompareArrows">
