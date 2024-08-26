@@ -3,8 +3,6 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Documents.MmmFunctions;
-using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
 using MediatR;
@@ -39,7 +37,9 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 
             if (!productResponse.IsSuccess() || products.Count == 0)
             {
-                return new BaseResponse<PzDto>(productResponse.Status, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
+                return new BaseResponse<PzDto>(
+                    productResponse.Status,
+                    "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
             }
 
             var validationResult = await new CreatePzValidator(products).ValidateAsync(request, cancellationToken);
@@ -51,8 +51,6 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 
             var entity = _mapper.Map<PZ>(request);
 
-            entity.CreatedAt = DateTime.Now;
-
             if (entity == null)
             {
                 return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
@@ -61,6 +59,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             var lastNumber = await _repository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
 
             entity.DocumentId = entity.GenerateDocumentId(lastNumber);
+            entity.CreatedAt = DateTime.Now;
 
             foreach (var item in entity.DocumentItems)
             {
