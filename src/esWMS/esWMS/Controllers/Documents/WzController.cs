@@ -1,11 +1,14 @@
-﻿using esWMS.Application.Functions.Documents.WzFunctions;
+﻿using esMWS.Domain.Models;
+using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWz;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzItems;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz;
+using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetSortedFilteredWz;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 
 namespace esWMS.Controllers.Documents
 {
@@ -28,88 +31,100 @@ namespace esWMS.Controllers.Documents
         }
 
         [HttpPost]
-        public async Task<ActionResult<BaseResponse<WzDto>>> CreatePz([FromBody] CreateWzCommand createWzCommand)
+        public async Task<ActionResult<WzDto>> CreatePz([FromBody] CreateWzCommand createWzCommand)
         {
             if (_userContextService.GetUserId is not null)
                 createWzCommand.CreatedBy = _userContextService.GetUserId.ToString();
 
             var result = await _mediator.Send(createWzCommand);
 
-            if (result is BaseResponse<WzDto> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Created("", r.ReturnedObj);
-                }
-                else if (r.ValidationErrors?.Any() ?? false)
-                {
+                case BaseResponse.ResponseStatus.Success:
+                    return Created("", result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
-                }
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
 
-        [HttpPatch("/approve-wz-items")]
-        public async Task<ActionResult<BaseResponse<WzDto>>> ApprovePzItems([FromBody] ApproveWzItemsCommand approveWzItemsCommand)
+        [HttpPatch("approve-items")]
+        public async Task<ActionResult<WzDto>> ApprovePzItems([FromBody] ApproveWzItemsCommand approveWzItemsCommand)
         {
             if (_userContextService.GetUserId is not null)
                 approveWzItemsCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
             var result = await _mediator.Send(approveWzItemsCommand);
 
-            if (result is BaseResponse<WzDto> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else if (r.ValidationErrors?.Any() ?? false)
-                {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
-                }
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
 
-        [HttpPatch("/approve-wz")]
-        public async Task<ActionResult<BaseResponse<WzDto>>> ApprovePz([FromBody] ApproveWzCommand approveWzCommand)
+        [HttpPatch("approve")]
+        public async Task<ActionResult<WzDto>> ApprovePz([FromBody] ApproveWzCommand approveWzCommand)
         {
             if (_userContextService.GetUserId is not null)
                 approveWzCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
             var result = await _mediator.Send(approveWzCommand);
 
-            if (result is BaseResponse<WzDto> r)
+            switch (result.Status)
             {
-                if (r.Success)
-                {
-                    return Ok(r.ReturnedObj);
-                }
-                else if (r.ValidationErrors?.Any() ?? false)
-                {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
-                }
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
             }
-            return BadRequest();
         }
 
-        //[HttpPost("get-filtered")]
-        //public async Task<ActionResult<PagedResult<WzDto>>> GetSortedAndFilteredPz([FromBody] SieveModel sieveModel)
-        //{
-        //    var result = await _mediator.Send(new GetSortedFilteredPzQuery(sieveModel));
+        [HttpPost("get-filtered")]
+        public async Task<ActionResult<PagedResult<WzDto>>> GetSortedAndFilteredWz([FromBody] SieveModel sieveModel)
+        {
+            var result = await _mediator.Send(new GetSortedFilteredWzQuery(sieveModel));
 
-        //    if (result is BaseResponse<PagedResult<WzDto>> r)
-        //    {
-        //        if (r.Success)
-        //        {
-        //            return Ok(r.ReturnedObj);
-        //        }
-        //        else
-        //        {
-        //            return BadRequest(r.Message);
-        //        }
-        //    }
-        //    return BadRequest();
-        //}
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
     }
 }

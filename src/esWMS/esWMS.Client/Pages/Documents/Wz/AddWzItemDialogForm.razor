@@ -1,0 +1,150 @@
+﻿@using esWMS.Client.Pages.Warehouse
+@using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IDialogService DialogService
+
+<MudDialog>
+    <TitleContent>
+        Dodawanie pozycji
+    </TitleContent>
+    <DialogContent>
+
+        <MudTextField @bind-Value="test"
+                      Label="Wybrany produkt"
+                      Disabled />
+
+        @if (documentItemWithAssignments.Count == 0)
+        {
+            <WarehouseStockTable SelectedStock="OnStockProductSelected" WarehouseId="@WarehouseId" />
+        }
+
+        <MudNumericField Label="Ilość"
+                         Disabled
+                         @bind-Value="quantity" />
+
+        <MudNumericField Label="Cena"
+                         @bind-Value="price" />
+
+        <MudSelect T="string"
+                   @bind-Value="currency"
+                   Label="Waluta"
+                   AnchorOrigin="Origin.BottomCenter"
+                   Immediate="true">
+
+            <MudSelectItem Value="@(new string("PLN"))">
+                PLN
+            </MudSelectItem>
+
+        </MudSelect>
+
+        <MudButton @onclick="OpenDialogAsync"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Dodaj pozycję
+        </MudButton>
+
+        <MudDataGrid T="DocumentWarehouseUnitItemVM"
+                     Items="@documentItemWithAssignments"
+                     EditMode="DataGridEditMode.Cell"
+                     Dense>
+            <Columns>
+                <PropertyColumn Property="x => x.WarehouseUnitItemId" />
+                <PropertyColumn Property="x => x.WarehouseUnitId" />
+                <PropertyColumn Property="x => x.DocumentItemId" />
+                <PropertyColumn Property="x => x.Quantity" />
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate Context="item">
+                        <MudStack Row>
+                            <MudIconButton Size="@Size.Small"
+                                           Icon="@Icons.Material.Outlined.Delete"
+                                           OnClick="@(() => { documentItemWithAssignments.Remove(item.Item); quantity -= item.Item.Quantity; StateHasChanged(); })" />
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Dodaj</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnAdded { get; set; } = new();
+
+    [Parameter]
+    public List<DocumentItemVM> DocumentItemVMs { get; set; }
+
+    [Parameter]
+    public string? WarehouseId { get; set; }
+
+    private WarehouseStockVM? selectedStockProduct;
+    private int quantity = 0;
+    private decimal price = 0;
+    private string currency = "PLN";
+    private string test = "";
+    private HashSet<DocumentWarehouseUnitItemVM> documentItemWithAssignments = new();
+
+    private void Submit()
+    {
+        if (selectedStockProduct != null)
+        {
+            DocumentItemVMs.Add(new DocumentItemVM()
+                {
+                    ProductId = selectedStockProduct.ProductId,
+                    ProductCode = "",//selectedStockProduct.ProductCode,
+                    EanCode = "",//selectedStockProduct.EanCode,
+                    ProductName = selectedStockProduct.ProductName,
+                    Quantity = quantity,
+                    Price = price,
+                    Currency = currency,
+                    DocumentWarehouseUnitItems = documentItemWithAssignments.ToList()
+                });
+        }
+
+        FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void OnStockProductSelected(WarehouseStockVM stockProduct)
+    {
+        selectedStockProduct = stockProduct;
+        test = stockProduct.ProductName;
+        StateHasChanged();
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+        var parameters = new DialogParameters<WarehouseUnitItemTableDialog>
+        {
+            { x => x.WarehouseUnitItem, EventCallback.Factory.Create<(WarehouseUnitItemVM, int)>(this, OnGet) },
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
+            { x => x.ProductIdFilter, selectedStockProduct?.ProductId ?? "" },
+            { x => x.WarehouseIdFilter, WarehouseId ?? "" },
+            { x => x.ExceptWarehouseUnitItem, documentItemWithAssignments?.Select(x => x.WarehouseUnitItemId)?.ToHashSet() ?? null }
+        };
+        return DialogService.ShowAsync<WarehouseUnitItemTableDialog>(null, parameters, options);
+    }
+
+    private void OnGet((WarehouseUnitItemVM warehouseUnitItem, int quantity) item)
+    {
+        documentItemWithAssignments.Add(
+            new("",
+                item.warehouseUnitItem.WarehouseUnitId,
+                item.quantity,
+                item.warehouseUnitItem.WarehouseUnitItemId));
+
+        quantity += item.quantity;
+
+        StateHasChanged();
+    }
+}

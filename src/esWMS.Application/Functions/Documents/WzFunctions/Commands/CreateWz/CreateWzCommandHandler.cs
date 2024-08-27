@@ -3,27 +3,47 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
+using esWMS.Application.Functions.Documents.MmmFunctions;
+using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
 using MediatR;
+using Sieve.Models;
 
 namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 {
     internal class CreateWzCommandHandler
         (IWzRepository wzRepository,
         IWarehouseUnitItemRepository warehouseUnitItemRepository,
+        IMediator mediator,
         IMapper mapper,
         ITransactionManager transactionManager)
         : IRequestHandler<CreateWzCommand, BaseResponse<WzDto>>
     {
         private readonly IWzRepository _wzRepository = wzRepository;
         private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
-
+        private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
         public async Task<BaseResponse<WzDto>> Handle(CreateWzCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await new CreateWzValidator().ValidateAsync(request, cancellationToken);
+            var productResponse = await _mediator.Send(
+                new GetSortedFilteredProductsQuery(
+                    new SieveModel()
+                    {
+                        Page = 1,
+                        PageSize = 500,
+                        Filters = "ProductId==" + string.Join('|', request.DocumentItems.Select(x => x.ProductId).Distinct())
+                    }));
+
+            var products = productResponse.ReturnedObj?.Items ?? [];
+
+            if (!productResponse.IsSuccess() || products.Count == 0)
+            {
+                return new BaseResponse<WzDto>(productResponse.Status, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
+            }
+
+            var validationResult = await new CreateWzValidator(products, _mediator).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -34,12 +54,14 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 
             if (entity == null)
             {
-                return new BaseResponse<WzDto>(false, "");
+                return new BaseResponse<WzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             var lastNumber = await _wzRepository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
 
             entity.DocumentId = entity.GenerateDocumentId(lastNumber);
+            entity.CreatedAt = DateTime.Now;
+            entity.CreatedBy = request.CreatedBy;
 
             foreach (var item in entity.DocumentItems)
             {
@@ -47,19 +69,18 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                 item.DocumentId = entity.DocumentId;
                 item.IsApproved = false;
 
-                foreach (var itemAssignment in
-                    request.DocumentItems.First(x => x.ProductId.Equals(item.ProductId)).DocumentItemsWithAssignment)
-                {
-                    var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
-                    {
-                        DocumentItemId = item.DocumentItemId,
-                        WarehouseUnitItemId = itemAssignment.WarehouseUnitItemId!,
-                        Quantity = itemAssignment.Quantity,
-                        CreatedAt = DateTime.Now,
-                        CreatedBy = request.CreatedBy
-                    };
+                var product = products!.First(x => x.ProductId.Equals(item.ProductId));
+                item.ProductCode = product.ProductCode;
+                item.EanCode = product.EanCode;
+                item.ProductName = product.ProductName;
 
-                    item.DocumentWarehouseUnitItems.Add(newDocumentWarehouseUnitItem);
+                foreach (var itemAssignment in item.DocumentWarehouseUnitItems)
+                {
+                    itemAssignment.DocumentItemId = item.DocumentItemId;
+                    itemAssignment.WarehouseUnitItemId = itemAssignment.WarehouseUnitItemId!;
+                    itemAssignment.Quantity = itemAssignment.Quantity;
+                    itemAssignment.CreatedAt = DateTime.Now;
+                    itemAssignment.CreatedBy = request.CreatedBy;
                 }
             }
 
@@ -67,8 +88,9 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 
             foreach (var documentItem in request.DocumentItems)
             {
-                foreach (var documentItemWithAssignment in documentItem.DocumentItemsWithAssignment)
+                foreach (var documentItemWithAssignment in documentItem.DocumentWarehouseUnitItems)
                 {
+                    // TODO check the blocked before add document!!!
                     warehouseUnitItemsQuantityToBlock
                         .Add(documentItemWithAssignment.WarehouseUnitItemId!, documentItemWithAssignment.Quantity);
                 }
@@ -83,7 +105,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                 var createdEntity = await _wzRepository.CreateAsync(entity);
 
                 var warehouseUnitItems = await _warehouseUnitItemRepository
-                      .BlockWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlock);
+                      .BlockExistWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlock);
 
                 await _transactionManager.CommitTransactionAsync();
 
@@ -93,7 +115,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<WzDto>(false, "Something went wrong.");
+                return new BaseResponse<WzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<WzDto>(entityDto);

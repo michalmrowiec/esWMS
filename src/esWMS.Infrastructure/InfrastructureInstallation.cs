@@ -5,6 +5,8 @@ using esWMS.Application.Contracts.Utilities;
 using esWMS.Infrastructure.Repositories;
 using esWMS.Infrastructure.Repositories.Documents;
 using esWMS.Infrastructure.Utilities;
+using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
+using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -72,6 +74,9 @@ namespace esWMS.Infrastructure
             services.AddScoped<IContractorRepository, ContractorRepository>();
             services.AddScoped<IPzRepository, PzRepository>();
             services.AddScoped<IWzRepository, WzRepository>();
+            services.AddScoped<IMmmRepository, MmmRepository>();
+            services.AddScoped<IMmpRepository, MmpRepository>();
+            services.AddScoped<IPwRepository, PwRepository>();
         }
     }
 }

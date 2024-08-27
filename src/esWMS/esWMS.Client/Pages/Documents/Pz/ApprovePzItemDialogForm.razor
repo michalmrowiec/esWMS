@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -22,7 +23,7 @@
             Dodaj pozycję
         </MudButton>
 
-        <MudDataGrid T="DocumentItemWithAssignmentVM"
+        <MudDataGrid T="DocumentWarehouseUnitItemVM"
                      Items="@documentItemWithAssignments"
                      EditMode="DataGridEditMode.Cell"
                      Dense
@@ -47,7 +48,7 @@
             </Columns>
         </MudDataGrid>
 
-        <MudDataGrid T="DocumentItemWithAssignmentVM"
+        <MudDataGrid T="DocumentWarehouseUnitItemVM"
                      Items="@DocumentItemVM.DocumentWarehouseUnitItems"
                      EditMode="DataGridEditMode.Cell"
                      Filterable="false"
@@ -103,7 +104,7 @@
     public DocumentItemVM DocumentItemVM { get; set; }
 
     private string? selectedWarehouseUnitId = "";
-    private List<DocumentItemWithAssignmentVM> documentItemWithAssignments = new();
+    private List<DocumentWarehouseUnitItemVM> documentItemWithAssignments = new();
     private List<string> responseErrors = new();
 
     private List<WarehouseUnitVM> warehouseUnitVMs = new();
@@ -122,6 +123,7 @@
     private void OnGet((string warehouseUnitId, int quantity) item)
     {
         documentItemWithAssignments.Add(new(DocumentItemVM.DocumentItemId, item.warehouseUnitId, item.quantity));
+        StateHasChanged();
     }
 
     private async Task Submit()
@@ -134,7 +136,7 @@
                 DocumentItemsWithAssignment = documentItemWithAssignments
             };
 
-            var response = await documentService.ApproveDocument(@"api/v1/Pz/approve-pz-items", requestBody);
+            var response = await documentService.ApproveDocument(@"api/v1/Pz/approve-items", requestBody);
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 var json = await response.Content.ReadAsStringAsync();
@@ -164,7 +166,7 @@
         sm.Page = 1;
         sm.PageSize = 100;
 
-        var warehouseUnitItemIds = string.Join(",", DocumentItemVM.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId));
+        var warehouseUnitItemIds = string.Join("|", DocumentItemVM.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId));
 
         sm.Filters = $"FilterByWarehouseUnitItemIds=={warehouseUnitItemIds}";
 

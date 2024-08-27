@@ -1,0 +1,134 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<CreateWarehouseUnitVM> createWarehouseUnitDataService
+@inject IDataService<WarehouseVM> warehouseDataService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        Nowa jednostka magazynowa
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@model"
+                 @ref="@form"
+                 Validation="@(validator.ValidateValue)"
+                 ValidationDelay="0">
+            <MudCardContent>
+                <MudSelect T="string"
+                           @bind-Value="model.WarehouseId"
+                           Label="Magazyn"
+                           AnchorOrigin="Origin.BottomCenter"
+                           For="@(() => model.WarehouseId)"
+                           Immediate="true">
+                    @foreach (var warehouse in warehouses)
+                    {
+                        <MudSelectItem Value="@warehouse.WarehouseId">
+                            [@warehouse.WarehouseId] @warehouse.WarehouseName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+
+                @*                 <MudSelect T="string" @bind-Value="model.MediaId" Label="Medium" For="@(() => model.MediaId)" Immediate="true">
+                @foreach (var media in mediaItems)
+                {
+                <MudSelectItem Value="@media.MediaId">
+                @media.MediaName
+                </MudSelectItem>
+                }
+                </MudSelect> *@
+
+                @*                 <MudSelect T="string" @bind-Value="model.LocationId" Label="Lokalizacja" For="@(() => model.LocationId)" Immediate="true">
+                @foreach (var location in locations)
+                {
+                <MudSelectItem Value="@location.LocationId">
+                @location.LocationName
+                </MudSelectItem>
+                }
+                </MudSelect> *@
+
+                <MudNumericField T="int?" @bind-Value="model.TotalWeight" For="@(() => model.TotalWeight)" Label="Waga całkowita (kg)" Immediate="true" />
+                <MudNumericField T="int?" @bind-Value="model.TotalLength" For="@(() => model.TotalLength)" Label="Długość całkowita (m)" Immediate="true" />
+                <MudNumericField T="int?" @bind-Value="model.TotalWidth" For="@(() => model.TotalWidth)" Label="Szerokość całkowita (m)" Immediate="true" />
+                <MudNumericField T="int?" @bind-Value="model.TotalHeight" For="@(() => model.TotalHeight)" Label="Wysokość całkowita (m)" Immediate="true" />
+
+                <MudCheckBox @bind-Value="model.CanBeStacked">Może być piętrowany</MudCheckBox>
+
+                @*                 <MudSelect T="string" @bind-Value="model.StackOnId" Label="Jednostka nadrzędna" For="@(() => model.StackOnId)" Immediate="true">
+                @foreach (var unit in stackableUnits)
+                {
+                <MudSelectItem Value="@unit.WarehouseUnitId">
+                @unit.UnitName
+                </MudSelectItem>
+                }
+                </MudSelect> *@
+            </MudCardContent>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm form;
+    private CreateWarehouseUnitVM model = new();
+    private CreateWarehouseUnitVMValidator validator = new();
+    private List<string> responseErrors = new();
+    private List<WarehouseVM> warehouses = new();
+    // private List<MediaVM> mediaItems = new();
+    // private List<LocationVM> locations = new();
+    private List<WarehouseUnitVM> stackableUnits = new();
+    [Parameter]
+    public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        responseErrors = new();
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var response = await createWarehouseUnitDataService.Create(@"api/v1/WarehouseUnit", model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                Snackbar.Add(new MarkupString($"Utworzono jednostkę magazynową"), Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var warehouseResponse = await warehouseDataService.GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
+        warehouses = warehouseResponse.Items.ToList();
+
+        // mediaItems = (await warehouseUnitService.GetMediaItems()).ToList();
+        // locations = (await warehouseUnitService.GetLocations()).ToList();
+        // stackableUnits = (await warehouseUnitService.GetStackableUnits()).ToList();
+    }
+}

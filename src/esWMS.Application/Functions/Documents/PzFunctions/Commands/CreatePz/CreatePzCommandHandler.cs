@@ -3,22 +3,46 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
+using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
 using MediatR;
+using Sieve.Models;
 
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 {
     internal class CreatePzCommandHandler
-        (IPzRepository repository, IMapper mapper, ITransactionManager transactionManager)
+        (IPzRepository repository,
+        IMediator mediator,
+        IMapper mapper,
+        ITransactionManager transactionManager)
         : IRequestHandler<CreatePzCommand, BaseResponse<PzDto>>
     {
         private readonly IPzRepository _repository = repository;
+        private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
         public async Task<BaseResponse<PzDto>> Handle(CreatePzCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await new CreatePzValidator().ValidateAsync(request, cancellationToken);
+            var productResponse = await _mediator.Send(
+                new GetSortedFilteredProductsQuery(
+                    new SieveModel()
+                    {
+                        Page = 1,
+                        PageSize = 500,
+                        Filters = "ProductId==" + string.Join('|', request.DocumentItems.Select(x => x.ProductId).Distinct())
+                    }));
+
+            var products = productResponse.ReturnedObj?.Items ?? [];
+
+            if (!productResponse.IsSuccess() || products.Count == 0)
+            {
+                return new BaseResponse<PzDto>(
+                    productResponse.Status,
+                    "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
+            }
+
+            var validationResult = await new CreatePzValidator(products).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -26,23 +50,27 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             }
 
             var entity = _mapper.Map<PZ>(request);
-            
-            entity.CreatedAt = DateTime.Now;
 
             if (entity == null)
             {
-                return new BaseResponse<PzDto>(false, "");
+                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             var lastNumber = await _repository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
 
             entity.DocumentId = entity.GenerateDocumentId(lastNumber);
+            entity.CreatedAt = DateTime.Now;
 
             foreach (var item in entity.DocumentItems)
             {
                 item.DocumentItemId = Guid.NewGuid().ToString();
                 item.DocumentId = entity.DocumentId;
                 item.IsApproved = false;
+
+                var product = products!.First(x => x.ProductId.Equals(item.ProductId));
+                item.ProductCode = product.ProductCode;
+                item.EanCode = product.EanCode;
+                item.ProductName = product.ProductName;
             }
 
             PzDto entityDto;
@@ -55,7 +83,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             }
             catch (Exception ex)
             {
-                return new BaseResponse<PzDto>(false, "Something went wrong.");
+                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<PzDto>(entityDto);

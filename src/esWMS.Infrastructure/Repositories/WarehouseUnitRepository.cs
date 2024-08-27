@@ -9,7 +9,7 @@ using Sieve.Services;
 namespace esWMS.Infrastructure.Repositories
 {
     internal class WarehouseUnitRepository
-        (EsWmsDbContext context, 
+        (EsWmsDbContext context,
         ILogger<WarehouseUnitRepository> logger,
         ISieveProcessor sieveProcessor)
                 : BaseRepository<WarehouseUnit>(context, logger), IWarehouseUnitRepository
@@ -18,11 +18,56 @@ namespace esWMS.Infrastructure.Repositories
         private readonly ILogger<WarehouseUnitRepository> _logger = logger;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
+        public async Task<IList<WarehouseUnit>> SetWarehouseUnitsBlockedStatusAsync(bool block, params string[] warehouseUnitIds)
+        {
+            try
+            {
+                var warehouseUnits = await GetWarehouseUnitsWithItemsByIdAsync(warehouseUnitIds);
+
+                foreach (var wu in warehouseUnits)
+                {
+                    foreach (var wui in wu.WarehouseUnitItems)
+                    {
+                        // Jeśli blokujemy, ustaw BlockedQuantity na ilość. Jeśli odblokowujemy, ustaw na 0.
+                        wui.BlockedQuantity = block ? wui.Quantity : 0;
+                    }
+
+                    // Ustawienie statusu IsBlocked na podstawie parametru block.
+                    wu.IsBlocked = block;
+                }
+
+                await _context.SaveChangesAsync();
+                return warehouseUnits;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error setting warehouse units blocked status");
+                throw;
+            }
+        }
+
+
+        public async Task<IList<WarehouseUnit>> CreateRangeAsync(IEnumerable<WarehouseUnit> warehouseUnits)
+        {
+            try
+            {
+                await _context.WarehouseUnits.AddRangeAsync(warehouseUnits);
+                await _context.SaveChangesAsync();
+                return warehouseUnits.ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating entities");
+                throw;
+            }
+        }
+
         public async Task<PagedResult<WarehouseUnit>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             var items = _context
                 .WarehouseUnits
                 .Include(x => x.WarehouseUnitItems)
+                    .ThenInclude(x => x.Product)
                 .AsNoTracking()
                 .AsQueryable();
 

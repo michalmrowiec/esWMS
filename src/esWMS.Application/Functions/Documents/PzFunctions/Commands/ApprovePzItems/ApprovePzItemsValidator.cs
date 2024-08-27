@@ -12,13 +12,19 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
         {
             _mediator = mediator;
 
+            RuleForEach(x => x.DocumentItemsWithAssignment)
+                .ChildRules(itemsASsignment =>
+                    itemsASsignment.RuleFor(x => x.WarehouseUnitId)
+                    .NotEmpty()
+                    .NotNull());
+
             RuleFor(x => x)
                 .CustomAsync(async (value, context, cancellationToken) =>
                 {
                     var documentResponse = await _mediator.Send(new GetPzByIdQuery(value.DocumentId));
                     var document = documentResponse.ReturnedObj;
 
-                    if (!documentResponse.Success || document == null)
+                    if (!documentResponse.IsSuccess() || document == null)
                     {
                         context.AddFailure("DocumentId", $"The document by Id: {value} does not exist.");
                     }
@@ -33,10 +39,6 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                             $"The original document does not contain these item identifiers: {string.Join("; ", contained)}");
                     }
 
-
-
-                    // TODO already  approve check add
-
                     foreach (var item in value.DocumentItemsWithAssignment)
                     {
                         var docItem = document.DocumentItems.First(x => x.DocumentItemId.Equals(item.DocumentItemId));
@@ -44,16 +46,23 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                         if (docItem.IsApproved)
                         {
                             context.AddFailure(
-                                "DocumentItemsWithAssignment",
+                                "DocumentWarehouseUnitItems",
                                 $"The document item by ID: {docItem.DocumentItemId} is already  approved");
                         }
                     }
 
+                    if(value.DocumentItemsWithAssignment == null || value.DocumentItemsWithAssignment.Count == 0)
+                    {
+                        context.AddFailure("DocumentItemsWithAssignment", "No document items provided.");
+                    }
 
+                    if(value.DocumentItemsWithAssignment!.Any(x => x.WarehouseUnitId == null))
+                    {
+                        context.AddFailure("WarehouseUnitIds", "No warehouse units provided.");
+                    }   
 
-
-                    string[] warehouseUnitIds = value.DocumentItemsWithAssignment
-                                                    .Select(x => x.WarehouseUnitId)
+                    string[] warehouseUnitIds = value.DocumentItemsWithAssignment!
+                                                    .Select(x => x.WarehouseUnitId!)
                                                     .ToArray();
 
                     if (warehouseUnitIds.Length != 0)
@@ -62,22 +71,33 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                             new GetWarehouseUnitsByIdsQuery(warehouseUnitIds));
                         var warehouseUnit = warehouseUnitResponse.ReturnedObj;
 
-                        if (!warehouseUnitResponse.Success || warehouseUnit == null)
+                        if (!warehouseUnitResponse.IsSuccess()
+                            || warehouseUnit == null
+                            || warehouseUnit.Count() == 0)
                         {
                             context.AddFailure("Somenthing went wrong");
                         }
-                        // TODO add check warehouse unit is member of issue warehouse
-                        var warehouseUnitIdsResponse = warehouseUnit!.Select(x => x.WarehouseUnitId).ToArray();
-                        var warehouseUnitIdsContained = warehouseUnitIds.Except(warehouseUnitIdsResponse);
-
-                        if (warehouseUnitIdsContained.Any())
+                        else
                         {
-                            context.AddFailure(
-                                "WarehouseUnitIds",
-                                $"There are no warehouse unit with identifiers: {string.Join("; ", warehouseUnitIdsContained)}");
+                            var warehouseUnitIdsResponse = warehouseUnit!.Select(x => x.WarehouseUnitId).ToArray();
+                            var warehouseUnitIdsContained = warehouseUnitIds.Except(warehouseUnitIdsResponse);
+
+                            if (warehouseUnitIdsContained.Any())
+                            {
+                                context.AddFailure(
+                                    "WarehouseUnitIds",
+                                    $"There are no warehouse unit with identifiers: {string.Join("; ", warehouseUnitIdsContained)}");
+                            }
+
+                            if (warehouseUnit.Any(wu => wu.WarehouseId != document.IssueWarehouseId))
+                            {
+                                var nonMatchingWarehouseUnits = warehouseUnit.Where(wu => wu.WarehouseId != document.IssueWarehouseId).ToList();
+                                context.AddFailure(
+                                    "WarehouseUnitIds",
+                                    $"The following warehouse units are not members of the warehouse with ID {document.IssueWarehouseId}: {string.Join("; ", nonMatchingWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
+                            }
                         }
                     }
-
 
                     foreach (var docItemId in value.DocumentItemsWithAssignment.Select(x => x.DocumentItemId))
                     {
@@ -91,10 +111,10 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                             .Where(x => x.DocumentItemId.Equals(docItemId))
                             .Sum(x => x.Quantity);
 
-                        if(totalQuantitySoFar + newAssignmentQuantity > docItem.Quantity)
+                        if (totalQuantitySoFar + newAssignmentQuantity > docItem.Quantity)
                         {
                             context.AddFailure(
-                                "DocumentItemsWithAssignment",
+                                "DocumentWarehouseUnitItems",
                                 $"The quantity being assigned ({totalQuantitySoFar + newAssignmentQuantity}) exceeds the available quantity ({docItem.Quantity}) for the Document Item ID: {docItemId}. Warehouse Unit IDs involved: {string.Join("; ", warehouseUnitItemIdsContained)}");
                         }
                     }

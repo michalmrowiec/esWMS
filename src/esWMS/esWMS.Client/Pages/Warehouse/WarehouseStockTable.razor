@@ -6,20 +6,6 @@
 @inject IDataService<WarehouseStockVM> warehouseUnitService
 @inject IDataService<WarehouseVM> warehouseService
 
-<MudSelect T="string"
-           @bind-Value="warehouseId"
-           SelectedValuesChanged="OnSearch"
-           Label="Magazyn"
-           AnchorOrigin="Origin.BottomCenter"
-           Immediate="true">
-    @foreach (var warehouse in warehouses)
-    {
-        <MudSelectItem Value="@warehouse.WarehouseId">
-            [@warehouse.WarehouseId] @warehouse.WarehouseName
-        </MudSelectItem>
-    }
-</MudSelect>
-
 <MudTable T="WarehouseStockVM"
           ServerData="ServerReload"
           Dense="true"
@@ -29,7 +15,35 @@
           OnRowClick="RowClickEvent">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Stany magazynowe</MudText>
+        <MudSelect T="string"
+                   Class="ps-5"
+                   @bind-Value="warehouseId"
+                   SelectedValuesChanged="OnSearch"
+                   Label="Magazyn"
+                   AnchorOrigin="Origin.BottomCenter"
+                   Immediate="true"
+                   Disabled="@(WarehouseId != null)">
+            @foreach (var warehouse in warehouses)
+            {
+                <MudSelectItem Value="@warehouse.WarehouseId">
+                    @if (warehouse.WarehouseId == " ")
+                    {
+                        <span>
+                            @warehouse.WarehouseName
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            [@warehouse.WarehouseId] @warehouse.WarehouseName
+                        </span>
+                    }
+                </MudSelectItem>
+            }
+        </MudSelect>
         <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
@@ -54,7 +68,19 @@
             <MudTableSortLabel SortLabel="Quantity" T="WarehouseStockVM">
                 Ilość
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="Quantity" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Quantity" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="BlockedQuantity" T="WarehouseStockVM">
+                Zablokowane
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="BlockedQuantity" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Available" T="WarehouseStockVM">
+                Dostępne
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Available" OnChangedAction="OnSearch" />
         </MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -62,6 +88,8 @@
         <MudTd DataLabel="Nazwa artykułu">@context.ProductName</MudTd>
         <MudTd DataLabel="Kategoria">@context.CategoryName</MudTd>
         <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
+        <MudTd DataLabel="Zablokowane">@context.BlockedQuantity</MudTd>
+        <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>No matching records found</MudText>
@@ -75,6 +103,11 @@
 </MudTable>
 
 @code {
+    [Parameter]
+    public EventCallback<WarehouseStockVM> SelectedStock { get; set; }
+    [Parameter]
+    public string? WarehouseId { get; set; }
+
     private IEnumerable<WarehouseStockVM> Products = [];
 
     private IEnumerable<WarehouseStockVM> pagedData;
@@ -89,14 +122,23 @@
          { "ProductId", new("ProductId") },
          { "ProductName", new("ProductName") },
          { "CategoryName", new("CategoryName") },
-         { "Quantity", new("Quantity") }
+         { "Quantity", new("Quantity", ">") },
+         { "BlockedQuantity", new("BlockedQuantity", ">") },
+         { "Available", new("Available", ">") }
     };
 
     protected override async Task OnInitializedAsync()
     {
         var warehouseResponse = await warehouseService
-            .GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500, "", ""));
+            .GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
         warehouses.AddRange(warehouseResponse.Items.ToList());
+
+        if (WarehouseId != null)
+        {
+            warehouseId = WarehouseId;
+        }
+
+        StateHasChanged();
     }
 
     private async Task<TableData<WarehouseStockVM>> ServerReload(TableState state, CancellationToken token)
@@ -128,6 +170,6 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<WarehouseStockVM> tableRowClickEventArgs)
     {
-        //await SelectedWarehoseUnit.InvokeAsync(tableRowClickEventArgs.Item);
+        await SelectedStock.InvokeAsync(tableRowClickEventArgs.Item);
     }
 }

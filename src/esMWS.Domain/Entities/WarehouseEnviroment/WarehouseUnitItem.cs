@@ -15,6 +15,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
         public string? BatchLot { get; set; }
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
+        public string? Currency { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }
@@ -22,7 +23,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
 
         public WarehouseUnit? WarehouseUnit { get; set; }
         public Product? Product { get; set; }
-        public IList<DocumentWarehouseUnitItem> DocumentWarehouseUnitItems { get; set; } = [];
+        public List<DocumentWarehouseUnitItem> DocumentWarehouseUnitItems { get; set; } = [];
 
         public WarehouseUnitItem()
         { }

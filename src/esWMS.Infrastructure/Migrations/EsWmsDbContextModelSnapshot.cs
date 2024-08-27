@@ -611,6 +611,11 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("varchar(60)");
 
+                    b.Property<bool>("IsBlocked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
                     b.Property<string>("LocationId")
                         .HasColumnType("varchar(11)");
 
@@ -682,6 +687,10 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(60)
                         .HasColumnType("varchar(60)");
+
+                    b.Property<string>("Currency")
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
@@ -794,7 +803,15 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<DateTime?>("GoodsReceiptDate")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("RelatedMmmId")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("varchar(25)");
+
                     b.HasIndex("FromWarehouseId");
+
+                    b.HasIndex("RelatedMmmId")
+                        .IsUnique();
 
                     b.HasDiscriminator().HasValue("MMP");
                 });
@@ -802,6 +819,10 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.Documents.PW", b =>
                 {
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
+
+                    b.Property<string>("DepartmentName")
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
 
                     b.Property<DateTime?>("GoodsReceiptDate")
                         .HasColumnType("datetime(6)");
@@ -843,14 +864,17 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<string>("DepartmentName")
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)");
 
                     b.Property<DateTime?>("GoodsReleaseDate")
                         .HasColumnType("datetime(6)");
 
                     b.ToTable("Documents", t =>
                         {
+                            t.Property("DepartmentName")
+                                .HasColumnName("RW_DepartmentName");
+
                             t.Property("GoodsReleaseDate")
                                 .HasColumnName("RW_GoodsReleaseDate");
                         });
@@ -1091,7 +1115,15 @@ namespace esWMS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("esMWS.Domain.Entities.Documents.MMM", "RelatedMmm")
+                        .WithOne("RelatedMmp")
+                        .HasForeignKey("esMWS.Domain.Entities.Documents.MMP", "RelatedMmmId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("FromWarehouse");
+
+                    b.Navigation("RelatedMmm");
                 });
 
             modelBuilder.Entity("esMWS.Domain.Entities.Documents.PZ", b =>
@@ -1182,6 +1214,11 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.Zone", b =>
                 {
                     b.Navigation("Locations");
+                });
+
+            modelBuilder.Entity("esMWS.Domain.Entities.Documents.MMM", b =>
+                {
+                    b.Navigation("RelatedMmp");
                 });
 #pragma warning restore 612, 618
         }

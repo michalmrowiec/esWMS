@@ -9,14 +9,22 @@
         Nowa kategoria
     </TitleContent>
     <DialogContent>
-        <MudForm Model="@model" @ref="@form" Validation="@(validator.ValidateValue)" ValidationDelay="0">
+        <MudForm Model="@model"
+                 @ref="@form"
+                 Validation="@(validator.ValidateValue)"
+                 ValidationDelay="0">
             <MudCardContent>
                 <MudTextField @bind-Value="model.CategoryName"
                               For="@(() => model.CategoryName)"
                               Immediate="true"
                               Label="Nazwa" />
 
-                <MudSelect T="string" @bind-Value="model.ParentCategoryId" Label="Kategoria nadrzędna" AnchorOrigin="Origin.BottomCenter" For="@(() => model.ParentCategoryId)" Immediate="true">
+                <MudSelect T="string"
+                           @bind-Value="model.ParentCategoryId"
+                           Label="Kategoria nadrzędna"
+                           AnchorOrigin="Origin.BottomCenter"
+                           For="@(() => model.ParentCategoryId)"
+                           Immediate="true">
                     @foreach (var pCategory in parentCategories)
                     {
                         <MudSelectItem Value="@pCategory.CategoryId">

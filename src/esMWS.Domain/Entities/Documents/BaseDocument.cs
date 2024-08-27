@@ -24,5 +24,38 @@ namespace esMWS.Domain.Entities.Documents
         public Employee? AssignedEmployee { get; set; }
         public Employee? ApprovingEmployee { get; set; }
         public IList<DocumentItem> DocumentItems { get; set; } = [];
+
+        protected BaseDocument()
+        { }
+
+        protected BaseDocument
+            (string documentId,
+            string issueWarehouseId,
+            string? comment,
+            DateTime documentIssueDate,
+            string? issuingEmployeeId,
+            string? assignedEmployeeId,
+            bool isApproved,
+            DateTime? aprovedDate,
+            string? approvingEmployeeId,
+            DateTime createdAt,
+            string? createdBy,
+            DateTime? modifiedAt,
+            string? modifiedBy)
+        {
+            DocumentId = documentId;
+            IssueWarehouseId = issueWarehouseId;
+            Comment = comment;
+            DocumentIssueDate = documentIssueDate;
+            IssuingEmployeeId = issuingEmployeeId;
+            AssignedEmployeeId = assignedEmployeeId;
+            IsApproved = isApproved;
+            AprovedDate = aprovedDate;
+            ApprovingEmployeeId = approvingEmployeeId;
+            CreatedAt = createdAt;
+            CreatedBy = createdBy;
+            ModifiedAt = modifiedAt;
+            ModifiedBy = modifiedBy;
+        }
     }
 }

@@ -1,0 +1,45 @@
+﻿@using esWMS.Client.Pages.Warehouse
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
+@using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IDialogService DialogService
+
+<MudDialog>
+    <TitleContent>
+        Dodawanie jednostek magazynowych
+    </TitleContent>
+    <DialogContent>
+        <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Multi"
+                            SelectedWarehouseUnits="OnSelected"
+                            WarehouseIdFilter="@WarehouseId"
+                            ShowOnlyUnblocked />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnAdded { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<List<WarehouseUnitVM>> WarehouseUnitVMs { get; set; }
+
+    [Parameter]
+    public string? WarehouseId { get; set; }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void OnSelected(HashSet<WarehouseUnitVM> warehouseUnits)
+    {
+        WarehouseUnitVMs.InvokeAsync(warehouseUnits.ToList());
+
+        FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

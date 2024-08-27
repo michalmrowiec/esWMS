@@ -1,8 +1,9 @@
 ﻿@page "/products"
+@using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @rendermode InteractiveAuto
-@inject IProductService productService
+@inject IDataService<ProductVM> dataService
 
 <MudTable T="ProductVM"
           ServerData="ServerReload"
@@ -14,42 +15,40 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Artykuły</MudText>
         <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
             <MudTableSortLabel SortLabel="ProductCode" T="ProductVM">
                 Code
             </MudTableSortLabel>
-            @*             <MudSelect T="string"  Label="Sign" AnchorOrigin="Origin.BottomCenter">
-            <MudSelectItem Value="@("Contains")" />
-            <MudSelectItem Value="@("Equals")" />
-            </MudSelect> *@
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("ProductCode", s))"></MudTextField>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ProductCode" OnChangedAction="OnSearch" />
 
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="ProductName" T="ProductVM">
                 Name
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("ProductName", s))"></MudTextField>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ProductName" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="CategoryName" T="ProductVM">
                 Category
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("CategoryName", s))"></MudTextField>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="CategoryName" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="Price" T="ProductVM">
                 Price
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Price", s))"></MudTextField>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Price" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="Unit" T="ProductVM">
                 Unit
             </MudTableSortLabel>
-            <MudTextField T="string" ValueChanged="@(s=>OnSearch2("Unit", s))"></MudTextField>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="Unit" OnChangedAction="OnSearch" />
         </MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -66,7 +65,7 @@
         <MudText>Loading...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
+        <MudTablePager />
     </PagerContent>
 </MudTable>
 
@@ -75,13 +74,19 @@
     public EventCallback<ProductVM> SelectedProduct { get; set; }
 
     private IEnumerable<ProductVM> Products = [];
-
     private IEnumerable<ProductVM> pagedData;
     private MudTable<ProductVM> table;
 
     private int totalItems;
-    private string searchString = null;
-    private Dictionary<string, string> searchString2 = new();
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "ProductCode", new("ProductName") },
+        { "ProductName", new("ProductName") },
+        { "CategoryName", new("CategoryName") },
+        { "Price", new("Price", ">") },
+        { "Unit", new("Unit") }
+    };
 
 
     private async Task<TableData<ProductVM>> ServerReload(TableState state, CancellationToken token)
@@ -93,38 +98,19 @@
 
         sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
 
-        //sm.Filters = string.Concat("productName", "@=", searchString);
-
-        foreach (var item in searchString2)
+        foreach (var searchOption in searchOptions)
         {
-            sm.Filters += item.Key + item.Value + ',';
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
         }
 
-
-        var response = await productService.GetProduct(sm);
+        var response = await dataService.GetPagedResult(@"api/v1/Product/get-filtered", sm);
 
         return new TableData<ProductVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
 
-    private void OnSearch(string text)
+    private void OnSearch()
     {
-        searchString = text;
-        table.ReloadServerData();
-    }
-
-    private void OnSearch2(string column, string text)
-    {
-        if (text == null || text == string.Empty)
-        {
-            text = "";
-            searchString2.Remove(column);
-            table.ReloadServerData();
-            return;
-        }
-        if (!searchString2.TryAdd(column, $"@={text}"))
-        {
-            searchString2[column] = $"@={text}";
-        }
         table.ReloadServerData();
     }
 

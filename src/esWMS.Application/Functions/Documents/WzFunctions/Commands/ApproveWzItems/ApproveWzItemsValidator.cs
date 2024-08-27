@@ -18,7 +18,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
                     var documentResponse = await _mediator.Send(new GetWzByIdQuery(value.DocumentId));
                     var document = documentResponse.ReturnedObj;
 
-                    if (!documentResponse.Success || document == null)
+                    if (!documentResponse.IsSuccess() || document == null)
                     {
                         context.AddFailure("DocumentId", $"The document by Id: {value} does not exist.");
                     }
@@ -36,8 +36,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
                     }
 
 
-                    // TODO already  approve check add
-
+                    // already approve check add
                     foreach (var item in value.DocumentItemsWithAssignment)
                     {
                         var docItem = document.DocumentItems.First(x => x.DocumentItemId.Equals(item.DocumentItemId));
@@ -45,42 +44,42 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
                         if (docItem.IsApproved)
                         {
                             context.AddFailure(
-                                "DocumentItemsWithAssignment",
+                                "DocumentWarehouseUnitItems",
                                 $"The document item by ID: {docItem.DocumentItemId} is already  approved");
                         }
                     }
 
+                    // TODO zmienić sprawdzanie warehouseUnitIds na sprawdzanie warehouseUnitItemsIds
+                    //string[] warehouseUnitIds = value.DocumentItemsWithAssignment
+                    //                                .Select(x => x.WarehouseUnitId)
+                    //                                .ToArray();
 
-                    string[] warehouseUnitIds = value.DocumentItemsWithAssignment
-                                                    .Select(x => x.WarehouseUnitId)
-                                                    .ToArray();
+                    //if (warehouseUnitIds.Length != 0)
+                    //{
+                    //    var warehouseUnitResponse = await _mediator.Send(
+                    //        new GetWarehouseUnitsByIdsQuery(warehouseUnitIds));
+                    //    var warehouseUnit = warehouseUnitResponse.ReturnedObj;
 
-                    if (warehouseUnitIds.Length != 0)
-                    {
-                        var warehouseUnitResponse = await _mediator.Send(
-                            new GetWarehouseUnitsByIdsQuery(warehouseUnitIds));
-                        var warehouseUnit = warehouseUnitResponse.ReturnedObj;
+                    //    if (!warehouseUnitResponse.Success || warehouseUnit == null)
+                    //    {
+                    //        context.AddFailure("Somenthing went wrong");
+                    //    }
+                    //    // TODO add check warehouse unit is member of issue warehouse
+                    //    var warehouseUnitItemIdsResponse = warehouseUnit!.Select(x => x.WarehouseUnitId).ToArray();
 
-                        if (!warehouseUnitResponse.Success || warehouseUnit == null)
-                        {
-                            context.AddFailure("Somenthing went wrong");
-                        }
-                        // TODO add check warehouse unit is member of issue warehouse
-                        var warehouseUnitItemIdsResponse = warehouseUnit!.Select(x => x.WarehouseUnitId).ToArray();
+                    //    var warehouseUnitIdsContained = warehouseUnitIds.Except(warehouseUnitItemIdsResponse);
 
-                        var warehouseUnitIdsContained = warehouseUnitIds.Except(warehouseUnitItemIdsResponse);
-
-                        if (warehouseUnitIdsContained.Any())
-                        {
-                            context.AddFailure(
-                                "WarehouseUnitIds",
-                                $"There are no warehouse unit with identifiers: {string.Join("; ", warehouseUnitIdsContained)}");
-                        }
-                    }
+                    //    if (warehouseUnitIdsContained.Any())
+                    //    {
+                    //        context.AddFailure(
+                    //            "WarehouseUnitIds",
+                    //            $"There are no warehouse unit with identifiers: {string.Join("; ", warehouseUnitIdsContained)}");
+                    //    }
+                    //}
 
                     // TODO fix this and add validation for warehouseUnitItems
 
-                    //foreach (var docItemId in value.DocumentItemWithAssignment.Select(x => x.DocumentItemId))
+                    //foreach (var docItemId in value.CreateDocumentWarehouseUnitItemCommand.Select(x => x.DocumentItemId))
                     //{
                     //    var docItem = document.DocumentItems.First(x => x.DocumentItemId.Equals(docItemId));
 
@@ -88,14 +87,14 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
 
                     //    var warehouseUnitItemIdsContained = docItem.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId);
 
-                    //    var newAssignmentQuantity = value.DocumentItemWithAssignment
+                    //    var newAssignmentQuantity = value.CreateDocumentWarehouseUnitItemCommand
                     //        .Where(x => x.DocumentItemId.Equals(docItemId))
                     //        .Sum(x => x.Quantity);
 
                     //    if (totalQuantitySoFar + newAssignmentQuantity > docItem.Quantity)
                     //    {
                     //        context.AddFailure(
-                    //            "DocumentItemsWithAssignment",
+                    //            "DocumentWarehouseUnitItems",
                     //            $"The quantity being assigned ({totalQuantitySoFar + newAssignmentQuantity}) exceeds the available quantity ({docItem.Quantity}) for the Document Item ID: {docItemId}. Warehouse Unit IDs involved: {string.Join("; ", warehouseUnitItemIdsContained)}");
                     //    }
                     //}

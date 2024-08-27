@@ -7,7 +7,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzIt
     public class ApproveWzItemsCommand : IRequest<BaseResponse<WzDto>>
     {
         public string DocumentId { get; set; } = null!;
-        public List<DocumentItemWithAssignment> DocumentItemsWithAssignment { get; set; } = null!;
+        public List<CreateDocumentWarehouseUnitItemCommand> DocumentItemsWithAssignment { get; set; } = null!;
 
         public string? ModifiedBy { get; set; }
     }

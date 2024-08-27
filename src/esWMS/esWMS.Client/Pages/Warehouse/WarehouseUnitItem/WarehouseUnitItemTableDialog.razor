@@ -1,0 +1,73 @@
+﻿@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+
+<MudDialog>
+    <TitleContent>
+        Wybieranie jednostki magazynowej
+    </TitleContent>
+    <DialogContent>
+
+        <MudTextField Value="@string.Concat(selected?.WarehouseUnitItemId," ilość: ", selected?.Quantity).ToString()"
+                      Label="Wybrana jednostka"
+                      Disabled />
+
+        <WarehouseUnitItemTable SelectedWarehoseUnitItem="OnSelected"
+                                ProductIdFilter="@ProductIdFilter"
+                                WarehouseIdFilter="@WarehouseIdFilter"
+                                ExceptWarehouseUnitItem="@ExceptWarehouseUnitItem" />
+
+        <MudNumericField Label="Ilość"
+                         @bind-Value="quantity" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Dodaj</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnAdded { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<(WarehouseUnitItemVM, int)> WarehouseUnitItem { get; set; }
+
+    [Parameter]
+    public string? ProductIdFilter { get; set; }
+
+    [Parameter]
+    public string? WarehouseIdFilter { get; set; }
+
+    [Parameter]
+    public HashSet<string>? ExceptWarehouseUnitItem { get; set; }
+
+    private WarehouseUnitItemVM? selected;
+    private int quantity = 0;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void Submit()
+    {
+        if (selected != null &&
+            quantity > 0 &&
+            quantity <= selected.Quantity &&
+            selected.ProductId.Equals(ProductIdFilter) &&
+            selected.WarehouseUnit.WarehouseId.Equals(WarehouseIdFilter))
+        {
+            WarehouseUnitItem.InvokeAsync(new(selected, quantity));
+
+            FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+    }
+
+    private void OnSelected(WarehouseUnitItemVM warehouseUnitItem)
+    {
+        selected = warehouseUnitItem;
+        quantity = warehouseUnitItem.Quantity - warehouseUnitItem.BlockedQuantity;
+        StateHasChanged();
+    }
+}

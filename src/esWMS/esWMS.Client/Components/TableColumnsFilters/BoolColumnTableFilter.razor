@@ -1,7 +1,12 @@
-﻿<MudSelect T="string" ValueChanged="@((s) => {SearchOptions[Column].Value = s; OnChangedAction.Invoke();})" Variant="Variant.Text" AnchorOrigin="Origin.BottomCenter" Style="width: 8%">
+﻿<MudSelect T="string"
+           ValueChanged="@((s) => {SearchOptions[Column].Value = s; OnChangedAction.Invoke();})"
+           Variant="Variant.Text"
+           AnchorOrigin="Origin.BottomCenter"
+           Style="width: 8%"
+           Disabled="Disabled">
     <MudSelectItem Value="@(string.Empty)">Wszystkie</MudSelectItem>
-    <MudSelectItem Value="@("true")">Zatwierdzone</MudSelectItem>
-    <MudSelectItem Value="@("false")">Niezatwierdzone</MudSelectItem>
+    <MudSelectItem Value="@("true")">Tak</MudSelectItem>
+    <MudSelectItem Value="@("false")">Nie</MudSelectItem>
 </MudSelect>
 
 @code {
@@ -13,4 +18,7 @@
 
     [Parameter]
     public Action OnChangedAction { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
 }

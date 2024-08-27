@@ -9,7 +9,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
         public void Configure(EntityTypeBuilder<RW> builder)
         {
             builder.Property(d => d.DepartmentName)
-                .HasMaxLength(100);
+                .HasMaxLength(250);
         }
     }
 }

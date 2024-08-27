@@ -11,7 +11,7 @@
                       Label="Wybrana jednostka"
                       Disabled />
 
-        <WarehouseUnitTable SelectedWarehoseUnit="OnSelected" />
+        <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Single" SelectedWarehouseUnits="OnSelected" />
 
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />
@@ -38,20 +38,20 @@
 
     private void Submit()
     {
-        if (selected != null ||
-            quantity <= 0)
+        if (selected != null &&
+            quantity > 0)
         {
             WarehouseUnitId.InvokeAsync((selected, quantity));
+
+            FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+            MudDialog.Close(DialogResult.Ok(true));
         }
-
-        FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
-
-        MudDialog.Close(DialogResult.Ok(true));
     }
 
-    private void OnSelected(WarehouseUnitVM warehouseUnit)
+    private void OnSelected(HashSet<WarehouseUnitVM> warehouseUnits)
     {
-        selected = warehouseUnit.WarehouseUnitId;
+        selected = warehouseUnits.FirstOrDefault()?.WarehouseUnitId;
         StateHasChanged();
     }
 }

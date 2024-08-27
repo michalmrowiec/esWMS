@@ -1,6 +1,4 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Application.Functions.WarehouseUnitItems;
+﻿using esWMS.Application.Functions.WarehouseUnitItems;
 
 namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions
 {

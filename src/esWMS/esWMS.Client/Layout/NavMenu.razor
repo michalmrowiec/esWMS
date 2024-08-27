@@ -1,10 +1,20 @@
 ﻿@using esWMS.Client.Pages
-@using esWMS.Client.Pages.Documents
+@using esWMS.Client.Pages.Documents.Mmm
+@using esWMS.Client.Pages.Documents.Mmp
+@using esWMS.Client.Pages.Documents.Pw
 @using esWMS.Client.Pages.Documents.Pz
+@using esWMS.Client.Pages.Documents.Wz
+@using esWMS.Client.Pages.OnePage
+@using esWMS.Client.Pages.Warehouse
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
+@using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
 @inject OnePageState onePageState
 
 <MudNavMenu>
-    <MudNavGroup Title="Artykuły" Expanded="false" Icon="@Icons.Material.Filled.Category">
+    <MudButton OnClick="@(() => _allGroupsExpanded = !_allGroupsExpanded)">
+        @(_allGroupsExpanded ? "Zwiń" : "Rozwiń")
+    </MudButton>
+    <MudNavGroup Title="Artykuły" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Category">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
                     OnClick="@(() => onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
@@ -16,7 +26,7 @@
             Lista Kategorii
         </MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Magazyny" Expanded="false" Icon="@Icons.Material.Filled.Warehouse">
+    <MudNavGroup Title="Magazyny" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
                     OnClick="@(() => onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
@@ -28,18 +38,77 @@
             Jednostki Magazynowe
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.Segment"
+                    OnClick="@(() => onePageState.AddTab(new TabView("Pozycje Magazynowe", new WarehouseUnitItemTable(), Guid.NewGuid(), Icons.Material.Filled.Segment)))">
+            Pozycje Magazynowe
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.Warehouse"
                     OnClick="@(() => onePageState.AddTab(new TabView("Stany Magazynowe", new WarehouseStockTable(), Guid.NewGuid(), Icons.Material.Filled.Warehouse)))">
             Stany Magazynowe
         </MudNavLink>
     </MudNavGroup>
-    <MudNavGroup Title="Dokumenty" Expanded="false" Icon="@Icons.Material.Filled.LibraryBooks">
-        <MudNavGroup Title="PZ" Expanded="false" Icon="@Icons.Material.Filled.ArrowDownward">
+    <MudNavGroup Title="Dokumenty" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.LibraryBooks">
+        <MudNavGroup Title="PZ" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
                 Lista PZ
             </MudNavLink>
         </MudNavGroup>
+        <MudNavGroup Title="WZ" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("WZ", new WzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                Lista WZ
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="PW" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("PW", new PwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                Lista PW
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="MM" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.CompareArrows">
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.Add"
+                        OnClick="@(() => OpenCreateMmTab())">
+                Utwórz MM
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("MM-", new MmmTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                Lista MM-
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("MM+", new MmpTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                Lista MM+
+            </MudNavLink>
+        </MudNavGroup>
     </MudNavGroup>
 </MudNavMenu>
+
+@code {
+    private bool _allGroupsExpanded = true;
+
+    private void OpenCreateMmTab()
+    {
+        var tabId = Guid.NewGuid();
+
+        var callbacksOnAddMm = new List<EventCallback>
+        {
+            EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
+            EventCallback.Factory.Create(this, () => onePageState.AddTab(new TabView("MM-", new MmmTable(), Guid.NewGuid(), Icons.Material.Filled.List)))
+        };
+
+        onePageState.AddTab(
+            new TabView(
+                "Tworzenie MM",
+                new AddMmm(),
+                tabId,
+                Icons.Material.Filled.NoteAdd,
+                new() { { "EventCallbacks", callbacksOnAddMm } }));
+    }
+}

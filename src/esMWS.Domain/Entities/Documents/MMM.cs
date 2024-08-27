@@ -8,5 +8,6 @@ namespace esMWS.Domain.Entities.Documents
         public string ToWarehouseId { get; set; } = null!;
 
         public Warehouse? ToWarehouse { get; set; }
+        public MMP? RelatedMmp { get; set; }
     }
 }

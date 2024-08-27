@@ -6,12 +6,19 @@
         {
             
         }
-        public SieveModelVM(int page, int pageSize, string filters, string sorts)
+        public SieveModelVM(int page, int pageSize, string filters = "", string sorts = "")
         {
             Page = page;
             PageSize = pageSize;
             Filters = filters;
             Sorts = sorts;
+        }
+
+        public SieveModelVM(string filters)
+        {
+            Page = 1;
+            PageSize = 1;
+            Filters = filters;
         }
 
         public int Page { get; set; } = 1;

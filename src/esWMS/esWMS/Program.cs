@@ -1,5 +1,5 @@
 using esWMS.Application;
-using esWMS.Client.Pages;
+using esWMS.Client.Pages.OnePage;
 using esWMS.Client.Services;
 using esWMS.Components;
 using esWMS.Infrastructure;

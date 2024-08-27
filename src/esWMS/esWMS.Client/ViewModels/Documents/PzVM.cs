@@ -14,9 +14,9 @@ namespace esWMS.Client.ViewModels.Documents
     {
         public string? IssueWarehouseId { get; set; }
         public string? Comment { get; set; }
-        public DateTime? DocumentIssueDate { get; set; }
+        public DateTime? DocumentIssueDate { get; set; } = DateTime.Now;
         public string? AssignedEmployeeId { get; set; }
-        public DateTime? GoodsReceiptDate { get; set; }
+        public DateTime? GoodsReceiptDate { get; set; } = DateTime.Now;
         public string? SupplierContractorId { get; set; }
         public IList<DocumentItemVM> DocumentItems { get; set; } = [];
     }

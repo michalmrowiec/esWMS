@@ -71,7 +71,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWz
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<WzDto>(false, "Something went wrong.");
+                return new BaseResponse<WzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<WzDto>(mappedUpdatedDocument);

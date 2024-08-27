@@ -10,6 +10,7 @@
         public int? TotalLength { get; set; }
         public int? TotalWidth { get; set; }
         public int? TotalHeight { get; set; }
+        public bool IsBlocked { get; set; }
         public bool? CanBeStacked { get; set; }
         public string? StackOnId { get; set; }
         public DateTime CreatedAt { get; set; }

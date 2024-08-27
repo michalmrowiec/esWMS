@@ -1,12 +1,29 @@
 ﻿@using esWMS.Client.Pages.Documents
 <div class="d-flex">
-    <MudSelect T="string" @bind-Value="SearchOptions[Column].Operator" SelectedValuesChanged="@(() => OnChangedAction.Invoke())" Variant="Variant.Text" AnchorOrigin="Origin.BottomCenter" Style="width: 8%">
-        <MudSelectItem Value="@("@=")">=</MudSelectItem>
-        <MudSelectItem Value="@("!@=")">!=</MudSelectItem>
+    <MudSelect T="string"
+               Disabled="Disabled"
+               @bind-Value="SearchOptions[Column].Operator"
+               SelectedValuesChanged="@(() => OnChangedAction.Invoke())"
+               Variant="Variant.Text"
+               AnchorOrigin="Origin.BottomCenter"
+               Style="width: 8%">
+        @if (TypeOfField == TypeOfFIlterField.Text)
+        {
+            <MudSelectItem Value="@("@=")">=</MudSelectItem>
+            <MudSelectItem Value="@("!@=")">!=</MudSelectItem>
+        }
+        else if (TypeOfField == TypeOfFIlterField.Numeric)
+        {
+            <MudSelectItem Value="@(">")">@string.Concat(">")</MudSelectItem>
+            <MudSelectItem Value="@(">=")">@string.Concat(">=")</MudSelectItem>
+            <MudSelectItem Value="@("<")">@string.Concat("<")</MudSelectItem>
+            <MudSelectItem Value="@("<=")">@string.Concat("<=")</MudSelectItem>
+        }
         <MudSelectItem Value="@("==")">==</MudSelectItem>
         <MudSelectItem Value="@("!=")">!==</MudSelectItem>
     </MudSelect>
     <MudTextField T="string"
+                  Disabled="Disabled"
                   ValueChanged="@((s) => {SearchOptions[Column].Value = s; OnChangedAction.Invoke();})">
     </MudTextField>
 </div>
@@ -20,4 +37,16 @@
 
     [Parameter]
     public Action OnChangedAction { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; } = false;
+
+    [Parameter]
+    public TypeOfFIlterField TypeOfField { get; set; } = TypeOfFIlterField.Text;
+
+    public enum TypeOfFIlterField
+    {
+        Text,
+        Numeric
+    }
 }

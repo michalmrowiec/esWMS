@@ -19,6 +19,30 @@ namespace esWMS.Infrastructure.Repositories.Documents
         private readonly ILogger<BaseDocumentRepository<TDocument>> _logger = logger;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
+        private readonly Dictionary<Type, Func<IQueryable<TDocument>, IQueryable<TDocument>>> _queryStrategies =
+            new()
+            {
+                { typeof(WZ), (query) => (IQueryable<TDocument>)((IQueryable<WZ>)query)
+                    .Include(x => x.RecipientContractor)
+                },
+                { typeof(PZ), (query) => (IQueryable<TDocument>)((IQueryable<PZ>)query)
+                    .Include(x => x.SupplierContractor)
+                },
+                { typeof(MMM), (query) => (IQueryable<TDocument>)((IQueryable<MMM>)query)
+                    .Include(x => x.ToWarehouse)
+                    .Include(x => x.RelatedMmp)
+                },
+                { typeof(MMP), (query) => (IQueryable<TDocument>)((IQueryable<MMP>)query)
+                    .Include(x => x.FromWarehouse)
+                    .Include(x => x.RelatedMmm)
+                },
+                { typeof(BaseDocument), (query) => query
+                    .Include(x => x.IssueWarehouse)
+                    .Include(x => x.DocumentItems)
+                        .ThenInclude(x => x.DocumentWarehouseUnitItems)
+                }
+            };
+
         public async Task<TDocument> GetDocumentByIdWithItemsAsync(string id)
         {
             try
@@ -28,9 +52,15 @@ namespace esWMS.Infrastructure.Repositories.Documents
                     .Include(x => x.DocumentItems)
                         .ThenInclude(x => x.DocumentWarehouseUnitItems)
                             .ThenInclude(x => x.WarehouseUnitItem)
-                    .FirstOrDefaultAsync(x => x.DocumentId == id);
+                                .ThenInclude(x => x.WarehouseUnit)
+                    .FirstOrDefaultAsync(x => x.DocumentId.Equals(id));
 
                 return result ?? throw new KeyNotFoundException("The object with the given id was not found.");
+            }
+            catch (KeyNotFoundException)
+            {
+                _logger.LogWarning("Document with Id: {DocumentId} was not found.", id);
+                throw;
             }
             catch (Exception ex)
             {
@@ -59,19 +89,18 @@ namespace esWMS.Infrastructure.Repositories.Documents
             }
         }
 
-        public Task<BaseDocument> UpdateDocumentAsync(BaseDocument document)
-        {
-            throw new NotImplementedException();
-        }
-
         public virtual async Task<PagedResult<TDocument>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             var documents = _context
                 .Set<TDocument>()
-                .Include(x => x.IssueWarehouse)
-                .Include(x => x.DocumentItems)
-                .AsNoTracking()
-                .AsQueryable();
+                .AsNoTracking();
+
+            if (_queryStrategies.TryGetValue(typeof(TDocument), out var strategy))
+            {
+                documents = strategy(documents);
+            }
+
+            documents = _queryStrategies[typeof(BaseDocument)](documents);
 
             var filteredDocuments = await _sieveProcessor
                 .Apply(sieveModel, documents)
