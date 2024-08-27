@@ -1,5 +1,7 @@
 using esMWS.Domain.Models;
 using esWMS.Application.Functions.Documents.PwFunctions;
+using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePw;
+using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwItems;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw;
 using esWMS.Application.Functions.Documents.PwFunctions.Queries.GetSortedFilteredPw;
 using esWMS.Application.Responses;
@@ -53,55 +55,55 @@ namespace esWMS.Controllers.Documents
             }
         }
 
-        //[HttpPatch("approve-items")]
-        //public async Task<ActionResult<PwDto>> ApprovePwItems([FromBody] ApprovePwItemsCommand approvePwItemsCommand)
-        //{
-        //    if (_userContextService.GetUserId is not null)
-        //        approvePwItemsCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+        [HttpPatch("approve-items")]
+        public async Task<ActionResult<PwDto>> ApprovePwItems([FromBody] ApprovePwItemsCommand approvePwItemsCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                approvePwItemsCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
-        //    var result = await _mediator.Send(approvePwItemsCommand);
+            var result = await _mediator.Send(approvePwItemsCommand);
 
-        //    switch (result.Status)
-        //    {
-        //        case BaseResponse.ResponseStatus.Success:
-        //            return Ok(result.ReturnedObj);
-        //        case BaseResponse.ResponseStatus.ValidationError:
-        //            return BadRequest(result.ValidationErrors);
-        //        case BaseResponse.ResponseStatus.ServerError:
-        //            return StatusCode(500);
-        //        case BaseResponse.ResponseStatus.NotFound:
-        //            return NotFound();
-        //        case BaseResponse.ResponseStatus.BadQuery:
-        //            return BadRequest(result.Message);
-        //        default:
-        //            return BadRequest();
-        //    }
-        //}
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
 
-        //[HttpPatch("approve")]
-        //public async Task<ActionResult<PwDto>> ApprovePw([FromBody] ApprovePwCommand approvePwCommand)
-        //{
-        //    if (_userContextService.GetUserId is not null)
-        //        approvePwCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+        [HttpPatch("approve")]
+        public async Task<ActionResult<PwDto>> ApprovePw([FromBody] ApprovePwCommand approvePwCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                approvePwCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
-        //    var result = await _mediator.Send(approvePwCommand);
+            var result = await _mediator.Send(approvePwCommand);
 
-        //    switch (result.Status)
-        //    {
-        //        case BaseResponse.ResponseStatus.Success:
-        //            return Ok(result.ReturnedObj);
-        //        case BaseResponse.ResponseStatus.ValidationError:
-        //            return BadRequest(result.ValidationErrors);
-        //        case BaseResponse.ResponseStatus.ServerError:
-        //            return StatusCode(500);
-        //        case BaseResponse.ResponseStatus.NotFound:
-        //            return NotFound();
-        //        case BaseResponse.ResponseStatus.BadQuery:
-        //            return BadRequest(result.Message);
-        //        default:
-        //            return BadRequest();
-        //    }
-        //}
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
 
         [HttpPost("get-filtered")]
         public async Task<ActionResult<PagedResult<PwDto>>> GetSortedAndFilteredPw([FromBody] SieveModel sieveModel)
