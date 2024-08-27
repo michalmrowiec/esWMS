@@ -1,5 +1,5 @@
-﻿using esWMS.Application.Functions.Documents.BaseDocumentFunctions.Queries.GetDocumentById;
-using esWMS.Application.Functions.WarehouseUnits.Queries.GetWarehouseUnitsByIds;
+﻿using esWMS.Application.Functions.WarehouseUnits.Queries.GetWarehouseUnitsByIds;
+using esWMS.Application.Functiosns.Documents.PwFunctions.Queries.GetPwById;
 using FluentValidation;
 using MediatR;
 
@@ -21,7 +21,7 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwIt
             RuleFor(x => x)
                 .CustomAsync(async (value, context, cancellationToken) =>
                 {
-                    var documentResponse = await _mediator.Send(new GetPzByIdQuery(value.DocumentId));
+                    var documentResponse = await _mediator.Send(new GetPwByIdQuery(value.DocumentId));
                     var document = documentResponse.ReturnedObj;
 
                     if (!documentResponse.IsSuccess() || document == null)

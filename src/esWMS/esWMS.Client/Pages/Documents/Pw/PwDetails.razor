@@ -65,13 +65,8 @@
                     <MudCheckBox Value="@context.Item.IsApproved" Disabled />
                     @if (!context.Item.IsApproved)
                     {
-                        @*                         <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
-                    Size="@Size.Small"
-                    Variant="@Variant.Filled"
-                    Color="@Color.Primary">
-                    Zatwierdź
-                    </MudButton> *@
-                        <MudButton Size="@Size.Small"
+                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                                   Size="@Size.Small"
                                    Variant="@Variant.Filled"
                                    Color="@Color.Primary">
                             Zatwierdź
@@ -86,7 +81,7 @@
 @if (PwVM.DocumentItems.All(x => x.IsApproved) &&
 !PwVM.IsApproved)
 {
-    <MudButton OnClick="@(() => ApprovePz())"
+    <MudButton OnClick="@(() => ApprovePw())"
                Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
@@ -137,17 +132,17 @@ else
 
     private List<string> responseErrors = new();
 
-    // private Task OpenDialogAsync(DocumentItemVM documentItem)
-    // {
-    //     InvokeAsync(RefreshPw);
-    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-    //     var parameters = new DialogParameters<ApprovePzItemDialogForm>
-    //     {
-    //         { x => x.DocumentItemVM, documentItem},
-    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPz) } }
-    //     };
-    //     return DialogService.ShowAsync<ApprovePzItemDialogForm>(null, parameters, options);
-    // }
+    private Task OpenDialogAsync(DocumentItemVM documentItem)
+    {
+        InvokeAsync(RefreshPw);
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<ApprovePwItemDialogForm>
+        {
+            { x => x.DocumentItemVM, documentItem},
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPw) } }
+        };
+        return DialogService.ShowAsync<ApprovePwItemDialogForm>(null, parameters, options);
+    }
 
     private async Task RefreshPw()
     {
@@ -167,7 +162,7 @@ else
         StateHasChanged();
     }
 
-    public async Task ApprovePz()
+    public async Task ApprovePw()
     {
         var response = await documentDataService.ApproveDocument(@"api/v1/Pw/approve", new { DocumentId = PwVM.DocumentId });
 
