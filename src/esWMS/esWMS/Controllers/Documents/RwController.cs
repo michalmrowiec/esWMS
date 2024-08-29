@@ -1,5 +1,7 @@
 ﻿using esMWS.Domain.Models;
 using esWMS.Application.Functions.Documents.RwFunctions;
+using esWMS.Application.Functions.Documents.RwFunctions.Commands.ApproveRw;
+using esWMS.Application.Functions.Documents.RwFunctions.Commands.ApproveRwItems;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw;
 using esWMS.Application.Functions.Documents.RwFunctions.Queries.GetSortedFilteredRw;
 using esWMS.Application.Responses;
@@ -75,54 +77,54 @@ namespace esWMS.Controllers.Documents
             }
         }
 
-        //[HttpPatch("approve-items")]
-        //public async Task<ActionResult<RwDto>> ApprovePzItems([FromBody] ApproveWzItemsCommand approveWzItemsCommand)
-        //{
-        //    if (_userContextService.GetUserId is not null)
-        //        approveWzItemsCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+        [HttpPatch("approve-items")]
+        public async Task<ActionResult<RwDto>> ApproveRwItems([FromBody] ApproveRwItemsCommand approveRwItemsCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                approveRwItemsCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
-        //    var result = await _mediator.Send(approveWzItemsCommand);
+            var result = await _mediator.Send(approveRwItemsCommand);
 
-        //    switch (result.Status)
-        //    {
-        //        case BaseResponse.ResponseStatus.Success:
-        //            return Ok(result.ReturnedObj);
-        //        case BaseResponse.ResponseStatus.ValidationError:
-        //            return BadRequest(result.ValidationErrors);
-        //        case BaseResponse.ResponseStatus.ServerError:
-        //            return StatusCode(500);
-        //        case BaseResponse.ResponseStatus.NotFound:
-        //            return NotFound();
-        //        case BaseResponse.ResponseStatus.BadQuery:
-        //            return BadRequest(result.Message);
-        //        default:
-        //            return BadRequest();
-        //    }
-        //}
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
 
-        //[HttpPatch("approve")]
-        //public async Task<ActionResult<WzDto>> ApprovePz([FromBody] ApproveWzCommand approveWzCommand)
-        //{
-        //    if (_userContextService.GetUserId is not null)
-        //        approveWzCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+        [HttpPatch("approve")]
+        public async Task<ActionResult<RwDto>> ApprovePz([FromBody] ApproveRwCommand approveRwCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                approveRwCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
-        //    var result = await _mediator.Send(approveWzCommand);
+            var result = await _mediator.Send(approveRwCommand);
 
-        //    switch (result.Status)
-        //    {
-        //        case BaseResponse.ResponseStatus.Success:
-        //            return Ok(result.ReturnedObj);
-        //        case BaseResponse.ResponseStatus.ValidationError:
-        //            return BadRequest(result.ValidationErrors);
-        //        case BaseResponse.ResponseStatus.ServerError:
-        //            return StatusCode(500);
-        //        case BaseResponse.ResponseStatus.NotFound:
-        //            return NotFound();
-        //        case BaseResponse.ResponseStatus.BadQuery:
-        //            return BadRequest(result.Message);
-        //        default:
-        //            return BadRequest();
-        //    }
-        //}
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
     }
 }

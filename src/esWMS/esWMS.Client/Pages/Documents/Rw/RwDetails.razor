@@ -65,13 +65,8 @@
                     <MudCheckBox Value="@context.Item.IsApproved" Disabled />
                     @if (!context.Item.IsApproved)
                     {
-@*                         <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
                                    Size="@Size.Small"
-                                   Variant="@Variant.Filled"
-                                   Color="@Color.Primary">
-                            Zatwierdź
-                        </MudButton> *@
-                        <MudButton Size="@Size.Small"
                                    Variant="@Variant.Filled"
                                    Color="@Color.Primary">
                             Zatwierdź
@@ -86,7 +81,7 @@
 @if (RwVM.DocumentItems.All(x => x.IsApproved) &&
 !RwVM.IsApproved)
 {
-    <MudButton OnClick="@(() => ApproveWz())"
+    <MudButton OnClick="@(() => ApproveRw())"
                Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
@@ -137,19 +132,19 @@ else
 
     private List<string> responseErrors = new();
 
-    // private Task OpenDialogAsync(DocumentItemVM documentItem)
-    // {
-    //     InvokeAsync(RefreshWz);
-    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-    //     var parameters = new DialogParameters<ApproveWzItemDialogForm>
-    //     {
-    //         { x => x.DocumentItemVM, documentItem},
-    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
-    //     };
-    //     return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
-    // }
+    private Task OpenDialogAsync(DocumentItemVM documentItem)
+    {
+        InvokeAsync(RefreshRw);
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<ApproveRwItemDialogForm>
+        {
+            { x => x.DocumentItemVM, documentItem},
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshRw) } }
+        };
+        return DialogService.ShowAsync<ApproveRwItemDialogForm>(null, parameters, options);
+    }
 
-    private async Task RefreshWz()
+    private async Task RefreshRw()
     {
         var sm = new SieveModelVM();
 
@@ -157,7 +152,7 @@ else
         sm.PageSize = 1;
         sm.Filters = $"DocumentId=={RwVM.DocumentId}";
 
-        var response = await dataService.GetPagedResult(@"api/v1/Wz/get-filtered", sm);
+        var response = await dataService.GetPagedResult(@"api/v1/Rw/get-filtered", sm);
 
         if (response.Items.FirstOrDefault() != null)
         {
@@ -167,16 +162,16 @@ else
         StateHasChanged();
     }
 
-    public async Task ApproveWz()
+    public async Task ApproveRw()
     {
-        var response = await documentDataService.ApproveDocument(@"api/v1/Wz/approve", new { DocumentId = RwVM.DocumentId });
+        var response = await documentDataService.ApproveDocument(@"api/v1/Rw/approve", new { DocumentId = RwVM.DocumentId });
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var json = await response.Content.ReadAsStringAsync();
             var responseObj = JsonConvert.DeserializeObject<RwVM>(json);
 
-            await RefreshWz();
+            await RefreshRw();
 
             Snackbar.Configuration.PositionClass = "Bottom-End";
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{RwVM.DocumentId}</strong>"), Severity.Success);
