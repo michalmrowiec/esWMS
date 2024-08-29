@@ -128,7 +128,7 @@
                 sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
         }
 
-        var response = await dataService.GetPagedResult(@"api/v1/Wz/get-filtered", sm);
+        var response = await dataService.GetPagedResult(@"api/v1/Rw/get-filtered", sm);
 
         return new TableData<RwVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }

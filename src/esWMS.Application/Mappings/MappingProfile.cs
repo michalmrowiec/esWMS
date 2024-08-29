@@ -16,6 +16,8 @@ using esWMS.Application.Functions.Documents.PwFunctions;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw;
 using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
+using esWMS.Application.Functions.Documents.RwFunctions;
+using esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw;
 using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz;
 using esWMS.Application.Functions.Locations;
@@ -128,6 +130,9 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreatePwCommand, PW>();
             CreateMap<PW, PwDto>();
+
+            CreateMap<CreateRwCommand, RW>();
+            CreateMap<RW, RwDto>();
 
             CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
                 .ForMember("Items", opt => opt.MapFrom("Items"));

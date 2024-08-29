@@ -54,13 +54,8 @@
                   Immediate="true"
                   Label="Odbiorca" />
 
-@*     <MudButton @onclick="OpenDialogAsync"
+    <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
-               Color="Color.Primary"
-               Disabled="@(model.IssueWarehouseId == null)">
-        Dodaj pozycję
-    </MudButton> *@
-    <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                Disabled="@(model.IssueWarehouseId == null)">
         Dodaj pozycję
@@ -123,17 +118,17 @@
         warehouses = warehouseResponse.Items.ToList();
     }
 
-    // private Task OpenDialogAsync()
-    // {
-    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-    //     var parameters = new DialogParameters<AddWzItemDialogForm>
-    //     {
-    //         { x => x.DocumentItemVMs, model.DocumentItems },
-    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
-    //         { x => x.WarehouseId, model.IssueWarehouseId }
-    //     };
-    //     return DialogService.ShowAsync<AddWzItemDialogForm>(null, parameters, options);
-    // }
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+        var parameters = new DialogParameters<AddRwItemDialogForm>
+        {
+            { x => x.DocumentItemVMs, model.DocumentItems },
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
+            { x => x.WarehouseId, model.IssueWarehouseId }
+        };
+        return DialogService.ShowAsync<AddRwItemDialogForm>(null, parameters, options);
+    }
 
     private async Task Submit()
     {
