@@ -96,6 +96,14 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwIt
                                     "WarehouseUnitIds",
                                     $"The following warehouse units are not members of the warehouse with ID {document.IssueWarehouseId}: {string.Join("; ", nonMatchingWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
                             }
+
+                            if (warehouseUnit.Any(wu => wu.IsBlocked))
+                            {
+                                var blockedWarehouseUnits = warehouseUnit.Where(wu => wu.IsBlocked).ToList();
+                                context.AddFailure(
+                                    "WarehouseUnitIds",
+                                    $"The following warehouse units are blocked: {string.Join("; ", blockedWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
+                            }
                         }
                     }
 
