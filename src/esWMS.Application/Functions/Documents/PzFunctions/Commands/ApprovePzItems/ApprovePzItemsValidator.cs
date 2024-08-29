@@ -69,17 +69,17 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                     {
                         var warehouseUnitResponse = await _mediator.Send(
                             new GetWarehouseUnitsByIdsQuery(warehouseUnitIds));
-                        var warehouseUnit = warehouseUnitResponse.ReturnedObj;
+                        var warehouseUnits = warehouseUnitResponse.ReturnedObj;
 
                         if (!warehouseUnitResponse.IsSuccess()
-                            || warehouseUnit == null
-                            || warehouseUnit.Count() == 0)
+                            || warehouseUnits == null
+                            || warehouseUnits.Count() == 0)
                         {
                             context.AddFailure("Somenthing went wrong");
                         }
                         else
                         {
-                            var warehouseUnitIdsResponse = warehouseUnit!.Select(x => x.WarehouseUnitId).ToArray();
+                            var warehouseUnitIdsResponse = warehouseUnits!.Select(x => x.WarehouseUnitId).ToArray();
                             var warehouseUnitIdsContained = warehouseUnitIds.Except(warehouseUnitIdsResponse);
 
                             if (warehouseUnitIdsContained.Any())
@@ -89,17 +89,17 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                                     $"There are no warehouse unit with identifiers: {string.Join("; ", warehouseUnitIdsContained)}");
                             }
 
-                            if (warehouseUnit.Any(wu => wu.WarehouseId != document.IssueWarehouseId))
+                            if (warehouseUnits.Any(wu => wu.WarehouseId != document.IssueWarehouseId))
                             {
-                                var nonMatchingWarehouseUnits = warehouseUnit.Where(wu => wu.WarehouseId != document.IssueWarehouseId).ToList();
+                                var nonMatchingWarehouseUnits = warehouseUnits.Where(wu => wu.WarehouseId != document.IssueWarehouseId).ToList();
                                 context.AddFailure(
                                     "WarehouseUnitIds",
                                     $"The following warehouse units are not members of the warehouse with ID {document.IssueWarehouseId}: {string.Join("; ", nonMatchingWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
                             }
 
-                            if (warehouseUnit.Any(wu => wu.IsBlocked))
+                            if (warehouseUnits.Any(wu => wu.IsBlocked))
                             {
-                                var blockedWarehouseUnits = warehouseUnit.Where(wu => wu.IsBlocked).ToList();
+                                var blockedWarehouseUnits = warehouseUnits.Where(wu => wu.IsBlocked).ToList();
                                 context.AddFailure(
                                     "WarehouseUnitIds",
                                     $"The following warehouse units are blocked: {string.Join("; ", blockedWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
