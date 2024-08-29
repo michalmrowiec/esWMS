@@ -5,12 +5,12 @@ using FluentValidation;
 using MediatR;
 using Sieve.Models;
 
-namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
+namespace esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw
 {
-    internal class CreateWzValidator : CreateBaseDocumentValidator<CreateWzCommand>
+    internal class CreateRwValidator : CreateBaseDocumentValidator<CreateRwCommand>
     {
         private readonly IMediator _mediator;
-        public CreateWzValidator(IList<ProductDto> productsFromDocumentItems, IMediator mediator)
+        public CreateRwValidator(IList<ProductDto> productsFromDocumentItems, IMediator mediator)
         {
             _mediator = mediator;
             RuleForEach(x => x.DocumentItems)

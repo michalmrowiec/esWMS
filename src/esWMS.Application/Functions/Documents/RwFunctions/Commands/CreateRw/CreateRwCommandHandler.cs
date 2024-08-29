@@ -2,29 +2,30 @@
 using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
+using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
 using MediatR;
 using Sieve.Models;
 
-namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
+namespace esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw
 {
-    internal class CreateWzCommandHandler
-        (IWzRepository wzRepository,
+    internal class CreateRwCommandHandler
+        (IRwRepository rwRepository,
         IWarehouseUnitItemRepository warehouseUnitItemRepository,
         IMediator mediator,
         IMapper mapper,
         ITransactionManager transactionManager)
-        : IRequestHandler<CreateWzCommand, BaseResponse<WzDto>>
+        : IRequestHandler<CreateRwCommand, BaseResponse<RwDto>>
     {
-        private readonly IWzRepository _wzRepository = wzRepository;
+        private readonly IRwRepository _rwRepository = rwRepository;
         private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
         private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
-        public async Task<BaseResponse<WzDto>> Handle(CreateWzCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<RwDto>> Handle(CreateRwCommand request, CancellationToken cancellationToken)
         {
             var productResponse = await _mediator.Send(
                 new GetSortedFilteredProductsQuery(
@@ -39,24 +40,24 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 
             if (!productResponse.IsSuccess() || products.Count == 0)
             {
-                return new BaseResponse<WzDto>(productResponse.Status, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
+                return new BaseResponse<RwDto>(productResponse.Status, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
             }
 
-            var validationResult = await new CreateWzValidator(products, _mediator).ValidateAsync(request, cancellationToken);
+            var validationResult = await new CreateRwValidator(products, _mediator).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
-                return new BaseResponse<WzDto>(validationResult);
+                return new BaseResponse<RwDto>(validationResult);
             }
 
-            var entity = _mapper.Map<WZ>(request);
+            var entity = _mapper.Map<RW>(request);
 
             if (entity == null)
             {
-                return new BaseResponse<WzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
+                return new BaseResponse<RwDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
-            var lastNumber = await _wzRepository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
+            var lastNumber = await _rwRepository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
 
             entity.DocumentId = entity.GenerateDocumentId(lastNumber);
             entity.CreatedAt = DateTime.Now;
@@ -94,29 +95,29 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                 }
             }
 
-            WzDto entityDto;
+            RwDto entityDto;
 
             try
             {
                 await _transactionManager.BeginTransactionAsync();
 
-                var createdEntity = await _wzRepository.CreateAsync(entity);
+                var createdEntity = await _rwRepository.CreateAsync(entity);
 
                 var warehouseUnitItems = await _warehouseUnitItemRepository
                       .BlockExistWarehouseUnitItemsQuantityAsync(warehouseUnitItemsQuantityToBlock);
 
                 await _transactionManager.CommitTransactionAsync();
 
-                entityDto = _mapper.Map<WzDto>(createdEntity);
+                entityDto = _mapper.Map<RwDto>(createdEntity);
             }
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
 
-                return new BaseResponse<WzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
+                return new BaseResponse<RwDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
-            return new BaseResponse<WzDto>(entityDto);
+            return new BaseResponse<RwDto>(entityDto);
         }
     }
 }
