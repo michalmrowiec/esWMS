@@ -1,0 +1,165 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Documents
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IWarehouseService warehouseService
+@inject IDataService<CreateRwVM> createRwDataService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudForm Model="@model"
+         @ref="@form"
+         Validation="@(validator.ValidateValue)"
+         ValidationDelay="0" Spacing="4">
+
+    <MudSelect T="string"
+               @bind-Value="model.IssueWarehouseId"
+               Label="Magazyn wydający"
+               AnchorOrigin="Origin.BottomCenter"
+               For="@(() => model.IssueWarehouseId)"
+               Immediate="true"
+               Disabled="@(model.DocumentItems.Count > 0)">
+        @foreach (var warehouse in warehouses)
+        {
+            <MudSelectItem Value="@warehouse.WarehouseId">
+                [@warehouse.WarehouseId] @warehouse.WarehouseName
+            </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudDatePicker Label="Data wystawienia dokumentu"
+                   @bind-Date="model.DocumentIssueDate"
+                   For="@(() => model.DocumentIssueDate)" />
+
+    <MudTextField T="string"
+                  @bind-Value="model.Comment"
+                  For="@(() => model.Comment)"
+                  Immediate="true"
+                  Label="Uwagi"
+                  Lines="3" />
+
+    <MudTextField @bind-Value="model.AssignedEmployeeId"
+                  For="@(() => model.AssignedEmployeeId)"
+                  Label="Przypisany pracownik"
+                  Disabled />
+
+    <MudDatePicker Label="Data wydania"
+                   @bind-Date="model.GoodsReleaseDate"
+                   For="@(() => model.GoodsReleaseDate)" />
+
+    <MudTextField T="string"
+                  @bind-Value="model.DepartmentName"
+                  For="@(() => model.DepartmentName)"
+                  Immediate="true"
+                  Label="Odbiorca" />
+
+@*     <MudButton @onclick="OpenDialogAsync"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(model.IssueWarehouseId == null)">
+        Dodaj pozycję
+    </MudButton> *@
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(model.IssueWarehouseId == null)">
+        Dodaj pozycję
+    </MudButton>
+
+    <MudDataGrid T="DocumentItemVM"
+                 Items="@model.DocumentItems"
+                 EditMode="DataGridEditMode.Cell"
+                 Dense>
+        <Columns>
+            <PropertyColumn Property="x => x.ProductId" />
+            <PropertyColumn Property="x => x.ProductCode" />
+            <PropertyColumn Property="x => x.ProductName" />
+            <PropertyColumn Property="x => x.Quantity" />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate Context="item">
+                    <MudStack Row>
+                        <MudIconButton Size="@Size.Small"
+                                       Icon="@Icons.Material.Outlined.Delete"
+                                       OnClick="@(() => { model.DocumentItems.Remove(item.Item); StateHasChanged(); })" />
+                    </MudStack>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+    </MudDataGrid>
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary" Class="ml-auto"
+               OnClick="@(async () => await Submit())"
+               Disabled="@(model.DocumentItems.Count == 0)">
+        Utwórz
+    </MudButton>
+</MudForm>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    private CreateRwVM model = new();
+    private MudForm form;
+    private CreateRwVMValidator validator = new();
+    private List<WarehouseVM> warehouses = new();
+    private List<string> responseErrors = new();
+    [Parameter]
+    public List<EventCallback>? EventCallbacks { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var warehouseResponse = await warehouseService.GetWarehouse(new SieveModelVM(1, 500, "", ""));
+        warehouses = warehouseResponse.Items.ToList();
+    }
+
+    // private Task OpenDialogAsync()
+    // {
+    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+    //     var parameters = new DialogParameters<AddWzItemDialogForm>
+    //     {
+    //         { x => x.DocumentItemVMs, model.DocumentItems },
+    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
+    //         { x => x.WarehouseId, model.IssueWarehouseId }
+    //     };
+    //     return DialogService.ShowAsync<AddWzItemDialogForm>(null, parameters, options);
+    // }
+
+    private async Task Submit()
+    {
+        responseErrors = new();
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var response = await createRwDataService.Create(@"api/v1/Rw", model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                model = new();
+                var json = await response.Content.ReadAsStringAsync();
+                var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
+
+                Snackbar.Configuration.PositionClass = "Bottom-End";
+                Snackbar.Add(new MarkupString($"Utworzono <strong>{responseObj?.DocumentId}</strong>"), Severity.Success);
+
+                EventCallbacks?.ForEach(async x => await x.InvokeAsync());
+            }
+            else
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                StateHasChanged();
+            }
+        }
+    }
+}

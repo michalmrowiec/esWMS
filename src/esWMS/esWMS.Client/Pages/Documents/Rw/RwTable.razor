@@ -19,14 +19,10 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Dokumenty RW</MudText>
         <MudSpacer />
-        @*         <MudButton @onclick="OpenCreateWzTab"
-        Variant="Variant.Filled"
-        Color="Color.Primary">
-        Utwórz WZ
-        </MudButton> *@
-        <MudButton Variant="Variant.Filled"
+        <MudButton @onclick="OpenCreateRwTab"
+                   Variant="Variant.Filled"
                    Color="Color.Primary">
-            Utwórz WZ
+            Utwórz RW
         </MudButton>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
@@ -102,20 +98,20 @@
         { "DepartmentName", new("DepartmentName") }
     };
 
-    private List<EventCallback> callbacksOnAddPz = new();
+    private List<EventCallback> callbacksOnAddRw = new();
 
-    // private void OpenCreateWzTab()
-    // {
-    //     var tabId = Guid.NewGuid();
+    private void OpenCreateRwTab()
+    {
+        var tabId = Guid.NewGuid();
 
-    //     callbacksOnAddPz = new List<EventCallback>
-    //     {
-    //         EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
-    //         EventCallback.Factory.Create(this, table.ReloadServerData)
-    //     };
+        callbacksOnAddRw = new List<EventCallback>
+        {
+            EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
+            EventCallback.Factory.Create(this, table.ReloadServerData)
+        };
 
-    //     onePageState.AddTab(new TabView("Tworzenie WZ", new AddWz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
-    // }
+        onePageState.AddTab(new TabView("Tworzenie RW", new AddRw(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddRw } }));
+    }
 
     private async Task<TableData<RwVM>> ServerReload(TableState state, CancellationToken token)
     {

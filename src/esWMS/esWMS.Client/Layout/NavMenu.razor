@@ -50,51 +50,45 @@
         </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Dokumenty" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.LibraryBooks">
-        <MudNavGroup Title="PZ" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
-            <MudNavLink Match="NavLinkMatch.Prefix"
-                        Icon="@Icons.Material.Filled.List"
-                        OnClick="@(() => onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista PZ
-            </MudNavLink>
-        </MudNavGroup>
-        <MudNavGroup Title="WZ" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">
+        <MudNavGroup Title="Wydania" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("WZ", new WzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista WZ
+                WZ
             </MudNavLink>
-        </MudNavGroup>
-        <MudNavGroup Title="PW" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
-            <MudNavLink Match="NavLinkMatch.Prefix"
-                        Icon="@Icons.Material.Filled.List"
-                        OnClick="@(() => onePageState.AddTab(new TabView("PW", new PwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista PW
-            </MudNavLink>
-        </MudNavGroup>
-        <MudNavGroup Title="RW" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("RW", new RwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista PW
-            </MudNavLink>
-        </MudNavGroup>
-        <MudNavGroup Title="MM" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.CompareArrows">
-            <MudNavLink Match="NavLinkMatch.Prefix"
-                        Icon="@Icons.Material.Filled.Add"
-                        OnClick="@(() => OpenCreateMmTab())">
-                Utwórz MM
+                RW
             </MudNavLink>
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("MM-", new MmmTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista MM-
+                MM-
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Przyjęcia" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                PZ
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("PW", new PwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                PW
             </MudNavLink>
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("MM+", new MmpTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista MM+
+                MM+
             </MudNavLink>
         </MudNavGroup>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.Add"
+                    OnClick="@(() => OpenCreateMmTab())">
+            Utwórz MM
+        </MudNavLink>
     </MudNavGroup>
 </MudNavMenu>
 
