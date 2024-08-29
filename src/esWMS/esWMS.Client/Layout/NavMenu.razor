@@ -3,6 +3,7 @@
 @using esWMS.Client.Pages.Documents.Mmp
 @using esWMS.Client.Pages.Documents.Pw
 @using esWMS.Client.Pages.Documents.Pz
+@using esWMS.Client.Pages.Documents.Rw
 @using esWMS.Client.Pages.Documents.Wz
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Pages.Warehouse
@@ -67,6 +68,13 @@
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("PW", new PwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                Lista PW
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="RW" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("RW", new RwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
                 Lista PW
             </MudNavLink>
         </MudNavGroup>
