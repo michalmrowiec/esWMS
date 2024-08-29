@@ -139,12 +139,12 @@
 
     private void RowClickEvent(TableRowClickEventArgs<RwVM> tableRowClickEventArgs)
     {
-        // onePageState.AddTab(
-        //     new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
-        //     new WzDetails(),
-        //     Guid.NewGuid(),
-        //     Icons.Material.Filled.Info,
-        //     new() { { "WzVM", tableRowClickEventArgs?.Item ?? new() } }));
+        onePageState.AddTab(
+            new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
+            new RwDetails(),
+            Guid.NewGuid(),
+            Icons.Material.Filled.Info,
+            new() { { "RwVM", tableRowClickEventArgs?.Item ?? new() } }));
     }
 
     private void OnSearch()
