@@ -43,6 +43,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
 
             new RwSieveProcessor().Configure(mapper);
 
+            new ZwSieveProcessor().Configure(mapper);
+
             return mapper;
         }
     }
@@ -60,6 +62,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
         public IQueryable<PW> DocumentIssueDate(IQueryable<PW> source, string op, string[] values) =>
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
         public IQueryable<RW> DocumentIssueDate(IQueryable<RW> source, string op, string[] values) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
+        public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, string op, string[] values) =>
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
 
         public IQueryable<WarehouseUnit> FilterByWarehouseUnitItemIds(IQueryable<WarehouseUnit> source, string op, string[] values)
