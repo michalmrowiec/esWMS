@@ -5,6 +5,7 @@
 @using esWMS.Client.Pages.Documents.Pz
 @using esWMS.Client.Pages.Documents.Rw
 @using esWMS.Client.Pages.Documents.Wz
+@using esWMS.Client.Pages.Documents.Zw
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Pages.Warehouse
 @using esWMS.Client.Pages.Warehouse.WarehouseUnit
@@ -77,6 +78,11 @@
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(() => onePageState.AddTab(new TabView("PW", new PwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
                 PW
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(() => onePageState.AddTab(new TabView("ZW", new ZwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                ZW
             </MudNavLink>
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
