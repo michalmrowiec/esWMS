@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace esWMS.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class Init_v2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -240,17 +240,14 @@ namespace esWMS.Infrastructure.Migrations
                     GoodsReceiptDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     FromWarehouseId = table.Column<string>(type: "varchar(3)", maxLength: 3, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PW_GoodsReceiptDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    PZ_GoodsReceiptDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    RelatedMmmId = table.Column<string>(type: "varchar(25)", maxLength: 25, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DepartmentName = table.Column<string>(type: "varchar(250)", maxLength: 250, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     SupplierContractorId = table.Column<string>(type: "varchar(3)", maxLength: 3, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    RW_GoodsReleaseDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
-                    DepartmentName = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    WZ_GoodsReleaseDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     RecipientContractorId = table.Column<string>(type: "varchar(3)", maxLength: 3, nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ZW_GoodsReceiptDate = table.Column<DateTime>(type: "datetime(6)", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -267,6 +264,11 @@ namespace esWMS.Infrastructure.Migrations
                         principalTable: "Contractors",
                         principalColumn: "ContractorId",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Documents_Documents_RelatedMmmId",
+                        column: x => x.RelatedMmmId,
+                        principalTable: "Documents",
+                        principalColumn: "DocumentId");
                     table.ForeignKey(
                         name: "FK_Documents_Employees_ApprovingEmployeeId",
                         column: x => x.ApprovingEmployeeId,
@@ -445,6 +447,7 @@ namespace esWMS.Infrastructure.Migrations
                     TotalLength = table.Column<int>(type: "int", nullable: true),
                     TotalWidth = table.Column<int>(type: "int", nullable: true),
                     TotalHeight = table.Column<int>(type: "int", nullable: true),
+                    IsBlocked = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: false),
                     CanBeStacked = table.Column<bool>(type: "tinyint(1)", nullable: true),
                     StackOnId = table.Column<string>(type: "varchar(50)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -500,6 +503,8 @@ namespace esWMS.Infrastructure.Migrations
                     SerialNumber = table.Column<string>(type: "varchar(100)", maxLength: 100, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Currency = table.Column<string>(type: "varchar(5)", maxLength: 5, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
@@ -604,6 +609,12 @@ namespace esWMS.Infrastructure.Migrations
                 name: "IX_Documents_RecipientContractorId",
                 table: "Documents",
                 column: "RecipientContractorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Documents_RelatedMmmId",
+                table: "Documents",
+                column: "RelatedMmmId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Documents_SupplierContractorId",

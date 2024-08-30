@@ -8,7 +8,12 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
     {
         public void Configure(EntityTypeBuilder<ZW> builder)
         {
+            builder.Property(d => d.GoodsReceiptDate)
+                .HasColumnName("GoodsReceiptDate")
+                .IsRequired(false);
+
             builder.Property(d => d.DepartmentName)
+                .HasColumnName("DepartmentName")
                 .HasMaxLength(250);
         }
     }

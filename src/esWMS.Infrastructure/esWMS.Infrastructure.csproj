@@ -29,8 +29,4 @@
     <ProjectReference Include="..\esWMS.Application\esWMS.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
-
 </Project>

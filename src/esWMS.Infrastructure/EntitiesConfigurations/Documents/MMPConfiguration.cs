@@ -16,6 +16,10 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .IsRequired()
                 .HasMaxLength(25);
 
+            builder.Property(d => d.GoodsReceiptDate)
+                .HasColumnName("GoodsReceiptDate")
+                .IsRequired(false);
+
             builder
                 .HasOne(d => d.FromWarehouse)
                 .WithMany(w => w.MMPDocuments)

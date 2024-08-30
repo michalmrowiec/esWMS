@@ -779,7 +779,9 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<DateTime?>("GoodsReleaseDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReleaseDate");
 
                     b.Property<string>("ToWarehouseId")
                         .IsRequired()
@@ -801,7 +803,9 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(3)");
 
                     b.Property<DateTime?>("GoodsReceiptDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReceiptDate");
 
                     b.Property<string>("RelatedMmmId")
                         .IsRequired()
@@ -821,17 +825,15 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<string>("DepartmentName")
+                        .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(250)
-                        .HasColumnType("varchar(250)");
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("DepartmentName");
 
                     b.Property<DateTime?>("GoodsReceiptDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("GoodsReceiptDate")
-                                .HasColumnName("PW_GoodsReceiptDate");
-                        });
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReceiptDate");
 
                     b.HasDiscriminator().HasValue("PW");
                 });
@@ -841,7 +843,9 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<DateTime?>("GoodsReceiptDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReceiptDate");
 
                     b.Property<string>("SupplierContractorId")
                         .IsRequired()
@@ -849,12 +853,6 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(3)");
 
                     b.HasIndex("SupplierContractorId");
-
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("GoodsReceiptDate")
-                                .HasColumnName("PZ_GoodsReceiptDate");
-                        });
 
                     b.HasDiscriminator().HasValue("PZ");
                 });
@@ -864,20 +862,15 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<string>("DepartmentName")
+                        .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(250)
-                        .HasColumnType("varchar(250)");
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("DepartmentName");
 
                     b.Property<DateTime?>("GoodsReleaseDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("DepartmentName")
-                                .HasColumnName("RW_DepartmentName");
-
-                            t.Property("GoodsReleaseDate")
-                                .HasColumnName("RW_GoodsReleaseDate");
-                        });
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReleaseDate");
 
                     b.HasDiscriminator().HasValue("RW");
                 });
@@ -887,7 +880,9 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<DateTime?>("GoodsReleaseDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReleaseDate");
 
                     b.Property<string>("RecipientContractorId")
                         .IsRequired()
@@ -895,12 +890,6 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(3)");
 
                     b.HasIndex("RecipientContractorId");
-
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("GoodsReleaseDate")
-                                .HasColumnName("WZ_GoodsReleaseDate");
-                        });
 
                     b.HasDiscriminator().HasValue("WZ");
                 });
@@ -910,20 +899,15 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<string>("DepartmentName")
+                        .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(250)
-                        .HasColumnType("varchar(250)");
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("DepartmentName");
 
                     b.Property<DateTime?>("GoodsReceiptDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("DepartmentName")
-                                .HasColumnName("ZW_DepartmentName");
-
-                            t.Property("GoodsReceiptDate")
-                                .HasColumnName("ZW_GoodsReceiptDate");
-                        });
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReceiptDate");
 
                     b.HasDiscriminator().HasValue("ZW");
                 });
