@@ -7,7 +7,6 @@ using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseEnvir
 using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;
-using System.Linq;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
 {
@@ -31,6 +30,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             new WarehouseUnitItemSieveProcessor().Configure(mapper);
 
             new WarehouseStockSieveProcessor().Configure(mapper);
+
+            new DocumentItemsSieveProcessor().Configure(mapper);
 
             new PzSieveProcessor().Configure(mapper);
 

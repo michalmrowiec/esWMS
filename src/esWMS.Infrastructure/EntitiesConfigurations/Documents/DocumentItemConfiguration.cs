@@ -49,12 +49,6 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
             builder.Property(di => di.Currency)
                 .HasMaxLength(5);
 
-            //builder.Property(di => di.WarehouseUnitId)
-            //    .HasMaxLength(50);
-
-            //builder.Property(di => di.WarehouseUnitItemId)
-            //    .HasMaxLength(50);
-
             builder.Property(di => di.IsApproved)
                 .IsRequired();
 
@@ -84,17 +78,6 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .WithOne(dwui => dwui.DocumentItem)
                 .HasForeignKey(dwui => dwui.DocumentItemId)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            //builder
-            //    .HasOne(di => di.WarehouseUnitItem)
-            //    .WithMany()
-            //    .HasForeignKey(di => di.WarehouseUnitItemId)
-            //    .OnDelete(DeleteBehavior.SetNull);
-
-            //builder
-            //    .HasMany(di => di.WarehouseUnitItems)
-            //    .WithMany(wui => wui.DocumentItems)
-            //    .UsingEntity<DocumentWarehouseUnitItem>();
         }
     }
 }

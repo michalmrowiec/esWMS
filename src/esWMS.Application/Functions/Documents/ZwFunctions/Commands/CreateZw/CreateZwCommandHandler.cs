@@ -3,7 +3,7 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
+using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetEligibleItemsForZwReturn;
 using esWMS.Application.Responses;
 using MediatR;
 using Sieve.Models;
@@ -25,25 +25,26 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw
         public async Task<BaseResponse<ZwDto>> Handle
             (CreateZwCommand request, CancellationToken cancellationToken)
         {
-            var productResponse = await _mediator.Send(
-                new GetSortedFilteredProductsQuery(
+            var eligibleItemsForZwReturnResponse = await _mediator.Send(
+                new GetEligibleItemsForZwReturnQuery(
                     new SieveModel()
                     {
                         Page = 1,
-                        PageSize = 500,
-                        Filters = "ProductId==" + string.Join('|', request.DocumentItems.Select(x => x.ProductId).Distinct())
+                        PageSize = 1000,
+                        Filters = $"DocumentItemId=={string.Join('|', request.DocumentItemIdQuantity.Select(x => x.DocumentItemId))}"
                     }));
 
-            var products = productResponse.ReturnedObj?.Items ?? [];
+            var eligibleItemsForZwReturn = eligibleItemsForZwReturnResponse.ReturnedObj?.Items ?? [];
 
-            if (!productResponse.IsSuccess() || products.Count == 0)
+            if (!eligibleItemsForZwReturnResponse.IsSuccess() || eligibleItemsForZwReturn.Count == 0)
             {
                 return new BaseResponse<ZwDto>(
-                    productResponse.Status,
-                    "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
+                    BaseResponse.ResponseStatus.ServerError,
+                    "Something went wrong. An error occurred while retrieving the list of document items.");
             }
 
-            var validationResult = await new CreateZwValidator(products).ValidateAsync(request, cancellationToken);
+            var validationResult = await new CreateZwValidator
+                (eligibleItemsForZwReturn).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -54,7 +55,8 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw
 
             if (entity == null)
             {
-                return new BaseResponse<ZwDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
+                return new BaseResponse<ZwDto>
+                    (BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             var lastNumber = await _repository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
@@ -62,16 +64,20 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw
             entity.DocumentId = entity.GenerateDocumentId(lastNumber);
             entity.CreatedAt = DateTime.Now;
 
-            foreach (var item in entity.DocumentItems)
+            foreach (var item in request.DocumentItemIdQuantity)
             {
-                item.DocumentItemId = Guid.NewGuid().ToString();
-                item.DocumentId = entity.DocumentId;
-                item.IsApproved = false;
-
-                var product = products!.First(x => x.ProductId.Equals(item.ProductId));
-                item.ProductCode = product.ProductCode;
-                item.EanCode = product.EanCode;
-                item.ProductName = product.ProductName;
+                var di = _mapper.Map<DocumentItem>
+                    (eligibleItemsForZwReturn.First(x => x.DocumentItemId.Equals(item.DocumentItemId)));
+                di.DocumentItemId = Guid.NewGuid().ToString();
+                di.DocumentId = entity.DocumentId;
+                di.IsApproved = false;
+                di.Quantity = item.Quantity;
+                di.CreatedAt = DateTime.Now;
+                di.CreatedBy = entity.CreatedBy;
+                di.ModifiedAt = null;
+                di.ModifiedBy = null;
+                di.Document = null;
+                di.Product = null;
             }
 
             ZwDto entityDto;

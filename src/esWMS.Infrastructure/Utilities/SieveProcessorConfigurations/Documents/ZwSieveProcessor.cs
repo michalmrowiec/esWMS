@@ -16,7 +16,7 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
             mapper.Property<ZW>(x => x.IsApproved)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<PZWW>(x => x.DepartmentName)
+            mapper.Property<ZW>(x => x.DepartmentName)
                 .CanSort()
                 .CanFilter();
         }

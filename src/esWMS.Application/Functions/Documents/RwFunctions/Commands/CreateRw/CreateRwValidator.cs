@@ -36,63 +36,6 @@ namespace esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw
                             "DocumentItems",
                             $"There are no products with the given IDs: {string.Join(", ", missingProductIds)}");
                     }
-
-
-                    var oneYearAgo = DateTime.UtcNow.AddYears(-1).ToString("yyyy-MM-dd");
-
-                    foreach (var documentItem in value)
-                    {
-                        var productId = documentItem.ProductId;
-
-                        var rwContainstSameProductsResponse = await _mediator.Send(
-                            new GetSortedFilteredRwQuery(
-                                new SieveModel()
-                                {
-                                    Page = 1,
-                                    PageSize = 500,
-                                    Filters = $"ContainsProductIds=={productId};" +
-                                              $"DocumentIssueDate>={oneYearAgo};" +
-                                              "IsApproved==true"
-                                }));
-                        var rwContainstSameProducts = rwContainstSameProductsResponse.ReturnedObj?.Items ?? [];
-
-                        var zwContainstSameProductsResponse = await _mediator.Send(
-                            new GetSortedFilteredZwQuery(
-                                new SieveModel()
-                                {
-                                    Page = 1,
-                                    PageSize = 500,
-                                    Filters = $"ContainsProductIds=={productId};" +
-                                              $"DocumentIssueDate>={oneYearAgo};" +
-                                              "IsApproved==true"
-                                }));
-                        var zwContainstSameProducts = zwContainstSameProductsResponse.ReturnedObj?.Items ?? [];
-
-                        if (!rwContainstSameProductsResponse.IsSuccess()
-                            || !zwContainstSameProductsResponse.IsSuccess())
-                        {
-                            context.AddFailure("DocumentItems", $"Something went wrong while getting product ID {productId}.");
-                            continue;
-                        }
-
-                        var totalIssuedQuantity = rwContainstSameProducts.Sum(doc => doc.DocumentItems
-                            .Where(di => di.ProductId == productId)
-                            .Sum(item => item.Quantity));
-
-                        var totalReturnedQuantity = zwContainstSameProducts.Sum(doc => doc.DocumentItems
-                            .Where(di => di.ProductId == productId)
-                            .Sum(item => item.Quantity));
-
-                        var currentReturnQuantity = documentItem.DocumentWarehouseUnitItems.Sum(item => item.Quantity);
-
-                        if (currentReturnQuantity > (totalIssuedQuantity - totalReturnedQuantity))
-                        {
-                            context.AddFailure(
-                                "DocumentItems",
-                                $"The quantity of product ID {productId} to be returned ({currentReturnQuantity}) exceeds the available quantity ({totalIssuedQuantity - totalReturnedQuantity}) issued by RW.");
-                        }
-                    }
-
                 });
 
             RuleFor(x => x)

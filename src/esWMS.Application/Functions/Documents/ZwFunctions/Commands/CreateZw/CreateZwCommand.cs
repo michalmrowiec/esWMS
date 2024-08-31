@@ -5,9 +5,17 @@ using MediatR;
 namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw
 {
     public class CreateZwCommand
-        : CreateBaseDocumentCommand, IRequest<BaseResponse<ZwDto>>
+        : CreateFlatBaseDocumentCommand, IRequest<BaseResponse<ZwDto>>
     {
         public DateTime? GoodsReceiptDate { get; set; }
         public string? DepartmentName { get; set; }
+
+        public IList<DocumentItemIdQuantity> DocumentItemIdQuantity { get; set; } = [];
+    }
+
+    public class DocumentItemIdQuantity
+    {
+        public string DocumentItemId { get; set; } = null!;
+        public int Quantity { get; set; }
     }
 }

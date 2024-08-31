@@ -3,6 +3,7 @@ using esWMS.Application.Functions.Documents.ZwFunctions;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZw;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwItems;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw;
+using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetEligibleItemsForZwReturn;
 using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetSortedFilteredZw;
 using esWMS.Application.Responses;
 using esWMS.Services;
@@ -56,7 +57,8 @@ namespace esWMS.Controllers.Documents
         }
 
         [HttpPatch("approve-items")]
-        public async Task<ActionResult<ZwDto>> ApproveZwItems([FromBody] ApproveZwItemsCommand approveZwItemsCommand)
+        public async Task<ActionResult<ZwDto>> ApproveZwItems
+            ([FromBody] ApproveZwItemsCommand approveZwItemsCommand)
         {
             if (_userContextService.GetUserId is not null)
                 approveZwItemsCommand.ModifiedBy = _userContextService.GetUserId.ToString();
@@ -81,7 +83,8 @@ namespace esWMS.Controllers.Documents
         }
 
         [HttpPatch("approve")]
-        public async Task<ActionResult<ZwDto>> ApproveZw([FromBody] ApproveZwCommand approveZwCommand)
+        public async Task<ActionResult<ZwDto>> ApproveZw
+            ([FromBody] ApproveZwCommand approveZwCommand)
         {
             if (_userContextService.GetUserId is not null)
                 approveZwCommand.ModifiedBy = _userContextService.GetUserId.ToString();
@@ -106,9 +109,33 @@ namespace esWMS.Controllers.Documents
         }
 
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<PagedResult<ZwDto>>> GetSortedAndFilteredZw([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<ZwDto>>> GetSortedAndFilteredZw
+            ([FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredZwQuery(sieveModel));
+
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
+
+        [HttpPost("get-eligible-items")]
+        public async Task<ActionResult<PagedResult<ZwDto>>> GetEligibleItemsForZwReturn
+            ([FromBody] SieveModel sieveModel)
+        {
+            var result = await _mediator.Send(new GetEligibleItemsForZwReturnQuery(sieveModel));
 
             switch (result.Status)
             {
