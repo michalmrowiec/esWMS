@@ -78,6 +78,8 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw
                 di.ModifiedBy = null;
                 di.Document = null;
                 di.Product = null;
+
+                entity.DocumentItems.Add(di);
             }
 
             ZwDto entityDto;

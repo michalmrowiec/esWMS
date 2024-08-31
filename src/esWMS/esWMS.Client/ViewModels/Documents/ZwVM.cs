@@ -16,6 +16,13 @@ namespace esWMS.Client.ViewModels.Documents
         public DateTime? GoodsReceiptDate { get; set; } = DateTime.Now;
         public string? DepartmentName { get; set; }
         public IList<DocumentItemVM> DocumentItems { get; set; } = [];
+        public IList<DocumentItemIdQuantityVM> DocumentItemIdQuantity { get; set; } = [];
+
+        public class DocumentItemIdQuantityVM
+        {
+            public string DocumentItemId { get; set; } = null!;
+            public int Quantity { get; set; }
+        }
     }
     public class CreateZwVMValidator : AbstractValidator<CreateZwVM>
     {

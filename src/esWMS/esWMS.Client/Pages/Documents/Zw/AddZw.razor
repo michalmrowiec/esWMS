@@ -18,13 +18,12 @@
                Label="Magazyn wydający"
                AnchorOrigin="Origin.BottomCenter"
                For="@(() => model.IssueWarehouseId)"
-               Immediate="true"
-               Disabled="@(model.DocumentItems.Count > 0)">
+               Immediate="true">
         @foreach (var warehouse in warehouses)
         {
-            <MudSelectItem Value="@warehouse.WarehouseId">
-                [@warehouse.WarehouseId] @warehouse.WarehouseName
-            </MudSelectItem>
+                <MudSelectItem Value="@warehouse.WarehouseId">
+                    [@warehouse.WarehouseId] @warehouse.WarehouseName
+                </MudSelectItem>
         }
     </MudSelect>
 
@@ -92,15 +91,15 @@
 
 @if (responseErrors.Any())
 {
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+        <MudItem xs="12" sm="5">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
             @foreach (var error in responseErrors)
             {
-                <MudText Color="@Color.Error">@error</MudText>
+                        <MudText Color="@Color.Error">@error</MudText>
             }
-        </MudPaper>
-    </MudItem>
+            </MudPaper>
+        </MudItem>
 }
 
 @code {
@@ -136,7 +135,19 @@
 
         if (form.IsValid)
         {
-            var response = await dataService.Create(@"api/v1/Zw", model);
+            var requestModel = new
+            {
+                IssueWarehouseId = model.IssueWarehouseId,
+                Comment = model.Comment,
+                DocumentIssueDate = model.DocumentIssueDate,
+                AssignedEmployeeId = model.AssignedEmployeeId,
+                GoodsReceiptDate = model.GoodsReceiptDate,
+                DepartmentName = model.DepartmentName,
+                DocumentItemIdQuantity = model.DocumentItems
+                    .Select(x => new { DocumentItemId = x.DocumentItemId, Quantity = x.Quantity })
+            };
+
+            var response = await dataService.CreateObject(@"api/v1/Zw", requestModel);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 model = new();

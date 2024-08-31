@@ -7,9 +7,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
     {
         public void Configure(SievePropertyMapper mapper)
         {
-            mapper.Property<DocumentItem>(x => x.DocumentItemId)
-                .CanSort()
-                .CanFilter();
+            //mapper.Property<DocumentItem>(x => x.DocumentItemId)
+            //    .CanSort();
             mapper.Property<DocumentItem>(x => x.DocumentId)
                 .CanSort()
                 .CanFilter();

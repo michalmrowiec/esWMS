@@ -8,28 +8,13 @@
     <DialogContent>
 
         <MudTextField @bind-Value="test"
-                      Label="Wybrany produkt"
+                      Label="Wybrana pozycja dokumentu"
                       Disabled />
 
-        <ProductTable SelectedProduct="OnProductSelected" />
+        <ZwDocumentItemsTable SelectedDocumentItem="OnDocumentItemSelected" />
 
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />
-
-        <MudNumericField Label="Cena"
-                         @bind-Value="price" />
-
-        <MudSelect T="string"
-                   @bind-Value="currency"
-                   Label="Waluta"
-                   AnchorOrigin="Origin.BottomCenter"
-                   Immediate="true">
-
-            <MudSelectItem Value="@(new string("PLN"))">
-                PLN
-            </MudSelectItem>
-
-        </MudSelect>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
@@ -46,27 +31,18 @@
     [Parameter]
     public List<DocumentItemVM> DocumentItemVMs { get; set; }
 
-    private ProductVM? selectedProduct;
+    private DocumentItemVM? selectedDocumentItem;
     private int quantity = 0;
-    private decimal price = 0;
-    private string currency = "PLN";
     private string test = "";
 
 
     private void Submit()
     {
-        if (selectedProduct != null)
+        if (selectedDocumentItem != null
+            && quantity > 0)
         {
-            DocumentItemVMs.Add(new DocumentItemVM()
-                {
-                    ProductId = selectedProduct.ProductId,
-                    ProductCode = selectedProduct.ProductCode,
-                    EanCode = selectedProduct.EanCode,
-                    ProductName = selectedProduct.ProductName,
-                    Quantity = quantity,
-                    Price = price,
-                    Currency = currency
-                });
+            selectedDocumentItem.Quantity = quantity;
+            DocumentItemVMs.Add(selectedDocumentItem);
         }
 
         FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
@@ -76,10 +52,10 @@
 
     private void Cancel() => MudDialog.Cancel();
 
-    private void OnProductSelected(ProductVM product)
+    private void OnDocumentItemSelected(DocumentItemVM documentItemVM)
     {
-        selectedProduct = product;
-        test = product.ProductName;
+        selectedDocumentItem = documentItemVM;
+        test = documentItemVM.DocumentItemId;
         StateHasChanged();
     }
 }
