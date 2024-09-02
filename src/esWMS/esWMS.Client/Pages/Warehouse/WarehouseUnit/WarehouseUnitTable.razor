@@ -8,12 +8,24 @@
 @inject OnePageState onePageState
 @inject IDialogService DialogService
 
+<style>
+    .selected-row {
+        background-color: #7e6fff;
+    }
+
+    .child-row {
+        background-color: #a7a7a717;
+        border-left: 5px solid #d0d0d0;
+    }
+</style>
+
 <MudTable T="WarehouseUnitVM"
           ServerData="ServerReload"
           Dense="true"
           Hover="true"
           @ref="table"
           RowClass="cursor-pointer"
+          RowClassFunc="GetRowClass"
           OnRowClick="RowClickEvent"
           MultiSelection="@(TypeOfSelection == SelectionType.Multi)"
           @bind-SelectedItems="selectedWarehouseUnits">
@@ -94,7 +106,7 @@
                                       Elevation="0"
                                       Dense
                                       Bordered
-                                      Striped>
+                                      RowClass="child-row">
                                 <ColGroup>
                                     <col />
                                     <col />
@@ -153,7 +165,7 @@
 
 @code {
     [Parameter]
-    public SelectionType TypeOfSelection { get; set; }
+    public SelectionType TypeOfSelection { get; set; } = SelectionType.None;
     [Parameter]
     public string? WarehouseIdFilter { get; set; }
     [Parameter]
@@ -165,7 +177,6 @@
     private IEnumerable<WarehouseUnitVM> pagedData;
     private MudTable<WarehouseUnitVM> table;
     private Dictionary<string, bool> wuIdShow = new();
-
     private int totalItems;
 
     private Dictionary<string, FilterOption> searchOptions = new()
@@ -174,6 +185,16 @@
         { "WarehouseId", new("WarehouseId") },
         { "IsBlocked", new("IsBlocked", "==", string.Empty) }
     };
+
+    private string GetRowClass(WarehouseUnitVM item, int rowIndex)
+    {
+        if (selectedWarehouseUnits.Contains(item))
+        {
+            Console.WriteLine("selectedrow!");
+            return "selected-row";
+        }
+        return string.Empty;
+    }
 
     private void ShowBtnPress(string id)
     {
@@ -227,6 +248,7 @@
         {
             if (tableRowClickEventArgs.Item != null)
             {
+                selectedWarehouseUnits.Clear();
                 selectedWarehouseUnits.Add(tableRowClickEventArgs.Item);
             }
             await SelectedWarehouseUnits.InvokeAsync(selectedWarehouseUnits);

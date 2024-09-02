@@ -47,11 +47,6 @@
                    @bind-Date="model.DocumentIssueDate"
                    For="@(() => model.DocumentIssueDate)" />
 
-    <MudTextField @bind-Value="model.AssignedEmployeeId"
-                  For="@(() => model.AssignedEmployeeId)"
-                  Label="Przypisany pracownik"
-                  Disabled />
-
     <MudDatePicker Label="Data przyjęcia"
                    @bind-Date="model.GoodsReceiptDate"
                    For="@(() => model.GoodsReceiptDate)" />
@@ -62,6 +57,11 @@
                   Immediate="true"
                   Label="Uwagi"
                   Lines="3" />
+
+    <MudTextField @bind-Value="model.AssignedEmployeeId"
+                  For="@(() => model.AssignedEmployeeId)"
+                  Label="Przypisany pracownik"
+                  Disabled />
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
