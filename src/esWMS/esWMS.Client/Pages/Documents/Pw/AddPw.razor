@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Pages.Documents
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
@@ -28,16 +29,15 @@
         }
     </MudSelect>
 
+    <MudTextField T="string"
+                  @bind-Value="model.DepartmentName"
+                  For="@(() => model.DepartmentName)"
+                  Immediate="true"
+                  Label="Źródło" />
+
     <MudDatePicker Label="Data wystawienia dokumentu"
                    @bind-Date="model.DocumentIssueDate"
                    For="@(() => model.DocumentIssueDate)" />
-
-    <MudTextField T="string"
-                  @bind-Value="model.Comment"
-                  For="@(() => model.Comment)"
-                  Immediate="true"
-                  Label="Uwagi"
-                  Lines="3" />
 
     <MudTextField @bind-Value="model.AssignedEmployeeId"
                   For="@(() => model.AssignedEmployeeId)"
@@ -49,10 +49,11 @@
                    For="@(() => model.GoodsReceiptDate)" />
 
     <MudTextField T="string"
-                  @bind-Value="model.DepartmentName"
-                  For="@(() => model.DepartmentName)"
+                  @bind-Value="model.Comment"
+                  For="@(() => model.Comment)"
                   Immediate="true"
-                  Label="Źródło" />
+                  Label="Uwagi"
+                  Lines="3" />
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
@@ -121,12 +122,12 @@
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-        var parameters = new DialogParameters<AddPwItemDialogForm>
+        var parameters = new DialogParameters<AddReceivedItemDialogForm>
         {
             { x => x.DocumentItemVMs, model.DocumentItems },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
         };
-        return DialogService.ShowAsync<AddPwItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddReceivedItemDialogForm>(null, parameters, options);
     }
 
     private async Task Submit()

@@ -1,4 +1,5 @@
-﻿@using esWMS.Client.ViewModels
+﻿@using esWMS.Client.Pages
+@using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 
 <MudDialog>
@@ -7,11 +8,12 @@
     </TitleContent>
     <DialogContent>
 
-        <MudTextField @bind-Value="test"
+        <MudTextField @bind-Value="productInfo"
                       Label="Wybrany produkt"
                       Disabled />
 
-        <ProductTable SelectedProduct="OnProductSelected" />
+        <ProductTable SelectedProduct="OnProductSelected"
+                      PageSize="new int[] {5,10,25,50}" />
 
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />
@@ -50,7 +52,7 @@
     private int quantity = 0;
     private decimal price = 0;
     private string currency = "PLN";
-    private string test = "";
+    private string productInfo = "";
 
 
     private void Submit()
@@ -79,7 +81,8 @@
     private void OnProductSelected(ProductVM product)
     {
         selectedProduct = product;
-        test = product.ProductName;
+        price = product.Price ?? 0;
+        productInfo = product.ProductName;
         StateHasChanged();
     }
 }

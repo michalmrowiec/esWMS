@@ -59,19 +59,21 @@
         <MudTd DataLabel="Position">@context.Unit</MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <TableNoRecordsContent />
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <TablePager PageSize="@PageSize" />
     </PagerContent>
 </MudTable>
 
 @code {
     [Parameter]
     public EventCallback<ProductVM> SelectedProduct { get; set; }
+    [Parameter]
+    public int[]? PageSize { get; set; }
 
     private IEnumerable<ProductVM> Products = [];
     private IEnumerable<ProductVM> pagedData;
@@ -81,13 +83,12 @@
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
-        { "ProductCode", new("ProductName") },
+        { "ProductCode", new("ProductCode") },
         { "ProductName", new("ProductName") },
         { "CategoryName", new("CategoryName") },
         { "Price", new("Price", ">") },
         { "Unit", new("Unit") }
     };
-
 
     private async Task<TableData<ProductVM>> ServerReload(TableState state, CancellationToken token)
     {

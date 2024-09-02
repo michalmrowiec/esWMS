@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Pages.Documents
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
@@ -29,26 +30,6 @@
         }
     </MudSelect>
 
-    <MudDatePicker Label="Data wystawienia dokumentu"
-                   @bind-Date="model.DocumentIssueDate"
-                   For="@(() => model.DocumentIssueDate)" />
-
-    <MudTextField T="string"
-                  @bind-Value="model.Comment"
-                  For="@(() => model.Comment)"
-                  Immediate="true"
-                  Label="Uwagi"
-                  Lines="3" />
-
-    <MudTextField @bind-Value="model.AssignedEmployeeId"
-                  For="@(() => model.AssignedEmployeeId)"
-                  Label="Przypisany pracownik"
-                  Disabled />
-
-    <MudDatePicker Label="Data przyjęcia"
-                   @bind-Date="model.GoodsReceiptDate"
-                   For="@(() => model.GoodsReceiptDate)" />
-
     <MudSelect T="string"
                @bind-Value="model.SupplierContractorId"
                Label="Dostawca"
@@ -61,6 +42,26 @@
             </MudSelectItem>
         }
     </MudSelect>
+
+    <MudDatePicker Label="Data wystawienia dokumentu"
+                   @bind-Date="model.DocumentIssueDate"
+                   For="@(() => model.DocumentIssueDate)" />
+
+    <MudTextField @bind-Value="model.AssignedEmployeeId"
+                  For="@(() => model.AssignedEmployeeId)"
+                  Label="Przypisany pracownik"
+                  Disabled />
+
+    <MudDatePicker Label="Data przyjęcia"
+                   @bind-Date="model.GoodsReceiptDate"
+                   For="@(() => model.GoodsReceiptDate)" />
+
+    <MudTextField T="string"
+                  @bind-Value="model.Comment"
+                  For="@(() => model.Comment)"
+                  Immediate="true"
+                  Label="Uwagi"
+                  Lines="3" />
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
@@ -132,12 +133,12 @@
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-        var parameters = new DialogParameters<AddPzItemDialogForm>
+        var parameters = new DialogParameters<AddReceivedItemDialogForm>
         {
             { x => x.DocumentItemVMs, model.DocumentItems },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
         };
-        return DialogService.ShowAsync<AddPzItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddReceivedItemDialogForm>(null, parameters, options);
     }
 
     private async Task Submit()
