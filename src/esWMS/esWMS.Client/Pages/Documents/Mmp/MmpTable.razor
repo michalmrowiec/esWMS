@@ -115,9 +115,9 @@
         return new TableData<MmpVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
 
-    private void RowClickEvent(TableRowClickEventArgs<MmpVM> tableRowClickEventArgs)
+    private async Task RowClickEvent(TableRowClickEventArgs<MmpVM> tableRowClickEventArgs)
     {
-        onePageState.AddTab(
+        await onePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new MmpDetails(),
             Guid.NewGuid(),

@@ -7,25 +7,30 @@ namespace esWMS.Client.Pages.OnePage
     {
         public List<TabView> UserTabs = new();
         public int UserIndex;
-        public event Action? OnAddTab;
+        public event Func<Task>? OnAddTab;
         public bool StateHasChanged { get; set; }
 
-        private void NotifyStateChanged() => OnAddTab?.Invoke();
-
-        public void AddTab(TabView tabView)
+        private async Task NotifyStateChanged()
+        {
+            if (OnAddTab is not null)
+            {
+                await OnAddTab.Invoke();
+            }
+        }
+        public async Task AddTab(TabView tabView)
         {
             UserTabs.Add(tabView);
             UserIndex = UserTabs.Count - 1; // Automatically switch to the new tab.
-            NotifyStateChanged();
+            await NotifyStateChanged();
         }
 
-        public void RemoveTab(Guid tabId)
+        public async Task RemoveTab(Guid tabId)
         {
             var tabView = UserTabs.SingleOrDefault((t) => Equals(t.Id, tabId));
             if (tabView is not null)
             {
                 UserTabs.Remove(tabView);
-                NotifyStateChanged();
+                await NotifyStateChanged();
             }
         }
     }

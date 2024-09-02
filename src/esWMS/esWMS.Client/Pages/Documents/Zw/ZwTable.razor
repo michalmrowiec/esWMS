@@ -133,9 +133,9 @@
         return new TableData<ZwVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
 
-    private void RowClickEvent(TableRowClickEventArgs<ZwVM> tableRowClickEventArgs)
+    private async Task RowClickEvent(TableRowClickEventArgs<ZwVM> tableRowClickEventArgs)
     {
-        onePageState.AddTab(
+        await onePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new ZwDetails(),
             Guid.NewGuid(),
