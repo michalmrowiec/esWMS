@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence.Documents;
+using esWMS.Application.Functions.Services;
 using esWMS.Application.Responses;
 using MediatR;
 
@@ -16,10 +18,6 @@ internal class GetSortedFilteredPwQueryHandler
     public async Task<BaseResponse<PagedResult<PwDto>>> Handle
         (GetSortedFilteredPwQuery request, CancellationToken cancellationToken)
     {
-        var pagedResult = await _pwRepository.GetSortedFilteredAsync(request.SieveModel);
-
-        var mapped = _mapper.Map<PagedResult<PwDto>>(pagedResult);
-
-        return new BaseResponse<PagedResult<PwDto>>(mapped);
+        return await request.SieveModel.Handle<PwDto, PW>(_mapper, _pwRepository);
     }
 }
