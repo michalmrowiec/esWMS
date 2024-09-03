@@ -3,7 +3,7 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface IZoneRepository
-        : IBaseRepository<Zone>
+        : IBaseRepository<Zone>, ISieve<Zone>
     {
         Task<IList<Zone>> GetAllWarehouseZones(string warehouseId);
     }

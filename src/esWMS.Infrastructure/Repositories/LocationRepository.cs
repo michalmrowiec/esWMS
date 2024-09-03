@@ -8,8 +8,11 @@ using Sieve.Services;
 
 namespace esWMS.Infrastructure.Repositories
 {
-    internal class LocationRepository(EsWmsDbContext context, ILogger<LocationRepository> logger, ISieveProcessor sieveProcessor)
-                : BaseRepository<Location>(context, logger), ILocationRepository
+    internal class LocationRepository
+        (EsWmsDbContext context,
+        ILogger<LocationRepository> logger,
+        ISieveProcessor sieveProcessor)
+        : BaseRepository<Location>(context, logger), ILocationRepository
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
