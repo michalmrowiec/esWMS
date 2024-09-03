@@ -21,6 +21,12 @@
                    Color="Color.Primary">
             Utwórz lokalizację
         </MudButton>
+        <MudButton Class="ms-3"
+                   @onclick="OpenZoneDialogAsync"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Utwórz strefę
+        </MudButton>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>
@@ -143,5 +149,21 @@
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddLocationModalDialogForm>(null, parameters, options);
+    }
+
+    private Task OpenZoneDialogAsync()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<AddZoneModalDialogForm>
+        {
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+        };
+        return DialogService.ShowAsync<AddZoneModalDialogForm>(null, parameters, options);
     }
 }

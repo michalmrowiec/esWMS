@@ -1,0 +1,118 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Product
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<CreateZoneVM> zoneDataService
+@inject IDataService<WarehouseVM> warehouseDataService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        Nowa strefa
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@model"
+                 @ref="@form"
+                 Validation="@(validator.ValidateValue)"
+                 ValidationDelay="0">
+            <MudCardContent>
+                <MudSelect T="string"
+                           @bind-Value="model.WarehouseId"
+                           Label="Magazyn"
+                           AnchorOrigin="Origin.BottomCenter"
+                           For="@(() => model.WarehouseId)"
+                           Immediate="true">
+                    @foreach (var warehouse in warehouses)
+                    {
+                        <MudSelectItem Value="@warehouse.WarehouseId">
+                            [@warehouse.WarehouseId] @warehouse.WarehouseName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudTextField @bind-Value="model.ZoneName"
+                              For="@(() => model.ZoneName)"
+                                 Immediate="true"
+                                 Label="Nazwa"
+                                 MaxLength="30" />
+
+                <MudTextField @bind-Value="model.ZoneAlias"
+                              For="@(() => model.ZoneAlias)"
+                              Immediate="true"
+                              Label="Alias"
+                              MaxLength="1"
+                              TextChanged="@(() => model.ZoneAlias = model.ZoneAlias?.ToString()?.ToUpper().ToCharArray()?.First() ?? null)" />
+
+                <MudNumericField @bind-Value="model.AvgTemperature"
+                                 For="@(() => model.AvgTemperature)"
+                                 Label="Średnia temperatura (°C)"
+                                 Immediate="true"
+                                 Min="-999"
+                                 Max="999" />
+            </MudCardContent>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm form;
+    private CreateZoneVM model = new();
+    private CreateZoneVMValidator validator = new();
+    private List<string> responseErrors = new();
+    private List<WarehouseVM> warehouses = new();
+    [Parameter]
+    public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        responseErrors = new();
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var response = await zoneDataService.Create(@"api/v1/Zone", model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var newLocation = JsonConvert.DeserializeObject<ZoneVM>(content) ?? new();
+
+                Snackbar.Configuration.PositionClass = "Bottom-End";
+                Snackbar.Add(new MarkupString($"Utworzono <strong>{newLocation.ZoneId}</strong>"), Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var warehouseResponse = await warehouseDataService.GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
+        warehouses = warehouseResponse.Items.ToList();
+    }
+}

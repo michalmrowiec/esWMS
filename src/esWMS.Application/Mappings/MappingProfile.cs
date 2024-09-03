@@ -55,6 +55,7 @@ namespace esWMS.Application.Mappings
             CreateMap<Contractor, ContractorDto>();
 
             CreateMap<CreateWarehouseCommand, Warehouse>();
+            CreateMap<Warehouse, FlatWarehouseDto>();
             CreateMap<Warehouse, WarehouseDto>();
 
             CreateMap<CreateWarehouseUnitCommand, WarehouseUnit>();

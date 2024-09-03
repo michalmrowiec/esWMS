@@ -10,6 +10,6 @@ namespace esWMS.Application.Functions.Zones
         public string WarehouseId { get; set; } = null!;
         public int? AvgTemperature { get; set; }
 
-        public WarehouseDto? Warehouse { get; set; }
+        public FlatWarehouseDto? Warehouse { get; set; }
     }
 }
