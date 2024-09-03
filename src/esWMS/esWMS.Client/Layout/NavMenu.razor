@@ -8,6 +8,7 @@
 @using esWMS.Client.Pages.Documents.Zw
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Pages.Warehouse
+@using esWMS.Client.Pages.Warehouse.Location
 @using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
 @inject OnePageState onePageState
@@ -18,13 +19,13 @@
     </MudButton>
     <MudNavGroup Title="Artykuły" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Category">
         <MudNavLink Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.Filled.List"
-                    OnClick="@(async () => await onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                    Icon="@Icons.Material.Filled.ShoppingCart"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.ShoppingCart)))">
             Lista Artykułów
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.Filled.List"
-                    OnClick="@(async () => await onePageState.AddTab(new TabView("Kategorie", new CategoryTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                    Icon="@Icons.Material.Filled.Sell"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Kategorie", new CategoryTable(), Guid.NewGuid(), Icons.Material.Filled.Sell)))">
             Lista Kategorii
         </MudNavLink>
     </MudNavGroup>
@@ -56,7 +57,7 @@
         </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Dokumenty" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.LibraryBooks">
-        <MudNavGroup Title="Wydania" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">
+        <MudNavGroup Title="Wydania" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.Logout">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(async () => await onePageState.AddTab(new TabView("WZ", new WzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
@@ -73,7 +74,7 @@
                 MM-
             </MudNavLink>
         </MudNavGroup>
-        <MudNavGroup Title="Przyjęcia" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
+        <MudNavGroup Title="Przyjęcia" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.Login">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
                         OnClick="@(async () => await onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">

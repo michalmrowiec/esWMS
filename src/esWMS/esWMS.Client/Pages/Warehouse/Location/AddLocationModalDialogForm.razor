@@ -1,0 +1,156 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<CreateLocationVM> dataService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        Nowa lokalizacja
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@model"
+                 @ref="@form"
+                 Validation="@(validator.ValidateValue)"
+                 ValidationDelay="0">
+            <MudCardContent>
+                @* <MudSelect T="string"
+                @bind-Value="model.ParentCategoryId"
+                Label="Kategoria nadrzędna"
+                AnchorOrigin="Origin.BottomCenter"
+                For="@(() => model.ParentCategoryId)"
+                Immediate="true">
+                @foreach (var pCategory in parentCategories)
+                {
+                <MudSelectItem Value="@pCategory.CategoryId">
+                @pCategory.CategoryName
+                </MudSelectItem>
+                }
+                </MudSelect> *@
+
+                <MudNumericField @bind-Value="model.Row"
+                                 For="@(() => model.Row)"
+                                 Immediate="true"
+                                 Label="Regał"
+                                 Min="0"
+                                 Max="99" />
+
+                <MudTextField @bind-Value="model.Column"
+                              For="@(() => model.Column)"
+                              Immediate="true"
+                              Label="Kolumna"
+                              MaxLength="1" />
+
+                <MudNumericField @bind-Value="model.Level"
+                                 For="@(() => model.Level)"
+                                 Immediate="true"
+                                 Label="Poziom"
+                                 Min="0"
+                                 Max="9" />
+
+                <MudNumericField @bind-Value="model.Cell"
+                                 For="@(() => model.Cell)"
+                                 Immediate="true"
+                                 Label="Komórka"
+                                 Min="0"
+                                 Max="9" />
+
+                <MudNumericField @bind-Value="model.Level"
+                                 For="@(() => model.Level)"
+                                 Immediate="true"
+                                 Label="Pojemność"
+                                 Min="1"
+                                 Max="99999" />
+
+                <MudNumericField T="int"
+                                 @bind-Value="model.MaxLength"
+                                 For="@(() => model.MaxLength)"
+                                 Label="Maksymalna długość (m)"
+                                 Immediate="true"
+                                 Min="0"
+                                 Max="99999" />
+
+                <MudNumericField T="int"
+                                 @bind-Value="model.MaxWidth"
+                                 For="@(() => model.MaxWidth)"
+                                 Label="Maksymalna szerokość (m)"
+                                 Immediate="true"
+                                 Min="0"
+                                 Max="99999" />
+
+                <MudNumericField T="int"
+                                 @bind-Value="model.MaxHeight"
+                                 For="@(() => model.MaxHeight)"
+                                 Label="Maksymalna wysokość (m)"
+                                 Immediate="true"
+                                 Min="0"
+                                 Max="99999" />
+
+                <MudNumericField T="int"
+                                 @bind-Value="model.MaxWeight"
+                                 For="@(() => model.MaxWeight)"
+                                 Label="Maksymalne obciążenie (kg)"
+                                 Immediate="true"
+                                 Min="0"
+                                 Max="99999" />
+            </MudCardContent>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm form;
+    private CreateLocationVM model = new();
+    private CreateLocationVMValidator validator = new();
+    private List<string> responseErrors = new();
+    private List<ZoneVM> zones = new();
+    [Parameter]
+    public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        responseErrors = new();
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var response = await dataService.Create(@"api/v1/Location", model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var newLocation = JsonConvert.DeserializeObject<LocationVM>(content) ?? new();
+
+                Snackbar.Configuration.PositionClass = "Bottom-End";
+                Snackbar.Add(new MarkupString($"Utworzono <strong>{newLocation.LocationId}</strong>"), Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            }
+        }
+    }
+}
