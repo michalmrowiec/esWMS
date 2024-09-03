@@ -1,8 +1,6 @@
-﻿using esWMS.Application.Functions.Warehouses;
-
-namespace esWMS.Application.Functions.Zones
+﻿namespace esWMS.Client.ViewModels
 {
-    public class ZoneDto
+    public class ZoneVM
     {
         public string ZoneId { get; set; } = null!;
         public string? ZoneName { get; set; }
@@ -10,6 +8,6 @@ namespace esWMS.Application.Functions.Zones
         public string WarehouseId { get; set; } = null!;
         public int? AvgTemperature { get; set; }
 
-        public WarehouseDto? Warehouse { get; set; }
+        public WarehouseVM? Warehouse { get; set; }
     }
 }

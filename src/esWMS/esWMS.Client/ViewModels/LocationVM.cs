@@ -1,8 +1,6 @@
-﻿using esWMS.Application.Functions.Zones;
-
-namespace esWMS.Application.Functions.Locations
+﻿namespace esWMS.Client.ViewModels
 {
-    public class LocationDto
+    public class LocationVM
     {
         public string LocationId { get; set; } = null!;
         public string ZoneId { get; set; } = null!;
@@ -18,6 +16,6 @@ namespace esWMS.Application.Functions.Locations
         public bool IsBusy { get; set; }
         public string? DefaultMediaTypeId { get; set; }
 
-        public ZoneDto? Zone { get; set; }
+        public ZoneVM? Zone { get; set; }
     }
 }
