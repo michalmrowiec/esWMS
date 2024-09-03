@@ -70,7 +70,11 @@
         <MudTd DataLabel="Id">@context.LocationId</MudTd>
         <MudTd DataLabel="Id strefy">@context.ZoneId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.Zone.WarehouseId</MudTd>
-        <MudTd DataLabel="Pojemność">@context.Capacity</MudTd>
+        <MudTd DataLabel="Pojemność">
+            @(context.Capacity % 1 == 0
+                ? context.Capacity.ToString("0")
+                : context.Capacity.ToString("0.00"))
+        </MudTd>
         <MudTd DataLabel="Zajęte">@context.IsBusy</MudTd>
     </RowTemplate>
     <NoRecordsContent>

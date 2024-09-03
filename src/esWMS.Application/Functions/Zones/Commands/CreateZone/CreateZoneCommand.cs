@@ -8,7 +8,7 @@ namespace esWMS.Application.Functions.Zones.Commands.CreateZone
         public string? ZoneName { get; set; }
         public char ZoneAlias { get; set; }
         public string WarehouseId { get; set; } = null!;
-        public int? AvgTemperature { get; set; }
+        public decimal? AvgTemperature { get; set; }
         public string? CreatedBy { get; set; }
     }
 }

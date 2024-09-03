@@ -10,11 +10,11 @@ namespace esWMS.Client.ViewModels
         public char Column { get; set; }
         public int Level { get; set; }
         public int Cell { get; set; }
-        public int Capacity { get; set; }
-        public int MaxLength { get; set; }
-        public int MaxWidth { get; set; }
-        public int MaxHeight { get; set; }
-        public int MaxWeight { get; set; }
+        public decimal Capacity { get; set; }
+        public decimal? MaxLength { get; set; }
+        public decimal? MaxWidth { get; set; }
+        public decimal? MaxHeight { get; set; }
+        public decimal? MaxWeight { get; set; }
         public bool IsBusy { get; set; }
         public string? DefaultMediaTypeId { get; set; }
 
@@ -28,11 +28,11 @@ namespace esWMS.Client.ViewModels
         public char? Column { get; set; } = 'A';
         public int Level { get; set; } = 1;
         public int Cell { get; set; } = 1;
-        public int Capacity { get; set; } = 1;
-        public int MaxLength { get; set; }
-        public int MaxWidth { get; set; }
-        public int MaxHeight { get; set; }
-        public int MaxWeight { get; set; }
+        public decimal Capacity { get; set; } = 1;
+        public decimal? MaxLength { get; set; }
+        public decimal? MaxWidth { get; set; }
+        public decimal? MaxHeight { get; set; }
+        public decimal? MaxWeight { get; set; }
         public bool IsBusy { get; set; } = false;
         public string? DefaultMediaTypeId { get; set; }
         public string? CreatedBy { get; set; }

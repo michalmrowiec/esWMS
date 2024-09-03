@@ -59,39 +59,35 @@
                                  Min="0"
                                  Max="9" />
 
-                <MudNumericField @bind-Value="model.Level"
-                                 For="@(() => model.Level)"
+                <MudNumericField @bind-Value="model.Capacity"
+                                 For="@(() => model.Capacity)"
                                  Immediate="true"
                                  Label="Pojemność"
                                  Min="1"
                                  Max="99999" />
 
-                <MudNumericField T="int"
-                                 @bind-Value="model.MaxLength"
+                <MudNumericField @bind-Value="model.MaxLength"
                                  For="@(() => model.MaxLength)"
                                  Label="Maksymalna długość (m)"
                                  Immediate="true"
                                  Min="0"
                                  Max="99999" />
 
-                <MudNumericField T="int"
-                                 @bind-Value="model.MaxWidth"
+                <MudNumericField @bind-Value="model.MaxWidth"
                                  For="@(() => model.MaxWidth)"
                                  Label="Maksymalna szerokość (m)"
                                  Immediate="true"
                                  Min="0"
                                  Max="99999" />
 
-                <MudNumericField T="int"
-                                 @bind-Value="model.MaxHeight"
+                <MudNumericField @bind-Value="model.MaxHeight"
                                  For="@(() => model.MaxHeight)"
                                  Label="Maksymalna wysokość (m)"
                                  Immediate="true"
                                  Min="0"
                                  Max="99999" />
 
-                <MudNumericField T="int"
-                                 @bind-Value="model.MaxWeight"
+                <MudNumericField @bind-Value="model.MaxWeight"
                                  For="@(() => model.MaxWeight)"
                                  Label="Maksymalne obciążenie (kg)"
                                  Immediate="true"
