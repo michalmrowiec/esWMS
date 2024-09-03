@@ -23,6 +23,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
 
             new ContractorSieveProcessor().Configure(mapper);
 
+            new LocationSieveProcessor().Configure(mapper);
+
             new WarehouseSieveProcessor().Configure(mapper);
 
             new WarehouseUnitSieveProcessor().Configure(mapper);

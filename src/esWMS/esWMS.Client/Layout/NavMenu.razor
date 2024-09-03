@@ -49,6 +49,11 @@
                     OnClick="@(async () => await onePageState.AddTab(new TabView("Stany Magazynowe", new WarehouseStockTable(), Guid.NewGuid(), Icons.Material.Filled.Warehouse)))">
             Stany Magazynowe
         </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.LocationOn"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Lokalizacje", new LocationTable(), Guid.NewGuid(), Icons.Material.Filled.LocationOn)))">
+            Lokalizacje
+        </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Dokumenty" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.LibraryBooks">
         <MudNavGroup Title="Wydania" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">

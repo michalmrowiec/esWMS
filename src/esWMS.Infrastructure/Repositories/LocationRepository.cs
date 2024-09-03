@@ -33,7 +33,7 @@ namespace esWMS.Infrastructure.Repositories
         {
             var locations = _context.Locations
                             .Include(x => x.Zone)
-                                .ThenInclude(x => x != null ? x.Warehouse : new())
+                                .ThenInclude(x => x != null ? x.Warehouse : null)
                             .AsNoTracking()
                             .AsQueryable();
 

@@ -3,9 +3,9 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @rendermode InteractiveAuto
-@inject IDataService<ProductVM> dataService
+@inject IDataService<LocationVM> dataService
 
-<MudTable T="ProductVM"
+<MudTable T="LocationVM"
           ServerData="ServerReload"
           Dense="true"
           Hover="true"
@@ -13,50 +13,53 @@
           RowClass="cursor-pointer"
           OnRowClick="RowClickEvent">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Artykuły</MudText>
+        <MudText Typo="Typo.h6">Lokalizacje</MudText>
         <MudSpacer />
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>
     <HeaderContent>
         <MudTh>
-            <MudTableSortLabel SortLabel="ProductCode" T="ProductVM">
-                Code
+            <MudTableSortLabel SortLabel="LocationId" T="LocationVM">
+                Id
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="ProductCode" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="LocationId" OnChangedAction="OnSearch" />
 
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="ProductName" T="ProductVM">
-                Name
+            <MudTableSortLabel SortLabel="ZoneId" T="LocationVM">
+                Id strefy
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="ProductName" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneId" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="CategoryName" T="ProductVM">
-                Category
+            <MudTableSortLabel SortLabel="WarehouseId" T="LocationVM">
+                Id magazynu
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="CategoryName" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseId" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="Price" T="ProductVM">
-                Price
+            <MudTableSortLabel SortLabel="Capacity" T="LocationVM">
+                Pojemność
             </MudTableSortLabel>
-            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Price" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric"
+                                  SearchOptions="searchOptions"
+                                  Column="Capacity"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="Unit" T="ProductVM">
-                Unit
+            <MudTableSortLabel SortLabel="IsBusy" T="LocationVM">
+                Zajęte
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="Unit" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="IsBusy" OnChangedAction="OnSearch" />
         </MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Nr">@context.ProductCode</MudTd>
-        <MudTd DataLabel="Sign">@context.ProductName</MudTd>
-        <MudTd DataLabel="Name">@context.Category.CategoryName</MudTd>
-        <MudTd DataLabel="Position">@context.Price</MudTd>
-        <MudTd DataLabel="Position">@context.Unit</MudTd>
+        <MudTd DataLabel="Id">@context.LocationId</MudTd>
+        <MudTd DataLabel="Id strefy">@context.ZoneId</MudTd>
+        <MudTd DataLabel="Id magazynu">@context.Zone.WarehouseId</MudTd>
+        <MudTd DataLabel="Pojemność">@context.Capacity</MudTd>
+        <MudTd DataLabel="Zajęte">@context.IsBusy</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <TableNoRecordsContent />
@@ -71,26 +74,26 @@
 
 @code {
     [Parameter]
-    public EventCallback<ProductVM> SelectedProduct { get; set; }
+    public EventCallback<LocationVM> SelectedProduct { get; set; }
     [Parameter]
     public int[]? PageSize { get; set; }
 
-    private IEnumerable<ProductVM> Products = [];
-    private IEnumerable<ProductVM> pagedData;
-    private MudTable<ProductVM> table;
+    private IEnumerable<LocationVM> Products = [];
+    private IEnumerable<LocationVM> pagedData;
+    private MudTable<LocationVM> table;
 
     private int totalItems;
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
-        { "ProductCode", new("ProductCode") },
-        { "ProductName", new("ProductName") },
-        { "CategoryName", new("CategoryName") },
-        { "Price", new("Price", ">") },
-        { "Unit", new("Unit") }
+        { "LocationId", new("LocationId") },
+        { "ZoneId", new("ZoneId") },
+        { "WarehouseId", new("WarehouseId") },
+        { "Capacity", new("Capacity", ">") },
+        { "IsBusy", new("IsBusy", "==", string.Empty) }
     };
 
-    private async Task<TableData<ProductVM>> ServerReload(TableState state, CancellationToken token)
+    private async Task<TableData<LocationVM>> ServerReload(TableState state, CancellationToken token)
     {
         var sm = new SieveModelVM();
 
@@ -105,9 +108,9 @@
                 sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
         }
 
-        var response = await dataService.GetPagedResult(@"api/v1/Product/get-filtered", sm);
+        var response = await dataService.GetPagedResult(@"api/v1/Location/get-filtered", sm);
 
-        return new TableData<ProductVM>() { TotalItems = response.TotalItems, Items = response.Items };
+        return new TableData<LocationVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
 
     private void OnSearch()
@@ -115,7 +118,7 @@
         table.ReloadServerData();
     }
 
-    private async Task RowClickEvent(TableRowClickEventArgs<ProductVM> tableRowClickEventArgs)
+    private async Task RowClickEvent(TableRowClickEventArgs<LocationVM> tableRowClickEventArgs)
     {
         await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
     }
