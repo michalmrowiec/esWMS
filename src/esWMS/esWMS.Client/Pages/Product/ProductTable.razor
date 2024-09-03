@@ -74,6 +74,8 @@
     public EventCallback<ProductVM> SelectedProduct { get; set; }
     [Parameter]
     public int[]? PageSize { get; set; }
+    [Parameter]
+    public bool? ShowMediasOnly { get; set; }
 
     private IEnumerable<ProductVM> Products = [];
     private IEnumerable<ProductVM> pagedData;
@@ -87,8 +89,18 @@
         { "ProductName", new("ProductName") },
         { "CategoryName", new("CategoryName") },
         { "Price", new("Price", ">") },
-        { "Unit", new("Unit") }
+        { "Unit", new("Unit") },
+        { "IsMedia", new("IsMedia", "==") },
     };
+
+    protected override void OnInitialized()
+    {
+        if (ShowMediasOnly == true)
+        {
+            searchOptions["IsMedia"].Operator = "==";
+            searchOptions["IsMedia"].Value = "true";
+        }
+    }
 
     private async Task<TableData<ProductVM>> ServerReload(TableState state, CancellationToken token)
     {

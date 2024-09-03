@@ -4,6 +4,7 @@
 @using esWMS.Client.ViewModels
 @rendermode InteractiveAuto
 @inject IDataService<LocationVM> dataService
+@inject IDialogService DialogService
 
 <MudTable T="LocationVM"
           ServerData="ServerReload"
@@ -15,6 +16,11 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Lokalizacje</MudText>
         <MudSpacer />
+        <MudButton @onclick="OpenDialogAsync"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Utwórz lokalizację
+        </MudButton>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>
@@ -121,5 +127,21 @@
     private async Task RowClickEvent(TableRowClickEventArgs<LocationVM> tableRowClickEventArgs)
     {
         await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<AddLocationModalDialogForm>
+        {
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+        };
+        return DialogService.ShowAsync<AddLocationModalDialogForm>(null, parameters, options);
     }
 }

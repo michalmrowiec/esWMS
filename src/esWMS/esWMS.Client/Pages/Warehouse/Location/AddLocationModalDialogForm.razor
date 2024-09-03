@@ -1,8 +1,11 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Product
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
-@inject IDataService<CreateLocationVM> dataService
+@inject IDataService<CreateLocationVM> locationDataService
+@inject IDataService<ZoneVM> zoneDataService
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
 <MudDialog>
     <TitleContent>
@@ -14,19 +17,19 @@
                  Validation="@(validator.ValidateValue)"
                  ValidationDelay="0">
             <MudCardContent>
-                @* <MudSelect T="string"
-                @bind-Value="model.ParentCategoryId"
-                Label="Kategoria nadrzędna"
-                AnchorOrigin="Origin.BottomCenter"
-                For="@(() => model.ParentCategoryId)"
-                Immediate="true">
-                @foreach (var pCategory in parentCategories)
-                {
-                <MudSelectItem Value="@pCategory.CategoryId">
-                @pCategory.CategoryName
-                </MudSelectItem>
-                }
-                </MudSelect> *@
+                <MudSelect T="string"
+                           @bind-Value="model.ZoneId"
+                           Label="Strefa składowania"
+                           AnchorOrigin="Origin.BottomCenter"
+                           For="@(() => model.ZoneId)"
+                           Immediate="true">
+                    @foreach (var zone in zones)
+                    {
+                        <MudSelectItem Value="@zone.ZoneId">
+                            [@zone.ZoneId] @zone.ZoneName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
 
                 <MudNumericField @bind-Value="model.Row"
                                  For="@(() => model.Row)"
@@ -39,7 +42,8 @@
                               For="@(() => model.Column)"
                               Immediate="true"
                               Label="Kolumna"
-                              MaxLength="1" />
+                              MaxLength="1"
+                              TextChanged="@(() => model.Column = model.Column?.ToString()?.ToUpper().ToCharArray()?.First() ?? null)" />
 
                 <MudNumericField @bind-Value="model.Level"
                                  For="@(() => model.Level)"
@@ -93,6 +97,18 @@
                                  Immediate="true"
                                  Min="0"
                                  Max="99999" />
+
+                <MudCheckBox @bind-Value="model.IsBusy">Zajęty</MudCheckBox>
+
+                <MudTextField Value="@mediaInfo"
+                              Label="Domyślny nośnik"
+                              Disabled />
+                <MudStack Row="true">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => {model.DefaultMediaTypeId = null; mediaInfo = string.Empty; StateHasChanged();})">
+                        Wyczyść
+                    </MudIconButton>
+                    <MudButton OnClick="OpenDialogAsync">Wybierz nośnik</MudButton>
+                </MudStack>
             </MudCardContent>
         </MudForm>
     </DialogContent>
@@ -123,10 +139,28 @@
     private CreateLocationVMValidator validator = new();
     private List<string> responseErrors = new();
     private List<ZoneVM> zones = new();
+    private string mediaInfo = string.Empty;
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
 
     private void Cancel() => MudDialog.Cancel();
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium
+            };
+        var parameters = new DialogParameters<ProductTableDialog>
+        {
+            { x => x.ShowMediasOnly, true },
+            { x => x.SelectedProduct, EventCallback.Factory.Create<ProductVM>(this, (product) => {model.DefaultMediaTypeId = product.ProductId; mediaInfo = $"[{product.ProductId}] {product.ProductName}"; }) },
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
+        };
+        return DialogService.ShowAsync<ProductTableDialog>(null, parameters, options);
+    }
 
     private async Task Submit()
     {
@@ -135,7 +169,7 @@
 
         if (form.IsValid)
         {
-            var response = await dataService.Create(@"api/v1/Location", model);
+            var response = await locationDataService.Create(@"api/v1/Location", model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -152,5 +186,11 @@
                 responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
             }
         }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await zoneDataService.GetPagedResult(@"api/v1/Zone/get-filtered", new SieveModelVM(1, 500));
+        zones = res.Items.ToList();
     }
 }

@@ -24,10 +24,10 @@ namespace esWMS.Client.ViewModels
     public class CreateLocationVM
     {
         public string ZoneId { get; set; }
-        public int Row { get; set; }
-        public char Column { get; set; }
-        public int Level { get; set; }
-        public int Cell { get; set; }
+        public int Row { get; set; } = 1;
+        public char? Column { get; set; } = 'A';
+        public int Level { get; set; } = 1;
+        public int Cell { get; set; } = 1;
         public int Capacity { get; set; } = 1;
         public int MaxLength { get; set; }
         public int MaxWidth { get; set; }
@@ -38,16 +38,39 @@ namespace esWMS.Client.ViewModels
         public string? CreatedBy { get; set; }
     }
 
-    public class CreateLocationVMValidator : AbstractValidator<LocationVM>
+    public class CreateLocationVMValidator : AbstractValidator<CreateLocationVM>
     {
         public CreateLocationVMValidator()
         {
+            RuleFor(l => l.ZoneId)
+                .NotEmpty().WithMessage("Pole ZoneId jest wymagane.")
+                .MaximumLength(5).WithMessage("Pole ZoneId może mieć maksymalnie 5 znaków.");
 
+            RuleFor(l => l.Row)
+                .NotEmpty().WithMessage("Pole Row jest wymagane.");
+
+            RuleFor(l => l.Column)
+                .NotEmpty().WithMessage("Pole Column jest wymagane.")
+                .Must(c => c.HasValue && c >= 'A' && c <= 'Z').WithMessage("Pole Column może zawierać tylko jedną wielką literę od A do Z.");
+
+            RuleFor(l => l.Level)
+                .NotEmpty().WithMessage("Pole Level jest wymagane.");
+
+            RuleFor(l => l.Cell)
+                .NotEmpty().WithMessage("Pole Cell jest wymagane.");
+
+            RuleFor(l => l.Capacity)
+                .NotEmpty().WithMessage("Pole Capacity jest wymagane.")
+                .GreaterThan(0).WithMessage("Pole Capacity musi być większe od 0.");
+
+            RuleFor(l => l.IsBusy)
+                .NotNull().WithMessage("Pole IsBusy jest wymagane.");
         }
+
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<LocationVM>.CreateWithOptions((LocationVM)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<CreateLocationVM>.CreateWithOptions((CreateLocationVM)model, x => x.IncludeProperties(propertyName)));
             if (result.IsValid)
                 return Array.Empty<string>();
             return result.Errors.Select(e => e.ErrorMessage);

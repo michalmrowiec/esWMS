@@ -33,7 +33,7 @@ namespace esWMS.Application.Functions.Locations.Commands.CreateLocation
             var entity = _mapper.Map<Location>(request);
 
             entity.LocationId =
-                $"{entity.ZoneId}/{entity.Row:D2}/{entity.Column}/{entity.Level}/{entity.Cell}";
+                $"{entity.ZoneId}/{entity.Row:D2}/{entity.Column}/{entity.Level}/{entity.Cell}".ToUpper();
 
             var createdEntity = await _repository.CreateAsync(entity);
 
