@@ -28,9 +28,13 @@
           RowClassFunc="GetRowClass"
           OnRowClick="RowClickEvent"
           MultiSelection="@(TypeOfSelection == SelectionType.Multi)"
-          @bind-SelectedItems="selectedWarehouseUnits">
+          @bind-SelectedItems="selectedWarehouseUnits"
+          FixedHeader
+          Height="80%">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Jednostki magazynowe</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3" OnClick="@(() => { wuIdShow = wuIdShow.ToDictionary(pair => pair.Key, pair => true); } )">Rowzwiń wszystkie</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mt-3 ml-3" OnClick="@(() => { wuIdShow = wuIdShow.ToDictionary(pair => pair.Key, pair => false); })">Zwiń wszystkie</MudButton>
         <MudSpacer />
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
@@ -74,6 +78,14 @@
                                    Column="IsBlocked"
                                    OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="LocationId" T="WarehouseUnitVM">
+                Id lokalizacji
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="LocationId"
+                                  OnChangedAction="OnSearch" />
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd>
@@ -86,6 +98,7 @@
         <MudTd DataLabel="Zablokowana">
             <MudCheckBox @bind-Value="@context.IsBlocked" Size="Size.Small" Disabled="true"></MudCheckBox>
         </MudTd>
+        <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
     </RowTemplate>
     <ChildRowContent>
         @if (wuIdShow[context.WarehouseUnitId] == true)
@@ -143,10 +156,10 @@
         }
     </ChildRowContent>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <TableNoRecordsContent />
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
@@ -183,7 +196,8 @@
     {
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") },
-        { "IsBlocked", new("IsBlocked", "==", string.Empty) }
+        { "IsBlocked", new("IsBlocked", "==", string.Empty) },
+        { "LocationId", new("LocationId") }
     };
 
     private string GetRowClass(WarehouseUnitVM item, int rowIndex)

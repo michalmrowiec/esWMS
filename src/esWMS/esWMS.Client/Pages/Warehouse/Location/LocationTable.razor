@@ -30,6 +30,8 @@
           Height="80%">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Lokalizacje</MudText>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3" OnClick="@((args) => table.ExpandAllGroups())">Rowzwiń wszystkie</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mt-3 ml-3" OnClick="@((args) => table.CollapseAllGroups())">Zwiń wszystkie</MudButton>
         <MudSpacer />
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
@@ -40,12 +42,6 @@
                        OnClick="OnSearch" />
     </ToolBarContent>
     <HeaderContent>
-        <MudTh>
-            <MudTableSortLabel SortLabel="ZoneName" T="LocationVM">
-                Nazwa strefy
-            </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneName" OnChangedAction="OnSearch" />
-        </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="LocationId" T="LocationVM">
                 Id
@@ -79,6 +75,12 @@
             </MudTableSortLabel>
             <DefaultColumntFilter SearchOptions="searchOptions" Column="IsBusy" OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="DefaultMediaTypeId" T="LocationVM">
+                Domyślny nośnik
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="DefaultMediaTypeId" OnChangedAction="OnSearch" />
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.LocationId</MudTd>
@@ -89,7 +91,10 @@
                 ? context.Capacity.ToString("0")
                 : context.Capacity.ToString("0.00"))
         </MudTd>
-        <MudTd DataLabel="Zajęte">@context.IsBusy</MudTd>
+        <MudTd DataLabel="Zajęte">
+            <MudCheckBox @bind-Value="@context.IsBusy" Size="Size.Small" Disabled="true"></MudCheckBox>
+        </MudTd>
+        <MudTd DataLabel="Domyślny nośnik">@context.DefaultMediaTypeId</MudTd>
     </RowTemplate>
     <GroupHeaderTemplate>
         <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"{context.GroupName}: [{context.Key}] {context.Items.First(x => x.ZoneId == context.Key).Zone.ZoneName}")</MudTh>
@@ -104,9 +109,6 @@
         <TablePager PageSize="@PageSize" />
     </PagerContent>
 </MudTable>
-
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-3" OnClick="@((args) => table.ExpandAllGroups())">Rowzwiń wszystkie</MudButton>
-<MudButton Variant="Variant.Filled" Color="Color.Secondary" Class="mt-3 ml-3" OnClick="@((args) => table.CollapseAllGroups())">Zwiń wszystkie</MudButton>
 
 @code {
     [Parameter]
@@ -126,7 +128,8 @@
         { "WarehouseId", new("WarehouseId") },
         { "LocationId", new("LocationId") },
         { "Capacity", new("Capacity", ">") },
-        { "IsBusy", new("IsBusy", "==", string.Empty) }
+        { "IsBusy", new("IsBusy", "==", string.Empty) },
+        { "DefaultMediaTypeId", new("DefaultMediaTypeId") }
     };
 
     private TableGroupDefinition<LocationVM> _groupDefinition = new()
