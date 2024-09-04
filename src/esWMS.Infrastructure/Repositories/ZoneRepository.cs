@@ -39,9 +39,10 @@ namespace esWMS.Infrastructure.Repositories
         public async Task<PagedResult<Zone>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             var zones = _context.Zones
-                            .Include(x => x.Warehouse)
-                            .AsNoTracking()
-                            .AsQueryable();
+                .Include(x => x.Locations)
+                .Include(x => x.Warehouse)
+                .AsNoTracking()
+                .AsQueryable();
 
             var filteredZones = await _sieveProcessor
                 .Apply(sieveModel, zones)

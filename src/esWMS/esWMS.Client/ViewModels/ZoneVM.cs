@@ -11,15 +11,16 @@ namespace esWMS.Client.ViewModels
         public decimal? AvgTemperature { get; set; }
 
         public WarehouseVM? Warehouse { get; set; }
+        public IList<LocationVM> Locations { get; set; } = [];
     }
 
 
     public class CreateZoneVM
     {
         public string? ZoneName { get; set; }
-        public decimal? ZoneAlias { get; set; }
+        public char? ZoneAlias { get; set; }
         public string? WarehouseId { get; set; }
-        public int? AvgTemperature { get; set; }
+        public decimal? AvgTemperature { get; set; }
     }
 
     public class CreateZoneVMValidator : AbstractValidator<CreateZoneVM>

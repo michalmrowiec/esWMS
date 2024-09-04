@@ -2,7 +2,12 @@
 
 namespace esWMS.Application.Functions.Locations
 {
-    public class LocationDto
+    public class LocationDto : FlatLocationDto
+    {
+        public FlatZoneDto? Zone { get; set; }
+    }
+
+    public class FlatLocationDto
     {
         public string LocationId { get; set; } = null!;
         public string ZoneId { get; set; } = null!;
@@ -17,7 +22,5 @@ namespace esWMS.Application.Functions.Locations
         public decimal? MaxWeight { get; set; }
         public bool IsBusy { get; set; }
         public string? DefaultMediaTypeId { get; set; }
-
-        public ZoneDto? Zone { get; set; }
     }
 }

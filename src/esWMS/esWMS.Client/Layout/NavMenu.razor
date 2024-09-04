@@ -57,6 +57,16 @@
                     OnClick="@(async () => await onePageState.AddTab(new TabView("Lokalizacje", new LocationTable(), Guid.NewGuid(), Icons.Material.Filled.LocationOn)))">
             Lokalizacje
         </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.LocationOn"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Lokalizacje_new", new ZoneTable(), Guid.NewGuid(), Icons.Material.Filled.LocationOn)))">
+            Lokalizacje_new
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.LocationOn"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Lokalizacje_new2", new LocationTable2(), Guid.NewGuid(), Icons.Material.Filled.LocationOn)))">
+            Lokalizacje_new2
+        </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Dokumenty" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.LibraryBooks">
         <MudNavGroup Title="Wydania" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.Logout">

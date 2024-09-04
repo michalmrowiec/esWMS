@@ -88,9 +88,11 @@ namespace esWMS.Application.Mappings
                 .ForMember(dest => dest.WarehouseUnitItems, opt => opt.Ignore());
 
             CreateMap<CreateZoneCommand, Zone>();
+            CreateMap<Zone, FlatZoneDto>();
             CreateMap<Zone, ZoneDto>();
 
             CreateMap<CreateLocationCommand, Location>();
+            CreateMap<Location, FlatLocationDto>();
             CreateMap<Location, LocationDto>()
                 .ReverseMap();
 

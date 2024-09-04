@@ -17,6 +17,14 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseE
                 .CanSort()
                 .CanFilter()
                 .HasName("WarehouseId");
+            mapper.Property<Location>(x => x.Zone.ZoneName)
+                .CanSort()
+                .CanFilter()
+                .HasName("ZoneName");
+            mapper.Property<Location>(x => x.Zone.ZoneAlias)
+                .CanSort()
+                .CanFilter()
+                .HasName("ZoneAlias");
             mapper.Property<Location>(x => x.Capacity)
                 .CanSort()
                 .CanFilter();
