@@ -1,0 +1,137 @@
+﻿@page "/zones"
+@using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IDataService<ZoneVM> dataService
+@inject IDialogService DialogService
+
+<MudTable T="ZoneVM"
+          ServerData="ServerReload"
+          Dense="true"
+          Hover="true"
+          @ref="table"
+          RowClass="cursor-pointer">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Lokalizacje</MudText>
+        <MudSpacer />
+        <MudButton @onclick="OpenZoneDialogAsync"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Utwórz strefę
+        </MudButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ZoneId" T="ZoneVM">
+                Id strefy
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ZoneName" T="ZoneVM">
+                Nazwa strefy
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneName" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ZoneAlias" T="ZoneVM">
+                Alias strefy
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneAlias" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="WarehouseId" T="ZoneVM">
+                Id magazynu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="AvgTemperature" T="ZoneVM">
+                Średnia temperatura (°C)
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric"
+                                  SearchOptions="searchOptions"
+                                  Column="AvgTemperature"
+                                  OnChangedAction="OnSearch" />
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.ZoneId</MudTd>
+        <MudTd DataLabel="Id strefy">@context.ZoneName</MudTd>
+        <MudTd DataLabel="Alias strefy">@context.ZoneAlias</MudTd>
+        <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
+        <MudTd DataLabel="Średnia temperatura (°C)">@context.AvgTemperature</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <TableNoRecordsContent />
+    </NoRecordsContent>
+    <LoadingContent>
+        <TableLoadingContent />
+    </LoadingContent>
+    <PagerContent>
+        <TablePager PageSize="@PageSize" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public int[]? PageSize { get; set; }
+    private IEnumerable<ZoneVM> Products = [];
+    private IEnumerable<ZoneVM> pagedData;
+    private MudTable<ZoneVM> table;
+
+    private int totalItems;
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "ZoneId", new("ZoneId") },
+        { "ZoneName", new("ZoneName") },
+        { "ZoneAlias", new("ZoneAlias") },
+        { "WarehouseId", new("WarehouseId") },
+        { "AvgTemperature", new("AvgTemperature", ">") }
+    };
+
+    private async Task<TableData<ZoneVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await dataService.GetPagedResult(@"api/v1/Zone/get-filtered", sm);
+
+        return new TableData<ZoneVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch()
+    {
+        table.ReloadServerData();
+    }
+
+    private Task OpenZoneDialogAsync()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<AddZoneModalDialogForm>
+        {
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+        };
+        return DialogService.ShowAsync<AddZoneModalDialogForm>(null, parameters, options);
+    }
+}

@@ -34,11 +34,6 @@
     <MudNavGroup Title="Magazyny" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
-                    OnClick="@(async () => await onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-            Lista Magazynów
-        </MudNavLink>
-        <MudNavLink Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.Filled.List"
                     OnClick="@(async () => await onePageState.AddTab(new TabView("Jednostki Magazynowe", new WarehouseUnitTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
             Jednostki Magazynowe
         </MudNavLink>
@@ -51,6 +46,16 @@
                     Icon="@Icons.Material.Filled.Warehouse"
                     OnClick="@(async () => await onePageState.AddTab(new TabView("Stany Magazynowe", new WarehouseStockTable(), Guid.NewGuid(), Icons.Material.Filled.Warehouse)))">
             Stany Magazynowe
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.List"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+            Lista Magazynów
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.Map"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Strefy magazynowe", new ZoneTable(), Guid.NewGuid(), Icons.Material.Filled.Map)))">
+            Strefy magazynowe
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.LocationOn"
