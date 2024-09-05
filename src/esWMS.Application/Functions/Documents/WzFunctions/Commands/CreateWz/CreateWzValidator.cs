@@ -13,7 +13,6 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
         public CreateWzValidator(IList<ProductDto> productsFromDocumentItems, IMediator mediator)
         {
             _mediator = mediator;
-            // TODO add WarehouseUnit is no blocked check
             RuleForEach(x => x.DocumentItems)
                 .ChildRules(items => items.RuleForEach(x => x.DocumentWarehouseUnitItems)
                     .ChildRules(itemsASsignment =>
@@ -37,10 +36,10 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                     }
                 });
 
-            RuleFor(x => x.DocumentItems)
+            RuleFor(x => x)
                 .CustomAsync(async (value, context, cancellationToken) =>
                 {
-                    var allWarehouseUnitItemIds = value
+                    var allWarehouseUnitItemIds = value.DocumentItems
                                                     .SelectMany(x => x.DocumentWarehouseUnitItems)
                                                     .Select(x => x.WarehouseUnitItemId)
                                                     .Distinct()
@@ -62,7 +61,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                         context.AddFailure("DocumentItems", "Something went wrong.");
                     }
 
-                    foreach (var documentItem in value)
+                    foreach (var documentItem in value.DocumentItems)
                     {
                         foreach (var itemAssignment in documentItem.DocumentWarehouseUnitItems.DistinctBy(x => x.WarehouseUnitItemId))
                         {
@@ -80,7 +79,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                                     $"Available quantity for unit {itemAssignment.WarehouseUnitItemId} is {availableQuantity} but trying to lock value {allWantQuantity}. Value exceeds by {allWantQuantity - availableQuantity}.");
                             }
 
-                            if(documentItem.ProductId != wui.ProductId)
+                            if (documentItem.ProductId != wui.ProductId)
                             {
                                 context.AddFailure(
                                     "DocumentWarehouseUnitItems",
@@ -88,6 +87,30 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                                     $"The document item contains product with ID {documentItem.ProductId}, while the warehouse unit item contains product with ID {wui.ProductId}.");
                             }
                         }
+                    }
+
+                    var warehouseUnits = warehouseUnitItems.Select(x => x.WarehouseUnit).DistinctBy(x => x?.WarehouseUnitId).ToList();
+
+                    if (warehouseUnits == null
+                        || warehouseUnits.Count == 0)
+                    {
+                        context.AddFailure("Somenthing went wrong");
+                    }
+
+                    if (warehouseUnits!.Any(wu => wu!.WarehouseId != value.IssueWarehouseId))
+                    {
+                        var nonMatchingWarehouseUnits = warehouseUnits!.Where(wu => wu?.WarehouseId != value.IssueWarehouseId).ToList();
+                        context.AddFailure(
+                        "WarehouseUnitIds",
+                            $"The following warehouse units are not members of the warehouse with ID {value.IssueWarehouseId}: {string.Join("; ", nonMatchingWarehouseUnits.Select(wu => wu!.WarehouseUnitId))}");
+                    }
+
+                    if (warehouseUnits!.Any(wu => wu!.IsBlocked))
+                    {
+                        var blockedWarehouseUnits = warehouseUnits!.Where(wu => wu!.IsBlocked).ToList();
+                        context.AddFailure(
+                            "WarehouseUnitIds",
+                            $"The following warehouse units are blocked: {string.Join("; ", blockedWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
                     }
                 });
         }

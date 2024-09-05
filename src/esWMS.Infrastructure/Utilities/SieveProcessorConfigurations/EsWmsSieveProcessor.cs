@@ -23,6 +23,10 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
 
             new ContractorSieveProcessor().Configure(mapper);
 
+            new LocationSieveProcessor().Configure(mapper);
+
+            new ZoneSieveProcessor().Configure(mapper);
+
             new WarehouseSieveProcessor().Configure(mapper);
 
             new WarehouseUnitSieveProcessor().Configure(mapper);
@@ -30,6 +34,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             new WarehouseUnitItemSieveProcessor().Configure(mapper);
 
             new WarehouseStockSieveProcessor().Configure(mapper);
+
+            new DocumentItemsSieveProcessor().Configure(mapper);
 
             new PzSieveProcessor().Configure(mapper);
 
@@ -40,6 +46,10 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             new MmpSieveProcessor().Configure(mapper);
 
             new PwSieveProcessor().Configure(mapper);
+
+            new RwSieveProcessor().Configure(mapper);
+
+            new ZwSieveProcessor().Configure(mapper);
 
             return mapper;
         }
@@ -57,8 +67,13 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
         public IQueryable<PW> DocumentIssueDate(IQueryable<PW> source, string op, string[] values) =>
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
+        public IQueryable<RW> DocumentIssueDate(IQueryable<RW> source, string op, string[] values) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
+        public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, string op, string[] values) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
 
-        public IQueryable<WarehouseUnit> FilterByWarehouseUnitItemIds(IQueryable<WarehouseUnit> source, string op, string[] values)
+        public IQueryable<RW> ContainsProductIds
+            (IQueryable<RW> source, string op, string[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -68,7 +83,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             switch (op)
             {
                 case "==":
-                    source = source.Where(unit => unit.WarehouseUnitItems.Any(item => values.Contains(item.WarehouseUnitItemId)));
+                    source = source
+                        .Where(rw => rw.DocumentItems.Any(di => values.Contains(di.ProductId)));
                     break;
                 default:
                     break;
@@ -77,7 +93,71 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             return source;
         }
 
-        public IQueryable<Product> ProductId(IQueryable<Product> source, string op, string[] values)
+        public IQueryable<ZW> ContainsProductIds
+            (IQueryable<ZW> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source
+                        .Where(zw => zw.DocumentItems.Any(di => values.Contains(di.ProductId)));
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
+        public IQueryable<WarehouseUnit> FilterByWarehouseUnitItemIds
+            (IQueryable<WarehouseUnit> source, string op, string[] values)
+        {
+            if (values == null
+                || values.Length == 0)
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(unit => unit.WarehouseUnitItems
+                                            .Any(item => values.Contains(item.WarehouseUnitItemId)));
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
+        public IQueryable<DocumentItem> DocumentItemId
+            (IQueryable<DocumentItem> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(item => values.Contains(item.DocumentItemId));
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
+        public IQueryable<Product> ProductId
+            (IQueryable<Product> source, string op, string[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -96,7 +176,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             return source;
         }
 
-        public IQueryable<WarehouseUnitItem> WarehouseUnitItemId(IQueryable<WarehouseUnitItem> source, string op, string[] values)
+        public IQueryable<WarehouseUnitItem> WarehouseUnitItemId
+            (IQueryable<WarehouseUnitItem> source, string op, string[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -118,9 +199,12 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             return source;
         }
 
-        public IQueryable<WarehouseUnitItem> Available(IQueryable<WarehouseUnitItem> source, string op, string[] values)
+        public IQueryable<WarehouseUnitItem> Available
+            (IQueryable<WarehouseUnitItem> source, string op, string[] values)
         {
-            if (values == null || values.Length == 0 || !int.TryParse(values[0], out int intValue))
+            if (values == null
+                || values.Length == 0
+                || !int.TryParse(values[0], out int intValue))
             {
                 return source;
             }
@@ -152,9 +236,12 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             return source;
         }
 
-        public IQueryable<WarehouseStock> Available(IQueryable<WarehouseStock> source, string op, string[] values)
+        public IQueryable<WarehouseStock> Available
+            (IQueryable<WarehouseStock> source, string op, string[] values)
         {
-            if (values == null || values.Length == 0 || !int.TryParse(values[0], out int intValue))
+            if (values == null
+                || values.Length == 0
+                || !int.TryParse(values[0], out int intValue))
             {
                 return source;
             }

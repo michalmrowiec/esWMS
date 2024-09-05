@@ -4,13 +4,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
-    internal class MMMConfiguration : IEntityTypeConfiguration<MMM>
+    internal class MmmConfiguration : IEntityTypeConfiguration<MMM>
     {
         public void Configure(EntityTypeBuilder<MMM> builder)
         {
             builder.Property(d => d.ToWarehouseId)
                 .IsRequired()
                 .HasMaxLength(3);
+
+            builder.Property(d => d.GoodsReleaseDate)
+                .HasColumnName("GoodsReleaseDate")
+                .IsRequired(false);
 
             builder
                 .HasOne(d => d.ToWarehouse)

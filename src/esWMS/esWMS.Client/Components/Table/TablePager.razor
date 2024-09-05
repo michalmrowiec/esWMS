@@ -1,0 +1,19 @@
+﻿<MudTablePager HideRowsPerPage="false"
+               RowsPerPageString="Elementy na stronę:"
+               PageSizeOptions="PageSize" />
+
+@code {
+    [Parameter]
+    public int[]? PageSize { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (PageSize == null
+            || PageSize?.Length < 1
+            || PageSize?.Length > 10)
+        {
+            PageSize = new int[] { 25, 50, 100, 500 };
+        }
+
+    }
+}

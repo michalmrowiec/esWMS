@@ -1,11 +1,16 @@
 ﻿@using esWMS.Client.Pages
+@using esWMS.Client.Pages.Category
 @using esWMS.Client.Pages.Documents.Mmm
 @using esWMS.Client.Pages.Documents.Mmp
 @using esWMS.Client.Pages.Documents.Pw
 @using esWMS.Client.Pages.Documents.Pz
+@using esWMS.Client.Pages.Documents.Rw
 @using esWMS.Client.Pages.Documents.Wz
+@using esWMS.Client.Pages.Documents.Zw
 @using esWMS.Client.Pages.OnePage
+@using esWMS.Client.Pages.Product
 @using esWMS.Client.Pages.Warehouse
+@using esWMS.Client.Pages.Warehouse.Location
 @using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
 @inject OnePageState onePageState
@@ -16,84 +21,100 @@
     </MudButton>
     <MudNavGroup Title="Artykuły" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Category">
         <MudNavLink Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.Filled.List"
-                    OnClick="@(() => onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                    Icon="@Icons.Material.Filled.ShoppingCart"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.ShoppingCart)))">
             Lista Artykułów
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.Filled.List"
-                    OnClick="@(() => onePageState.AddTab(new TabView("Kategorie", new CategoryTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                    Icon="@Icons.Material.Filled.Sell"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Kategorie", new CategoryTable(), Guid.NewGuid(), Icons.Material.Filled.Sell)))">
             Lista Kategorii
         </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Magazyny" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.List"
-                    OnClick="@(() => onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-            Lista Magazynów
-        </MudNavLink>
-        <MudNavLink Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.Filled.List"
-                    OnClick="@(() => onePageState.AddTab(new TabView("Jednostki Magazynowe", new WarehouseUnitTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Jednostki Magazynowe", new WarehouseUnitTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
             Jednostki Magazynowe
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.Segment"
-                    OnClick="@(() => onePageState.AddTab(new TabView("Pozycje Magazynowe", new WarehouseUnitItemTable(), Guid.NewGuid(), Icons.Material.Filled.Segment)))">
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Pozycje Magazynowe", new WarehouseUnitItemTable(), Guid.NewGuid(), Icons.Material.Filled.Segment)))">
             Pozycje Magazynowe
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.Warehouse"
-                    OnClick="@(() => onePageState.AddTab(new TabView("Stany Magazynowe", new WarehouseStockTable(), Guid.NewGuid(), Icons.Material.Filled.Warehouse)))">
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Stany Magazynowe", new WarehouseStockTable(), Guid.NewGuid(), Icons.Material.Filled.Warehouse)))">
             Stany Magazynowe
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.List"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+            Lista Magazynów
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.Map"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Strefy magazynowe", new ZoneTable(), Guid.NewGuid(), Icons.Material.Filled.Map)))">
+            Strefy magazynowe
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.LocationOn"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Lokalizacje", new LocationTable(), Guid.NewGuid(), Icons.Material.Filled.LocationOn)))">
+            Lokalizacje
         </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Dokumenty" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.LibraryBooks">
-        <MudNavGroup Title="PZ" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
+        <MudNavGroup Title="Wydania" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.Logout">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
-                        OnClick="@(() => onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista PZ
+                        OnClick="@(async () => await onePageState.AddTab(new TabView("WZ", new WzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                WZ
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(async () => await onePageState.AddTab(new TabView("RW", new RwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                RW
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(async () => await onePageState.AddTab(new TabView("MM-", new MmmTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                MM-
             </MudNavLink>
         </MudNavGroup>
-        <MudNavGroup Title="WZ" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowUpward">
+        <MudNavGroup Title="Przyjęcia" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.Login">
             <MudNavLink Match="NavLinkMatch.Prefix"
                         Icon="@Icons.Material.Filled.List"
-                        OnClick="@(() => onePageState.AddTab(new TabView("WZ", new WzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista WZ
+                        OnClick="@(async () => await onePageState.AddTab(new TabView("PZ", new PzTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                PZ
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(async () => await onePageState.AddTab(new TabView("PW", new PwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                PW
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(async () => await onePageState.AddTab(new TabView("ZW", new ZwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                ZW
+            </MudNavLink>
+            <MudNavLink Match="NavLinkMatch.Prefix"
+                        Icon="@Icons.Material.Filled.List"
+                        OnClick="@(async () => await onePageState.AddTab(new TabView("MM+", new MmpTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
+                MM+
             </MudNavLink>
         </MudNavGroup>
-        <MudNavGroup Title="PW" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.ArrowDownward">
-            <MudNavLink Match="NavLinkMatch.Prefix"
-                        Icon="@Icons.Material.Filled.List"
-                        OnClick="@(() => onePageState.AddTab(new TabView("PW", new PwTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista PW
-            </MudNavLink>
-        </MudNavGroup>
-        <MudNavGroup Title="MM" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Filled.CompareArrows">
-            <MudNavLink Match="NavLinkMatch.Prefix"
-                        Icon="@Icons.Material.Filled.Add"
-                        OnClick="@(() => OpenCreateMmTab())">
-                Utwórz MM
-            </MudNavLink>
-            <MudNavLink Match="NavLinkMatch.Prefix"
-                        Icon="@Icons.Material.Filled.List"
-                        OnClick="@(() => onePageState.AddTab(new TabView("MM-", new MmmTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista MM-
-            </MudNavLink>
-            <MudNavLink Match="NavLinkMatch.Prefix"
-                        Icon="@Icons.Material.Filled.List"
-                        OnClick="@(() => onePageState.AddTab(new TabView("MM+", new MmpTable(), Guid.NewGuid(), Icons.Material.Filled.List)))">
-                Lista MM+
-            </MudNavLink>
-        </MudNavGroup>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.Add"
+                    OnClick="@(async () => await OpenCreateMmTab())">
+            Utwórz MM
+        </MudNavLink>
     </MudNavGroup>
 </MudNavMenu>
 
 @code {
     private bool _allGroupsExpanded = true;
 
-    private void OpenCreateMmTab()
+    private async Task OpenCreateMmTab()
     {
         var tabId = Guid.NewGuid();
 
@@ -103,7 +124,7 @@
             EventCallback.Factory.Create(this, () => onePageState.AddTab(new TabView("MM-", new MmmTable(), Guid.NewGuid(), Icons.Material.Filled.List)))
         };
 
-        onePageState.AddTab(
+        await onePageState.AddTab(
             new TabView(
                 "Tworzenie MM",
                 new AddMmm(),

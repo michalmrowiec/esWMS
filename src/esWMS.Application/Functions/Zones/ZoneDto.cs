@@ -1,11 +1,20 @@
-﻿namespace esWMS.Application.Functions.Zones
+﻿using esWMS.Application.Functions.Locations;
+using esWMS.Application.Functions.Warehouses;
+
+namespace esWMS.Application.Functions.Zones
 {
-    public class ZoneDto
+    public class ZoneDto : FlatZoneDto
+    {
+        public FlatWarehouseDto? Warehouse { get; set; }
+        public IList<FlatLocationDto> Locations { get; set; } = [];
+    }
+
+    public class FlatZoneDto
     {
         public string ZoneId { get; set; } = null!;
         public string? ZoneName { get; set; }
         public char ZoneAlias { get; set; }
         public string WarehouseId { get; set; } = null!;
-        public int? AvgTemperature { get; set; }
+        public decimal? AvgTemperature { get; set; }
     }
 }

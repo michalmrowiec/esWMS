@@ -129,15 +129,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var warehouseResponse = await warehouseService
-            .GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
-        warehouses.AddRange(warehouseResponse.Items.ToList());
-
         if (WarehouseId != null)
         {
             warehouseId = WarehouseId;
         }
 
+        var warehouseResponse = await warehouseService
+            .GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
+        warehouses.AddRange(warehouseResponse.Items.ToList());
+        
         StateHasChanged();
     }
 

@@ -16,8 +16,12 @@ using esWMS.Application.Functions.Documents.PwFunctions;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw;
 using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
+using esWMS.Application.Functions.Documents.RwFunctions;
+using esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw;
 using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz;
+using esWMS.Application.Functions.Documents.ZwFunctions;
+using esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 using esWMS.Application.Functions.Products;
@@ -44,8 +48,6 @@ namespace esWMS.Application.Mappings
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
                 .ReverseMap();
 
-            //CreateMap<ProductDto, Product>();
-
             CreateMap<CreateCategoryCommand, Category>();
             CreateMap<Category, CategoryDto>()
                 .ReverseMap();
@@ -53,6 +55,7 @@ namespace esWMS.Application.Mappings
             CreateMap<Contractor, ContractorDto>();
 
             CreateMap<CreateWarehouseCommand, Warehouse>();
+            CreateMap<Warehouse, FlatWarehouseDto>();
             CreateMap<Warehouse, WarehouseDto>();
 
             CreateMap<CreateWarehouseUnitCommand, WarehouseUnit>();
@@ -82,25 +85,14 @@ namespace esWMS.Application.Mappings
                 .ForMember(dest => dest.Location, opt => opt.Ignore())
                 .ForMember(dest => dest.Media, opt => opt.Ignore())
                 .ForMember(dest => dest.StackOn, opt => opt.Ignore())
-                .ForMember(dest => dest.WarehouseUnitItems, opt => opt.Ignore()); // Dodaj ignorowanie lub właściwe mapowanie
-
-
-            //CreateMap<WarehouseUnitItem, DocumentItem>()
-            //    .ForMember(di => di.ProductId, opt => opt.MapFrom(wui => wui.ProductId))
-            //    .ForMember(di => di.ProductCode, opt => opt.MapFrom(wui => wui.Product.ProductCode))
-            //    .ForMember(di => di.EanCode, opt => opt.MapFrom(wui => wui.Product.EanCode))
-            //    .ForMember(di => di.ProductName, opt => opt.MapFrom(wui => wui.Product.ProductName))
-            //    .ForMember(di => di.Quantity, opt => opt.MapFrom(wui => wui.Quantity))
-            //    .ForMember(di => di.BestBefore, opt => opt.MapFrom(wui => wui.BestBefore))
-            //    .ForMember(di => di.BatchLot, opt => opt.MapFrom(wui => wui.BatchLot))
-            //    .ForMember(di => di.SerialNumber, opt => opt.MapFrom(wui => wui.SerialNumber))
-            //    .ForMember(di => di.Price, opt => opt.MapFrom(wui => wui.Price))
-            //    .ForMember(di => di.Currency, opt => opt.MapFrom(wui => wui.Currency));
+                .ForMember(dest => dest.WarehouseUnitItems, opt => opt.Ignore());
 
             CreateMap<CreateZoneCommand, Zone>();
+            CreateMap<Zone, FlatZoneDto>();
             CreateMap<Zone, ZoneDto>();
 
             CreateMap<CreateLocationCommand, Location>();
+            CreateMap<Location, FlatLocationDto>();
             CreateMap<Location, LocationDto>()
                 .ReverseMap();
 
@@ -108,7 +100,8 @@ namespace esWMS.Application.Mappings
             CreateMap<Contractor, ContractorDto>();
 
             CreateMap<CreateDocumentItemCommand, DocumentItem>();
-            CreateMap<DocumentItem, DocumentItemDto>();
+            CreateMap<DocumentItem, DocumentItemDto>()
+                .ReverseMap();
 
             CreateMap<CreateDocumentWarehouseUnitItemCommand, DocumentWarehouseUnitItem>();
             CreateMap<DocumentWarehouseUnitItem, DocumentWarehouseUnitItemDto>();
@@ -128,6 +121,13 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreatePwCommand, PW>();
             CreateMap<PW, PwDto>();
+
+            CreateMap<CreateRwCommand, RW>();
+            CreateMap<RW, RwDto>();
+
+            CreateMap<CreateZwCommand, ZW>()
+                .ForMember(dest => dest.DocumentItems, opt => opt.Ignore());
+            CreateMap<ZW, ZwDto>();
 
             CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
                 .ForMember("Items", opt => opt.MapFrom("Items"));

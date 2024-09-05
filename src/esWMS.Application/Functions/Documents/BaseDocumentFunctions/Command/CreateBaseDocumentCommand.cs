@@ -2,7 +2,12 @@
 
 namespace esWMS.Application.Functions.Documents.BaseDocumentFunctions.Command
 {
-    public abstract class CreateBaseDocumentCommand
+    public abstract class CreateBaseDocumentCommand : CreateFlatBaseDocumentCommand
+    {
+        public IList<CreateDocumentItemCommand> DocumentItems { get; set; } = [];
+    }
+
+    public abstract class CreateFlatBaseDocumentCommand
     {
         public string IssueWarehouseId { get; set; } = null!;
         public string? Comment { get; set; }
@@ -10,7 +15,5 @@ namespace esWMS.Application.Functions.Documents.BaseDocumentFunctions.Command
         public string? IssuingEmployeeId { get; set; }
         public string? AssignedEmployeeId { get; set; }
         public string? CreatedBy { get; set; }
-
-        public IList<CreateDocumentItemCommand> DocumentItems { get; set; } = [];
     }
 }

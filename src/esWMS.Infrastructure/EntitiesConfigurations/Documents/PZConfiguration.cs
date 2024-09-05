@@ -4,13 +4,17 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
-    internal class PZConfiguration : IEntityTypeConfiguration<PZ>
+    internal class PzConfiguration : IEntityTypeConfiguration<PZ>
     {
         public void Configure(EntityTypeBuilder<PZ> builder)
         {
             builder.Property(d => d.SupplierContractorId)
                 .IsRequired()
                 .HasMaxLength(3);
+
+            builder.Property(d => d.GoodsReceiptDate)
+                .HasColumnName("GoodsReceiptDate")
+                .IsRequired(false);
 
             builder
                 .HasOne(d => d.SupplierContractor)

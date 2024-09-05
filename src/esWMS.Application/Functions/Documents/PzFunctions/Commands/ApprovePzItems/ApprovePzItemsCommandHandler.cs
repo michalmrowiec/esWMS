@@ -33,7 +33,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
             }
 
             var document = await _pzRepozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
-            var warehouseUnits = await _warehouseUnitRepository.GetWarehouseUnitsWithItemsByIdAsync(
+            var warehouseUnits = await _warehouseUnitRepository.GetWarehouseUnitsWithItemsByIdsAsync(
                 request.DocumentItemsWithAssignment
                 .Select(x => x.WarehouseUnitId)
                 .ToArray());

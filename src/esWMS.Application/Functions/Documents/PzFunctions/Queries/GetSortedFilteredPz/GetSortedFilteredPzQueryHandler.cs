@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Functions.Documents.PzFunctions;
+using esWMS.Application.Functions.Services;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Responses;
 using MediatR;
@@ -17,11 +19,8 @@ namespace esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWareho
 
         public async Task<BaseResponse<PagedResult<PzDto>>> Handle(GetSortedFilteredPzQuery request, CancellationToken cancellationToken)
         {
-            var pagedResult = await _pzRepository.GetSortedFilteredAsync(request.SieveModel);
+            return await request.SieveModel.Handle<PzDto, PZ>(_mapper, _pzRepository);
 
-            var mapped = _mapper.Map<PagedResult<PzDto>>(pagedResult);
-
-            return new BaseResponse<PagedResult<PzDto>>(mapped);
         }
     }
 }

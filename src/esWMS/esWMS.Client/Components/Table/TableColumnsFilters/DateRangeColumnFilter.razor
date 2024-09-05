@@ -1,0 +1,35 @@
+﻿@using esWMS.Client.Components.TableColumnsFilters
+<MudStack>
+    <MudDateRangePicker @ref="_picker" DateRangeChanged="@((dr) => {
+                                            SearchOptions["DocumentIssueDateEnd"].Value = dr.End.Value.Date.ToString("yyyy-MM-dd");;
+                                            SearchOptions["DocumentIssueDateStart"].Value = dr.Start.Value.Date.ToString("yyyy-MM-dd");
+                                            OnChangedAction.Invoke(); })"
+                        AutoClose="true"
+                        Margin="Margin.None">
+        <PickerActions>
+            <MudButton Class="mr-auto align-self-start"
+                       OnClick="@(() => {
+                                        _picker.ClearAsync();
+                                        SearchOptions["DocumentIssueDateStart"].Value = "";
+                                        SearchOptions["DocumentIssueDateEnd"].Value = "";
+                                        OnChangedAction.Invoke();})">
+                Wyczyść
+            </MudButton>
+            <MudButton OnClick="@(() => _picker.CloseAsync(false))">Zamknij</MudButton>
+        </PickerActions>
+    </MudDateRangePicker>
+</MudStack>
+
+@code {
+    [Parameter]
+    public Dictionary<string, FilterOption> SearchOptions { get; set; }
+
+    [Parameter]
+    public string Column { get; set; }
+
+    [Parameter]
+    public Action OnChangedAction { get; set; }
+
+    private MudDateRangePicker _picker;
+    private DateRange _dateRange { get; set; }
+}

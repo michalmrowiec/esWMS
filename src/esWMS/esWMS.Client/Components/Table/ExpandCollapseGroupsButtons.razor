@@ -1,0 +1,25 @@
+﻿<MudButton Variant="Variant.Filled"
+           Color="Color.Default"
+           EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+           Size="Size.Small"
+           Class=""
+           OnClick="@(() => ExpandAction.InvokeAsync())">
+    Rowzwiń wszystkie
+</MudButton>
+
+<MudButton Variant="Variant.Filled"
+           Color="Color.Default"
+           EndIcon="@Icons.Material.Filled.KeyboardArrowUp"
+           Size="Size.Small"
+           Class="ml-3" 
+           OnClick="@(() => CollapseAction.InvokeAsync())">
+    Zwiń wszystkie
+</MudButton>
+
+@code {
+    [Parameter]
+    public EventCallback<Action> ExpandAction { get; set; }
+
+    [Parameter]
+    public EventCallback<Action> CollapseAction { get; set; }
+}

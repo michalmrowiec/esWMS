@@ -1,0 +1,192 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IDocumentDataService documentService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject IDataService<WarehouseUnitVM> warehouseUnitDataService
+
+<MudDialog>
+    <TitleContent>
+        Zatwierdzanie pozycji
+    </TitleContent>
+    <DialogContent>
+        <MudText Typo="Typo.subtitle1"><strong>Id pozycji dokumentu:</strong> @DocumentItemVM.DocumentItemId</MudText>
+
+        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
+
+        <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Single"
+                            SelectedWarehouseUnits="OnGet" />
+
+        <MudNumericField Label="Ilość"
+                         @bind-Value="quantity" />
+
+        <MudButton Color="Color.Primary" OnClick="SubmitWarehouseUnit">Dodaj</MudButton>
+
+
+        <MudDataGrid T="DocumentWarehouseUnitItemVM"
+                     Items="@documentItemWithAssignments"
+                     EditMode="DataGridEditMode.Cell"
+                     Dense
+                     Bordered
+                     Hover>
+            <ToolBarContent>
+                <MudText Typo="Typo.subtitle1">Nowe przypisania</MudText>
+                <MudSpacer />
+            </ToolBarContent>
+            <Columns>
+                <PropertyColumn Property="x => x.WarehouseUnitId" />
+                <PropertyColumn Property="x => x.Quantity" />
+                <TemplateColumn CellClass="d-flex justify-end">
+                    <CellTemplate Context="item">
+                        <MudStack Row>
+                            <MudIconButton Size="@Size.Small"
+                                           Icon="@Icons.Material.Outlined.Delete"
+                                           OnClick="@(() => { documentItemWithAssignments.Remove(item.Item); StateHasChanged(); })" />
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+        </MudDataGrid>
+
+        <MudDataGrid T="DocumentWarehouseUnitItemVM"
+                     Items="@DocumentItemVM.DocumentWarehouseUnitItems"
+                     EditMode="DataGridEditMode.Cell"
+                     Filterable="false"
+                     SortMode="SortMode.None"
+                     Dense
+                     Bordered
+                     Hover>
+            <ToolBarContent>
+                <MudText Typo="Typo.subtitle1">Przypisane</MudText>
+                <MudSpacer />
+            </ToolBarContent>
+            <Columns>
+                <PropertyColumn Property="x => x.WarehouseUnitItemId" Title="Id pozycji magazynowej" />
+                <TemplateColumn CellClass="d-flex justify-end" Title="Id jednostki magazynowej">
+                    <CellTemplate Context="item">
+                        <MudStack Row>
+                            <MudText>@warehouseUnitVMs.FirstOrDefault(x => x.WarehouseUnitItems.Any(x => x.WarehouseUnitItemId.Equals(item.Item.WarehouseUnitItemId)))?.WarehouseUnitId</MudText>
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+                <PropertyColumn Property="x => x.Quantity" />
+            </Columns>
+        </MudDataGrid>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Zatwierdź</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnAdded { get; set; } = new();
+
+    [Parameter]
+    public DocumentItemVM DocumentItemVM { get; set; }
+
+    [Parameter]
+    public string Uri { get; set; }
+
+    private string? selectedWarehouseUnitId = "";
+    private List<DocumentWarehouseUnitItemVM> documentItemWithAssignments = new();
+    private List<string> responseErrors = new();
+    private List<WarehouseUnitVM> warehouseUnitVMs = new();
+
+    private WarehouseUnitVM? selected;
+    private int quantity = 0;
+
+    protected override void OnParametersSet()
+    {
+        quantity = DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity));
+    }
+
+    private void OnGet(HashSet<WarehouseUnitVM> warehouseUnits)
+    {
+        selected = warehouseUnits.FirstOrDefault();
+        StateHasChanged();
+    }
+
+    private void SubmitWarehouseUnit()
+    {
+        if (selected != null && quantity > 0)
+        {
+            documentItemWithAssignments.Add(new(DocumentItemVM.DocumentItemId, selected?.WarehouseUnitId, quantity));
+            selected = null;
+            quantity = DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity));
+            StateHasChanged();
+        }
+    }
+
+    private async Task Submit()
+    {
+        if (selectedWarehouseUnitId != null)
+        {
+            var requestBody = new
+            {
+                DocumentId = DocumentItemVM.DocumentId,
+                DocumentItemsWithAssignment = documentItemWithAssignments
+            };
+
+            var response = await documentService.ApproveDocument(Uri, requestBody);
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var responseObj = JsonConvert.DeserializeObject<PwVM>(json);
+
+                Snackbar.Configuration.PositionClass = "Bottom-End";
+                Snackbar.Add(new MarkupString("Pomyślnie zatwierdzono"), Severity.Success);
+
+                FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            }
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = 1;
+        sm.PageSize = 100;
+
+        var warehouseUnitItemIds = string.Join("|", DocumentItemVM.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId));
+
+        sm.Filters = $"FilterByWarehouseUnitItemIds=={warehouseUnitItemIds}";
+
+        var response = await warehouseUnitDataService.GetPagedResult(@"api/v1/WarehouseUnit/get-filtered", sm);
+
+        warehouseUnitVMs = response.Items.ToList();
+
+        StateHasChanged();
+    }
+}

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence.Documents;
+using esWMS.Application.Functions.Services;
 using esWMS.Application.Responses;
 using MediatR;
 
@@ -15,11 +17,8 @@ namespace esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetSortedFi
 
         public async Task<BaseResponse<PagedResult<MmpDto>>> Handle(GetSortedFilteredMmpQuery request, CancellationToken cancellationToken)
         {
-            var pagedResult = await _mmpRepository.GetSortedFilteredAsync(request.SieveModel);
+            return await request.SieveModel.Handle<MmpDto, MMP>(_mapper, _mmpRepository);
 
-            var mapped = _mapper.Map<PagedResult<MmpDto>>(pagedResult);
-
-            return new BaseResponse<PagedResult<MmpDto>>(mapped);
         }
     }
 }

@@ -8,17 +8,33 @@
 @inject OnePageState onePageState
 @inject IDialogService DialogService
 
+<style>
+    .selected-row {
+        background-color: #7e6fff;
+    }
+
+    .child-row {
+        background-color: #a7a7a717;
+        border-left: 5px solid #d0d0d0;
+    }
+</style>
+
 <MudTable T="WarehouseUnitVM"
           ServerData="ServerReload"
           Dense="true"
           Hover="true"
           @ref="table"
           RowClass="cursor-pointer"
+          RowClassFunc="GetRowClass"
           OnRowClick="RowClickEvent"
           MultiSelection="@(TypeOfSelection == SelectionType.Multi)"
-          @bind-SelectedItems="selectedWarehouseUnits">
+          @bind-SelectedItems="selectedWarehouseUnits"
+          FixedHeader
+          Height="80%">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Jednostki magazynowe</MudText>
+        <MudText Typo="Typo.h6" Class="me-3">Jednostki magazynowe</MudText>
+        <ExpandCollapseGroupsButtons ExpandAction="@(() => { wuIdShow = wuIdShow.ToDictionary(pair => pair.Key, pair => true); } )"
+                                     CollapseAction="@(() => { wuIdShow = wuIdShow.ToDictionary(pair => pair.Key, pair => false); })" />
         <MudSpacer />
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
@@ -62,6 +78,14 @@
                                    Column="IsBlocked"
                                    OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="LocationId" T="WarehouseUnitVM">
+                Id lokalizacji
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="LocationId"
+                                  OnChangedAction="OnSearch" />
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd>
@@ -74,6 +98,7 @@
         <MudTd DataLabel="Zablokowana">
             <MudCheckBox @bind-Value="@context.IsBlocked" Size="Size.Small" Disabled="true"></MudCheckBox>
         </MudTd>
+        <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
     </RowTemplate>
     <ChildRowContent>
         @if (wuIdShow[context.WarehouseUnitId] == true)
@@ -94,7 +119,7 @@
                                       Elevation="0"
                                       Dense
                                       Bordered
-                                      Striped>
+                                      RowClass="child-row">
                                 <ColGroup>
                                     <col />
                                     <col />
@@ -131,10 +156,10 @@
         }
     </ChildRowContent>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <TableNoRecordsContent />
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
@@ -153,7 +178,7 @@
 
 @code {
     [Parameter]
-    public SelectionType TypeOfSelection { get; set; }
+    public SelectionType TypeOfSelection { get; set; } = SelectionType.None;
     [Parameter]
     public string? WarehouseIdFilter { get; set; }
     [Parameter]
@@ -165,15 +190,25 @@
     private IEnumerable<WarehouseUnitVM> pagedData;
     private MudTable<WarehouseUnitVM> table;
     private Dictionary<string, bool> wuIdShow = new();
-
     private int totalItems;
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") },
-        { "IsBlocked", new("IsBlocked", "==", string.Empty) }
+        { "IsBlocked", new("IsBlocked", "==", string.Empty) },
+        { "LocationId", new("LocationId") }
     };
+
+    private string GetRowClass(WarehouseUnitVM item, int rowIndex)
+    {
+        if (selectedWarehouseUnits.Contains(item))
+        {
+            Console.WriteLine("selectedrow!");
+            return "selected-row";
+        }
+        return string.Empty;
+    }
 
     private void ShowBtnPress(string id)
     {
@@ -227,6 +262,7 @@
         {
             if (tableRowClickEventArgs.Item != null)
             {
+                selectedWarehouseUnits.Clear();
                 selectedWarehouseUnits.Add(tableRowClickEventArgs.Item);
             }
             await SelectedWarehouseUnits.InvokeAsync(selectedWarehouseUnits);

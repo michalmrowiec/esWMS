@@ -101,7 +101,7 @@
 
     private List<EventCallback> callbacksOnAddPz = new();
 
-    private void OpenCreatePzTab()
+    private async Task OpenCreatePzTab()
     {
         var tabId = Guid.NewGuid();
 
@@ -111,7 +111,7 @@
             EventCallback.Factory.Create(this, table.ReloadServerData)
         };
 
-        onePageState.AddTab(new TabView("Tworzenie PZ", new AddPz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
+        await onePageState.AddTab(new TabView("Tworzenie PZ", new AddPz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
     }
 
     private async Task<TableData<PzVM>> ServerReload(TableState state, CancellationToken token)

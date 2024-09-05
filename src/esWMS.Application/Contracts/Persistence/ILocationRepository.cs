@@ -3,7 +3,7 @@
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface ILocationRepository
-        : IBaseRepository<Location>
+        : IBaseRepository<Location>, ISieve<Location>
     {
         Task<IList<Location>> GetAllZoneLocations(string zoneId);
         Task<IList<Location>> GetBusyZoneLocations(string zoneId);

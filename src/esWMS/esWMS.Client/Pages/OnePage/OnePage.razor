@@ -44,7 +44,7 @@
     {
         base.OnInitialized();
 
-        onePageState.OnAddTab += StateHasChanged;
+        onePageState.OnAddTab += async () => await InvokeAsync(StateHasChanged);
     }
 
     protected override void OnAfterRender(bool firstRender)

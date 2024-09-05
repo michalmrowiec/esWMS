@@ -1,0 +1,61 @@
+﻿@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+
+<MudDialog>
+    <TitleContent>
+        Dodawanie pozycji
+    </TitleContent>
+    <DialogContent>
+
+        <MudTextField @bind-Value="test"
+                      Label="Wybrana pozycja dokumentu"
+                      Disabled />
+
+        <ZwDocumentItemsTable SelectedDocumentItem="OnDocumentItemSelected" />
+
+        <MudNumericField Label="Ilość"
+                         @bind-Value="quantity" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Dodaj</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnAdded { get; set; } = new();
+
+    [Parameter]
+    public List<DocumentItemVM> DocumentItemVMs { get; set; }
+
+    private DocumentItemVM? selectedDocumentItem;
+    private int quantity = 0;
+    private string test = "";
+
+
+    private void Submit()
+    {
+        if (selectedDocumentItem != null
+            && quantity > 0)
+        {
+            selectedDocumentItem.Quantity = quantity;
+            DocumentItemVMs.Add(selectedDocumentItem);
+        }
+
+        FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private void OnDocumentItemSelected(DocumentItemVM documentItemVM)
+    {
+        selectedDocumentItem = documentItemVM;
+        test = documentItemVM.DocumentItemId;
+        StateHasChanged();
+    }
+}

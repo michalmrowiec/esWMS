@@ -2,7 +2,12 @@
 
 namespace esWMS.Application.Functions.Warehouses
 {
-    public class WarehouseDto
+    public class WarehouseDto : FlatWarehouseDto
+    {
+        public IList<ZoneDto> Zones { get; set; } = [];
+    }
+
+    public class FlatWarehouseDto
     {
         public string WarehouseId { get; set; } = null!;
         public string WarehouseName { get; set; } = null!;
@@ -11,7 +16,5 @@ namespace esWMS.Application.Functions.Warehouses
         public string? Region { get; set; }
         public string? PostalCode { get; set; }
         public string? Address { get; set; }
-
-        public IList<ZoneDto> Zones { get; set; } = [];
     }
 }

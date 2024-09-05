@@ -3,7 +3,6 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
 using MediatR;
@@ -90,7 +89,6 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
             {
                 foreach (var documentItemWithAssignment in documentItem.DocumentWarehouseUnitItems)
                 {
-                    // TODO check the blocked before add document!!!
                     warehouseUnitItemsQuantityToBlock
                         .Add(documentItemWithAssignment.WarehouseUnitItemId!, documentItemWithAssignment.Quantity);
                 }

@@ -32,7 +32,7 @@ namespace esWMS.Application.Functions.Zones.Commands.CreateZone
 
             var entity = _mapper.Map<Zone>(request);
 
-            entity.ZoneId = $"{entity.WarehouseId}/{entity.ZoneId}";
+            entity.ZoneId = $"{entity.WarehouseId}/{entity.ZoneAlias}".ToUpper();
 
             var createdEntity = await _repository.CreateAsync(entity);
 

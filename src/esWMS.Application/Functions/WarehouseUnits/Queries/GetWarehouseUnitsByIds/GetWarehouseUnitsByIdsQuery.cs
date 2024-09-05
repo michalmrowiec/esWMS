@@ -3,6 +3,6 @@ using MediatR;
 
 namespace esWMS.Application.Functions.WarehouseUnits.Queries.GetWarehouseUnitsByIds
 {
-    public record GetWarehouseUnitsByIdsQuery(string[] WarehouseUniIds)
+    public record GetWarehouseUnitsByIdsQuery(params string[] WarehouseUniIds)
         : IRequest<BaseResponse<IEnumerable<WarehouseUnitDto>>>;
 }

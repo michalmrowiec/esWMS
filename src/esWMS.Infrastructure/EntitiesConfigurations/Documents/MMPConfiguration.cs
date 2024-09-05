@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
-    internal class MMPConfiguration : IEntityTypeConfiguration<MMP>
+    internal class MmpConfiguration : IEntityTypeConfiguration<MMP>
     {
         public void Configure(EntityTypeBuilder<MMP> builder)
         {
@@ -15,6 +15,10 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
             builder.Property(d => d.RelatedMmmId)
                 .IsRequired()
                 .HasMaxLength(25);
+
+            builder.Property(d => d.GoodsReceiptDate)
+                .HasColumnName("GoodsReceiptDate")
+                .IsRequired(false);
 
             builder
                 .HasOne(d => d.FromWarehouse)

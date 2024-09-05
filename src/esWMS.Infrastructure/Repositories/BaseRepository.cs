@@ -73,7 +73,7 @@ namespace esWMS.Infrastructure.Repositories
             }
         }
 
-        public async Task<TEntity> GetByIdAsync(TId id)
+        public virtual async Task<TEntity> GetByIdAsync(TId id)
         {
             try
             {

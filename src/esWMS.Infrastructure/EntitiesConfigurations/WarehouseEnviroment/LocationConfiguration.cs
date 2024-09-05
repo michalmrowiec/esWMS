@@ -13,7 +13,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 
             builder.Property(l => l.LocationId)
                 .IsRequired()
-                .HasMaxLength(11);
+                .HasMaxLength(20);
 
             builder.Property(l => l.ZoneId)
                 .IsRequired()
@@ -34,11 +34,19 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 
             builder.Property(l => l.Capacity)
                 .IsRequired()
-                .HasDefaultValue(1);
+                .HasDefaultValue(1m);
 
-            builder.Property(l => l.IsBusy)
-                .IsRequired()
-                .HasDefaultValue(false);
+            builder.Property(l => l.MaxLength)
+                .HasColumnType("decimal(18, 2)");
+
+            builder.Property(l => l.MaxWidth)
+                .HasColumnType("decimal(18, 2)");
+
+            builder.Property(l => l.MaxHeight)
+                .HasColumnType("decimal(18, 2)");
+
+            builder.Property(l => l.MaxWeight)
+                .HasColumnType("decimal(18, 2)");
 
             builder.Property(l => l.CreatedAt)
                 .IsRequired();

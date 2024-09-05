@@ -1,0 +1,186 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IDialogService DialogService
+@inject IDataService<ZwVM> dataService
+@inject IDocumentDataService documentDataService
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Numer dokumentu:</strong> @ZwVM.DocumentId
+</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Magazyn wydający:</strong>
+    [@ZwVM.IssueWarehouseId] @ZwVM.IssueWarehouse?.WarehouseName
+</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Komentarz:</strong> @ZwVM.Comment
+</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Data wystawienia dokumentu:</strong>
+    @ZwVM.DocumentIssueDate.ToString("dd-MM-yyyy")
+</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Zatwierdzono: </strong>
+    @if (ZwVM.IsApproved)
+    {
+        <span>TAK</span>
+    }
+    else
+    {
+        <span>NIE</span>
+    }
+</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Data przyjęcia towaru:</strong>
+    @ZwVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")
+</MudText>
+
+<MudText Typo="Typo.body1" Class="mb-3">
+    <strong>Źródło:</strong>
+    @ZwVM.DepartmentName
+</MudText>
+
+<MudDataGrid T="DocumentItemVM"
+             Items="@ZwVM.DocumentItems"
+             EditMode="DataGridEditMode.Cell"
+             Class="mb-3"
+             Dense
+             Hover
+             Bordered>
+    <Columns>
+        <PropertyColumn Property="x => x.ProductId" Title="Id" />
+        <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
+        <PropertyColumn Property="x => x.ProductName" Title="Nazwa" />
+        <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
+        <TemplateColumn CellClass="d-flex" Title="Zatwierdzenie">
+            <CellTemplate>
+                <MudStack Row>
+                    <MudCheckBox Value="@context.Item.IsApproved" Disabled />
+                    @if (!context.Item.IsApproved)
+                    {
+                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
+                                   Size="@Size.Small"
+                                   Variant="@Variant.Filled"
+                                   Color="@Color.Primary">
+                            Zatwierdź
+                        </MudButton>
+                    }
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+</MudDataGrid>
+
+@if (ZwVM.DocumentItems.All(x => x.IsApproved) &&
+!ZwVM.IsApproved)
+{
+    <MudButton OnClick="@(() => ApprovePw())"
+               Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Class="mb-3">
+        Zatwierdź
+    </MudButton>
+}
+else if (ZwVM.IsApproved)
+{
+    <MudButton Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled
+               Class="mb-3">
+        Zatwierdzono
+    </MudButton>
+}
+else
+{
+    <MudButton Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled
+               Class="mb-3">
+        Zatwierdź
+    </MudButton>
+}
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5" Class="mb-3">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [Parameter]
+    public ZwVM ZwVM { get; set; } = new();
+
+    [Parameter]
+    public List<EventCallback>? EventCallbacks { get; set; }
+
+    private List<string> responseErrors = new();
+
+    private Task OpenDialogAsync(DocumentItemVM documentItem)
+    {
+        InvokeAsync(RefreshZw);
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<ApproveZwItemDialogForm>
+        {
+            { x => x.DocumentItemVM, documentItem},
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshZw) } }
+        };
+        return DialogService.ShowAsync<ApproveZwItemDialogForm>(null, parameters, options);
+    }
+
+    private async Task RefreshZw()
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = 1;
+        sm.PageSize = 1;
+        sm.Filters = $"DocumentId=={ZwVM.DocumentId}";
+
+        var response = await dataService.GetPagedResult(@"api/v1/Zw/get-filtered", sm);
+
+        if (response.Items.FirstOrDefault() != null)
+        {
+            ZwVM = response.Items.First();
+        }
+
+        StateHasChanged();
+    }
+
+    public async Task ApprovePw()
+    {
+        var response = await documentDataService.ApproveDocument(@"api/v1/Zw/approve", new { DocumentId = ZwVM.DocumentId });
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<ZwVM>(json);
+
+            await RefreshZw();
+
+            Snackbar.Configuration.PositionClass = "Bottom-End";
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{ZwVM.DocumentId}</strong>"), Severity.Success);
+
+        }
+        else
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        }
+    }
+}

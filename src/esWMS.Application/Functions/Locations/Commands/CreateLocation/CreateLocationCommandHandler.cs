@@ -30,14 +30,23 @@ namespace esWMS.Application.Functions.Locations.Commands.CreateLocation
                 return new BaseResponse<LocationDto>(validationResult);
             }
 
-            var entity = _mapper.Map<Location>(request);
+            LocationDto entityDto;
+            try
+            {
+                var entity = _mapper.Map<Location>(request);
 
-            entity.LocationId =
-                $"{entity.ZoneId}/{entity.Row:D2}/{entity.Column}/{entity.Level}/{entity.Cell}";
+                entity.LocationId =
+                    $"{entity.ZoneId}/{entity.Row:D2}/{entity.Column}/{entity.Level}/{entity.Cell}".ToUpper();
 
-            var createdEntity = await _repository.CreateAsync(entity);
+                var createdEntity = await _repository.CreateAsync(entity);
 
-            var entityDto = _mapper.Map<LocationDto>(createdEntity);
+                entityDto = _mapper.Map<LocationDto>(createdEntity);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
 
             return new BaseResponse<LocationDto>(entityDto);
         }

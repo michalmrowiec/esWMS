@@ -48,7 +48,9 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz
             {
                 foreach (var warUnitItem in documentItem.DocumentWarehouseUnitItems)
                 {
-                    warUnitItem.WarehouseUnitItem.BlockedQuantity -= warUnitItem.WarehouseUnitItem.BlockedQuantity;
+                    //warUnitItem.WarehouseUnitItem.BlockedQuantity -= warUnitItem.WarehouseUnitItem.BlockedQuantity;
+                    warUnitItem.WarehouseUnitItem.BlockedQuantity -= documentItem.DocumentWarehouseUnitItems.Where(wui => wui.WarehouseUnitItemId.Equals(warUnitItem.WarehouseUnitItemId)).Sum(dwui => dwui.Quantity);
+
                 }
             }
 

@@ -391,13 +391,13 @@ namespace esWMS.Infrastructure.Migrations
             modelBuilder.Entity("esMWS.Domain.Entities.WarehouseEnviroment.Location", b =>
                 {
                     b.Property<string>("LocationId")
-                        .HasMaxLength(11)
-                        .HasColumnType("varchar(11)");
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
 
-                    b.Property<int>("Capacity")
+                    b.Property<decimal>("Capacity")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("decimal(65,30)")
+                        .HasDefaultValue(1m);
 
                     b.Property<int>("Cell")
                         .HasColumnType("int");
@@ -417,25 +417,20 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<string>("DefaultMediaTypeId")
                         .HasColumnType("varchar(50)");
 
-                    b.Property<bool>("IsBusy")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValue(false);
-
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
-                    b.Property<int>("MaxHeight")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("MaxHeight")
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("MaxLength")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("MaxLength")
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("MaxWeight")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("MaxWeight")
+                        .HasColumnType("decimal(18, 2)");
 
-                    b.Property<int>("MaxWidth")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("MaxWidth")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
@@ -617,7 +612,7 @@ namespace esWMS.Infrastructure.Migrations
                         .HasDefaultValue(false);
 
                     b.Property<string>("LocationId")
-                        .HasColumnType("varchar(11)");
+                        .HasColumnType("varchar(20)");
 
                     b.Property<string>("MediaId")
                         .HasColumnType("varchar(50)");
@@ -736,8 +731,8 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
-                    b.Property<int?>("AvgTemperature")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("AvgTemperature")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -779,7 +774,9 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<DateTime?>("GoodsReleaseDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReleaseDate");
 
                     b.Property<string>("ToWarehouseId")
                         .IsRequired()
@@ -801,7 +798,9 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(3)");
 
                     b.Property<DateTime?>("GoodsReceiptDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReceiptDate");
 
                     b.Property<string>("RelatedMmmId")
                         .IsRequired()
@@ -821,17 +820,15 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<string>("DepartmentName")
+                        .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(250)
-                        .HasColumnType("varchar(250)");
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("DepartmentName");
 
                     b.Property<DateTime?>("GoodsReceiptDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("GoodsReceiptDate")
-                                .HasColumnName("PW_GoodsReceiptDate");
-                        });
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReceiptDate");
 
                     b.HasDiscriminator().HasValue("PW");
                 });
@@ -841,7 +838,9 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<DateTime?>("GoodsReceiptDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReceiptDate");
 
                     b.Property<string>("SupplierContractorId")
                         .IsRequired()
@@ -849,12 +848,6 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("varchar(3)");
 
                     b.HasIndex("SupplierContractorId");
-
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("GoodsReceiptDate")
-                                .HasColumnName("PZ_GoodsReceiptDate");
-                        });
 
                     b.HasDiscriminator().HasValue("PZ");
                 });
@@ -864,20 +857,15 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<string>("DepartmentName")
+                        .ValueGeneratedOnUpdateSometimes()
                         .HasMaxLength(250)
-                        .HasColumnType("varchar(250)");
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("DepartmentName");
 
                     b.Property<DateTime?>("GoodsReleaseDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("DepartmentName")
-                                .HasColumnName("RW_DepartmentName");
-
-                            t.Property("GoodsReleaseDate")
-                                .HasColumnName("RW_GoodsReleaseDate");
-                        });
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReleaseDate");
 
                     b.HasDiscriminator().HasValue("RW");
                 });
@@ -887,7 +875,9 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
                     b.Property<DateTime?>("GoodsReleaseDate")
-                        .HasColumnType("datetime(6)");
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReleaseDate");
 
                     b.Property<string>("RecipientContractorId")
                         .IsRequired()
@@ -896,12 +886,6 @@ namespace esWMS.Infrastructure.Migrations
 
                     b.HasIndex("RecipientContractorId");
 
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("GoodsReleaseDate")
-                                .HasColumnName("WZ_GoodsReleaseDate");
-                        });
-
                     b.HasDiscriminator().HasValue("WZ");
                 });
 
@@ -909,14 +893,16 @@ namespace esWMS.Infrastructure.Migrations
                 {
                     b.HasBaseType("esMWS.Domain.Entities.Documents.BaseDocument");
 
-                    b.Property<DateTime?>("GoodsReceiptDate")
-                        .HasColumnType("datetime(6)");
+                    b.Property<string>("DepartmentName")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasMaxLength(250)
+                        .HasColumnType("varchar(250)")
+                        .HasColumnName("DepartmentName");
 
-                    b.ToTable("Documents", t =>
-                        {
-                            t.Property("GoodsReceiptDate")
-                                .HasColumnName("ZW_GoodsReceiptDate");
-                        });
+                    b.Property<DateTime?>("GoodsReceiptDate")
+                        .ValueGeneratedOnUpdateSometimes()
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("GoodsReceiptDate");
 
                     b.HasDiscriminator().HasValue("ZW");
                 });
