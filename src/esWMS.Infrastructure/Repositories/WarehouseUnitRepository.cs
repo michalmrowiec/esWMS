@@ -22,7 +22,7 @@ namespace esWMS.Infrastructure.Repositories
         {
             try
             {
-                var warehouseUnits = await GetWarehouseUnitsWithItemsByIdAsync(warehouseUnitIds);
+                var warehouseUnits = await GetWarehouseUnitsWithItemsByIdsAsync(warehouseUnitIds);
 
                 foreach (var wu in warehouseUnits)
                 {
@@ -82,7 +82,7 @@ namespace esWMS.Infrastructure.Repositories
             return new PagedResult<WarehouseUnit>(filteredItems, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
         }
 
-        public async Task<IList<WarehouseUnit>> GetWarehouseUnitsWithItemsByIdAsync(params string[] warehouseUnitIds)
+        public async Task<IList<WarehouseUnit>> GetWarehouseUnitsWithItemsByIdsAsync(params string[] warehouseUnitIds)
         {
             try
             {

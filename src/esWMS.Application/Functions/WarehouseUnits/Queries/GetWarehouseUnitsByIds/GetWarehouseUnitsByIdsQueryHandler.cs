@@ -14,7 +14,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Queries.GetWarehouseUnitsBy
         public async Task<BaseResponse<IEnumerable<WarehouseUnitDto>>> Handle
             (GetWarehouseUnitsByIdsQuery request, CancellationToken cancellationToken)
         {
-            var result = await _repository.GetWarehouseUnitsWithItemsByIdAsync(request.WarehouseUniIds);
+            var result = await _repository.GetWarehouseUnitsWithItemsByIdsAsync(request.WarehouseUniIds);
 
             var mapped = _mapper.Map<List<WarehouseUnitDto>>(result);
 

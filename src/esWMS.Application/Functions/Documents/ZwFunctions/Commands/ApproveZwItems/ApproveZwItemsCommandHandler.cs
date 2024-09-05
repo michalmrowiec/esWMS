@@ -35,7 +35,7 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwIt
             }
 
             var document = await _repozitory.GetDocumentByIdWithItemsAsync(request.DocumentId);
-            var warehouseUnits = await _warehouseUnitRepository.GetWarehouseUnitsWithItemsByIdAsync(
+            var warehouseUnits = await _warehouseUnitRepository.GetWarehouseUnitsWithItemsByIdsAsync(
                 request.DocumentItemsWithAssignment!
                 .Select(x => x.WarehouseUnitId!)
                 .ToArray());

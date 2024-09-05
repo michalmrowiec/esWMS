@@ -1,10 +1,12 @@
-﻿using esWMS.Application.Functions.Zones;
+﻿using esWMS.Application.Functions.WarehouseUnits;
+using esWMS.Application.Functions.Zones;
 
 namespace esWMS.Application.Functions.Locations
 {
     public class LocationDto : FlatLocationDto
     {
         public FlatZoneDto? Zone { get; set; }
+        public IList<FlatWarehouseUnitDto> WarehouseUnits { get; set; } = [];
     }
 
     public class FlatLocationDto

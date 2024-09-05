@@ -16,6 +16,7 @@ namespace esWMS.Infrastructure.Repositories
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
+        private readonly ILogger<LocationRepository> _logger = logger;
 
         public Task<IList<Location>> GetAllZoneLocations(string zoneId)
         {
@@ -30,6 +31,20 @@ namespace esWMS.Infrastructure.Repositories
         public Task<IList<Location>> GetFreeZoneLocations(string zoneId)
         {
             throw new NotImplementedException();
+        }
+
+        public override async Task<Location> GetByIdAsync(string id)
+        {
+            try
+            {
+                var result = await _context.Locations.FindAsync(id);
+                return result ?? throw new KeyNotFoundException("The object with the given id was not found.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving entity with Id: {EntityId}", id);
+                throw;
+            }
         }
 
         public async Task<PagedResult<Location>> GetSortedFilteredAsync(SieveModel sieveModel)

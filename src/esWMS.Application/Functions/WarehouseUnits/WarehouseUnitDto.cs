@@ -1,9 +1,11 @@
-﻿using esWMS.Application.Functions.WarehouseUnitItems;
+﻿using esWMS.Application.Functions.Locations;
+using esWMS.Application.Functions.WarehouseUnitItems;
 
 namespace esWMS.Application.Functions.WarehouseUnits
 {
     public class WarehouseUnitDto : FlatWarehouseUnitDto
     {
+        public LocationDto? Location { get; set; }
         public IList<WarehouseUnitItemDto> WarehouseUnitItems { get; set; } = [];
     }
 
