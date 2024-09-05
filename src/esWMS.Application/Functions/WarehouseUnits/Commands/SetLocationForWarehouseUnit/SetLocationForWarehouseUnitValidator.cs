@@ -8,7 +8,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
     internal class SetLocationForWarehouseUnitValidator : AbstractValidator<SetLocationForWarehouseUnitCommand>
     {
         public SetLocationForWarehouseUnitValidator
-            (BaseResponse<IEnumerable<WarehouseUnitDto>>? warehouseUnitResponse, BaseResponse<LocationDto>? newLocationResponse)
+            (WarehouseUnit? warehouseUnit, BaseResponse<LocationDto>? newLocationResponse)
         {
             RuleFor(x => x.WarehouseUnitId)
                 .NotNull()
@@ -16,23 +16,9 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                 .WithMessage("Warehouse unit ID is required.")
                 .Custom((value, context) =>
                 {
-                    if (warehouseUnitResponse == null)
-                    {
-                        context.AddFailure("Something went wrong while retrieving warehouse units.");
-                        return;
-                    }
-
-                    if (warehouseUnitResponse.Status == BaseResponse.ResponseStatus.NotFound
-                        || warehouseUnitResponse.ReturnedObj?.FirstOrDefault() == null)
+                    if (warehouseUnit == null)
                     {
                         context.AddFailure($"Warehouse unit with ID: {value} not found.");
-                        return;
-                    }
-
-                    if (!warehouseUnitResponse.IsSuccess())
-                    {
-                        context.AddFailure($"Something went wrong while retrieving warehouse unit: {warehouseUnitResponse.Message}");
-                        return;
                     }
                 });
 
