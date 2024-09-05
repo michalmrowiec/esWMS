@@ -1,0 +1,23 @@
+﻿<MudButton Variant="Variant.Filled"
+           Color="Color.Primary"
+           Size="Size.Small"
+           Class="mt-3"
+           OnClick="@(() => ExpandAction.InvokeAsync())">
+    Rowzwiń wszystkie
+</MudButton>
+
+<MudButton Variant="Variant.Filled" 
+           Color="Color.Secondary"
+           Size="Size.Small"
+           Class="mt-3 ml-3" 
+           OnClick="@(() => CollapseAction.InvokeAsync())">
+    Zwiń wszystkie
+</MudButton>
+
+@code {
+    [Parameter]
+    public EventCallback<Action> ExpandAction { get; set; }
+
+    [Parameter]
+    public EventCallback<Action> CollapseAction { get; set; }
+}
