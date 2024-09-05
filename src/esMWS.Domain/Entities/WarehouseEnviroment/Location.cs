@@ -1,4 +1,6 @@
-﻿namespace esMWS.Domain.Entities.WarehouseEnviroment
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace esMWS.Domain.Entities.WarehouseEnviroment
 {
     public class Location
     {
@@ -13,7 +15,6 @@
         public decimal? MaxWidth { get; set; }
         public decimal? MaxHeight { get; set; }
         public decimal? MaxWeight { get; set; }
-        public bool IsBusy { get; set; }
         public string? DefaultMediaTypeId { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
@@ -23,5 +24,8 @@
         public Zone? Zone { get; set; }
         public Product? DefaultMediaType { get; set; }
         public IList<WarehouseUnit> WarehouseUnits { get; set; } = [];
+
+        [NotMapped]
+        public bool IsFull => Capacity <= WarehouseUnits.Count;
     }
 }

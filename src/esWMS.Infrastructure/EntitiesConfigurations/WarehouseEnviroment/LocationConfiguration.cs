@@ -48,10 +48,6 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
             builder.Property(l => l.MaxWeight)
                 .HasColumnType("decimal(18, 2)");
 
-            builder.Property(l => l.IsBusy)
-                .IsRequired()
-                .HasDefaultValue(false);
-
             builder.Property(l => l.CreatedAt)
                 .IsRequired();
 

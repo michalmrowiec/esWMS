@@ -70,10 +70,10 @@
                                   OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
-            <MudTableSortLabel SortLabel="IsBusy" T="LocationVM">
+            <MudTableSortLabel SortLabel="IsFull" T="LocationVM">
                 Zajęte
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="IsBusy" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="IsFull" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="DefaultMediaTypeId" T="LocationVM">
@@ -92,7 +92,7 @@
                 : context.Capacity.ToString("0.00"))
         </MudTd>
         <MudTd DataLabel="Zajęte">
-            <MudCheckBox @bind-Value="@context.IsBusy" Size="Size.Small" Disabled="true"></MudCheckBox>
+            <MudCheckBox @bind-Value="@context.IsFull" Size="Size.Small" Disabled="true"></MudCheckBox>
         </MudTd>
         <MudTd DataLabel="Domyślny nośnik">@context.DefaultMediaTypeId</MudTd>
     </RowTemplate>
@@ -128,7 +128,7 @@
         { "WarehouseId", new("WarehouseId") },
         { "LocationId", new("LocationId") },
         { "Capacity", new("Capacity", ">") },
-        { "IsBusy", new("IsBusy", "==", string.Empty) },
+        { "IsFull", new("IsFull", "==", string.Empty) },
         { "DefaultMediaTypeId", new("DefaultMediaTypeId") }
     };
 

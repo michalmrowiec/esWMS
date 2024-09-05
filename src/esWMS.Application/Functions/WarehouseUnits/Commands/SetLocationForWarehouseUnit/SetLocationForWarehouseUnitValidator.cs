@@ -61,7 +61,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                         return;
                     }
 
-                    if (newLocationResponse.ReturnedObj.IsBusy)
+                    if (newLocationResponse.ReturnedObj.IsFull)
                     {
                         context.AddFailure($"Location with ID: {value} is full.");
                     }

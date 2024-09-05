@@ -15,7 +15,7 @@ namespace esWMS.Client.ViewModels
         public decimal? MaxWidth { get; set; }
         public decimal? MaxHeight { get; set; }
         public decimal? MaxWeight { get; set; }
-        public bool IsBusy { get; set; }
+        public bool IsFull { get; set; }
         public string? DefaultMediaTypeId { get; set; }
 
         public ZoneVM? Zone { get; set; }
@@ -33,7 +33,6 @@ namespace esWMS.Client.ViewModels
         public decimal? MaxWidth { get; set; }
         public decimal? MaxHeight { get; set; }
         public decimal? MaxWeight { get; set; }
-        public bool IsBusy { get; set; } = false;
         public string? DefaultMediaTypeId { get; set; }
         public string? CreatedBy { get; set; }
     }
@@ -62,9 +61,6 @@ namespace esWMS.Client.ViewModels
             RuleFor(l => l.Capacity)
                 .NotEmpty().WithMessage("Pole Capacity jest wymagane.")
                 .GreaterThan(0).WithMessage("Pole Capacity musi być większe od 0.");
-
-            RuleFor(l => l.IsBusy)
-                .NotNull().WithMessage("Pole IsBusy jest wymagane.");
         }
 
 

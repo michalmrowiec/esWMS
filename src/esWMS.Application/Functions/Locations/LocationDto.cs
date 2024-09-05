@@ -22,7 +22,7 @@ namespace esWMS.Application.Functions.Locations
         public decimal? MaxWidth { get; set; }
         public decimal? MaxHeight { get; set; }
         public decimal? MaxWeight { get; set; }
-        public bool IsBusy { get; set; }
+        public bool IsFull { get; set; }
         public string? DefaultMediaTypeId { get; set; }
     }
 }
