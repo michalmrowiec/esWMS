@@ -1,0 +1,107 @@
+﻿@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<LocationVM> locationService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        Przypisanie lokalizacji
+    </TitleContent>
+    <DialogContent>
+        <MudTextField T="string"
+                      @bind-Value="@WarehouseUnitItem.WarehouseUnitId"
+                      Label="Id jednostki magazynowej"
+                      Disabled />
+
+        <MudAutocomplete @bind-Value="@searchString"
+                         SearchFunc="Search"
+                         Variant="Variant.Text"
+                         Label="Lokalizacja"
+                         Dense="false"
+                         Clearable="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Zatwierdź</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public WarehouseUnitVM WarehouseUnitItem { get; set; }
+
+    private List<string> locations = new();
+
+    private string searchString { get; set; } = "";
+
+    private List<string> responseErrors = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Search("", CancellationToken.None);
+    }
+
+    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    {
+        string filters = "";
+
+        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(WarehouseUnitItem.WarehouseId))
+            filters = $"LocationId@={WarehouseUnitItem.WarehouseId!.ToUpper()}";
+        else
+            filters = $"LocationId@={WarehouseUnitItem.WarehouseId!.ToUpper()},{value.ToUpper()}";
+
+        var locationResponse = await locationService.GetPagedResult(@"api/v1/Location/get-filtered", new SieveModelVM(1, 10, filters));
+        locations = locationResponse.Items.Select(x => x.LocationId).ToList();
+
+        if (string.IsNullOrWhiteSpace(value))
+            return locations;
+
+        return locations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task Submit()
+    {
+        // var requestBody = new
+        // {
+        //     DocumentId = DocumentItemVM.DocumentId,
+        //     DocumentItemsWithAssignment = DocumentItemVM.DocumentWarehouseUnitItems
+        // };
+
+        // var response = await documentService.ApproveDocument(@"api/v1/Wz/approve-items", requestBody);
+        // if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        // {
+        //     var json = await response.Content.ReadAsStringAsync();
+        //     var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
+
+        //     Snackbar.Configuration.PositionClass = "Bottom-End";
+        //     Snackbar.Add(new MarkupString("Pomyślnie zatwierdzono"), Severity.Success);
+
+        //     FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
+
+        //     MudDialog.Close(DialogResult.Ok(true));
+        // }
+        // else
+        // {
+        //     var json = await response.Content.ReadAsStringAsync();
+        //     responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        // }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
