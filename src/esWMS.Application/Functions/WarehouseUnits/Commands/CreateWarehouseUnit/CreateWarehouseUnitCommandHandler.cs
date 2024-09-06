@@ -1,29 +1,27 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
+using esWMS.Application.Functions.Locations.Queries.GetLocationById;
 using esWMS.Application.Responses;
 using MediatR;
 
 namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit
 {
     internal class CreateWarehouseUnitCommandHandler
+        (IWarehouseUnitRepository repository,
+        IMediator mediator,
+        IMapper mapper)
         : IRequestHandler<CreateWarehouseUnitCommand, BaseResponse<WarehouseUnitDto>>
     {
-        private readonly IWarehouseUnitRepository _repository;
-        private readonly IMapper _mapper;
-
-        public CreateWarehouseUnitCommandHandler
-            (IWarehouseUnitRepository repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        private readonly IWarehouseUnitRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
+        private readonly IMediator _mediator = mediator;
 
         public async Task<BaseResponse<WarehouseUnitDto>> Handle
             (CreateWarehouseUnitCommand request, CancellationToken cancellationToken)
         {
             var validationResult =
-                await new CreateWarehouseUnitValidator().ValidateAsync(request, cancellationToken);
+                await new CreateWarehouseUnitValidator(_mediator).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -37,7 +35,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUni
             foreach (var item in request.WarehouseUnitItems)
             {
                 var warehouseUnitItemEntity = _mapper.Map<WarehouseUnitItem>(item);
-                
+
                 warehouseUnitItemEntity.WarehouseUnitItemId = Guid.NewGuid().ToString();
                 warehouseUnitItemEntity.WarehouseUnitId = warehouseUnitEntity.WarehouseUnitId;
 

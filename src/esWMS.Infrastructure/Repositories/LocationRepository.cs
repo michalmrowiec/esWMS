@@ -37,7 +37,9 @@ namespace esWMS.Infrastructure.Repositories
         {
             try
             {
-                var result = await _context.Locations.FindAsync(id);
+                var result = await _context.Locations
+                    .Include(x => x.WarehouseUnits)
+                    .FirstOrDefaultAsync(x => x.LocationId.Equals(id));
                 return result ?? throw new KeyNotFoundException("The object with the given id was not found.");
             }
             catch (Exception ex)
@@ -52,6 +54,7 @@ namespace esWMS.Infrastructure.Repositories
             var locations = _context.Locations
                             .Include(x => x.Zone)
                                 .ThenInclude(x => x != null ? x.Warehouse : null)
+                            .Include(x => x.WarehouseUnits)
                             .AsNoTracking()
                             .AsQueryable();
 
