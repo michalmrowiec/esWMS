@@ -48,19 +48,26 @@
                 }
                 </MudSelect> *@
 
-                @*                 <MudSelect T="string" @bind-Value="model.LocationId" Label="Lokalizacja" For="@(() => model.LocationId)" Immediate="true">
-                @foreach (var location in locations)
-                {
-                <MudSelectItem Value="@location.LocationId">
-                @location.LocationName
-                </MudSelectItem>
-                }
-                </MudSelect> *@
-
-                <MudNumericField T="int?" @bind-Value="model.TotalWeight" For="@(() => model.TotalWeight)" Label="Waga całkowita (kg)" Immediate="true" />
-                <MudNumericField T="int?" @bind-Value="model.TotalLength" For="@(() => model.TotalLength)" Label="Długość całkowita (m)" Immediate="true" />
-                <MudNumericField T="int?" @bind-Value="model.TotalWidth" For="@(() => model.TotalWidth)" Label="Szerokość całkowita (m)" Immediate="true" />
-                <MudNumericField T="int?" @bind-Value="model.TotalHeight" For="@(() => model.TotalHeight)" Label="Wysokość całkowita (m)" Immediate="true" />
+                <MudNumericField T="int?"
+                                 @bind-Value="model.TotalWeight"
+                                 For="@(() => model.TotalWeight)"
+                                 Label="Waga całkowita (kg)"
+                                 Immediate="true" />
+                <MudNumericField T="int?"
+                                 @bind-Value="model.TotalLength"
+                                 For="@(() => model.TotalLength)"
+                                 Label="Długość całkowita (m)"
+                                 Immediate="true" />
+                <MudNumericField T="int?"
+                                 @bind-Value="model.TotalWidth"
+                                 For="@(() => model.TotalWidth)"
+                                 Label="Szerokość całkowita (m)"
+                                 Immediate="true" />
+                <MudNumericField T="int?"
+                                 @bind-Value="model.TotalHeight"
+                                 For="@(() => model.TotalHeight)"
+                                 Label="Wysokość całkowita (m)"
+                                 Immediate="true" />
 
                 <MudCheckBox @bind-Value="model.CanBeStacked">Może być piętrowany</MudCheckBox>
 
