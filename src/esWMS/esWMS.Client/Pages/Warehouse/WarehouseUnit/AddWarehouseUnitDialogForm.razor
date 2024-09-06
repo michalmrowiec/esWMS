@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @inject IDataService<CreateWarehouseUnitVM> createWarehouseUnitDataService
@@ -28,6 +29,10 @@
                         </MudSelectItem>
                     }
                 </MudSelect>
+
+                <LocationSelector Disabled="@string.IsNullOrEmpty(model.WarehouseId)"
+                                  LocationIdFilter="@model.WarehouseId"
+                                  SearchString="@((value) => model.LocationId = value)" />
 
                 @*                 <MudSelect T="string" @bind-Value="model.MediaId" Label="Medium" For="@(() => model.MediaId)" Immediate="true">
                 @foreach (var media in mediaItems)

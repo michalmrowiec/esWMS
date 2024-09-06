@@ -46,9 +46,10 @@
                        OnClick="OnSearch" />
     </ToolBarContent>
     <ColGroup>
-        <col style="width:auto;" />
+        <col style="width:20%;" />
         <col />
-        <col />
+        <col style="width:15%;" />
+        <col style="width:10%;" />
         <col />
     </ColGroup>
     <HeaderContent>
@@ -86,19 +87,29 @@
                                   Column="LocationId"
                                   OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd>
             <MudButton Variant="Variant.Outlined"
                        Size="Size.Small"
-                       OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">@((wuIdShow[context.WarehouseUnitId] == true) ? $"Ukryj pozycje ({context.WarehouseUnitItems.Count})" : $"Pokaż pozycje ({context.WarehouseUnitItems.Count})")</MudButton>
+                       OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
+                @((wuIdShow[context.WarehouseUnitId] == true) ? $"Ukryj pozycje ({context.WarehouseUnitItems.Count})" : $"Pokaż pozycje ({context.WarehouseUnitItems.Count})")
+            </MudButton>
         </MudTd>
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
         <MudTd DataLabel="Zablokowana">
-            <MudCheckBox @bind-Value="@context.IsBlocked" Size="Size.Small" Disabled="true"></MudCheckBox>
+            <MudCheckBox @bind-Value="@context.IsBlocked"
+                         Size="Size.Small"
+                         Disabled />
         </MudTd>
         <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
+        <MudTh>
+            <MudIconButton Size="@Size.Small"
+                           Icon="@Icons.Material.Outlined.EditLocation"
+                           OnClick="StateHasChanged" />
+        </MudTh>
     </RowTemplate>
     <ChildRowContent>
         @if (wuIdShow[context.WarehouseUnitId] == true)
@@ -162,7 +173,7 @@
         <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
-        <MudTablePager PageSizeOptions="new int[] {5,10,20,50}" />
+        <MudTablePager />
     </PagerContent>
 </MudTable>
 
