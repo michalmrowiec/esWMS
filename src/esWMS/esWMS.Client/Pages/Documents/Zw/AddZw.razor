@@ -120,12 +120,12 @@
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-        var parameters = new DialogParameters<AddZwItemDialogForm>
+        var parameters = new DialogParameters<AddZwItemDialog>
         {
             { x => x.DocumentItemVMs, model.DocumentItems },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
         };
-        return DialogService.ShowAsync<AddZwItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddZwItemDialog>(null, parameters, options);
     }
 
     private async Task Submit()

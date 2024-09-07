@@ -136,12 +136,12 @@ else
     {
         InvokeAsync(RefreshRw);
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApproveRwItemDialogForm>
+        var parameters = new DialogParameters<ApproveRwItemDialog>
         {
             { x => x.DocumentItemVM, documentItem},
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshRw) } }
         };
-        return DialogService.ShowAsync<ApproveRwItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<ApproveRwItemDialog>(null, parameters, options);
     }
 
     private async Task RefreshRw()

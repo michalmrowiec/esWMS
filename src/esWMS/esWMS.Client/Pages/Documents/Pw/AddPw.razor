@@ -122,12 +122,12 @@
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-        var parameters = new DialogParameters<AddReceivedItemDialogForm>
+        var parameters = new DialogParameters<AddReceivedItemDialog>
         {
             { x => x.DocumentItemVMs, model.DocumentItems },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
         };
-        return DialogService.ShowAsync<AddReceivedItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddReceivedItemDialog>(null, parameters, options);
     }
 
     private async Task Submit()

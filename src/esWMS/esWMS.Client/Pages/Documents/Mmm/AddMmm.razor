@@ -125,13 +125,13 @@
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-        var parameters = new DialogParameters<AddMmmItemDialogForm>
+        var parameters = new DialogParameters<AddMmmItemDialog>
         {
             { x => x.WarehouseUnitVMs, EventCallback.Factory.Create<List<WarehouseUnitVM>>(this, OnGet) },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
             { x => x.WarehouseId, model.IssueWarehouseId }
         };
-        return DialogService.ShowAsync<AddMmmItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddMmmItemDialog>(null, parameters, options);
     }
 
     private void OnGet(List<WarehouseUnitVM> warehouseUnitVMs)

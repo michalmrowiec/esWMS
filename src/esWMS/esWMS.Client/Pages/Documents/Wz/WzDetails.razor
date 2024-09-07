@@ -136,12 +136,12 @@ else
     {
         InvokeAsync(RefreshWz);
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApproveWzItemDialogForm>
+        var parameters = new DialogParameters<ApproveWzItemDialog>
         {
             { x => x.DocumentItemVM, documentItem},
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
         };
-        return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<ApproveWzItemDialog>(null, parameters, options);
     }
 
     private async Task RefreshWz()

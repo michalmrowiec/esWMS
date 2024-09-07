@@ -215,10 +215,10 @@
                 FullWidth = true,
                 MaxWidth = MaxWidth.Medium
             };
-        var parameters = new DialogParameters<AddContractorModalDialogForm>
+        var parameters = new DialogParameters<AddContractorDialog>
         {
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
-        return DialogService.ShowAsync<AddContractorModalDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddContractorDialog>(null, parameters, options);
     }
 }

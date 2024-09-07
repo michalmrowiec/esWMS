@@ -137,13 +137,13 @@ else
     {
         InvokeAsync(RefreshPw);
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApproveReceivedItemDialogForm>
+        var parameters = new DialogParameters<ApproveReceivedItemDialog>
         {
             { x => x.DocumentItemVM, documentItem},
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPw) } },
             { x => x.Uri, @"api/v1/Pw/approve-items" }
         };
-        return DialogService.ShowAsync<ApproveReceivedItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<ApproveReceivedItemDialog>(null, parameters, options);
     }
 
     private async Task RefreshPw()

@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Pages\Documents\Wz\ApproveWzItemDialogForm.razor">
+    <Content Update="Pages\Documents\Wz\ApproveWzItemDialog.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
     <Content Update="Pages\Documents\Wz\WzDetails.razor">
