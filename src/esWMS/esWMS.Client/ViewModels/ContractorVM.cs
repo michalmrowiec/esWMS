@@ -40,7 +40,46 @@ namespace esWMS.Client.ViewModels
     {
         public CreateContractorVMValidator()
         {
+            RuleFor(c => c.ContractorId)
+                .NotEmpty().WithMessage("Wymagane jest podanie Id kontrahenta.")
+                .MaximumLength(3).WithMessage("Id kontrahenta nie może przekraczać 3 znaków.");
 
+            RuleFor(c => c.ContractorName)
+                .NotEmpty().WithMessage("Wymagane jest podanie nazwy kontrahenta.")
+                .MaximumLength(50).WithMessage("Nazwa kontrahenta nie może przekraczać 50 znaków.");
+
+            RuleFor(c => c.VatId)
+                .MaximumLength(30).WithMessage("VatId nie może przekraczać 30 znaków.");
+
+            RuleFor(c => c.IsSupplier)
+                .NotNull().WithMessage("Wymagane jest określenie, czy kontrahent jest dostawcą.");
+
+            RuleFor(c => c.IsRecipient)
+                .NotNull().WithMessage("Wymagane jest określenie, czy kontrahent jest odbiorcą.");
+
+            RuleFor(c => c.Country)
+                .MaximumLength(100).WithMessage("Kraj nie może przekraczać 100 znaków.");
+
+            RuleFor(c => c.City)
+                .MaximumLength(100).WithMessage("Miasto nie może przekraczać 100 znaków.");
+
+            RuleFor(c => c.Region)
+                .MaximumLength(100).WithMessage("Region nie może przekraczać 100 znaków.");
+
+            RuleFor(c => c.PostalCode)
+                .MaximumLength(25).WithMessage("Kod pocztowy nie może przekraczać 25 znaków.");
+
+            RuleFor(c => c.Address)
+                .MaximumLength(250).WithMessage("Adres nie może przekraczać 250 znaków.");
+
+            RuleFor(c => c.EmailAddress)
+                .MaximumLength(255).WithMessage("Adres e-mail nie może przekraczać 255 znaków.");
+
+            RuleFor(c => c.PhoneNumber)
+                .MaximumLength(20).WithMessage("Numer telefonu nie może przekraczać 20 znaków.");
+
+            RuleFor(c => c.IsActive)
+                .NotNull().WithMessage("Wymagane jest określenie, czy kontrahent jest aktywny.");
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
