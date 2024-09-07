@@ -1,22 +1,29 @@
-﻿@using esWMS.Client.Services
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @inject IDataService<LocationVM> locationService
+@inject IDataService<WarehouseUnitVM> warehouseUnitService
 @inject ISnackbar Snackbar
 
-<MudDialog>
+<MudDialog Class="width">
     <TitleContent>
         Przypisanie lokalizacji
     </TitleContent>
     <DialogContent>
         <MudTextField T="string"
-                      @bind-Value="@WarehouseUnitItem.WarehouseUnitId"
+                      Value="@WarehouseUnit.WarehouseUnitId"
                       Label="Id jednostki magazynowej"
+                      Disabled />
+
+        <MudTextField T="string"
+                      Value="@(string.IsNullOrEmpty(WarehouseUnit.LocationId) ? "Brak" : WarehouseUnit.LocationId)"
+                      Label="Aktualna lokalizacja"
                       Disabled />
 
         <MudAutocomplete @bind-Value="@searchString"
                          SearchFunc="Search"
                          Variant="Variant.Text"
-                         Label="Lokalizacja"
+                         Label="Nowa lokalizacja"
                          Dense="false"
                          Clearable="true" />
     </DialogContent>
@@ -44,7 +51,10 @@
     private MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public WarehouseUnitVM WarehouseUnitItem { get; set; }
+    public WarehouseUnitVM WarehouseUnit { get; set; }
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnSubmit { get; set; } = new();
 
     private List<string> locations = new();
 
@@ -61,10 +71,10 @@
     {
         string filters = "";
 
-        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(WarehouseUnitItem.WarehouseId))
-            filters = $"LocationId@={WarehouseUnitItem.WarehouseId!.ToUpper()}";
+        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(WarehouseUnit.WarehouseId))
+            filters = $"LocationId@={WarehouseUnit.WarehouseId!.ToUpper()}";
         else
-            filters = $"LocationId@={WarehouseUnitItem.WarehouseId!.ToUpper()},{value.ToUpper()}";
+            filters = $"LocationId@={WarehouseUnit.WarehouseId!.ToUpper()},{value.ToUpper()}";
 
         var locationResponse = await locationService.GetPagedResult(@"api/v1/Location/get-filtered", new SieveModelVM(1, 10, filters));
         locations = locationResponse.Items.Select(x => x.LocationId).ToList();
@@ -77,30 +87,27 @@
 
     private async Task Submit()
     {
-        // var requestBody = new
-        // {
-        //     DocumentId = DocumentItemVM.DocumentId,
-        //     DocumentItemsWithAssignment = DocumentItemVM.DocumentWarehouseUnitItems
-        // };
+        var requestBody = new
+        {
+            WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
+            NewLocationId = searchString
+    };
 
-        // var response = await documentService.ApproveDocument(@"api/v1/Wz/approve-items", requestBody);
-        // if (response.StatusCode == System.Net.HttpStatusCode.OK)
-        // {
-        //     var json = await response.Content.ReadAsStringAsync();
-        //     var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
+        var response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-location", requestBody);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Snackbar.Configuration.PositionClass = "Bottom-End";
+            Snackbar.Add(new MarkupString("Pomyślnie zaktualizowano"), Severity.Success);
 
-        //     Snackbar.Configuration.PositionClass = "Bottom-End";
-        //     Snackbar.Add(new MarkupString("Pomyślnie zatwierdzono"), Severity.Success);
+            FuncsOnSubmit?.ForEach(async x => await x.InvokeAsync());
 
-        //     FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
-
-        //     MudDialog.Close(DialogResult.Ok(true));
-        // }
-        // else
-        // {
-        //     var json = await response.Content.ReadAsStringAsync();
-        //     responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
-        // }
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        }
     }
 
     private void Cancel() => MudDialog.Cancel();

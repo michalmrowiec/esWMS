@@ -11,6 +11,7 @@ namespace esWMS.Client.Services
         Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel, Dictionary<string, string>? queryParams = null);
         Task<HttpResponseMessage> Create(string uri, T item);
         Task<HttpResponseMessage> CreateObject(string uri, object item);
+        Task<HttpResponseMessage> Patch(string uri, object item);
     }
 
     public interface IDocumentDataService
@@ -68,6 +69,18 @@ namespace esWMS.Client.Services
             var responseObj = JsonConvert.DeserializeObject<PagedResultVM<T>>(json);
 
             return responseObj;
+        }
+
+        public async Task<HttpResponseMessage> Patch(string uri, object item)
+        {
+            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
+
+            using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
+            request.Content = postJson;
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
         }
     }
 

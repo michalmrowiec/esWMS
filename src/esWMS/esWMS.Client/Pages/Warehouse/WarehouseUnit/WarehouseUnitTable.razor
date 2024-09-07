@@ -108,7 +108,7 @@
         <MudTh>
             <MudIconButton Size="@Size.Small"
                            Icon="@Icons.Material.Outlined.EditLocation"
-                           OnClick="StateHasChanged" />
+                           OnClick="@(async () => await OpenEditLocationDialogAsync(context))" />
         </MudTh>
     </RowTemplate>
     <ChildRowContent>
@@ -291,12 +291,23 @@
 
     private Task OpenDialogAsync()
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
         var parameters = new DialogParameters<AddWarehouseUnitDialogForm>
         {
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddWarehouseUnitDialogForm>(null, parameters, options);
+    }
+
+    private Task OpenEditLocationDialogAsync(WarehouseUnitVM warehouseUnit)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+        var parameters = new DialogParameters<SetLocationModalDialogForm>
+        {
+            { x => x.WarehouseUnit, warehouseUnit },
+            { x => x.FuncsOnSubmit, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+        };
+        return DialogService.ShowAsync<SetLocationModalDialogForm>(null, parameters, options);
     }
 
     public enum SelectionType

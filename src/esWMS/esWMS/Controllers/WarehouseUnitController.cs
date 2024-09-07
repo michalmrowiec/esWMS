@@ -1,15 +1,13 @@
 ﻿using esMWS.Domain.Models;
-using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwItems;
-using esWMS.Application.Functions.Documents.PwFunctions;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
+using esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit;
 
 namespace esWMS.Controllers
 {
