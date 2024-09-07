@@ -72,9 +72,9 @@
         string filters = "";
 
         if (string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(WarehouseUnit.WarehouseId))
-            filters = $"LocationId@={WarehouseUnit.WarehouseId!.ToUpper()}";
+            filters = $"IsFull==false,LocationId@={WarehouseUnit.WarehouseId!.ToUpper()}";
         else
-            filters = $"LocationId@={WarehouseUnit.WarehouseId!.ToUpper()},{value.ToUpper()}";
+            filters = $"IsFull==false,LocationId@={WarehouseUnit.WarehouseId!.ToUpper()},{value.ToUpper()}";
 
         var locationResponse = await locationService.GetPagedResult(@"api/v1/Location/get-filtered", new SieveModelVM(1, 10, filters));
         locations = locationResponse.Items.Select(x => x.LocationId).ToList();
