@@ -1,0 +1,175 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<CreateProductVM> productService
+@inject IDataService<CategoryVM> categoryService
+@inject IDataService<ContractorVM> contractorService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        Nowy produkt
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@model"
+                 @ref="@form"
+                 Validation="@(validator.ValidateValue)"
+                 ValidationDelay="0">
+            <MudCardContent>
+                <MudTextField @bind-Value="model.ProductCode"
+                              For="@(() => model.ProductCode)"
+                              Immediate="true"
+                              Label="Kod produktu"
+                              MaxLength="100" />
+
+                <MudTextField @bind-Value="model.EanCode"
+                              For="@(() => model.EanCode)"
+                              Immediate="true"
+                              Label="Kod EAN"
+                              MaxLength="100" />
+
+                <MudTextField @bind-Value="model.ProductName"
+                              For="@(() => model.ProductName)"
+                              Immediate="true"
+                              Label="Nazwa produktu"
+                              MaxLength="250" />
+
+                <MudTextField @bind-Value="model.ProductDescription"
+                              For="@(() => model.ProductDescription)"
+                              Immediate="true"
+                              Label="Opis produktu" />
+
+                <MudSelect T="string"
+                           @bind-Value="model.CategoryId"
+                           Label="Kategoria"
+                           AnchorOrigin="Origin.BottomCenter"
+                           For="@(() => model.CategoryId)"
+                           Immediate="true">
+                    @foreach (var category in categories)
+                    {
+                        <MudSelectItem Value="@category.CategoryId">
+                            @category.CategoryName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudSelect T="string"
+                           @bind-Value="model.Unit"
+                           For="@(() => model.Unit)"
+                           Immediate="true"
+                           Label="Jednostka">
+                    <MudSelectItem Value="@("SZT")">SZT</MudSelectItem>
+                    <MudSelectItem Value="@("4-PAK")">4-PAK</MudSelectItem>
+                    <MudSelectItem Value="@("KG")">KG</MudSelectItem>
+                </MudSelect>
+
+                <MudCheckBox @bind-Value="model.IsWeight" Label="Artykuł wagowy" />
+
+                <MudTextField @bind-Value="model.WeightPerUnit"
+                              For="@(() => model.WeightPerUnit)"
+                              Immediate="true"
+                              Label="Waga na jednostkę" />
+
+                <MudTextField @bind-Value="model.StorageTemperature"
+                              For="@(() => model.StorageTemperature)"
+                              Immediate="true"
+                              Label="Temperatura przechowywania" />
+
+                <MudCheckBox @bind-Value="model.IsMedia" Label="Artykuł jest nośnikiem" />
+
+                @if (model.IsMedia)
+                {
+                    <MudTextField @bind-Value="model.MediaTypeAlias"
+                                  For="@(() => model.MediaTypeAlias)"
+                                  Immediate="true"
+                                  Label="Alias nośnika"
+                                  MaxLength="10" />
+                }
+
+                <MudTextField @bind-Value="model.Price"
+                              For="@(() => model.Price)"
+                              Immediate="true"
+                              Label="Cena" />
+
+                <MudSelect T="string"
+                           @bind-Value="model.SupplierContractorId"
+                           For="@(() => model.SupplierContractorId)"
+                           Immediate="true"
+                           Label="Identyfikator dostawcy">
+                    @foreach (var contractor in contractors)
+                    {
+                        <MudSelectItem Value="@contractor.ContractorId">
+                            [@contractor.ContractorId] @contractor.ContractorName
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudCheckBox @bind-Value="model.IsActive" Label="Aktywny" />
+            </MudCardContent>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm form;
+    private CreateProductVM model = new();
+    private CreateProductVMValidator validator = new();
+    private List<string> responseErrors = new();
+    private List<CategoryVM> categories = new();
+    private List<ContractorVM> contractors = new();
+    [Parameter]
+    public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        responseErrors = new();
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var response = await productService.Create(@"api/v1/Product", model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                Snackbar.Configuration.PositionClass = "Bottom-End";
+                Snackbar.Add(new MarkupString($"Utworzono <strong>{model.ProductCode}</strong>"), Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var res = await categoryService.GetPagedResult(@"api/v1/Category/get-filtered", new SieveModelVM(1, 500, "", ""));
+        categories = res.Items.ToList();
+
+        var res2 = await contractorService.GetPagedResult(@"api/v1/Contractor/get-filtered", new SieveModelVM(1, 500, "IsSupplier==true", ""));
+        contractors = res2.Items.ToList();
+    }
+}

@@ -29,7 +29,8 @@ namespace esWMS.Controllers
         }
 
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<PagedResult<CategoryDto>>> GetSortedAndFilteredCategories([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<CategoryDto>>> GetSortedAndFilteredCategories
+            ([FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredCategoriesQuery(sieveModel));
 
