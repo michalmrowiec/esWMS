@@ -1,0 +1,209 @@
+﻿@page "/contractor"
+@using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@rendermode InteractiveAuto
+@inject IDataService<ContractorVM> contractorService
+
+<MudTable T="ContractorVM"
+          ServerData="ServerReload"
+          Dense="true"
+          Hover="true"
+          @ref="table"
+          RowClass="cursor-pointer"
+          OnRowClick="RowClickEvent">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Artykuły</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ContractorId" T="ContractorVM">
+                Id
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ContractorId" OnChangedAction="OnSearch" />
+
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ContractorName" T="ContractorVM">
+                Nazwa
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ContractorName" OnChangedAction="OnSearch" />
+
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="VatId" T="ContractorVM">
+                NIP
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="VatId" OnChangedAction="OnSearch" />
+
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="EmailAddress" T="ContractorVM">
+                Email
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="EmailAddress" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Country" T="WarehouseVM">
+                Kraj
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="Country" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="City" T="WarehouseVM">
+                Miasto
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="City" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Address" T="WarehouseVM">
+                Adres
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="Address" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Region" T="WarehouseVM">
+                Region
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="Region" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="PostalCode" T="WarehouseVM">
+                Kod Pocztowy
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="PostalCode" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsActive" T="WarehouseUnitVM">
+                Aktywny
+            </MudTableSortLabel>
+            <BoolColumnTableFilter SearchOptions="searchOptions"
+                                   Column="IsActive"
+                                   OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsSupplier" T="WarehouseUnitVM">
+                Dostawca
+            </MudTableSortLabel>
+            <BoolColumnTableFilter SearchOptions="searchOptions"
+                                   Column="IsSupplier"
+                                   OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsRecipient" T="WarehouseUnitVM">
+                Odbiorca
+            </MudTableSortLabel>
+            <BoolColumnTableFilter SearchOptions="searchOptions"
+                                   Column="IsRecipient"
+                                   OnChangedAction="OnSearch" />
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.ContractorId</MudTd>
+        <MudTd DataLabel="Nazwa">@context.ContractorName</MudTd>
+        <MudTd DataLabel="NIP">@context.VatId</MudTd>
+        <MudTd DataLabel="Email">@context.EmailAddress</MudTd>
+        <MudTd DataLabel="Kraj">@context.Country</MudTd>
+        <MudTd DataLabel="Miasto">@context.City</MudTd>
+        <MudTd DataLabel="Adres">@context.Address</MudTd>
+        <MudTd DataLabel="Region">@context.Region</MudTd>
+        <MudTd DataLabel="Kod Pocztowy">@context.PostalCode</MudTd>
+        <MudTd DataLabel="Aktywny">
+            <MudCheckBox @bind-Value="@context.IsActive"
+                         Size="Size.Small"
+                         Disabled />
+        </MudTd>
+        <MudTd DataLabel="Dostawca">
+            <MudCheckBox @bind-Value="@context.IsSupplier"
+                         Size="Size.Small"
+                         Disabled />
+        </MudTd>
+        <MudTd DataLabel="Odbiorca">
+            <MudCheckBox @bind-Value="@context.IsRecipient"
+                         Size="Size.Small"
+                         Disabled />
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <TableNoRecordsContent />
+    </NoRecordsContent>
+    <LoadingContent>
+        <TableLoadingContent />
+    </LoadingContent>
+    <PagerContent>
+        <TablePager PageSize="@PageSize" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public EventCallback<ContractorVM> SelectedProduct { get; set; }
+    [Parameter]
+    public int[]? PageSize { get; set; }
+    [Parameter]
+    public bool? ShowMediasOnly { get; set; }
+
+    private IEnumerable<ContractorVM> Products = [];
+    private IEnumerable<ContractorVM> pagedData;
+    private MudTable<ContractorVM> table;
+
+    private int totalItems;
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "ContractorId", new("ContractorId") },
+        { "ContractorName", new("ContractorName") },
+        { "VatId", new("VatId") },
+        { "EmailAddress", new("EmailAddress") },
+        { "Country", new("Country") },
+        { "City", new("City") },
+        { "Address", new("Address") },
+        { "Region", new("Region") },
+        { "PostalCode", new("PostalCode") },
+        { "IsActive", new("IsActive", "==", string.Empty) },
+        { "IsSupplier", new("IsSupplier", "==", string.Empty) },
+        { "IsRecipient", new("IsRecipient", "==", string.Empty) }
+    };
+
+    protected override void OnInitialized()
+    {
+        if (ShowMediasOnly == true)
+        {
+            searchOptions["IsMedia"].Operator = "==";
+            searchOptions["IsMedia"].Value = "true";
+        }
+    }
+
+    private async Task<TableData<ContractorVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await contractorService.GetPagedResult(@"api/v1/Contractor/get-filtered", sm);
+
+        return new TableData<ContractorVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch()
+    {
+        table.ReloadServerData();
+    }
+
+    private async Task RowClickEvent(TableRowClickEventArgs<ContractorVM> tableRowClickEventArgs)
+    {
+        await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
+    }
+}

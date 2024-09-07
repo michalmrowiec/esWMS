@@ -1,5 +1,6 @@
 ﻿@using esWMS.Client.Pages
 @using esWMS.Client.Pages.Category
+@using esWMS.Client.Pages.Contractor
 @using esWMS.Client.Pages.Documents.Mmm
 @using esWMS.Client.Pages.Documents.Mmp
 @using esWMS.Client.Pages.Documents.Pw
@@ -19,16 +20,21 @@
     <MudButton OnClick="@(() => _allGroupsExpanded = !_allGroupsExpanded)">
         @(_allGroupsExpanded ? "Zwiń" : "Rozwiń")
     </MudButton>
-    <MudNavGroup Title="Artykuły" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Category">
+    <MudNavGroup Title="Główne" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Category">
         <MudNavLink Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.Filled.ShoppingCart"
-                    OnClick="@(async () => await onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.ShoppingCart)))">
-            Lista Artykułów
+                    Icon="@Icons.Material.Filled.AutoStories"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid(), Icons.Material.Filled.AutoStories)))">
+            Artykuły
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.Sell"
                     OnClick="@(async () => await onePageState.AddTab(new TabView("Kategorie", new CategoryTable(), Guid.NewGuid(), Icons.Material.Filled.Sell)))">
-            Lista Kategorii
+            Kategorie
+        </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.Group"
+                    OnClick="@(async () => await onePageState.AddTab(new TabView("Kontrahenci", new ContractorTable(), Guid.NewGuid(), Icons.Material.Filled.Group)))">
+            Kontrahenci
         </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Magazyny" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
