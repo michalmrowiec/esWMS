@@ -52,8 +52,6 @@ namespace esWMS.Application.Mappings
             CreateMap<Category, CategoryDto>()
                 .ReverseMap();
 
-            CreateMap<Contractor, ContractorDto>();
-
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<Warehouse, FlatWarehouseDto>();
             CreateMap<Warehouse, WarehouseDto>();
@@ -96,7 +94,8 @@ namespace esWMS.Application.Mappings
             CreateMap<Location, LocationDto>()
                 .ReverseMap();
 
-            CreateMap<CreateContractorCommand, Contractor>();
+            CreateMap<CreateContractorCommand, Contractor>()
+                .ForMember(dest => dest.ContractorId, opt => opt.MapFrom(src => src.ContractorId.ToUpper()));
             CreateMap<Contractor, ContractorDto>();
 
             CreateMap<CreateDocumentItemCommand, DocumentItem>();
