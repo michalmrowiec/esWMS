@@ -17,6 +17,9 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUni
             RuleFor(x => x.LocationId)
                 .CustomAsync(async (value, context, cancellationToken) =>
                 {
+                    if (string.IsNullOrWhiteSpace(value))
+                        return;
+
                     var locationResponse = await mediator.Send(
                         new GetLocationByIdQuery(value ?? ""));
 
