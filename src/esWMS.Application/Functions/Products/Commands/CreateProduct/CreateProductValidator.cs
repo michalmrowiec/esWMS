@@ -30,8 +30,8 @@ namespace esWMS.Application.Functions.Products.Commands.CreateProduct
             RuleFor(x => x.IsMedia)
                 .NotNull();
 
-            RuleFor(x => x.MediaTypeAlias)
-                .MaximumLength(10);
+            //RuleFor(x => x.MediaTypeAlias)
+            //    .MaximumLength(10);
 
             RuleFor(x => x.Price)
                 .NotNull();

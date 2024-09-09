@@ -49,6 +49,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
             builder.Property(di => di.Currency)
                 .HasMaxLength(5);
 
+            builder.Property(di => di.Unit)
+                .HasMaxLength(10);
+
             builder.Property(di => di.IsApproved)
                 .IsRequired();
 

@@ -30,6 +30,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .IsRequired()
                 .HasDefaultValue(0);
 
+            builder.Property(di => di.Unit)
+                .HasMaxLength(10);
+
             builder.Property(wui => wui.BatchLot)
                 .HasMaxLength(50);
 

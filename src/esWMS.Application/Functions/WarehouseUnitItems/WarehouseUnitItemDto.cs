@@ -19,6 +19,9 @@ namespace esWMS.Application.Functions.WarehouseUnitItems
         public string? BatchLot { get; set; }
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
+        public string? Currency { get; set; }
+        public string? Unit { get; set; }
+        public int? VatRate { get; set; }
 
         public FlatWarehouseUnitDto? WarehouseUnit { get; set; }
         public ProductDto? Product { get; set; }

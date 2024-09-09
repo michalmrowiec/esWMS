@@ -15,6 +15,9 @@ namespace esWMS.Client.ViewModels
         public string? BatchLot { get; set; }
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
+        public string? Currency { get; set; }
+        public string? Unit { get; set; }
+        public int? VatRate { get; set; }
 
         public WarehouseUnitVM? WarehouseUnit { get; set; }
         public ProductVM? Product { get; set; }

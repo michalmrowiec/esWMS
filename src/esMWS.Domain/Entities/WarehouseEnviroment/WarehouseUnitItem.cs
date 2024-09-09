@@ -16,6 +16,8 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
+        public string? Unit { get; set; }
+        public int? VatRate { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }

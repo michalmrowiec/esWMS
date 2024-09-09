@@ -48,23 +48,22 @@
                 }
                 </MudSelect> *@
 
-                <MudNumericField T="int?"
-                                 @bind-Value="model.TotalWeight"
+                <MudNumericField @bind-Value="model.TotalWeight"
                                  For="@(() => model.TotalWeight)"
                                  Label="Waga całkowita (kg)"
                                  Immediate="true" />
-                <MudNumericField T="int?"
-                                 @bind-Value="model.TotalLength"
+
+                <MudNumericField @bind-Value="model.TotalLength"
                                  For="@(() => model.TotalLength)"
                                  Label="Długość całkowita (m)"
                                  Immediate="true" />
-                <MudNumericField T="int?"
-                                 @bind-Value="model.TotalWidth"
+
+                <MudNumericField @bind-Value="model.TotalWidth"
                                  For="@(() => model.TotalWidth)"
                                  Label="Szerokość całkowita (m)"
                                  Immediate="true" />
-                <MudNumericField T="int?"
-                                 @bind-Value="model.TotalHeight"
+
+                <MudNumericField @bind-Value="model.TotalHeight"
                                  For="@(() => model.TotalHeight)"
                                  Label="Wysokość całkowita (m)"
                                  Immediate="true" />

@@ -10,6 +10,8 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.
         public int Quantity { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
+        public int? VatRate { get; set; }
+        public string? Unit { get; set; }
         public bool IsApproved { get; set; }
         public string? CreatedBy { get; set; }
 

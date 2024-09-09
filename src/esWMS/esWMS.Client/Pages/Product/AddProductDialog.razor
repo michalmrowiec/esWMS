@@ -34,6 +34,12 @@
                               Label="Nazwa produktu"
                               MaxLength="250" />
 
+                <MudTextField @bind-Value="model.ShortProductName"
+                              For="@(() => model.ShortProductName)"
+                              Immediate="true"
+                              Label="Skrócona nazwa"
+                              MaxLength="35" />
+
                 <MudTextField @bind-Value="model.ProductDescription"
                               For="@(() => model.ProductDescription)"
                               Immediate="true"
@@ -65,26 +71,37 @@
 
                 <MudCheckBox @bind-Value="model.IsWeight" Label="Artykuł wagowy" />
 
-                <MudTextField @bind-Value="model.WeightPerUnit"
-                              For="@(() => model.WeightPerUnit)"
+                <MudTextField @bind-Value="model.TotalWeight"
+                              For="@(() => model.TotalWeight)"
                               Immediate="true"
-                              Label="Waga na jednostkę" />
+                              Label="Waga na jednostkę (kg)" />
 
-                <MudTextField @bind-Value="model.StorageTemperature"
-                              For="@(() => model.StorageTemperature)"
+                <MudTextField @bind-Value="model.TotalHeight"
+                              For="@(() => model.TotalHeight)"
                               Immediate="true"
-                              Label="Temperatura przechowywania" />
+                              Label="Wysokość (m)" />
+
+                <MudTextField @bind-Value="model.TotalWidth"
+                              For="@(() => model.TotalWidth)"
+                              Immediate="true"
+                              Label="Szerokość (m)" />
+
+                <MudTextField @bind-Value="model.TotalLength"
+                              For="@(() => model.TotalLength)"
+                              Immediate="true"
+                              Label="Długość (m)" />
+
+                <MudTextField @bind-Value="model.MinStorageTemperature"
+                              For="@(() => model.MinStorageTemperature)"
+                              Immediate="true"
+                              Label="Minimalna temperatura przechowywania (°C)" />
+
+                <MudTextField @bind-Value="model.MaxStorageTemperature"
+                              For="@(() => model.MaxStorageTemperature)"
+                              Immediate="true"
+                              Label="Maksymalna temperatura przechowywania (°C)" />
 
                 <MudCheckBox @bind-Value="model.IsMedia" Label="Artykuł jest nośnikiem" />
-
-                @if (model.IsMedia)
-                {
-                    <MudTextField @bind-Value="model.MediaTypeAlias"
-                                  For="@(() => model.MediaTypeAlias)"
-                                  Immediate="true"
-                                  Label="Alias nośnika"
-                                  MaxLength="10" />
-                }
 
                 <MudTextField @bind-Value="model.Price"
                               For="@(() => model.Price)"
