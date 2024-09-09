@@ -1,5 +1,4 @@
-﻿using esWMS.Application.Functions.Locations;
-using esWMS.Application.Functions.Locations.Queries.GetLocationById;
+﻿using esWMS.Application.Functions.Locations.Queries.GetLocationById;
 using esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehouseUnitItem;
 using esWMS.Application.Responses;
 using FluentValidation;

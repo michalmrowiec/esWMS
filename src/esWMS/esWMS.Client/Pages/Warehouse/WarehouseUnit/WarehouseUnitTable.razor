@@ -139,6 +139,7 @@
                                     <col />
                                     <col />
                                     <col />
+                                    <col />
                                 </ColGroup>
                                 <HeaderContent>
                                     <MudTh>Id pozycji</MudTh>
@@ -148,6 +149,7 @@
                                     <MudTh>Ilość</MudTh>
                                     <MudTh>Zablokowane</MudTh>
                                     <MudTh>Dostępne</MudTh>
+                                    <MudTh>Nośnik</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
                                     <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
@@ -157,6 +159,11 @@
                                     <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
                                     <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
                                     <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                                    <MudTd DataLabel="Nośnik">
+                                        <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
+                                                     Size="Size.Small"
+                                                     Disabled />
+                                    </MudTd>
                                 </RowTemplate>
                             </MudTable>
                         </MudCardContent>

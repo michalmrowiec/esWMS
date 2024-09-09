@@ -39,7 +39,8 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
             string? batchLot,
             string? serialNumber,
             decimal? price,
-            string? createdBy)
+            string? createdBy,
+            bool isMediaOfWarehouseUnit = false)
         {
             WarehouseUnitItemId = Guid.NewGuid().ToString();
             WarehouseUnitId = warehouseUnitId;
@@ -54,6 +55,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
             CreatedBy = createdBy;
             ModifiedAt = null;
             ModifiedBy = null;
+            IsMediaOfWarehouseUnit = isMediaOfWarehouseUnit;
         }
     }
 }

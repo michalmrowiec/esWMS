@@ -7,6 +7,7 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject IDataService<WarehouseUnitVM> warehouseUnitDataService
+@inject IDataService<ProductVM> productDataService
 
 <MudDialog>
     <TitleContent>
@@ -23,7 +24,13 @@
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />
 
+        @if (canBeMedia)
+        {
+            <MudCheckBox @bind-Value="setMediaOfWarehouseUnit" Label="Ustaw jako nośnik jednoski magazynowej" />
+        }
+
         <MudButton Color="Color.Primary" OnClick="SubmitWarehouseUnit">Dodaj</MudButton>
+
 
 
         <MudDataGrid T="DocumentWarehouseUnitItemVM"
@@ -115,6 +122,8 @@
     private List<WarehouseUnitVM> warehouseUnitVMs = new();
 
     private WarehouseUnitVM? selected;
+    private bool canBeMedia = false;
+    private bool setMediaOfWarehouseUnit = false;
     private int quantity = 0;
 
     protected override void OnParametersSet()
@@ -132,8 +141,9 @@
     {
         if (selected != null && quantity > 0)
         {
-            documentItemWithAssignments.Add(new(DocumentItemVM.DocumentItemId, selected?.WarehouseUnitId, quantity));
+            documentItemWithAssignments.Add(new(DocumentItemVM.DocumentItemId, selected?.WarehouseUnitId, quantity, isMedia: setMediaOfWarehouseUnit));
             selected = null;
+            setMediaOfWarehouseUnit = false;
             quantity = DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity));
             StateHasChanged();
         }
@@ -186,6 +196,12 @@
         var response = await warehouseUnitDataService.GetPagedResult(@"api/v1/WarehouseUnit/get-filtered", sm);
 
         warehouseUnitVMs = response.Items.ToList();
+
+        var productResponse = await productDataService.GetPagedResult(@"api/v1/Product/get-filtered", new SieveModelVM { Page = 1, PageSize = 1, Filters = $"ProductId=={DocumentItemVM.ProductId},IsMedia==true" });
+        if (productResponse.Items.Count == 1)
+        {
+            canBeMedia = true;
+        }
 
         StateHasChanged();
     }
