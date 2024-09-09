@@ -92,13 +92,13 @@
         <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <TableNoRecordsContent />
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <TablePager PageSize="@PageSize" />
     </PagerContent>
 </MudTable>
 
@@ -107,6 +107,8 @@
     public EventCallback<WarehouseStockVM> SelectedStock { get; set; }
     [Parameter]
     public string? WarehouseId { get; set; }
+    [Parameter]
+    public int[]? PageSize { get; set; } = new int[] { 5, 10, 25 };
 
     private IEnumerable<WarehouseStockVM> Products = [];
 
@@ -137,7 +139,7 @@
         var warehouseResponse = await warehouseService
             .GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
         warehouses.AddRange(warehouseResponse.Items.ToList());
-        
+
         StateHasChanged();
     }
 

@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Pages.Documents
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
@@ -132,13 +133,13 @@
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-        var parameters = new DialogParameters<AddWzItemDialog>
+        var parameters = new DialogParameters<AddIssuedItemDialog>
         {
             { x => x.DocumentItemVMs, model.DocumentItems },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
             { x => x.WarehouseId, model.IssueWarehouseId }
         };
-        return DialogService.ShowAsync<AddWzItemDialog>(null, parameters, options);
+        return DialogService.ShowAsync<AddIssuedItemDialog>(null, parameters, options);
     }
 
     private async Task Submit()
