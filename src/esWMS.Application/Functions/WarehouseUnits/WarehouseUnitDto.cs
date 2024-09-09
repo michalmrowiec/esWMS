@@ -13,7 +13,6 @@ namespace esWMS.Application.Functions.WarehouseUnits
     {
         public string WarehouseUnitId { get; set; } = null!;
         public string WarehouseId { get; set; } = null!;
-        public string? MediaId { get; set; }
         public string? LocationId { get; set; }
         public decimal? TotalWeight { get; set; }
         public decimal? TotalLength { get; set; }

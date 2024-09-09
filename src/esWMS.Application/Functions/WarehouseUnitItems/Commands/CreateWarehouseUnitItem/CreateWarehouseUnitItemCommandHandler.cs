@@ -11,19 +11,21 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehous
     {
         private readonly IWarehouseUnitItemRepository _repository;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
 
         public CreateWarehouseUnitItemCommandHandler
-            (IWarehouseUnitItemRepository repository, IMapper mapper)
+            (IWarehouseUnitItemRepository repository, IMapper mapper, IMediator mediator)
         {
             _repository = repository;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
         public async Task<BaseResponse<WarehouseUnitItemDto>> Handle
             (CreateWarehouseUnitItemCommand request, CancellationToken cancellationToken)
         {
             var validationResult =
-                await new CreateWarehouseUnitItemValidator(true).ValidateAsync(request, cancellationToken);
+                await new CreateWarehouseUnitItemValidator(true, _mediator).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {

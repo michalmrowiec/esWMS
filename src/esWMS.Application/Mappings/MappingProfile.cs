@@ -66,7 +66,6 @@ namespace esWMS.Application.Mappings
             CreateMap<WarehouseUnitDto, WarehouseUnit>()
                 .ForMember(dest => dest.Warehouse, opt => opt.Ignore())
                 .ForMember(dest => dest.Location, opt => opt.Ignore())
-                .ForMember(dest => dest.Media, opt => opt.Ignore())
                 .ForMember(dest => dest.StackOn, opt => opt.Ignore())
                 .ForMember(dest => dest.WarehouseUnitItems, opt => opt.MapFrom(src => src.WarehouseUnitItems));
 
@@ -81,7 +80,6 @@ namespace esWMS.Application.Mappings
             CreateMap<FlatWarehouseUnitDto, WarehouseUnit>()
                 .ForMember(dest => dest.Warehouse, opt => opt.Ignore())
                 .ForMember(dest => dest.Location, opt => opt.Ignore())
-                .ForMember(dest => dest.Media, opt => opt.Ignore())
                 .ForMember(dest => dest.StackOn, opt => opt.Ignore())
                 .ForMember(dest => dest.WarehouseUnitItems, opt => opt.Ignore());
 

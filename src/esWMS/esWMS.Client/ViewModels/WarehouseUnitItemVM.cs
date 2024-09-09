@@ -8,6 +8,7 @@ namespace esWMS.Client.ViewModels
         public string WarehouseUnitItemId { get; set; } = null!;
         public string WarehouseUnitId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
+        public bool IsMediaOfWarehouseUnit { get; set; }
         public int Quantity { get; set; }
         public int BlockedQuantity { get; set; }
         public DateTime? BestBefore { get; set; }

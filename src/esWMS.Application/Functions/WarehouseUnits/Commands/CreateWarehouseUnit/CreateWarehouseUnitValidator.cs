@@ -12,7 +12,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUni
         public CreateWarehouseUnitValidator(IMediator mediator)
         {
             RuleForEach(x => x.WarehouseUnitItems)
-                .SetValidator(new CreateWarehouseUnitItemValidator(false));
+                .SetValidator(new CreateWarehouseUnitItemValidator(false, mediator));
 
             RuleFor(x => x.LocationId)
                 .CustomAsync(async (value, context, cancellationToken) =>

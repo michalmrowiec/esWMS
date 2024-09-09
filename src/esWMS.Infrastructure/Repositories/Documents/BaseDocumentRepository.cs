@@ -53,6 +53,8 @@ namespace esWMS.Infrastructure.Repositories.Documents
                         .ThenInclude(x => x.DocumentWarehouseUnitItems)
                             .ThenInclude(x => x.WarehouseUnitItem)
                                 .ThenInclude(x => x.WarehouseUnit)
+                    .Include(x => x.DocumentItems)
+                        .ThenInclude(x => x.Product)
                     .FirstOrDefaultAsync(x => x.DocumentId.Equals(id));
 
                 return result ?? throw new KeyNotFoundException("The object with the given id was not found.");

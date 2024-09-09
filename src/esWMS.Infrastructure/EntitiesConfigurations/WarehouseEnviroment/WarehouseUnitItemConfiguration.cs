@@ -22,6 +22,10 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.Property(wui => wui.IsMediaOfWarehouseUnit)
+                .IsRequired()
+                .HasDefaultValue(false);
+
             builder.Property(wui => wui.Quantity)
                 .IsRequired()
                 .HasDefaultValue(0);

@@ -6,7 +6,6 @@ namespace esWMS.Client.ViewModels
     {
         public string WarehouseUnitId { get; set; } = null!;
         public string WarehouseId { get; set; } = null!;
-        public string? MediaId { get; set; }
         public string? LocationId { get; set; }
         public decimal? TotalWeight { get; set; }
         public decimal? TotalLength { get; set; }
@@ -22,7 +21,6 @@ namespace esWMS.Client.ViewModels
     public class CreateWarehouseUnitVM
     {
         public string? WarehouseId { get; set; }
-        public string? MediaId { get; set; }
         public string? LocationId { get; set; }
         public decimal? TotalWeight { get; set; }
         public decimal? TotalLength { get; set; }

@@ -51,15 +51,15 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                         }
                     }
 
-                    if(value.DocumentItemsWithAssignment == null || value.DocumentItemsWithAssignment.Count == 0)
+                    if (value.DocumentItemsWithAssignment == null || value.DocumentItemsWithAssignment.Count == 0)
                     {
                         context.AddFailure("DocumentItemsWithAssignment", "No document items provided.");
                     }
 
-                    if(value.DocumentItemsWithAssignment!.Any(x => x.WarehouseUnitId == null))
+                    if (value.DocumentItemsWithAssignment!.Any(x => x.WarehouseUnitId == null))
                     {
                         context.AddFailure("WarehouseUnitIds", "No warehouse units provided.");
-                    }   
+                    }
 
                     string[] warehouseUnitIds = value.DocumentItemsWithAssignment!
                                                     .Select(x => x.WarehouseUnitId!)
@@ -104,6 +104,78 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                                     "WarehouseUnitIds",
                                     $"The following warehouse units are blocked: {string.Join("; ", blockedWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
                             }
+
+                            if (value.DocumentItemsWithAssignment?.Count(x => x.IsMedia ?? false) > 1)
+                            {
+                                context.AddFailure(
+                                "DocumentItemsWithAssignment",
+                                    $"Warehouse Unit can have only one Warehouse Unit Item with set IsMediaOfWarehouseUnit on true.");
+                            }
+
+                            if (value.DocumentItemsWithAssignment?.Count(x => x.IsMedia ?? false) == 1)
+                            {
+                                var mediaItem = value.DocumentItemsWithAssignment.First(x => x.IsMedia ?? false);
+                                
+                                var warehouseUnit = warehouseUnits.FirstOrDefault(x => x.WarehouseUnitId == mediaItem.WarehouseUnitId);
+
+                                var existMedia = warehouseUnit.WarehouseUnitItems.Where(x => x.IsMediaOfWarehouseUnit);
+
+                                if (existMedia.Any())
+                                {
+                                    context.AddFailure(
+                                        "IsMediaOfWarehouseUnit",
+                                        $"Warehouse Unit by Id {warehouseUnit.WarehouseUnitId} already have Warehouse Unit Item with IsMediaOfWarehouseUnit set on true. ");
+                                }
+                            }
+
+
+
+                            // check media type
+                            //foreach (var mediaItem in value.DocumentItemsWithAssignment?.Where(x => x.IsMedia ?? false) ?? [])
+                            //{
+                            //    var docItem = document?.DocumentItems.FirstOrDefault(di => di.DocumentItemId == mediaItem.DocumentItemId);
+
+                            //    var productResponse = await _mediator.Send(new GetSortedFilteredProductsQuery(
+                            //        new Sieve.Models.SieveModel() { Page = 1, PageSize = 1, Filters = $"ProductId=={docItem?.ProductId}" }));
+                            //    var product = productResponse.ReturnedObj?.Items.FirstOrDefault();
+
+                            //    if (!productResponse.IsSuccess() || product == null)
+                            //    {
+                            //        context.AddFailure("DocumentItemsWithAssignment", $"Can not find the product related to document item by Id: {docItem?.ProductId}");
+                            //        continue;
+                            //    }
+
+
+                            //    var warehouseUnit = warehouseUnits.FirstOrDefault(x => x.WarehouseUnitId == mediaItem.WarehouseUnitId);
+
+                            //    if (warehouseUnit == null)
+                            //    {
+                            //        context.AddFailure("DocumentItemsWithAssignment", $"Can not find the warehouse unit by Id: {mediaItem.WarehouseUnitId}");
+                            //        continue;
+                            //    }
+
+                            //    var existingMediaItems = warehouseUnit.WarehouseUnitItems
+                            //        .Where(wui => wui.IsMediaOfWarehouseUnit)
+                            //        .ToList();
+
+                            //    var newMediaItems = context.ParentContext.InstanceToValidate
+                            //        .DocumentItemsWithAssignment
+                            //        .Where(x => x.WarehouseUnitId == item.WarehouseUnitId && x.IsMedia == true)
+                            //        .ToList();
+
+                            //    // Pobierz istniejące i nowo dodawane produkty, które są oznaczone jako IsMedia
+                            //    var mediaProductIds = existingMediaItems.Select(wui => wui.ProductId)
+                            //        .Union(newMediaItems.Select(x => x.DocumentItemId))
+                            //        .Distinct()
+                            //        .ToList();
+
+                            //    // Jeśli więcej niż jeden unikalny ProductId jest oznaczony jako media, to zwróć błąd
+                            //    if (mediaProductIds.Count > 1)
+                            //    {
+                            //        context.AddFailure("IsMediaOfWarehouseUnit",
+                            //            $"WarehouseUnit {item.WarehouseUnitId} może mieć tylko jeden typ produktu oznaczony jako media. Znaleziono produkty: {string.Join(", ", mediaProductIds)}.");
+                            //    }
+                            //}
                         }
                     }
 
@@ -126,6 +198,8 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                                 $"The quantity being assigned ({totalQuantitySoFar + newAssignmentQuantity}) exceeds the available quantity ({docItem.Quantity}) for the Document Item ID: {docItemId}. Warehouse Unit IDs involved: {string.Join("; ", warehouseUnitItemIdsContained)}");
                         }
                     }
+
+
                 });
         }
     }

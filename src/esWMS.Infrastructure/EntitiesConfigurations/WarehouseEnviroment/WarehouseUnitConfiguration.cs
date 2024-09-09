@@ -50,12 +50,6 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder
-                .HasOne(wu => wu.Media)
-                .WithMany()
-                .HasForeignKey(wu => wu.MediaId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            builder
                 .HasOne(wu => wu.Location)
                 .WithMany(l => l.WarehouseUnits)
                 .HasForeignKey(wu => wu.LocationId)

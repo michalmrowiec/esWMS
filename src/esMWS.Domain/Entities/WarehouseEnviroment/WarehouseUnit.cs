@@ -4,7 +4,6 @@
     {
         public string WarehouseUnitId { get; set; } = null!;
         public string WarehouseId { get; set; } = null!;
-        public string? MediaId { get; set; }
         public string? LocationId { get; set; }
         public decimal? TotalWeight { get; set; }
         public decimal? TotalLength { get; set; }
@@ -19,7 +18,6 @@
         public string? ModifiedBy { get; set; }
 
         public Warehouse? Warehouse { get; set; }
-        public Product? Media { get; set; }
         public Location? Location { get; set; }
         public WarehouseUnit? StackOn { get; set; }
         public IList<WarehouseUnitItem> WarehouseUnitItems { get; set; } = [];
