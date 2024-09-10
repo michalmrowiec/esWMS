@@ -145,7 +145,6 @@
                 var json = await response.Content.ReadAsStringAsync();
                 var responseObj = JsonConvert.DeserializeObject<PwVM>(json);
 
-                Snackbar.Configuration.PositionClass = "Bottom-End";
                 Snackbar.Add(new MarkupString($"Utworzono <b>{responseObj?.DocumentId}</b>"), Severity.Success);
 
                 EventCallbacks?.ForEach(async x => await x.InvokeAsync());

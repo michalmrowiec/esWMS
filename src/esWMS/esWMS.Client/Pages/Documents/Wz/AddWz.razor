@@ -30,6 +30,19 @@
         }
     </MudSelect>
 
+    <MudSelect T="string"
+               @bind-Value="model.RecipientContractorId"
+               Label="Odbiorca"
+               AnchorOrigin="Origin.BottomCenter"
+               For="@(() => model.RecipientContractorId)">
+        @foreach (var contractor in contractors)
+        {
+            <MudSelectItem Value="@contractor.ContractorId">
+                [@contractor.ContractorId] @contractor.ContractorName
+            </MudSelectItem>
+        }
+    </MudSelect>
+
     <MudDatePicker Label="Data wystawienia dokumentu"
                    @bind-Date="model.DocumentIssueDate"
                    For="@(() => model.DocumentIssueDate)" />
@@ -49,19 +62,6 @@
     <MudDatePicker Label="Data wydania"
                    @bind-Date="model.GoodsReleaseDate"
                    For="@(() => model.GoodsReleaseDate)" />
-
-    <MudSelect T="string"
-               @bind-Value="model.RecipientContractorId"
-               Label="Odbiorca"
-               AnchorOrigin="Origin.BottomCenter"
-               For="@(() => model.RecipientContractorId)">
-        @foreach (var contractor in contractors)
-        {
-            <MudSelectItem Value="@contractor.ContractorId">
-                [@contractor.ContractorId] @contractor.ContractorName
-            </MudSelectItem>
-        }
-    </MudSelect>
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
@@ -156,7 +156,6 @@
                 var json = await response.Content.ReadAsStringAsync();
                 var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
 
-                Snackbar.Configuration.PositionClass = "Bottom-End";
                 Snackbar.Add(new MarkupString($"Utworzono <b>{responseObj?.DocumentId}</b>"), Severity.Success);
 
                 EventCallbacks?.ForEach(async x => await x.InvokeAsync());

@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -136,12 +137,13 @@ else
     {
         InvokeAsync(RefreshRw);
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApproveRwItemDialog>
+        var parameters = new DialogParameters<ApproveIssuedItemDialog>
         {
+            { x => x.Uri, @"api/v1/Rw/approve-items" },
             { x => x.DocumentItemVM, documentItem},
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshRw) } }
         };
-        return DialogService.ShowAsync<ApproveRwItemDialog>(null, parameters, options);
+        return DialogService.ShowAsync<ApproveIssuedItemDialog>(null, parameters, options);
     }
 
     private async Task RefreshRw()
