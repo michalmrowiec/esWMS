@@ -1,6 +1,7 @@
 ﻿using esMWS.Domain.Models;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
+using esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
 using esWMS.Application.Responses;
@@ -90,6 +91,28 @@ namespace esWMS.Controllers
             {
                 case BaseResponse.ResponseStatus.Success:
                     return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
+
+        [HttpDelete("{warehouseUnitId}")]
+        public async Task<ActionResult> DeleteEmptyWarehouseUnit(string warehouseUnitId)
+        {
+            var result = await _mediator.Send(new DeleteWarehouseUnitCommand(warehouseUnitId));
+
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return NoContent();
                 case BaseResponse.ResponseStatus.ValidationError:
                     return BadRequest(result.ValidationErrors);
                 case BaseResponse.ResponseStatus.ServerError:
