@@ -4,7 +4,6 @@ using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Documents.PwFunctions;
 using esWMS.Application.Responses;
 using MediatR;
 
@@ -57,7 +56,8 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwIt
                     batchLot: docItem.BatchLot,
                     serialNumber: docItem.SerialNumber,
                     price: docItem.Price,
-                    createdBy: request.ModifiedBy);
+                    createdBy: request.ModifiedBy,
+                    isMediaOfWarehouseUnit: itemAssignment.IsMedia ?? false);
 
                 var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
                 {

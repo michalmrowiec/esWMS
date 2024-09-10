@@ -104,6 +104,29 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwIt
                                     "WarehouseUnitIds",
                                     $"The following warehouse units are blocked: {string.Join("; ", blockedWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
                             }
+
+                            if (value.DocumentItemsWithAssignment?.Count(x => x.IsMedia ?? false) > 1)
+                            {
+                                context.AddFailure(
+                                "DocumentItemsWithAssignment",
+                                    $"Warehouse Unit can have only one Warehouse Unit Item with set IsMediaOfWarehouseUnit on true.");
+                            }
+
+                            if (value.DocumentItemsWithAssignment?.Count(x => x.IsMedia ?? false) == 1)
+                            {
+                                var mediaItem = value.DocumentItemsWithAssignment.First(x => x.IsMedia ?? false);
+
+                                var warehouseUnit = warehouseUnits.FirstOrDefault(x => x.WarehouseUnitId == mediaItem.WarehouseUnitId);
+
+                                var existMedia = warehouseUnit.WarehouseUnitItems.Where(x => x.IsMediaOfWarehouseUnit);
+
+                                if (existMedia.Any())
+                                {
+                                    context.AddFailure(
+                                        "IsMediaOfWarehouseUnit",
+                                        $"Warehouse Unit by Id {warehouseUnit.WarehouseUnitId} already have Warehouse Unit Item with IsMediaOfWarehouseUnit set on true. ");
+                                }
+                            }
                         }
                     }
 
