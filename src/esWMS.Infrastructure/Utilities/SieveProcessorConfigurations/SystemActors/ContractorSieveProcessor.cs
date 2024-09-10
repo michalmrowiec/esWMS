@@ -16,6 +16,9 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.SystemActo
             mapper.Property<Contractor>(x => x.ContractorName)
                 .CanSort()
                 .CanFilter();
+            mapper.Property<Contractor>(x => x.EmailAddress)
+                .CanSort()
+                .CanFilter();
             mapper.Property<Contractor>(x => x.City)
                 .CanSort()
                 .CanFilter();
@@ -26,6 +29,15 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.SystemActo
                 .CanSort()
                 .CanFilter();
             mapper.Property<Contractor>(x => x.Region)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<Contractor>(x => x.IsActive)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<Contractor>(x => x.IsSupplier)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<Contractor>(x => x.IsRecipient)
                 .CanSort()
                 .CanFilter();
         }

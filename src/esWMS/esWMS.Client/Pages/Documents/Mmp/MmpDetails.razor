@@ -185,8 +185,7 @@ else
 
             await RefreshMmp();
 
-            Snackbar.Configuration.PositionClass = "Bottom-End";
-            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{MmpVM.DocumentId}</strong>"), Severity.Success);
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{MmpVM.DocumentId}</b>"), Severity.Success);
 
         }
         else

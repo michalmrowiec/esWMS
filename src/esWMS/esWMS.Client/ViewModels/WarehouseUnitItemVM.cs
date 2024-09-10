@@ -8,6 +8,7 @@ namespace esWMS.Client.ViewModels
         public string WarehouseUnitItemId { get; set; } = null!;
         public string WarehouseUnitId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
+        public bool IsMediaOfWarehouseUnit { get; set; }
         public int Quantity { get; set; }
         public int BlockedQuantity { get; set; }
         public DateTime? BestBefore { get; set; }
@@ -15,6 +16,9 @@ namespace esWMS.Client.ViewModels
         public string? BatchLot { get; set; }
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
+        public string? Currency { get; set; }
+        public string? Unit { get; set; }
+        public int? VatRate { get; set; }
 
         public WarehouseUnitVM? WarehouseUnit { get; set; }
         public ProductVM? Product { get; set; }

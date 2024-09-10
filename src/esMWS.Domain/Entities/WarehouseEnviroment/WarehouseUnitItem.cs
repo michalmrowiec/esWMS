@@ -8,6 +8,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
         public string WarehouseUnitItemId { get; set; } = null!;
         public string WarehouseUnitId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
+        public bool IsMediaOfWarehouseUnit { get; set; }
         public int Quantity { get; set; }
         public int BlockedQuantity { get; set; }
         public DateTime? BestBefore { get; set; }
@@ -16,6 +17,8 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
+        public string? Unit { get; set; }
+        public int? VatRate { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }
@@ -36,7 +39,8 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
             string? batchLot,
             string? serialNumber,
             decimal? price,
-            string? createdBy)
+            string? createdBy,
+            bool isMediaOfWarehouseUnit = false)
         {
             WarehouseUnitItemId = Guid.NewGuid().ToString();
             WarehouseUnitId = warehouseUnitId;
@@ -51,6 +55,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
             CreatedBy = createdBy;
             ModifiedAt = null;
             ModifiedBy = null;
+            IsMediaOfWarehouseUnit = isMediaOfWarehouseUnit;
         }
     }
 }

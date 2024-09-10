@@ -128,10 +128,10 @@
                 MaxWidth = MaxWidth.Medium,
                 FullWidth = true
             };
-        var parameters = new DialogParameters<AddZoneModalDialogForm>
+        var parameters = new DialogParameters<AddZoneDialog>
         {
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
-        return DialogService.ShowAsync<AddZoneModalDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddZoneDialog>(null, parameters, options);
     }
 }

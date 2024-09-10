@@ -6,12 +6,11 @@ namespace esWMS.Client.ViewModels
     {
         public string WarehouseUnitId { get; set; } = null!;
         public string WarehouseId { get; set; } = null!;
-        public string? MediaId { get; set; }
         public string? LocationId { get; set; }
-        public int? TotalWeight { get; set; }
-        public int? TotalLength { get; set; }
-        public int? TotalWidth { get; set; }
-        public int? TotalHeight { get; set; }
+        public decimal? TotalWeight { get; set; }
+        public decimal? TotalLength { get; set; }
+        public decimal? TotalWidth { get; set; }
+        public decimal? TotalHeight { get; set; }
         public bool IsBlocked { get; set; }
         public bool? CanBeStacked { get; set; }
         public string? StackOnId { get; set; }
@@ -22,12 +21,11 @@ namespace esWMS.Client.ViewModels
     public class CreateWarehouseUnitVM
     {
         public string? WarehouseId { get; set; }
-        public string? MediaId { get; set; }
         public string? LocationId { get; set; }
-        public int? TotalWeight { get; set; }
-        public int? TotalLength { get; set; }
-        public int? TotalWidth { get; set; }
-        public int? TotalHeight { get; set; }
+        public decimal? TotalWeight { get; set; }
+        public decimal? TotalLength { get; set; }
+        public decimal? TotalWidth { get; set; }
+        public decimal? TotalHeight { get; set; }
         public bool? CanBeStacked { get; set; }
         public string? StackOnId { get; set; }
     }

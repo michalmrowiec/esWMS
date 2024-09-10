@@ -25,13 +25,17 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .IsRequired()
                 .HasMaxLength(250);
 
+            builder.Property(p => p.ShortProductName)
+                .IsRequired()
+                .HasMaxLength(35);
+
             builder.Property(p => p.CategoryId)
                 .IsRequired()
                 .HasMaxLength(50);
 
             builder.Property(p => p.Unit)
                 .HasMaxLength(10);
-            
+
             builder.Property(p => p.IsWeight)
                 .IsRequired()
                 .HasDefaultValue(false);
@@ -40,14 +44,32 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .IsRequired()
                 .HasDefaultValue(false);
 
-            builder.Property(p => p.MediaTypeAlias)
-                .HasMaxLength(10);
-
             builder.Property(p => p.Price)
                 .HasColumnType("decimal(18,2)");
 
+            builder.Property(p => p.Currency)
+                .HasMaxLength(5);
+
             builder.Property(p => p.IsActive)
                 .IsRequired();
+
+            builder.Property(p => p.TotalLength)
+                .HasColumnType("decimal(18, 4)");
+
+            builder.Property(p => p.TotalWidth)
+                .HasColumnType("decimal(18, 4)");
+
+            builder.Property(p => p.TotalHeight)
+                .HasColumnType("decimal(18, 4)");
+
+            builder.Property(p => p.TotalWeight)
+                .HasColumnType("decimal(18, 4)");
+
+            builder.Property(p => p.MinStorageTemperature)
+                .HasColumnType("decimal(18, 2)");
+
+            builder.Property(p => p.MaxStorageTemperature)
+                .HasColumnType("decimal(18, 2)");
 
             builder.Property(p => p.CreatedAt)
                 .IsRequired();

@@ -180,10 +180,10 @@
                 MaxWidth = MaxWidth.Medium,
                 FullWidth = true
             };
-        var parameters = new DialogParameters<AddLocationModalDialogForm>
+        var parameters = new DialogParameters<AddLocationDialog>
         {
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
-        return DialogService.ShowAsync<AddLocationModalDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddLocationDialog>(null, parameters, options);
     }
 }

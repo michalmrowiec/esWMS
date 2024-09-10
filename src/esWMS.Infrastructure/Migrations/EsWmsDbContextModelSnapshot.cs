@@ -165,6 +165,13 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
 
+                    b.Property<string>("Unit")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<int?>("VatRate")
+                        .HasColumnType("int");
+
                     b.HasKey("DocumentItemId");
 
                     b.HasIndex("DocumentId");
@@ -421,16 +428,16 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal?>("MaxHeight")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18, 4)");
 
                     b.Property<decimal?>("MaxLength")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18, 4)");
 
                     b.Property<decimal?>("MaxWeight")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18, 4)");
 
                     b.Property<decimal?>("MaxWidth")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18, 4)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
@@ -474,6 +481,10 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("varchar(60)");
 
+                    b.Property<string>("Currency")
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar(5)");
+
                     b.Property<string>("EanCode")
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
@@ -491,9 +502,11 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false);
 
-                    b.Property<string>("MediaTypeAlias")
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                    b.Property<decimal?>("MaxStorageTemperature")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal?>("MinStorageTemperature")
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
@@ -518,17 +531,31 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("varchar(250)");
 
-                    b.Property<int?>("StorageTemperature")
-                        .HasColumnType("int");
+                    b.Property<string>("ShortProductName")
+                        .IsRequired()
+                        .HasMaxLength(35)
+                        .HasColumnType("varchar(35)");
 
                     b.Property<string>("SupplierContractorId")
                         .HasColumnType("varchar(3)");
+
+                    b.Property<decimal?>("TotalHeight")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal?>("TotalLength")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal?>("TotalWeight")
+                        .HasColumnType("decimal(18, 4)");
+
+                    b.Property<decimal?>("TotalWidth")
+                        .HasColumnType("decimal(18, 4)");
 
                     b.Property<string>("Unit")
                         .HasMaxLength(10)
                         .HasColumnType("varchar(10)");
 
-                    b.Property<int?>("WeightPerUnit")
+                    b.Property<int?>("VatRate")
                         .HasColumnType("int");
 
                     b.HasKey("ProductId");
@@ -614,9 +641,6 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<string>("LocationId")
                         .HasColumnType("varchar(20)");
 
-                    b.Property<string>("MediaId")
-                        .HasColumnType("varchar(50)");
-
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
@@ -627,17 +651,17 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<string>("StackOnId")
                         .HasColumnType("varchar(50)");
 
-                    b.Property<int?>("TotalHeight")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("TotalHeight")
+                        .HasColumnType("decimal(18, 4)");
 
-                    b.Property<int?>("TotalLength")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("TotalLength")
+                        .HasColumnType("decimal(18, 4)");
 
-                    b.Property<int?>("TotalWeight")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("TotalWeight")
+                        .HasColumnType("decimal(18, 4)");
 
-                    b.Property<int?>("TotalWidth")
-                        .HasColumnType("int");
+                    b.Property<decimal?>("TotalWidth")
+                        .HasColumnType("decimal(18, 4)");
 
                     b.Property<string>("WarehouseId")
                         .IsRequired()
@@ -647,8 +671,6 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasKey("WarehouseUnitId");
 
                     b.HasIndex("LocationId");
-
-                    b.HasIndex("MediaId");
 
                     b.HasIndex("StackOnId")
                         .IsUnique();
@@ -687,6 +709,11 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
+                    b.Property<bool>("IsMediaOfWarehouseUnit")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(false);
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
@@ -710,6 +737,13 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<string>("SerialNumber")
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Unit")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<int?>("VatRate")
+                        .HasColumnType("int");
 
                     b.Property<string>("WarehouseUnitId")
                         .IsRequired()
@@ -1027,11 +1061,6 @@ namespace esWMS.Infrastructure.Migrations
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("esMWS.Domain.Entities.WarehouseEnviroment.Product", "Media")
-                        .WithMany()
-                        .HasForeignKey("MediaId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
                     b.HasOne("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", "StackOn")
                         .WithOne()
                         .HasForeignKey("esMWS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", "StackOnId")
@@ -1044,8 +1073,6 @@ namespace esWMS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Location");
-
-                    b.Navigation("Media");
 
                     b.Navigation("StackOn");
 

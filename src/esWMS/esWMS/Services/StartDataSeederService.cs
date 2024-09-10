@@ -92,7 +92,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-002",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 500,
+                TotalWeight = 0.5m,
                 Price = 50.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -106,7 +106,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-002",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 200,
+                TotalWeight = 0.2m,
                 Price = 20.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -120,7 +120,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-003",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 2000,
+                TotalWeight = 2m,
                 Price = 350.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -134,7 +134,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-003",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 2500,
+                TotalWeight = 2.5m,
                 Price = 500.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -148,7 +148,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-005",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 10000,
+                TotalWeight = 10m,
                 Price = 500.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -162,7 +162,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-005",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 5000,
+                TotalWeight = 5m,
                 Price = 300.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -176,6 +176,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-006",
                 Unit = "szt",
                 IsWeight = false,
+                TotalWeight = 0.01m,
                 Price = 1.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -189,7 +190,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-006",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 20,
+                TotalWeight = 20m,
                 Price = 10.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -203,7 +204,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-006",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 300,
+                TotalWeight = 0.3m,
                 Price = 50.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -217,7 +218,7 @@ namespace esWMS.Services
                 CategoryId = "CAT-006",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 1,
+                TotalWeight = 1m,
                 Price = 20.00m,
                 IsActive = true,
                 CreatedAt = DateTime.Now
@@ -231,7 +232,10 @@ namespace esWMS.Services
                 CategoryId = "CAT-007",
                 Unit = "szt",
                 IsWeight = false,
-                WeightPerUnit = 25000,
+                TotalWeight = 25m,
+                TotalHeight = 0.144m,
+                TotalWidth = 0.8m,
+                TotalLength = 1.2m,
                 IsMedia = true,
                 Price = 70.00m,
                 IsActive = true,

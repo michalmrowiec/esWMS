@@ -44,6 +44,9 @@
     [Parameter]
     public DocumentItemVM DocumentItemVM { get; set; }
 
+    [Parameter]
+    public string Uri { get; set; }
+
     private List<string> responseErrors = new();
 
     private async Task Submit()
@@ -54,13 +57,12 @@
             DocumentItemsWithAssignment = DocumentItemVM.DocumentWarehouseUnitItems
         };
 
-        var response = await documentService.ApproveDocument(@"api/v1/Wz/approve-items", requestBody);
+        var response = await documentService.ApproveDocument(Uri, requestBody);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var json = await response.Content.ReadAsStringAsync();
             var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
 
-            Snackbar.Configuration.PositionClass = "Bottom-End";
             Snackbar.Add(new MarkupString("Pomyślnie zatwierdzono"), Severity.Success);
 
             FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());

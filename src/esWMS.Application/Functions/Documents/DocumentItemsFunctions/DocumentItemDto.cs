@@ -18,6 +18,8 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions
         public int Quantity { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
+        public int? VatRate { get; set; }
+        public string? Unit { get; set; }
         public string? WarehouseUnitItemId { get; set; }
         public bool IsApproved { get; set; }
 

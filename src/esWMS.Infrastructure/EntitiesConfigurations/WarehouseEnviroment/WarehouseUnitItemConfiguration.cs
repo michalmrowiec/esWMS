@@ -22,6 +22,10 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
                 .IsRequired()
                 .HasMaxLength(50);
 
+            builder.Property(wui => wui.IsMediaOfWarehouseUnit)
+                .IsRequired()
+                .HasDefaultValue(false);
+
             builder.Property(wui => wui.Quantity)
                 .IsRequired()
                 .HasDefaultValue(0);
@@ -29,6 +33,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
             builder.Property(wui => wui.BlockedQuantity)
                 .IsRequired()
                 .HasDefaultValue(0);
+
+            builder.Property(di => di.Unit)
+                .HasMaxLength(10);
 
             builder.Property(wui => wui.BatchLot)
                 .HasMaxLength(50);

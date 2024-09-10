@@ -137,13 +137,14 @@ else
     {
         InvokeAsync(RefreshPz);
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApproveReceivedItemDialogForm>
+        var parameters = new DialogParameters<ApproveReceivedItemDialog>
         {
-            { x => x.DocumentItemVM, documentItem},
+            { x => x.WarehouseId, PzVM.IssueWarehouseId },
+            { x => x.DocumentItemVM, documentItem },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPz) } },
             { x => x.Uri, @"api/v1/Pz/approve-items"}
         };
-        return DialogService.ShowAsync<ApproveReceivedItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<ApproveReceivedItemDialog>(null, parameters, options);
     }
 
     private async Task RefreshPz()
@@ -175,8 +176,7 @@ else
 
             await RefreshPz();
 
-            Snackbar.Configuration.PositionClass = "Bottom-End";
-            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{PzVM.DocumentId}</strong>"), Severity.Success);
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{PzVM.DocumentId}</b>"), Severity.Success);
 
         }
         else

@@ -11,6 +11,8 @@
         public int Quantity { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
+        public int? VatRate { get; set; }
+        public string? Unit { get; set; }
         public string? WarehouseUnitItemId { get; set; }
         public bool IsApproved { get; set; }
 
@@ -23,20 +25,22 @@
             (string? documentItemId,
             string? warehouseUnitId,
             int quantity,
-            string? warehouseUnitItemId = null)
+            string? warehouseUnitItemId = null,
+            bool? isMedia = null)
         {
             DocumentItemId = documentItemId;
             WarehouseUnitId = warehouseUnitId;
             WarehouseUnitItemId = warehouseUnitItemId;
             Quantity = quantity;
+            IsMedia = isMedia;
         }
 
         public string? DocumentItemId { get; set; }
         public string? WarehouseUnitId { get; set; }
         public string? WarehouseUnitItemId { get; set; }
         public int Quantity { get; set; }
+        public bool? IsMedia { get; set; }
 
         public WarehouseUnitItemVM? WarehouseUnitItem { get; set; }
-
     }
 }

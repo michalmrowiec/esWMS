@@ -52,8 +52,6 @@ namespace esWMS.Application.Mappings
             CreateMap<Category, CategoryDto>()
                 .ReverseMap();
 
-            CreateMap<Contractor, ContractorDto>();
-
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<Warehouse, FlatWarehouseDto>();
             CreateMap<Warehouse, WarehouseDto>();
@@ -68,7 +66,6 @@ namespace esWMS.Application.Mappings
             CreateMap<WarehouseUnitDto, WarehouseUnit>()
                 .ForMember(dest => dest.Warehouse, opt => opt.Ignore())
                 .ForMember(dest => dest.Location, opt => opt.Ignore())
-                .ForMember(dest => dest.Media, opt => opt.Ignore())
                 .ForMember(dest => dest.StackOn, opt => opt.Ignore())
                 .ForMember(dest => dest.WarehouseUnitItems, opt => opt.MapFrom(src => src.WarehouseUnitItems));
 
@@ -83,7 +80,6 @@ namespace esWMS.Application.Mappings
             CreateMap<FlatWarehouseUnitDto, WarehouseUnit>()
                 .ForMember(dest => dest.Warehouse, opt => opt.Ignore())
                 .ForMember(dest => dest.Location, opt => opt.Ignore())
-                .ForMember(dest => dest.Media, opt => opt.Ignore())
                 .ForMember(dest => dest.StackOn, opt => opt.Ignore())
                 .ForMember(dest => dest.WarehouseUnitItems, opt => opt.Ignore());
 
@@ -96,7 +92,8 @@ namespace esWMS.Application.Mappings
             CreateMap<Location, LocationDto>()
                 .ReverseMap();
 
-            CreateMap<CreateContractorCommand, Contractor>();
+            CreateMap<CreateContractorCommand, Contractor>()
+                .ForMember(dest => dest.ContractorId, opt => opt.MapFrom(src => src.ContractorId.ToUpper()));
             CreateMap<Contractor, ContractorDto>();
 
             CreateMap<CreateDocumentItemCommand, DocumentItem>();

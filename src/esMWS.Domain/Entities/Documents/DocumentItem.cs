@@ -18,7 +18,8 @@ namespace esMWS.Domain.Entities.Documents
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
-        // public string Unit { get; set; } UNIT!!!!!! TODO
+        public int? VatRate { get; set; }
+        public string? Unit { get; set; }
         public bool IsApproved { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }

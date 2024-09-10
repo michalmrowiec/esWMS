@@ -4,7 +4,7 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
-@inject IWarehouseService warehouseService
+@inject IDataService<WarehouseVM> warehouseService
 @inject IDataService<CreatePzVM> createPzDataService
 @inject IDataService<ContractorVM> contractorDataService
 @inject ISnackbar Snackbar
@@ -65,7 +65,8 @@
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
-               Color="Color.Primary">
+               Color="Color.Primary"
+               Disabled="@(string.IsNullOrEmpty(model.IssueWarehouseId))">
         Dodaj pozycję
     </MudButton>
 
@@ -124,7 +125,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var warehouseResponse = await warehouseService.GetWarehouse(new SieveModelVM(1, 500, "", ""));
+        var warehouseResponse = await warehouseService.GetPagedResult(@"api/v1/warehouse/get-filtered", new SieveModelVM(1, 500));
         var contractorResponse = await contractorDataService.GetPagedResult(@"api/v1/Contractor/get-filtered", new SieveModelVM(1, 500, "", ""));
         warehouses = warehouseResponse.Items.ToList();
         contractors = contractorResponse.Items.ToList();
@@ -133,12 +134,12 @@
     private Task OpenDialogAsync()
     {
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
-        var parameters = new DialogParameters<AddReceivedItemDialogForm>
+        var parameters = new DialogParameters<AddReceivedItemDialog>
         {
             { x => x.DocumentItemVMs, model.DocumentItems },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
         };
-        return DialogService.ShowAsync<AddReceivedItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddReceivedItemDialog>(null, parameters, options);
     }
 
     private async Task Submit()
@@ -155,8 +156,7 @@
                 var json = await response.Content.ReadAsStringAsync();
                 var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
 
-                Snackbar.Configuration.PositionClass = "Bottom-End";
-                Snackbar.Add(new MarkupString($"Utworzono <strong>{responseObj?.DocumentId}</strong>"), Severity.Success);
+                Snackbar.Add(new MarkupString($"Utworzono <b>{responseObj?.DocumentId}</b>"), Severity.Success);
 
                 EventCallbacks?.ForEach(async x => await x.InvokeAsync());
             }

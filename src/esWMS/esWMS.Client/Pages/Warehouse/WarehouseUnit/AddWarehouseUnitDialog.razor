@@ -1,9 +1,11 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @inject IDataService<CreateWarehouseUnitVM> createWarehouseUnitDataService
 @inject IDataService<WarehouseVM> warehouseDataService
 @inject ISnackbar Snackbar
+@inject IDataService<LocationVM> locationService
 
 <MudDialog>
     <TitleContent>
@@ -29,6 +31,14 @@
                     }
                 </MudSelect>
 
+                <MudAutocomplete @bind-Value="@model.LocationId"
+                                 SearchFunc="Search"
+                                 Variant="Variant.Text"
+                                 Label="Lokalizacja"
+                                 Disabled="@(string.IsNullOrEmpty(model.WarehouseId))"
+                                 Dense="false"
+                                 Clearable="true" />
+
                 @*                 <MudSelect T="string" @bind-Value="model.MediaId" Label="Medium" For="@(() => model.MediaId)" Immediate="true">
                 @foreach (var media in mediaItems)
                 {
@@ -38,19 +48,25 @@
                 }
                 </MudSelect> *@
 
-                @*                 <MudSelect T="string" @bind-Value="model.LocationId" Label="Lokalizacja" For="@(() => model.LocationId)" Immediate="true">
-                @foreach (var location in locations)
-                {
-                <MudSelectItem Value="@location.LocationId">
-                @location.LocationName
-                </MudSelectItem>
-                }
-                </MudSelect> *@
+                <MudNumericField @bind-Value="model.TotalWeight"
+                                 For="@(() => model.TotalWeight)"
+                                 Label="Waga całkowita (kg)"
+                                 Immediate="true" />
 
-                <MudNumericField T="int?" @bind-Value="model.TotalWeight" For="@(() => model.TotalWeight)" Label="Waga całkowita (kg)" Immediate="true" />
-                <MudNumericField T="int?" @bind-Value="model.TotalLength" For="@(() => model.TotalLength)" Label="Długość całkowita (m)" Immediate="true" />
-                <MudNumericField T="int?" @bind-Value="model.TotalWidth" For="@(() => model.TotalWidth)" Label="Szerokość całkowita (m)" Immediate="true" />
-                <MudNumericField T="int?" @bind-Value="model.TotalHeight" For="@(() => model.TotalHeight)" Label="Wysokość całkowita (m)" Immediate="true" />
+                <MudNumericField @bind-Value="model.TotalLength"
+                                 For="@(() => model.TotalLength)"
+                                 Label="Długość całkowita (m)"
+                                 Immediate="true" />
+
+                <MudNumericField @bind-Value="model.TotalWidth"
+                                 For="@(() => model.TotalWidth)"
+                                 Label="Szerokość całkowita (m)"
+                                 Immediate="true" />
+
+                <MudNumericField @bind-Value="model.TotalHeight"
+                                 For="@(() => model.TotalHeight)"
+                                 Label="Wysokość całkowita (m)"
+                                 Immediate="true" />
 
                 <MudCheckBox @bind-Value="model.CanBeStacked">Może być piętrowany</MudCheckBox>
 
@@ -97,7 +113,7 @@
     private List<WarehouseUnitVM> stackableUnits = new();
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
-
+    private List<string> locations = new();
     private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
@@ -130,5 +146,23 @@
         // mediaItems = (await warehouseUnitService.GetMediaItems()).ToList();
         // locations = (await warehouseUnitService.GetLocations()).ToList();
         // stackableUnits = (await warehouseUnitService.GetStackableUnits()).ToList();
+    }
+
+    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    {
+        string filters = "";
+
+        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(model.WarehouseId))
+            filters = $"IsFull==false,LocationId@={model.WarehouseId!.ToUpper()}";
+        else
+            filters = $"IsFull==false,LocationId@={model.WarehouseId!.ToUpper()},{value.ToUpper()}";
+
+        var locationResponse = await locationService.GetPagedResult(@"api/v1/Location/get-filtered", new SieveModelVM(1, 10, filters));
+        locations = locationResponse.Items.Select(x => x.LocationId).ToList();
+
+        if (string.IsNullOrWhiteSpace(value))
+            return locations;
+
+        return locations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
 }

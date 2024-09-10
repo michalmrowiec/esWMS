@@ -23,11 +23,11 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                 });
 
             RuleFor(x => x.NewLocationId)
-                .NotNull()
-                .NotEmpty()
-                .WithMessage("New location ID is required.")
                 .Custom((value, context) =>
                 {
+                    if (string.IsNullOrWhiteSpace(value))
+                        return;
+
                     if (newLocationResponse == null)
                     {
                         context.AddFailure("Something went wrong while retrieving locations.");

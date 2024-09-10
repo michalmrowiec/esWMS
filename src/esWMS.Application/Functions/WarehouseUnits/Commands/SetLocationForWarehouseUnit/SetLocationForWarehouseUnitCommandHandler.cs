@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
+using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Queries.GetLocationById;
 using esWMS.Application.Responses;
 using MediatR;
@@ -32,8 +33,12 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                     (BaseResponse.ResponseStatus.ServerError, "Something went wrong");
             }
 
-            var newLocationResponse = await _mediator.Send(
-                new GetLocationByIdQuery(request.NewLocationId));
+            BaseResponse<LocationDto>? newLocationResponse = null;
+            if (!string.IsNullOrWhiteSpace(request.NewLocationId))
+            {
+                newLocationResponse = await _mediator.Send(
+                    new GetLocationByIdQuery(request.NewLocationId));
+            }
 
             var validationResult = await new SetLocationForWarehouseUnitValidator
                 (warehouseUnit, newLocationResponse).ValidateAsync(request, cancellationToken);
@@ -43,9 +48,14 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                 return new BaseResponse<WarehouseUnitDto>(validationResult);
             }
 
-            var newLocation = newLocationResponse.ReturnedObj!;
-
-            warehouseUnit.LocationId = newLocation.LocationId;
+            if (!string.IsNullOrWhiteSpace(request.NewLocationId))
+            {
+                warehouseUnit.LocationId = newLocationResponse!.ReturnedObj!.LocationId;
+            }
+            else
+            {
+                warehouseUnit.LocationId = null;
+            }
             warehouseUnit.ModifiedAt = DateTime.Now;
             warehouseUnit.ModifiedBy = request.ModifiedBy;
 

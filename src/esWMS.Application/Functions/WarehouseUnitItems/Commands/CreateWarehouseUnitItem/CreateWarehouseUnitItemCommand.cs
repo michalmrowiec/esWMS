@@ -8,6 +8,7 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehous
     {
         public string WarehouseUnitId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
+        public bool IsMediaOfWarehouseUnit { get; set; } = false;
         public int Quantity { get; set; }
         public int BlockedQuantity { get; set; }
         public DateTime? BestBefore { get; set; }
@@ -16,6 +17,8 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehous
         public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
+        public string? Unit { get; set; }
+        public int? VatRate { get; set; }
         public string? CreatedBy { get; set; }
     }
 }

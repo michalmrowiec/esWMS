@@ -51,7 +51,7 @@ namespace esWMS.Controllers.Documents
             }
         }
 
-        [HttpPatch("approve")]
+        [HttpPost("approve")]
         public async Task<ActionResult<MmpDto>> ApproveMmp(
             [FromBody] ApproveMmpCommand approveMmpCommand)
         {

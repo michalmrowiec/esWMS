@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -136,12 +137,13 @@ else
     {
         InvokeAsync(RefreshWz);
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApproveWzItemDialogForm>
+        var parameters = new DialogParameters<ApproveIssuedItemDialog>
         {
+            { x => x.Uri, @"api/v1/Wz/approve-items" },
             { x => x.DocumentItemVM, documentItem},
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
         };
-        return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<ApproveIssuedItemDialog>(null, parameters, options);
     }
 
     private async Task RefreshWz()
@@ -173,8 +175,7 @@ else
 
             await RefreshWz();
 
-            Snackbar.Configuration.PositionClass = "Bottom-End";
-            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{WzVM.DocumentId}</strong>"), Severity.Success);
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{WzVM.DocumentId}</b>"), Severity.Success);
 
         }
         else

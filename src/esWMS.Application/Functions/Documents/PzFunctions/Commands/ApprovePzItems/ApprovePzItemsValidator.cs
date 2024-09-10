@@ -51,15 +51,15 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                         }
                     }
 
-                    if(value.DocumentItemsWithAssignment == null || value.DocumentItemsWithAssignment.Count == 0)
+                    if (value.DocumentItemsWithAssignment == null || value.DocumentItemsWithAssignment.Count == 0)
                     {
                         context.AddFailure("DocumentItemsWithAssignment", "No document items provided.");
                     }
 
-                    if(value.DocumentItemsWithAssignment!.Any(x => x.WarehouseUnitId == null))
+                    if (value.DocumentItemsWithAssignment!.Any(x => x.WarehouseUnitId == null))
                     {
                         context.AddFailure("WarehouseUnitIds", "No warehouse units provided.");
-                    }   
+                    }
 
                     string[] warehouseUnitIds = value.DocumentItemsWithAssignment!
                                                     .Select(x => x.WarehouseUnitId!)
@@ -104,6 +104,29 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                                     "WarehouseUnitIds",
                                     $"The following warehouse units are blocked: {string.Join("; ", blockedWarehouseUnits.Select(wu => wu.WarehouseUnitId))}");
                             }
+
+                            if (value.DocumentItemsWithAssignment?.Count(x => x.IsMedia ?? false) > 1)
+                            {
+                                context.AddFailure(
+                                "DocumentItemsWithAssignment",
+                                    $"Warehouse Unit can have only one Warehouse Unit Item with set IsMediaOfWarehouseUnit on true.");
+                            }
+
+                            if (value.DocumentItemsWithAssignment?.Count(x => x.IsMedia ?? false) == 1)
+                            {
+                                var mediaItem = value.DocumentItemsWithAssignment.First(x => x.IsMedia ?? false);
+                                
+                                var warehouseUnit = warehouseUnits.FirstOrDefault(x => x.WarehouseUnitId == mediaItem.WarehouseUnitId);
+
+                                var existMedia = warehouseUnit.WarehouseUnitItems.Where(x => x.IsMediaOfWarehouseUnit);
+
+                                if (existMedia.Any())
+                                {
+                                    context.AddFailure(
+                                        "IsMediaOfWarehouseUnit",
+                                        $"Warehouse Unit by Id {warehouseUnit.WarehouseUnitId} already have Warehouse Unit Item with IsMediaOfWarehouseUnit set on true. ");
+                                }
+                            }
                         }
                     }
 
@@ -126,6 +149,8 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                                 $"The quantity being assigned ({totalQuantitySoFar + newAssignmentQuantity}) exceeds the available quantity ({docItem.Quantity}) for the Document Item ID: {docItemId}. Warehouse Unit IDs involved: {string.Join("; ", warehouseUnitItemIdsContained)}");
                         }
                     }
+
+
                 });
         }
     }

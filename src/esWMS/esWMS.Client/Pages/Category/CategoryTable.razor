@@ -144,10 +144,10 @@
                 CloseOnEscapeKey = true,
                 CloseButton = true
             };
-        var parameters = new DialogParameters<AddCategoryDialogForm>
+        var parameters = new DialogParameters<AddCategoryDialog>
         {
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
-        return DialogService.ShowAsync<AddCategoryDialogForm>(null, parameters, options);
+        return DialogService.ShowAsync<AddCategoryDialog>(null, parameters, options);
     }
 }

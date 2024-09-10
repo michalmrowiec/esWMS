@@ -56,7 +56,7 @@ namespace esWMS.Controllers.Documents
             }
         }
 
-        [HttpPatch("approve-items")]
+        [HttpPost("approve-items")]
         public async Task<ActionResult<ZwDto>> ApproveZwItems
             ([FromBody] ApproveZwItemsCommand approveZwItemsCommand)
         {
@@ -82,7 +82,7 @@ namespace esWMS.Controllers.Documents
             }
         }
 
-        [HttpPatch("approve")]
+        [HttpPost("approve")]
         public async Task<ActionResult<ZwDto>> ApproveZw
             ([FromBody] ApproveZwCommand approveZwCommand)
         {

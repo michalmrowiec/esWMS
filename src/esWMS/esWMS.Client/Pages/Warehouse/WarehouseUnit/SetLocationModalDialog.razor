@@ -1,0 +1,113 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<LocationVM> locationService
+@inject IDataService<WarehouseUnitVM> warehouseUnitService
+@inject ISnackbar Snackbar
+
+<MudDialog Class="width">
+    <TitleContent>
+        Przypisanie lokalizacji
+    </TitleContent>
+    <DialogContent>
+        <MudTextField T="string"
+                      Value="@WarehouseUnit.WarehouseUnitId"
+                      Label="Id jednostki magazynowej"
+                      Disabled />
+
+        <MudTextField T="string"
+                      Value="@(string.IsNullOrEmpty(WarehouseUnit.LocationId) ? "Brak" : WarehouseUnit.LocationId)"
+                      Label="Aktualna lokalizacja"
+                      Disabled />
+
+        <MudAutocomplete @bind-Value="@searchString"
+                         SearchFunc="Search"
+                         Variant="Variant.Text"
+                         Label="Nowa lokalizacja"
+                         Dense="false"
+                         Clearable="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Zatwierdź</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public WarehouseUnitVM WarehouseUnit { get; set; }
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnSubmit { get; set; } = new();
+
+    private List<string> locations = new();
+
+    private string searchString { get; set; } = "";
+
+    private List<string> responseErrors = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Search("", CancellationToken.None);
+    }
+
+    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    {
+        string filters = "";
+
+        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(WarehouseUnit.WarehouseId))
+            filters = $"IsFull==false,LocationId@={WarehouseUnit.WarehouseId!.ToUpper()}";
+        else
+            filters = $"IsFull==false,LocationId@={WarehouseUnit.WarehouseId!.ToUpper()},{value.ToUpper()}";
+
+        var locationResponse = await locationService.GetPagedResult(@"api/v1/Location/get-filtered", new SieveModelVM(1, 10, filters));
+        locations = locationResponse.Items.Select(x => x.LocationId).ToList();
+
+        if (string.IsNullOrWhiteSpace(value))
+            return locations;
+
+        return locations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task Submit()
+    {
+        var requestBody = new
+        {
+            WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
+            NewLocationId = searchString
+    };
+
+        var response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-location", requestBody);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Snackbar.Add(new MarkupString("Pomyślnie zaktualizowano"), Severity.Success);
+
+            FuncsOnSubmit?.ForEach(async x => await x.InvokeAsync());
+
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

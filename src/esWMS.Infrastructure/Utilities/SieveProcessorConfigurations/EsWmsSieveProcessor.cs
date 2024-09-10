@@ -72,6 +72,35 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
         public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, string op, string[] values) =>
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
 
+        public IQueryable<Location> IsFull
+            (IQueryable<Location> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0 || !bool.TryParse(values[0], out bool isFull))
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    if (isFull)
+                        source = source.Where(location => location.Capacity <= location.WarehouseUnits.Count);
+                    else
+                        source = source.Where(location => location.Capacity > location.WarehouseUnits.Count);
+                    break;
+                case "!=":
+                    if (isFull)
+                        source = source.Where(location => location.Capacity > location.WarehouseUnits.Count);
+                    else
+                        source = source.Where(location => location.Capacity <= location.WarehouseUnits.Count);
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
         public IQueryable<RW> ContainsProductIds
             (IQueryable<RW> source, string op, string[] values)
         {

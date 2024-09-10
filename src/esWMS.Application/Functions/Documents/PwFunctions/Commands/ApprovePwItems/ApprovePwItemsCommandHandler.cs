@@ -56,7 +56,8 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwIt
                     batchLot: docItem.BatchLot,
                     serialNumber: docItem.SerialNumber,
                     price: docItem.Price,
-                    createdBy: request.ModifiedBy);
+                    createdBy: request.ModifiedBy,
+                    isMediaOfWarehouseUnit: itemAssignment.IsMedia ?? false);
 
                 var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
                 {
