@@ -169,7 +169,6 @@
                 var json = await response.Content.ReadAsStringAsync();
                 var responseObj = JsonConvert.DeserializeObject<PwVM>(json);
 
-                Snackbar.Configuration.PositionClass = "Bottom-End";
                 Snackbar.Add(new MarkupString("Pomyślnie zatwierdzono"), Severity.Success);
 
                 FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());

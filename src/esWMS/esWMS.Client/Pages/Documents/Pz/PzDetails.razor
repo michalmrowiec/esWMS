@@ -176,8 +176,7 @@ else
 
             await RefreshPz();
 
-            Snackbar.Configuration.PositionClass = "Bottom-End";
-            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <strong>{PzVM.DocumentId}</strong>"), Severity.Success);
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{PzVM.DocumentId}</b>"), Severity.Success);
 
         }
         else

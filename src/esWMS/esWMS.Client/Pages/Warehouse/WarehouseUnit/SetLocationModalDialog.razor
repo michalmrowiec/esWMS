@@ -96,7 +96,6 @@
         var response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-location", requestBody);
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            Snackbar.Configuration.PositionClass = "Bottom-End";
             Snackbar.Add(new MarkupString("Pomyślnie zaktualizowano"), Severity.Success);
 
             FuncsOnSubmit?.ForEach(async x => await x.InvokeAsync());

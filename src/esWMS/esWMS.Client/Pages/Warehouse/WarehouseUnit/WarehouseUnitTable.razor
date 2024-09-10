@@ -364,7 +364,7 @@
         var response = await warehouseUnitService.Delete(@"api/v1/WarehouseUnit/" + warehouseUnitVM.WarehouseUnitId);
         if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
         {
-            Snackbar.Add(new MarkupString($"Usunięto jednostkę magazynową"), Severity.Success);
+            Snackbar.Add(new MarkupString("Usunięto jednostkę magazynową"), Severity.Success);
             await table.ReloadServerData();
         }
         else
