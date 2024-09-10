@@ -139,7 +139,8 @@ else
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
         var parameters = new DialogParameters<ApproveReceivedItemDialog>
         {
-            { x => x.DocumentItemVM, documentItem},
+            { x => x.WarehouseId, PzVM.IssueWarehouseId },
+            { x => x.DocumentItemVM, documentItem },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPz) } },
             { x => x.Uri, @"api/v1/Pz/approve-items"}
         };

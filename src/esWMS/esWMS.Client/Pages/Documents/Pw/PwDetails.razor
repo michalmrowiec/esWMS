@@ -139,7 +139,8 @@ else
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
         var parameters = new DialogParameters<ApproveReceivedItemDialog>
         {
-            { x => x.DocumentItemVM, documentItem},
+            { x => x.WarehouseId, PwVM.IssueWarehouseId },
+            { x => x.DocumentItemVM, documentItem },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPw) } },
             { x => x.Uri, @"api/v1/Pw/approve-items" }
         };

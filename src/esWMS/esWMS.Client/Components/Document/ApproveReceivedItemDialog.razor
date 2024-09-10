@@ -19,7 +19,8 @@
         <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
 
         <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Single"
-                            SelectedWarehouseUnits="OnGet" />
+                            SelectedWarehouseUnits="OnGet"
+                            WarehouseIdFilter="@WarehouseId"/>
 
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />
@@ -112,6 +113,9 @@
 
     [Parameter]
     public DocumentItemVM DocumentItemVM { get; set; }
+
+    [Parameter]
+    public string? WarehouseId { get; set; }
 
     [Parameter]
     public string Uri { get; set; }

@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -136,12 +137,14 @@ else
     {
         InvokeAsync(RefreshZw);
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var parameters = new DialogParameters<ApproveZwItemDialog>
+        var parameters = new DialogParameters<ApproveReceivedItemDialog>
         {
-            { x => x.DocumentItemVM, documentItem},
-            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshZw) } }
+            { x => x.WarehouseId, ZwVM.IssueWarehouseId },
+            { x => x.DocumentItemVM, documentItem },
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshZw) } },
+            { x => x.Uri, @"api/v1/Zw/approve-items"}
         };
-        return DialogService.ShowAsync<ApproveZwItemDialog>(null, parameters, options);
+        return DialogService.ShowAsync<ApproveReceivedItemDialog>(null, parameters, options);
     }
 
     private async Task RefreshZw()
