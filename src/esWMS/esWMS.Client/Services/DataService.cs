@@ -1,7 +1,6 @@
 ﻿using esWMS.Client.ViewModels;
 using Newtonsoft.Json;
 using System.Text;
-using static MudBlazor.CategoryTypes;
 
 namespace esWMS.Client.Services
 {
@@ -27,14 +26,6 @@ namespace esWMS.Client.Services
 
         public async Task<HttpResponseMessage> Create(string uri, T item)
         {
-            //var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
-
-            //using var request = new HttpRequestMessage(HttpMethod.Post, uri);
-            //request.Content = postJson;
-
-            //var response = await _httpClient.SendAsync(request);
-
-            //return response;
             return await CreateObject(uri, item);
         }
 
@@ -93,7 +84,7 @@ namespace esWMS.Client.Services
         {
             var postJson = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
 
-            using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
+            using var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = postJson;
 
             var response = await _httpClient.SendAsync(request);
