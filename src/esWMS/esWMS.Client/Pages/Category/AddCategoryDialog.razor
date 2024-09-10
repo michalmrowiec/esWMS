@@ -1,7 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
-@inject ICategoryService categoryService
+@inject IDataService<CategoryVM> categoryService
 @inject ISnackbar Snackbar
 
 <MudDialog>
@@ -75,7 +75,7 @@
 
         if (form.IsValid)
         {
-            var response = await categoryService.CreateCategory(model);
+            var response = await categoryService.Create(@"api/v1/Category", model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 //Snackbar.Configuration.PositionClass = "Bottom-End";
@@ -93,7 +93,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var res = await categoryService.GetCategory(new SieveModelVM(1, 500, "", ""));
+        var res = await categoryService.GetPagedResult(@"api/v1/Category/get-filtered", new SieveModelVM(1, 500));
         parentCategories = res.Items.ToList();
     }
 }
