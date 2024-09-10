@@ -16,8 +16,8 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUni
             WarehouseUnit? warehouseUnit;
             try
             {
-                warehouseUnit = await _repository.GetByIdAsync(request.WarehouseUnitId);
-
+                var warehouseUnits = await _repository.GetWarehouseUnitsWithItemsByIdsAsync(request.WarehouseUnitId);
+                warehouseUnit = warehouseUnits.FirstOrDefault();
             }
             catch (Exception ex)
             {

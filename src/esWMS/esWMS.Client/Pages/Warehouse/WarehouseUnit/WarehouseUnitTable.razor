@@ -1,4 +1,6 @@
 ﻿@page "/warehouseunit"
+@using Newtonsoft.Json
+@using esWMS.Client.Components
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
@@ -7,6 +9,7 @@
 @inject IDataService<WarehouseUnitVM> warehouseUnitService
 @inject OnePageState onePageState
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <style>
     .selected-row {
@@ -88,6 +91,7 @@
                                   OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh></MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd>
@@ -109,6 +113,11 @@
             <MudIconButton Size="@Size.Small"
                            Icon="@Icons.Material.Outlined.EditLocation"
                            OnClick="@(async () => await OpenEditLocationDialogAsync(context))" />
+        </MudTh>
+                <MudTh>
+            <MudIconButton Size="@Size.Small"
+                           Icon="@Icons.Material.Outlined.Delete"
+                           OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
         </MudTh>
     </RowTemplate>
     <ChildRowContent>
@@ -194,6 +203,19 @@
     </MudButton>
 }
 
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
 @code {
     [Parameter]
     public SelectionType TypeOfSelection { get; set; } = SelectionType.None;
@@ -209,6 +231,8 @@
     private MudTable<WarehouseUnitVM> table;
     private Dictionary<string, bool> wuIdShow = new();
     private int totalItems;
+
+    private List<string> responseErrors = new();
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
@@ -315,6 +339,39 @@
             { x => x.FuncsOnSubmit, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<SetLocationModalDialog>(null, parameters, options);
+    }
+
+    private async Task OpenDeleteDialogAsync(WarehouseUnitVM warehouseUnitVM)
+    {
+        var parameters = new DialogParameters<DeleteConfirmDialog>
+        {
+            { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć jednostkę magazynową: {warehouseUnitVM.WarehouseUnitId} w lokalizacji: {warehouseUnitVM.LocationId ?? "brak lokalizacji"}?" }
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if(!result?.Canceled ?? false)
+        {
+            await DeleteAsync(warehouseUnitVM);
+        }
+    }
+
+    private async Task DeleteAsync(WarehouseUnitVM warehouseUnitVM)
+    {
+        var response = await warehouseUnitService.Delete(@"api/v1/WarehouseUnit/" + warehouseUnitVM.WarehouseUnitId);
+        if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+        {
+            Snackbar.Add(new MarkupString($"Usunięto jednostkę magazynową"), Severity.Success);
+            await table.ReloadServerData();
+        }
+        else
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        }
     }
 
     public enum SelectionType

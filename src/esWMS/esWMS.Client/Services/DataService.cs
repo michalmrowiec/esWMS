@@ -1,6 +1,7 @@
 ﻿using esWMS.Client.ViewModels;
 using Newtonsoft.Json;
 using System.Text;
+using static MudBlazor.CategoryTypes;
 
 namespace esWMS.Client.Services
 {
@@ -11,6 +12,7 @@ namespace esWMS.Client.Services
         Task<HttpResponseMessage> Create(string uri, T item);
         Task<HttpResponseMessage> CreateObject(string uri, object item);
         Task<HttpResponseMessage> Patch(string uri, object item);
+        Task<HttpResponseMessage> Delete(string uri);
     }
 
     public interface IDocumentDataService
@@ -35,6 +37,15 @@ namespace esWMS.Client.Services
 
             using var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = postJson;
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> Delete(string uri)
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
 
             var response = await _httpClient.SendAsync(request);
 

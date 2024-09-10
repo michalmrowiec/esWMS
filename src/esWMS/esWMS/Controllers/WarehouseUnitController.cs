@@ -105,7 +105,7 @@ namespace esWMS.Controllers
         }
 
         [HttpDelete("{warehouseUnitId}")]
-        public async Task<ActionResult> DeleteEmptyWarehouseUnit(string warehouseUnitId)
+        public async Task<ActionResult> DeleteEmptyWarehouseUnit([FromRoute] string warehouseUnitId)
         {
             var result = await _mediator.Send(new DeleteWarehouseUnitCommand(warehouseUnitId));
 
