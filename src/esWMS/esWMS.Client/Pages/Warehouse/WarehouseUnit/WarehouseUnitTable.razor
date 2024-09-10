@@ -49,14 +49,22 @@
                        OnClick="OnSearch" />
     </ToolBarContent>
     <ColGroup>
-        <col style="width:20%;" />
+        <col style="width:15%;" />
         <col />
         <col style="width:15%;" />
         <col style="width:10%;" />
         <col />
     </ColGroup>
     <HeaderContent>
-        <MudTh></MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ItemCount" T="WarehouseUnitVM">
+                Liczba pozycji
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="ItemCount"
+                                  OnChangedAction="OnSearch"
+                                  TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" />
+        </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="WarehouseUnitId" T="WarehouseUnitVM">
                 Id
@@ -95,11 +103,24 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd>
-            <MudButton Variant="Variant.Outlined"
-                       Size="Size.Small"
-                       OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
-                @((wuIdShow[context.WarehouseUnitId] == true) ? $"Ukryj pozycje ({context.WarehouseUnitItems.Count})" : $"Pokaż pozycje ({context.WarehouseUnitItems.Count})")
-            </MudButton>
+            @if (wuIdShow[context.WarehouseUnitId])
+            {
+                <MudButton Variant="Variant.Outlined"
+                           Size="Size.Small"
+                           EndIcon="@Icons.Material.Filled.KeyboardArrowUp"
+                           OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
+                    Pozycje (@context.WarehouseUnitItems.Count)
+                </MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Outlined"
+                           Size="Size.Small"
+                           EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+                           OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
+                    Pozycje (@context.WarehouseUnitItems.Count)
+                </MudButton>
+            }
         </MudTd>
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
@@ -114,7 +135,7 @@
                            Icon="@Icons.Material.Outlined.EditLocation"
                            OnClick="@(async () => await OpenEditLocationDialogAsync(context))" />
         </MudTh>
-                <MudTh>
+        <MudTh>
             <MudIconButton Size="@Size.Small"
                            Icon="@Icons.Material.Outlined.Delete"
                            OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
@@ -127,9 +148,6 @@
                 <td colspan="4">
                     <MudCard Elevation="0" Style="margin-left:50px;">
                         <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.body2">Pozycje jednostki: <strong>@context.WarehouseUnitId</strong></MudText>
-                            </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent Class="pa-0">
                             <MudTable Items="@context.WarehouseUnitItems.OrderBy(x => x.ProductId)"
@@ -236,6 +254,7 @@
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
+        { "ItemCount", new("ItemCount", ">", string.Empty) },
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") },
         { "IsBlocked", new("IsBlocked", "==", string.Empty) },
@@ -353,7 +372,7 @@
         var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
         var result = await dialog.Result;
 
-        if(!result?.Canceled ?? false)
+        if (!result?.Canceled ?? false)
         {
             await DeleteAsync(warehouseUnitVM);
         }
