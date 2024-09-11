@@ -139,17 +139,14 @@ namespace esWMS.Infrastructure.Repositories
 
         private async Task LoadStackOnRecursively(WarehouseUnit warehouseUnit, List<WarehouseUnit> stack)
         {
-            if (warehouseUnit.StackOnId != null)
-            {
-                var stackOn = await _context.WarehouseUnits
-                    .Include(x => x.StackOn)
-                    .FirstOrDefaultAsync(x => x.WarehouseUnitId == warehouseUnit.StackOnId);
+            var stackOn = await _context.WarehouseUnits
+                .Include(x => x.StackOn)
+                .FirstOrDefaultAsync(x => x.StackOnId == warehouseUnit.WarehouseUnitId);
 
-                if (stackOn != null)
-                {
-                    stack.Add(stackOn);
-                    await LoadStackOnRecursively(stackOn, stack);
-                }
+            if (stackOn != null)
+            {
+                stack.Add(stackOn);
+                await LoadStackOnRecursively(stackOn, stack);
             }
         }
     }

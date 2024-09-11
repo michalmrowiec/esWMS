@@ -30,7 +30,13 @@
                                  Clearable="true" />
             </MudTabPanel>
             <MudTabPanel Text="Piętrowanie" Icon="@Icons.Material.Filled.Layers" ID="@("stacking")">
+                <MudText>Piętrowane na: @stackOn?.WarehouseUnitId</MudText>
 
+                <WarehouseUnitTable ExceptWarehouseUnitIdFilter="new() { WarehouseUnit.WarehouseUnitId }"
+                                    WarehouseIdFilter="@WarehouseUnit.WarehouseId"
+                                    ShowOnlyCanStack
+                                    TypeOfSelection="WarehouseUnitTable.SelectionType.Single"
+                                    SelectedWarehouseUnits="OnSelected" />
             </MudTabPanel>
         </MudTabs>
     </DialogContent>
@@ -67,6 +73,13 @@
     private string searchString { get; set; } = "";
     private List<string> responseErrors = new();
     private MudTabs tabs;
+    private WarehouseUnitVM? stackOn;
+
+    private void OnSelected(HashSet<WarehouseUnitVM> warehouseUnits)
+    {
+        stackOn = warehouseUnits.FirstOrDefault();
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,13 +106,29 @@
 
     private async Task Submit()
     {
-        var requestBody = new
+        HttpResponseMessage response = new();
+        switch(tabs.ActivePanel.ID)
         {
-            WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
-            LocationId = searchString
-        };
+            case "location":
+                var requestBodyLocation = new
+                {
+                    WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
+                    LocationId = searchString
+                };
 
-        var response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-location", requestBody);
+                response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-location", requestBodyLocation);
+                break;
+            case "stacking":
+                var requestBodyStacking = new
+                {
+                    WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
+                    StackOnWarehouseUnitId = stackOn?.WarehouseUnitId
+                };
+
+                response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-stack-on", requestBodyStacking);
+                break;
+        }
+
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
             Snackbar.Add(new MarkupString("Pomyślnie zaktualizowano"), Severity.Success);

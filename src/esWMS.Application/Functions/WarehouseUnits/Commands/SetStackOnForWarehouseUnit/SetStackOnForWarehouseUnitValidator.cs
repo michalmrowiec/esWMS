@@ -24,9 +24,14 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWareh
                         context.AddFailure($"Warehouse unit with ID: {value} cannot be stacked.");
                     }
 
-                    if (warehouseUnit.LocationId != stackOnWarehouseUnit?.LocationId)
+                    if (warehouseUnit.WarehouseUnitId == stackOnWarehouseUnit?.StackOnId)
                     {
-                        context.AddFailure($"Warehouse unit with ID: {value} is not in the same location. Must be the same or empty.");
+                        context.AddFailure($"Warehouse unit with ID: {value} cannot be stacked on a warehouse unit that is already stacked on it.");
+                    }
+
+                    if (warehouseUnit.WarehouseUnitId == stackOnWarehouseUnit?.WarehouseUnitId)
+                    {
+                        context.AddFailure($"Warehouse unit with ID: {value} cannot be stacked on itself.");
                     }
                 });
 
@@ -40,6 +45,11 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWareh
                     {
                         context.AddFailure($"Warehouse unit with ID: {value} not found.");
                         return;
+                    }
+
+                    if (stackOnWarehouseUnit?.LocationId != warehouseUnit.LocationId)
+                    {
+                        context.AddFailure($"Warehouse unit with ID: {value} is not in the same location. Must be the same or empty.");
                     }
 
                     if (stackOnWarehouseUnit.CanBeStacked != true)

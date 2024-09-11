@@ -106,6 +106,14 @@
                                    Column="CanBeStacked"
                                    OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="StackOnId" T="WarehouseUnitVM">
+                Piętrowana na jednostce
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="StackOnId"
+                                  OnChangedAction="OnSearch" />
+        </MudTh>
         <MudTh></MudTh>
         <MudTh></MudTh>
     </HeaderContent>
@@ -142,7 +150,9 @@
             <MudCheckBox @bind-Value="@context.CanBeStacked"
                          Size="Size.Small"
                          Disabled />
-        </MudTd>        <MudTh>
+        </MudTd>
+        <MudTd DataLabel="Piętrowana na jednostce">@context.StackOnId</MudTd>
+        <MudTh>
             <MudIconButton Size="@Size.Small"
                            Icon="@Icons.Material.Outlined.EditLocation"
                            OnClick="@(async () => await OpenEditLocationDialogAsync(context))" />
@@ -252,6 +262,10 @@
     [Parameter]
     public string? WarehouseIdFilter { get; set; }
     [Parameter]
+    public HashSet<string>? ExceptWarehouseUnitIdFilter { get; set; }
+    [Parameter]
+    public bool ShowOnlyCanStack { get; set; } = false;
+    [Parameter]
     public bool ShowOnlyUnblocked { get; set; } = false;
     [Parameter]
     public EventCallback<HashSet<WarehouseUnitVM>> SelectedWarehouseUnits { get; set; }
@@ -271,7 +285,8 @@
         { "WarehouseId", new("WarehouseId") },
         { "IsBlocked", new("IsBlocked", "==", string.Empty) },
         { "LocationId", new("LocationId") },
-        { "CanBeStacked", new("CanBeStacked", "==", string.Empty) }
+        { "CanBeStacked", new("CanBeStacked", "==", string.Empty) },
+        { "StackOnId", new("StackOnId") }
     };
 
     private string GetRowClass(WarehouseUnitVM item, int rowIndex)
@@ -300,6 +315,19 @@
         {
             searchOptions["IsBlocked"].Operator = "==";
             searchOptions["IsBlocked"].Value = "false";
+        }
+        if (ExceptWarehouseUnitIdFilter != null)
+        {
+            if (ExceptWarehouseUnitIdFilter.Count > 0)
+            {
+                searchOptions["WarehouseUnitId"].Operator = "!=";
+                searchOptions["WarehouseUnitId"].Value = string.Join("|", ExceptWarehouseUnitIdFilter);
+            }
+        }
+        if (ShowOnlyCanStack)
+        {
+            searchOptions["CanBeStacked"].Operator = "==";
+            searchOptions["CanBeStacked"].Value = "true";
         }
     }
 
@@ -364,7 +392,7 @@
 
     private Task OpenEditLocationDialogAsync(WarehouseUnitVM warehouseUnit)
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true, MaxWidth = MaxWidth.Medium };
         var parameters = new DialogParameters<SetLocationModalDialog>
         {
             { x => x.WarehouseUnit, warehouseUnit },

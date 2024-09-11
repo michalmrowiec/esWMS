@@ -18,8 +18,9 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWareh
 
         public async Task<BaseResponse<WarehouseUnitDto>> Handle(SetStackOnForWarehouseUnitCommand request, CancellationToken cancellationToken)
         {
-            WarehouseUnit? warehouseUnit;
+            WarehouseUnit? warehouseUnit; //FIX
             WarehouseUnit? stackOnWarehouseUnit = null;
+            IList<WarehouseUnit> allStackOfWarehouseUnit; //FIX
             try
             {
                 warehouseUnit = await _warehouseUnitRepository.GetByIdAsync(request.WarehouseUnitId);
@@ -28,6 +29,8 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWareh
                 {
                     stackOnWarehouseUnit = await _warehouseUnitRepository.GetByIdAsync(request.StackOnWarehouseUnitId);
                 }
+
+                allStackOfWarehouseUnit = await _warehouseUnitRepository.GetAllStackOfWarehouseUnits(request.WarehouseUnitId);
             }
             catch (Exception ex)
             {
@@ -47,10 +50,21 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWareh
             {
                 warehouseUnit.StackOnId = stackOnWarehouseUnit!.WarehouseUnitId;
                 warehouseUnit.LocationId = stackOnWarehouseUnit.LocationId;
+
+                foreach (var wu in allStackOfWarehouseUnit)
+                {
+                    wu.LocationId = stackOnWarehouseUnit.LocationId;
+                }
             }
             else
             {
-                warehouseUnit.StackOn = null;
+                warehouseUnit.StackOnId = null;
+                warehouseUnit.LocationId = null;
+
+                foreach (var wu in allStackOfWarehouseUnit)
+                {
+                    wu.LocationId = null;
+                }
             }
             warehouseUnit.ModifiedAt = DateTime.Now;
             warehouseUnit.ModifiedBy = request.ModifiedBy;
