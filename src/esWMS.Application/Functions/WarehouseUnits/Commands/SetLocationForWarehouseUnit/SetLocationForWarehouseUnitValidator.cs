@@ -22,7 +22,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                     }
                 });
 
-            RuleFor(x => x.NewLocationId)
+            RuleFor(x => x.LocationId)
                 .Custom((value, context) =>
                 {
                     if (string.IsNullOrWhiteSpace(value))

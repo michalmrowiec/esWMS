@@ -96,7 +96,7 @@
         var requestBody = new
         {
             WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
-            NewLocationId = searchString
+            LocationId = searchString
         };
 
         var response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-location", requestBody);

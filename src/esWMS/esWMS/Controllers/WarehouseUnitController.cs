@@ -3,6 +3,7 @@ using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit;
+using esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
 using esWMS.Application.Responses;
 using esWMS.Services;
@@ -86,6 +87,32 @@ namespace esWMS.Controllers
                 setLocationForWarehouseUnitCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
             var result = await _mediator.Send(setLocationForWarehouseUnitCommand);
+
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
+
+        [HttpPatch("set-stack-on")]
+        public async Task<ActionResult<WarehouseUnitDto>> SetStackOnForWarehouseUnit
+            ([FromBody] SetStackOnForWarehouseUnitCommand setStackOnForWarehouseUnitCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                setStackOnForWarehouseUnitCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(setStackOnForWarehouseUnitCommand);
 
             switch (result.Status)
             {

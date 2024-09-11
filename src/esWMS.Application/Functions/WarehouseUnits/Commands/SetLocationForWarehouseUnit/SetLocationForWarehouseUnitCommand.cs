@@ -6,7 +6,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
     public class SetLocationForWarehouseUnitCommand : IRequest<BaseResponse<WarehouseUnitDto>>
     {
         public string WarehouseUnitId { get; set; } = null!;
-        public string? NewLocationId { get; set; }
+        public string? LocationId { get; set; }
         public string? ModifiedBy { get; set; }
     }
 }
