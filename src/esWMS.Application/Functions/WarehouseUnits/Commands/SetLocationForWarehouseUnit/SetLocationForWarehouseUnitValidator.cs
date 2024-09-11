@@ -20,6 +20,12 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                     {
                         context.AddFailure($"Warehouse unit with ID: {value} not found.");
                     }
+
+                    if(warehouseUnit!.StackOnId != null)
+                    {
+                        //optional change message
+                        context.AddFailure($"Warehouse unit with ID: {value} is stacked on another unit.");
+                    }
                 });
 
             RuleFor(x => x.LocationId)

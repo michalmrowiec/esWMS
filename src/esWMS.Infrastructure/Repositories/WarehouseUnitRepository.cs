@@ -112,5 +112,45 @@ namespace esWMS.Infrastructure.Repositories
                 throw;
             }
         }
+
+        public async Task<IList<WarehouseUnit>> GetAllStackOfWarehouseUnits(string baseWarehouseUnitId)
+        {
+            List<WarehouseUnit> stack = new List<WarehouseUnit>();
+            try
+            {
+                var result = await _context.WarehouseUnits.FirstOrDefaultAsync(x => x.WarehouseUnitId.Equals(baseWarehouseUnitId));
+
+                if (result == null)
+                {
+                    throw new KeyNotFoundException("The object with the given id was not found.");
+                }
+
+                stack.Add(result);
+
+                await LoadStackOnRecursively(result, stack);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving entity with Id: {EntityId}", baseWarehouseUnitId);
+                throw;
+            }
+            return stack;
+        }
+
+        private async Task LoadStackOnRecursively(WarehouseUnit warehouseUnit, List<WarehouseUnit> stack)
+        {
+            if (warehouseUnit.StackOnId != null)
+            {
+                var stackOn = await _context.WarehouseUnits
+                    .Include(x => x.StackOn)
+                    .FirstOrDefaultAsync(x => x.WarehouseUnitId == warehouseUnit.StackOnId);
+
+                if (stackOn != null)
+                {
+                    stack.Add(stackOn);
+                    await LoadStackOnRecursively(stackOn, stack);
+                }
+            }
+        }
     }
 }
