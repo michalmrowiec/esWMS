@@ -19,6 +19,9 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseE
             mapper.Property<WarehouseUnit>(x => x.LocationId)
                 .CanSort()
                 .CanFilter();
+            mapper.Property<WarehouseUnit>(x => x.CanBeStacked)
+                .CanSort()
+                .CanFilter();
         }
     }
 }

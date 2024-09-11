@@ -98,6 +98,14 @@
                                   Column="LocationId"
                                   OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="CanBeStacked" T="WarehouseUnitVM">
+                Możliwość piętrowania
+            </MudTableSortLabel>
+            <BoolColumnTableFilter SearchOptions="searchOptions"
+                                   Column="CanBeStacked"
+                                   OnChangedAction="OnSearch" />
+        </MudTh>
         <MudTh></MudTh>
         <MudTh></MudTh>
     </HeaderContent>
@@ -130,7 +138,11 @@
                          Disabled />
         </MudTd>
         <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
-        <MudTh>
+        <MudTd DataLabel="Możliwość piętrowania">
+            <MudCheckBox @bind-Value="@context.CanBeStacked"
+                         Size="Size.Small"
+                         Disabled />
+        </MudTd>        <MudTh>
             <MudIconButton Size="@Size.Small"
                            Icon="@Icons.Material.Outlined.EditLocation"
                            OnClick="@(async () => await OpenEditLocationDialogAsync(context))" />
@@ -258,7 +270,8 @@
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") },
         { "IsBlocked", new("IsBlocked", "==", string.Empty) },
-        { "LocationId", new("LocationId") }
+        { "LocationId", new("LocationId") },
+        { "CanBeStacked", new("CanBeStacked", "==", string.Empty) }
     };
 
     private string GetRowClass(WarehouseUnitVM item, int rowIndex)
