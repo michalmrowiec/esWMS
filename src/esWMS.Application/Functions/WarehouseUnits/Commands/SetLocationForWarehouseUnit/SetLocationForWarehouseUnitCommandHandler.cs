@@ -26,7 +26,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
             try
             {
                 warehouseUnit = await _warehouseUnitRepository.GetByIdAsync(request.WarehouseUnitId);
-                allStackOfWarehouseUnit = await _warehouseUnitRepository.GetAllStackOfWarehouseUnits(request.WarehouseUnitId);
+                allStackOfWarehouseUnit = await _warehouseUnitRepository.GetStackedWarehouseUnitsAboveAsync(request.WarehouseUnitId);
             }
             catch (Exception ex)
             {

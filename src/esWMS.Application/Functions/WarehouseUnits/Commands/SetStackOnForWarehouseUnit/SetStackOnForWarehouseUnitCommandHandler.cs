@@ -30,7 +30,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWareh
                     stackOnWarehouseUnit = await _warehouseUnitRepository.GetByIdAsync(request.StackOnWarehouseUnitId);
                 }
 
-                allStackOfWarehouseUnit = await _warehouseUnitRepository.GetAllStackOfWarehouseUnits(request.WarehouseUnitId);
+                allStackOfWarehouseUnit = await _warehouseUnitRepository.GetStackedWarehouseUnitsAboveAsync(request.WarehouseUnitId);
             }
             catch (Exception ex)
             {
