@@ -12,6 +12,8 @@
     <DialogContent>
         <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6" @ref="tabs">
             <MudTabPanel Text="Lokalizacja" Icon="@Icons.Material.Filled.LocationOn" ID="@("location")">
+                <MudText>Przypisz jednostkę magazynową do lokalizacji - tylko jednoski wolnostojące i podstawy jednostek piętrowanych (automatycznie przypisze lokalizację do piętrowanych).</MudText>
+                <MudText>Jeśli lokalizacja nie zostanie wybrana z listy, usunie lokalizację.</MudText>
                 <MudTextField T="string"
                               Value="@WarehouseUnit.WarehouseUnitId"
                               Label="Id jednostki magazynowej"
@@ -30,6 +32,8 @@
                                  Clearable="true" />
             </MudTabPanel>
             <MudTabPanel Text="Piętrowanie" Icon="@Icons.Material.Filled.Layers" ID="@("stacking")">
+                <MudText>Piętruj jednoskię na innej. Przypisuje lokalizację wybranej jednoski, na której jest piętrowana.</MudText>
+                <MudText>Jeśli jednoska nie zostanie wybrana z listy, usunie piętrowanie.</MudText>
                 <MudText>Piętrowane na: @stackOn?.WarehouseUnitId</MudText>
 
                 <WarehouseUnitTable ExceptWarehouseUnitIdFilter="new() { WarehouseUnit.WarehouseUnitId }"
@@ -37,6 +41,25 @@
                                     ShowOnlyCanStack
                                     TypeOfSelection="WarehouseUnitTable.SelectionType.Single"
                                     SelectedWarehouseUnits="OnSelected" />
+            </MudTabPanel>
+            <MudTabPanel Text="Przeniesienie" Icon="@Icons.Material.Filled.LayersClear" ID="@("stackingOff")">
+                <MudText>Zdejmi jednoskię (i wszyskie na niej piętrowane) i przypisz nową lokalizację.</MudText>
+                <MudTextField T="string"
+                              Value="@WarehouseUnit.WarehouseUnitId"
+                              Label="Id jednostki magazynowej"
+                              Disabled />
+
+                <MudTextField T="string"
+                              Value="@(string.IsNullOrEmpty(WarehouseUnit.LocationId) ? "Brak" : WarehouseUnit.LocationId)"
+                              Label="Aktualna lokalizacja"
+                              Disabled />
+
+                <MudAutocomplete @bind-Value="@searchString"
+                                 SearchFunc="Search"
+                                 Variant="Variant.Text"
+                                 Label="Nowa lokalizacja"
+                                 Dense="false"
+                                 Clearable="true" />
             </MudTabPanel>
         </MudTabs>
     </DialogContent>
@@ -107,7 +130,7 @@
     private async Task Submit()
     {
         HttpResponseMessage response = new();
-        switch(tabs.ActivePanel.ID)
+        switch (tabs.ActivePanel.ID)
         {
             case "location":
                 var requestBodyLocation = new
@@ -126,6 +149,16 @@
                 };
 
                 response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-stack-on", requestBodyStacking);
+                break;
+            case "stackingOff":
+                var requestBodyStackingOff = new
+                {
+                    WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
+                    LocationId = searchString,
+                    RemoveFromStack = true
+                };
+
+                response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-location", requestBodyStackingOff);
                 break;
         }
 

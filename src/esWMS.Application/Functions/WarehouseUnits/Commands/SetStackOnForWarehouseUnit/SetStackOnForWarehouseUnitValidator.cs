@@ -47,10 +47,13 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWareh
                         return;
                     }
 
-                    if (stackOnWarehouseUnit?.LocationId != warehouseUnit.LocationId)
-                    {
-                        context.AddFailure($"Warehouse unit with ID: {value} is not in the same location. Must be the same or empty.");
-                    }
+                    //if (stackOnWarehouseUnit?.LocationId != warehouseUnit.LocationId)
+                    //{
+                    //    if (!string.IsNullOrWhiteSpace(warehouseUnit.LocationId))
+                    //    {
+                    //        context.AddFailure($"Warehouse unit with ID: {value} is not in the same location. Must be the same or empty.");
+                    //    }
+                    //}
 
                     if (stackOnWarehouseUnit.CanBeStacked != true)
                     {

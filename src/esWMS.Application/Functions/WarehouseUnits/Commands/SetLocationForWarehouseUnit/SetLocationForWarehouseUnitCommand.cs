@@ -7,6 +7,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
     {
         public string WarehouseUnitId { get; set; } = null!;
         public string? LocationId { get; set; }
+        public bool RemoveFromStack { get; set; } = false;
         public string? ModifiedBy { get; set; }
     }
 }

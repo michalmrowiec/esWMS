@@ -53,6 +53,11 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
             {
                 warehouseUnit.LocationId = newLocationResponse!.ReturnedObj!.LocationId;
 
+                if(request.RemoveFromStack)
+                {
+                    warehouseUnit.StackOnId = null;
+                }
+
                 foreach (var wu in allStackOfWarehouseUnit)
                 {
                     wu.LocationId = newLocationResponse!.ReturnedObj!.LocationId;
