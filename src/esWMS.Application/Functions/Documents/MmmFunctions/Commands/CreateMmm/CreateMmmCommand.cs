@@ -16,6 +16,6 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
         public DateTime? GoodsReleaseDate { get; set; }
         public string ToWarehouseId { get; set; } = null!;
 
-        public List<UpdateWarehouseUnitCommand> WarehouseUnits { get; set; } = [];
+        public List<string> WarehouseUnitIds { get; set; } = [];
     }
 }

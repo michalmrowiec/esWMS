@@ -1,38 +1,35 @@
-﻿using FluentValidation;
+﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+using FluentValidation;
 
 namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
 {
     internal class CreateMmmValidator : AbstractValidator<CreateMmmCommand>
     {
-        public CreateMmmValidator()
+        public CreateMmmValidator(List<WarehouseUnit> warehouseUnitsToMove)
         {
-            RuleForEach(x => x.WarehouseUnits)
+            RuleFor(x => x.WarehouseUnitIds)
                 .NotEmpty()
-                .NotNull();
-
-            //RuleForEach(x => x.WarehouseUnits)
-            //    .ChildRules(wu =>
-            //        wu.RuleForEach(x => x.WarehouseUnitItems)
-            //            .ChildRules(wui =>
-            //            {
-            //                wui.RuleFor(x => x.Quantity)
-            //                    .GreaterThan(0);
-
-            //                wui.RuleFor(x => x.BlockedQuantity)
-            //                    .Equals(0); // not working??
-            //            }));
-
-            RuleFor(x => x.WarehouseUnits)
+                .NotNull()
                 .Custom((value, context) =>
                 {
-                    if (value.Any(wu => wu.IsBlocked))
+                    if (warehouseUnitsToMove.Any(wu => wu.IsBlocked))
                     {
                         context.AddFailure(
-                            "WarehouseUnits",
-                            $"The following warehouse units are blocked: {string.Join(", ", value.Where(wu => wu.IsBlocked))}.");
+                            "WarehouseUnitIds",
+                            $"The following warehouse units are blocked: {string.Join(", ", warehouseUnitsToMove.Where(wu => wu.IsBlocked))}.");
                     }
 
-                    var wuis = value.SelectMany(wu => wu.WarehouseUnitItems).ToList();
+                    foreach (var wu in warehouseUnitsToMove)
+                    {
+                        if (wu.WarehouseUnitItems.Count == 0)
+                        {
+                            context.AddFailure(
+                                "WarehouseUnitIds",
+                                $"Warehouse unit with ID: {wu.WarehouseUnitId} does not contain any items.");
+                        }
+                    }
+
+                    var wuis = warehouseUnitsToMove.SelectMany(wu => wu.WarehouseUnitItems).ToList();
 
                     foreach (var wui in wuis)
                     {
@@ -44,9 +41,9 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                         if (wui.BlockedQuantity != 0)
                         {
                             context.AddFailure(
-                                "WarehouseUnits",
+                                "WarehouseUnitIds",
                                 $"Warehouse unit items can only contain items that are not locked. " +
-                                $"However, the warehouse unit item with ID: {wui.WarehouseUnitItemId} has a lock on {wui.BlockedQuantity} items.");
+                                $"However, the warehouse unit with ID: {wui.WarehouseUnitId} has item with ID: {wui.WarehouseUnitItemId} thath has a lock on {wui.BlockedQuantity} items.");
                         }
                     }
                 });
@@ -56,7 +53,6 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                 .WithMessage("The destination warehouse cannot be the source warehouse.")
                 .NotEmpty()
                 .NotNull();
-
         }
     }
 }

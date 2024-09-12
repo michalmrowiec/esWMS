@@ -13,13 +13,21 @@
          Validation="@(validator.ValidateValue)"
          ValidationDelay="0" Spacing="4">
 
+    @if (showInfoAlert)
+    {
+        <MudAlert Severity="Severity.Info"
+                  ContentAlignment="HorizontalAlignment.Left"
+                  ShowCloseIcon="true"
+                  CloseIconClicked="(() => CloseInfo())">Jednostki piętrowane będą przesunięte w całości, nawet jeśli zostanie wybrana tylko jedna ze stosu.</MudAlert>
+    }
+
     <MudSelect T="string"
                @bind-Value="model.IssueWarehouseId"
                Label="Magazyn wydający"
                AnchorOrigin="Origin.BottomCenter"
                For="@(() => model.IssueWarehouseId)"
                Immediate="true"
-               Disabled="@(model.WarehouseUnits.Count > 0)">
+               Disabled="@(warehouseUnits.Count > 0)">
         @foreach (var warehouse in warehouses)
         {
             <MudSelectItem Value="@warehouse.WarehouseId">
@@ -69,7 +77,7 @@
     </MudButton>
 
     <MudDataGrid T="WarehouseUnitVM"
-                 Items="@model.WarehouseUnits"
+                 Items="@warehouseUnits"
                  Dense>
         <Columns>
             <PropertyColumn Title="Id jednostki magazynowej" Property="x => x.WarehouseUnitId" />
@@ -79,7 +87,7 @@
                     <MudStack Row>
                         <MudIconButton Size="@Size.Small"
                                        Icon="@Icons.Material.Outlined.Delete"
-                                       OnClick="@(() => { model.WarehouseUnits.Remove(item.Item); StateHasChanged(); })" />
+                                       OnClick="@(() => { warehouseUnits.Remove(item.Item); StateHasChanged(); })" />
                     </MudStack>
                 </CellTemplate>
             </TemplateColumn>
@@ -89,7 +97,7 @@
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary" Class="ml-auto"
                OnClick="@(async () => await Submit())"
-               Disabled="@(model.WarehouseUnits.Count == 0 || model.ToWarehouseId == null)">
+               Disabled="@(warehouseUnits.Count == 0 || model.ToWarehouseId == null)">
         Utwórz
     </MudButton>
 </MudForm>
@@ -115,6 +123,13 @@
     private List<string> responseErrors = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+    private bool showInfoAlert = true;
+    public IList<WarehouseUnitVM> warehouseUnits { get; set; } = [];
+
+    private void CloseInfo()
+    {
+        showInfoAlert = false;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -136,11 +151,12 @@
 
     private void OnGet(List<WarehouseUnitVM> warehouseUnitVMs)
     {
-        model.WarehouseUnits = warehouseUnitVMs;
+        warehouseUnits = warehouseUnitVMs;
     }
 
     private async Task Submit()
     {
+        model.WarehouseUnitIds = warehouseUnits.Select(x => x.WarehouseUnitId).ToList();
         responseErrors = new();
         await form.Validate();
 

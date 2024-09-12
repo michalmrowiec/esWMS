@@ -118,7 +118,10 @@ namespace esWMS.Infrastructure.Repositories
             List<WarehouseUnit> stackAbove = new List<WarehouseUnit>();
             try
             {
-                var result = await _context.WarehouseUnits.FirstOrDefaultAsync(x => x.WarehouseUnitId.Equals(warehouseUnitId));
+                var result = await _context.WarehouseUnits
+                    .Include(x => x.WarehouseUnitItems)
+                        .ThenInclude(x => x.Product)
+                    .FirstOrDefaultAsync(x => x.WarehouseUnitId.Equals(warehouseUnitId));
 
                 if (result == null)
                 {
@@ -143,6 +146,8 @@ namespace esWMS.Infrastructure.Repositories
             while (currentUnit != null)
             {
                 var nextUnit = await _context.WarehouseUnits
+                    .Include(x => x.WarehouseUnitItems)
+                        .ThenInclude(x => x.Product)
                     .FirstOrDefaultAsync(x => x.StackOnId == currentUnit.WarehouseUnitId);
 
                 if (nextUnit == null) break;
@@ -162,6 +167,8 @@ namespace esWMS.Infrastructure.Repositories
             while (currentUnit?.StackOnId != null)
             {
                 var nextUnit = await _context.WarehouseUnits
+                    .Include(x => x.WarehouseUnitItems)
+                        .ThenInclude(x => x.Product)
                     .FirstOrDefaultAsync(x => x.WarehouseUnitId == currentUnit.StackOnId);
 
                 if (nextUnit == null) break;
@@ -181,6 +188,8 @@ namespace esWMS.Infrastructure.Repositories
             try
             {
                 var result = await _context.WarehouseUnits
+                    .Include(x => x.WarehouseUnitItems)
+                        .ThenInclude(x => x.Product)
                     .FirstOrDefaultAsync(x => x.WarehouseUnitId.Equals(warehouseUnitId));
 
                 if (result == null)

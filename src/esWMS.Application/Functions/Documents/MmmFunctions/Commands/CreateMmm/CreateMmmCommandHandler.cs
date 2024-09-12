@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Models;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
@@ -31,27 +33,53 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
         public async Task<BaseResponse<MmmDto>> Handle
             (CreateMmmCommand request, CancellationToken cancellationToken)
         {
-            var productResponse = await _mediator.Send(
-                new GetSortedFilteredProductsQuery(
-                    new SieveModel()
-                    {
-                        Page = 1,
-                        PageSize = 1000,
-                        Filters = "ProductId==" + string.Join('|', request.WarehouseUnits.SelectMany(wu => wu.WarehouseUnitItems).Select(wui => wui.ProductId).Distinct())
-                    }));
+            List<WarehouseUnit> warehouseUnitsToMove = [];
+            BaseResponse<PagedResult<ProductDto>>? productResponse = null;
+            List<ProductDto> products = [];
 
-            List<ProductDto> products = productResponse.ReturnedObj?.Items.ToList() ?? [];
-
-            if (!productResponse.IsSuccess() || products.Count == 0)
+            try
             {
-                return new BaseResponse<MmmDto>(productResponse.Status, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
+                foreach (var wuId in request.WarehouseUnitIds.Distinct())
+                {
+                    var warehouseUnit = await _warehouseUnitRepository.GetFullWarehouseUnitStackAsync(wuId);
+
+                    if (warehouseUnit == null)
+                    {
+                        return new BaseResponse<MmmDto>(BaseResponse.ResponseStatus.NotFound, "Warehouse unit not found.");
+                    }
+
+                    warehouseUnitsToMove.AddRange(warehouseUnit);
+                }
+
+                warehouseUnitsToMove = warehouseUnitsToMove.Distinct().ToList();
+
+                productResponse = await _mediator.Send(
+                    new GetSortedFilteredProductsQuery(
+                        new SieveModel()
+                        {
+                            Page = 1,
+                            PageSize = 1000,
+                            Filters = "ProductId==" + string.Join('|', warehouseUnitsToMove.SelectMany(wu => wu.WarehouseUnitItems).Select(wui => wui.ProductId).Distinct())
+                        }));
+
+                products = productResponse.ReturnedObj?.Items.ToList() ?? [];
+            }
+            catch (Exception)
+            {
+                return new BaseResponse<MmmDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
+                throw;
             }
 
-            var validationResult = await new CreateMmmValidator().ValidateAsync(request, cancellationToken);
+            var validationResult = await new CreateMmmValidator(warehouseUnitsToMove).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
                 return new BaseResponse<MmmDto>(validationResult);
+            }
+
+            if (!productResponse.IsSuccess() || products.Count == 0)
+            {
+                return new BaseResponse<MmmDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
             }
 
             var entityMmm = _mapper.Map<MMM>(request);
@@ -67,7 +95,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
             entityMmm.CreatedAt = DateTime.Now;
             entityMmm.CreatedBy = request.CreatedBy;
 
-            foreach (var wu in request.WarehouseUnits)
+            foreach (var wu in warehouseUnitsToMove)
             {
                 foreach (var wui in wu.WarehouseUnitItems)
                 {
@@ -98,7 +126,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                         WarehouseUnitItemId = wui.WarehouseUnitItemId,
                         Quantity = wui.Quantity,
                         CreatedAt = DateTime.Now,
-                        
+
                         DocumentItem = null,
                         WarehouseUnitItem = null
                     });
@@ -121,7 +149,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                 var createdMmm = await _mmmRepository.CreateAsync(entityMmm);
 
                 var warehouseUnits = await _warehouseUnitRepository
-                    .SetWarehouseUnitsBlockedStatusAsync(true, request.WarehouseUnits.Select(wu => wu.WarehouseUnitId).ToArray());
+                    .SetWarehouseUnitsBlockedStatusAsync(true, warehouseUnitsToMove.Select(wu => wu.WarehouseUnitId).ToArray());
 
                 await _transactionManager.CommitTransactionAsync();
 
