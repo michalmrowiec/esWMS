@@ -141,9 +141,14 @@
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
         <MudTd DataLabel="Zablokowana">
-            <MudCheckBox @bind-Value="@context.IsBlocked"
-                         Size="Size.Small"
-                         Disabled />
+            @*             <MudCheckBox @bind-Value="@context.IsBlocked"
+            Color="Color.Warning"
+            Size="Size.Small"
+            Disabled="false" /> *@
+            @if (context.IsBlocked)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Block" />
+            }
         </MudTd>
         <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
         <MudTd DataLabel="Możliwość piętrowania">
@@ -157,11 +162,14 @@
                            Icon="@Icons.Material.Outlined.EditLocation"
                            OnClick="@(async () => await OpenEditLocationDialogAsync(context))" />
         </MudTh>
-        <MudTh>
-            <MudIconButton Size="@Size.Small"
-                           Icon="@Icons.Material.Outlined.Delete"
-                           OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
-        </MudTh>
+        @if (context.WarehouseUnitItems.Count == 0)
+        {
+            <MudTh>
+                <MudIconButton Size="@Size.Small"
+                               Icon="@Icons.Material.Outlined.Delete"
+                               OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
+            </MudTh>
+        }
     </RowTemplate>
     <ChildRowContent>
         @if (wuIdShow[context.WarehouseUnitId] == true)

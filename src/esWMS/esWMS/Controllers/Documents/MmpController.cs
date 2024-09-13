@@ -1,7 +1,10 @@
 ﻿using esMWS.Domain.Models;
+using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Documents.MmpFunctions;
 using esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp;
+using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetListOfWarehouseUnitsInMMP;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetSortedFilteredMmp;
+using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById;
 using esWMS.Application.Responses;
 using esWMS.Services;
 using MediatR;
@@ -59,6 +62,50 @@ namespace esWMS.Controllers.Documents
                 approveMmpCommand.ModifiedBy = _userContextService.GetUserId.ToString();
 
             var result = await _mediator.Send(approveMmpCommand);
+
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<MmpDto>> GetMmp([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new GetMmpByIdQuery(documentId));
+
+            switch (result.Status)
+            {
+                case BaseResponse.ResponseStatus.Success:
+                    return Ok(result.ReturnedObj);
+                case BaseResponse.ResponseStatus.ValidationError:
+                    return BadRequest(result.ValidationErrors);
+                case BaseResponse.ResponseStatus.ServerError:
+                    return StatusCode(500);
+                case BaseResponse.ResponseStatus.NotFound:
+                    return NotFound();
+                case BaseResponse.ResponseStatus.BadQuery:
+                    return BadRequest(result.Message);
+                default:
+                    return BadRequest();
+            }
+        }
+
+        [HttpGet("warehouse-unit-ids")]
+        public async Task<ActionResult<string[]>> GetMmpWarehouseUnitIds([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new GetListOfWarehouseUnitIdsRelatedMMPQuery(documentId));
 
             switch (result.Status)
             {

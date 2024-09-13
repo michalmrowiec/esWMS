@@ -3,6 +3,7 @@ using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Queries.GetSortedFilteredMmm;
+using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetListOfWarehouseUnitsInMMP;
 using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById;
 using esWMS.Application.Responses;
 using esWMS.Services;
@@ -105,8 +106,8 @@ namespace esWMS.Controllers.Documents
             }
         }
 
-        [HttpGet("{documentId}")]
-        public async Task<ActionResult<MmmDto>> GetMmm([FromRoute] string documentId)
+        [HttpGet]
+        public async Task<ActionResult<MmmDto>> GetMmm([FromQuery] string documentId)
         {
             var result = await _mediator.Send(new GetMmmByIdQuery(documentId));
 

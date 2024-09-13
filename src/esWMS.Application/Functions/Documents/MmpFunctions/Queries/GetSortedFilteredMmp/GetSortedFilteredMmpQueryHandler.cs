@@ -18,7 +18,6 @@ namespace esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetSortedFi
         public async Task<BaseResponse<PagedResult<MmpDto>>> Handle(GetSortedFilteredMmpQuery request, CancellationToken cancellationToken)
         {
             return await request.SieveModel.Handle<MmpDto, MMP>(_mapper, _mmpRepository);
-
         }
     }
 }
