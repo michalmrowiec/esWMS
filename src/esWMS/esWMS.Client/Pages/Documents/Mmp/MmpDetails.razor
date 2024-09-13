@@ -1,9 +1,11 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
 @inject IDataService<MmpVM> mmpDataService
+@inject IDataService<WarehouseUnitVM> warehouseUnitDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 
@@ -90,6 +92,12 @@
     </Columns>
 </MudDataGrid>
 
+@if (!MmpVM.IsApproved && warehouseUnitIds.Count > 0)
+{
+    <WarehouseUnitTable WarehouseUnitIdFilter="@warehouseUnitIds"
+                        TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.None" />
+}
+
 @if (MmpVM.DocumentItems.All(x => x.IsApproved) &&
 !MmpVM.IsApproved)
 {
@@ -143,6 +151,7 @@ else
     public List<EventCallback>? EventCallbacks { get; set; }
 
     private List<string> responseErrors = new();
+    public HashSet<string> warehouseUnitIds = new();
 
     // private Task OpenDialogAsync(DocumentItemVM documentItem)
     // {
@@ -155,6 +164,25 @@ else
     //     };
     //     return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
     // }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!MmpVM.IsApproved)
+        {
+            var idsResponse = await mmpDataService.Get(@"api/v1/Mmp/warehouse-unit-ids", new() { { "DocumentId", MmpVM.DocumentId } });
+            if (idsResponse == null)
+            {
+                return;
+            }
+
+            var json = await idsResponse.Content.ReadAsStringAsync();
+            var resObj = JsonConvert.DeserializeObject<string[]>(json);
+
+            warehouseUnitIds = resObj?.ToHashSet<string>() ?? new();
+
+            StateHasChanged();
+        }
+    }
 
     private async Task RefreshMmp()
     {
@@ -186,7 +214,6 @@ else
             await RefreshMmp();
 
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{MmpVM.DocumentId}</b>"), Severity.Success);
-
         }
         else
         {

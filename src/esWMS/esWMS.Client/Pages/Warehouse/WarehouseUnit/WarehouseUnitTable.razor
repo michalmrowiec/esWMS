@@ -147,7 +147,8 @@
             Disabled="false" /> *@
             @if (context.IsBlocked)
             {
-                <MudIcon Icon="@Icons.Material.Filled.Block" />
+                <MudIcon Icon="@Icons.Material.Filled.Block"
+                         Size="Size.Small" />
             }
         </MudTd>
         <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
@@ -272,6 +273,8 @@
     [Parameter]
     public HashSet<string>? ExceptWarehouseUnitIdFilter { get; set; }
     [Parameter]
+    public HashSet<string>? WarehouseUnitIdFilter { get; set; }
+    [Parameter]
     public bool ShowOnlyCanStack { get; set; } = false;
     [Parameter]
     public bool ShowOnlyUnblocked { get; set; } = false;
@@ -330,6 +333,14 @@
             {
                 searchOptions["WarehouseUnitId"].Operator = "!=";
                 searchOptions["WarehouseUnitId"].Value = string.Join("|", ExceptWarehouseUnitIdFilter);
+            }
+        }
+        if (WarehouseUnitIdFilter != null)
+        {
+            if (WarehouseUnitIdFilter.Count > 0)
+            {
+                searchOptions["WarehouseUnitId"].Operator = "==";
+                searchOptions["WarehouseUnitId"].Value = string.Join("|", WarehouseUnitIdFilter);
             }
         }
         if (ShowOnlyCanStack)
