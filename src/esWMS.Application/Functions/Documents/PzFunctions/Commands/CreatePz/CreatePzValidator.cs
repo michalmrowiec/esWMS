@@ -6,7 +6,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 {
     internal class CreatePzValidator : CreateBaseDocumentValidator<CreatePzCommand>
     {
-        public CreatePzValidator(IList<ProductDto> productsFromDocumentItems)
+        public CreatePzValidator(IEnumerable<ProductDto> productsFromDocumentItems)
         {
             RuleFor(x => x.DocumentItems)
                 .NotEmpty()
