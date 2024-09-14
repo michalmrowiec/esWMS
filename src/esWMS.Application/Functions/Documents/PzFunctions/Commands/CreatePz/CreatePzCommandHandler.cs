@@ -2,7 +2,6 @@
 using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
-using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Services;
 using esWMS.Application.Responses;
@@ -13,16 +12,12 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
     internal class CreatePzCommandHandler
         (IPzRepository repository,
         IProductService productService,
-        IMediator mediator,
-        IMapper mapper,
-        ITransactionManager transactionManager)
+        IMapper mapper)
         : IRequestHandler<CreatePzCommand, BaseResponse<PzDto>>
     {
         private readonly IPzRepository _repository = repository;
         private readonly IProductService _productService = productService;
-        private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
-        private readonly ITransactionManager _transactionManager = transactionManager;
 
         public async Task<BaseResponse<PzDto>> Handle
             (CreatePzCommand request, CancellationToken cancellationToken)
@@ -44,7 +39,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
                 return new BaseResponse<PzDto>(validationResult);
             }
 
-            var entity = await CreatePZ(request, productsResponse.Products);
+            var entity = await CreatePz(request, productsResponse.Products);
 
             if (entity == null)
             {
@@ -55,7 +50,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             return await SavePzEntityAsync(entity);
         }
 
-        private async Task<PZ?> CreatePZ(CreatePzCommand request, IEnumerable<ProductDto> products)
+        private async Task<PZ?> CreatePz(CreatePzCommand request, IEnumerable<ProductDto> products)
         {
             var entity = _mapper.Map<PZ>(request);
 
