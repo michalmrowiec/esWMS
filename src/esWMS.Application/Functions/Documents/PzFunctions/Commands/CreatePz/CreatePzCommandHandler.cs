@@ -4,21 +4,22 @@ using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.Products;
-using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
+using esWMS.Application.Functions.Services;
 using esWMS.Application.Responses;
 using MediatR;
-using Sieve.Models;
 
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 {
     internal class CreatePzCommandHandler
         (IPzRepository repository,
+        IProductService productService,
         IMediator mediator,
         IMapper mapper,
         ITransactionManager transactionManager)
         : IRequestHandler<CreatePzCommand, BaseResponse<PzDto>>
     {
         private readonly IPzRepository _repository = repository;
+        private readonly IProductService _productService = productService;
         private readonly IMediator _mediator = mediator;
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
@@ -26,16 +27,16 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
         public async Task<BaseResponse<PzDto>> Handle
             (CreatePzCommand request, CancellationToken cancellationToken)
         {
-            var products = await GetProducts(request.DocumentItems.Select(x => x.ProductId));
+            var productsResponse = await _productService.GetProductsAsync(request.DocumentItems.Select(x => x.ProductId));
 
-            if (products == null)
+            if (!productsResponse.IsSuccess)
             {
                 return new BaseResponse<PzDto>(
                     BaseResponse.ResponseStatus.ServerError,
                     "Error retrieving products for the document.");
             }
 
-            var validationResult = await new CreatePzValidator(products)
+            var validationResult = await new CreatePzValidator(productsResponse.Products)
                 .ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
@@ -43,7 +44,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
                 return new BaseResponse<PzDto>(validationResult);
             }
 
-            var entity = await CreatePZ(request, products);
+            var entity = await CreatePZ(request, productsResponse.Products);
 
             if (entity == null)
             {
@@ -52,23 +53,6 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             }
 
             return await SavePzEntityAsync(entity);
-        }
-
-        private async Task<IEnumerable<ProductDto>?> GetProducts(IEnumerable<string> productsIds)
-        {
-            var productResponse = await _mediator.Send(
-                new GetSortedFilteredProductsQuery(
-                    new SieveModel()
-                    {
-                        Page = 1,
-                        PageSize = 500,
-                        Filters = "ProductId==" + string.Join('|', productsIds.Distinct())
-                    }));
-
-            if (!productResponse.IsSuccess())
-                return null;
-
-            return productResponse.ReturnedObj?.Items ?? [];
         }
 
         private async Task<PZ?> CreatePZ(CreatePzCommand request, IEnumerable<ProductDto> products)

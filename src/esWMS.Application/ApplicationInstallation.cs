@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using esWMS.Application.Functions.Services;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace esWMS.Application
@@ -13,6 +14,7 @@ namespace esWMS.Application
             });
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddScoped<IProductService, ProductService>();
         }
     }
 }
