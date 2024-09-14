@@ -5,7 +5,7 @@ using esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
-using esWMS.Application.Responses;
+using esWMS.Controllers.Utils;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -40,21 +40,7 @@ namespace esWMS.Controllers
 
             var result = await _mediator.Send(createWarehouseUnit);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Created("", result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleCreatedResult(this, "");
         }
 
         [HttpPost("get-filtered")]
@@ -62,21 +48,7 @@ namespace esWMS.Controllers
         {
             var result = await _mediator.Send(new GetSortedFilteredWarehouseUnitsQuery(sieveModel));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpPatch("set-location")]
@@ -88,21 +60,7 @@ namespace esWMS.Controllers
 
             var result = await _mediator.Send(setLocationForWarehouseUnitCommand);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpPatch("set-stack-on")]
@@ -114,21 +72,7 @@ namespace esWMS.Controllers
 
             var result = await _mediator.Send(setStackOnForWarehouseUnitCommand);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpDelete("{warehouseUnitId}")]
@@ -136,21 +80,7 @@ namespace esWMS.Controllers
         {
             var result = await _mediator.Send(new DeleteWarehouseUnitCommand(warehouseUnitId));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return NoContent();
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleNoContentResult(this);
         }
     }
 }

@@ -2,7 +2,7 @@
 using esWMS.Application.Functions.Warehouses;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouseStocks;
-using esWMS.Application.Responses;
+using esWMS.Controllers.Utils;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -33,21 +33,7 @@ namespace esWMS.Controllers
         {
             var result = await _mediator.Send(new GetSortedFilteredWarehousesQuery(sieveModel));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpPost("get-filtered-stocks")]
@@ -56,21 +42,7 @@ namespace esWMS.Controllers
         {
             var result = await _mediator.Send(new GetSortedFilteredWarehouseStocksQuery(sieveModel, warehouseId));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
     }
 }

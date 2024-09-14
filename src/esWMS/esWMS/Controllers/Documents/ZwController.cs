@@ -5,7 +5,7 @@ using esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwItems;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw;
 using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetEligibleItemsForZwReturn;
 using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetSortedFilteredZw;
-using esWMS.Application.Responses;
+using esWMS.Controllers.Utils;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -39,21 +39,7 @@ namespace esWMS.Controllers.Documents
 
             var result = await _mediator.Send(createZwCommand);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Created("", result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleCreatedResult(this, "");
         }
 
         [HttpPost("approve-items")]
@@ -65,21 +51,7 @@ namespace esWMS.Controllers.Documents
 
             var result = await _mediator.Send(approveZwItemsCommand);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpPost("approve")]
@@ -91,21 +63,7 @@ namespace esWMS.Controllers.Documents
 
             var result = await _mediator.Send(approveZwCommand);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpPost("get-filtered")]
@@ -114,21 +72,7 @@ namespace esWMS.Controllers.Documents
         {
             var result = await _mediator.Send(new GetSortedFilteredZwQuery(sieveModel));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpPost("get-eligible-items")]
@@ -137,21 +81,7 @@ namespace esWMS.Controllers.Documents
         {
             var result = await _mediator.Send(new GetEligibleItemsForZwReturnQuery(sieveModel));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
     }
 }

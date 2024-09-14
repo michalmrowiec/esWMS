@@ -1,7 +1,7 @@
 ﻿using esMWS.Domain.Models;
 using esWMS.Application.Functions.WarehouseUnitItems;
 using esWMS.Application.Functions.WarehouseUnitItems.Queries.GetSortedFilteredWarehouseUnitItems;
-using esWMS.Application.Responses;
+using esWMS.Controllers.Utils;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -33,21 +33,7 @@ namespace esWMS.Controllers
         {
             var result = await _mediator.Send(new GetSortedFilteredWarehouseUnitItemsQuery(sieveModel));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
     }
 }
