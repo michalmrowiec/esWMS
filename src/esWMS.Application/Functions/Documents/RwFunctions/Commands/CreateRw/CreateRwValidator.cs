@@ -12,7 +12,7 @@ namespace esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw
     internal class CreateRwValidator : CreateBaseDocumentValidator<CreateRwCommand>
     {
         private readonly IMediator _mediator;
-        public CreateRwValidator(IList<ProductDto> productsFromDocumentItems, IMediator mediator)
+        public CreateRwValidator(IEnumerable<ProductDto> productsFromDocumentItems, IMediator mediator) : base(productsFromDocumentItems)
         {
             _mediator = mediator;
             RuleForEach(x => x.DocumentItems)
@@ -21,22 +21,6 @@ namespace esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw
                         itemsASsignment.RuleFor(x => x.WarehouseUnitItemId)
                         .NotEmpty()
                         .NotNull()));
-
-            RuleFor(x => x.DocumentItems)
-                .CustomAsync(async (value, context, cancellationToken) =>
-                {
-                    var requestedProductIds = value.Select(x => x.ProductId).Distinct().ToList();
-                    var foundProductIds = productsFromDocumentItems?.Select(x => x.ProductId).Distinct().ToList() ?? new List<string>();
-
-                    var missingProductIds = requestedProductIds.Except(foundProductIds).ToList();
-
-                    if (missingProductIds.Any())
-                    {
-                        context.AddFailure(
-                            "DocumentItems",
-                            $"There are no products with the given IDs: {string.Join(", ", missingProductIds)}");
-                    }
-                });
 
             RuleFor(x => x)
                 .CustomAsync(async (value, context, cancellationToken) =>

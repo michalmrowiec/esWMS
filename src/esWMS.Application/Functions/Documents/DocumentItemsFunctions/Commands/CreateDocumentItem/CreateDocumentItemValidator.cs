@@ -4,6 +4,9 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.
 {
     internal class CreateDocumentItemValidator : AbstractValidator<CreateDocumentItemCommand>
     {
+        public CreateDocumentItemValidator()
+        {
 
+        }
     }
 }

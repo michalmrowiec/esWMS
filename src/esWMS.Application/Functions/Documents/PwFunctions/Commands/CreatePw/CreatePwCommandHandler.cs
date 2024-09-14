@@ -3,8 +3,6 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Documents.PzFunctions;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
 using MediatR;

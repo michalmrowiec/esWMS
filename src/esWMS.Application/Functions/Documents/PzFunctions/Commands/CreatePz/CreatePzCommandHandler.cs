@@ -28,7 +28,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
         {
             var products = await GetProducts(request.DocumentItems.Select(x => x.ProductId));
 
-            if (products == null || !products.Any())
+            if (products == null)
             {
                 return new BaseResponse<PzDto>(
                     BaseResponse.ResponseStatus.ServerError,
@@ -54,7 +54,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
             return await SavePzEntityAsync(entity);
         }
 
-        private async Task<IEnumerable<ProductDto>> GetProducts(IEnumerable<string> productsIds)
+        private async Task<IEnumerable<ProductDto>?> GetProducts(IEnumerable<string> productsIds)
         {
             var productResponse = await _mediator.Send(
                 new GetSortedFilteredProductsQuery(
@@ -64,6 +64,9 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
                         PageSize = 500,
                         Filters = "ProductId==" + string.Join('|', productsIds.Distinct())
                     }));
+
+            if (!productResponse.IsSuccess())
+                return null;
 
             return productResponse.ReturnedObj?.Items ?? [];
         }
