@@ -1,6 +1,8 @@
 ﻿using esMWS.Domain.Models;
 using esWMS.Application.Functions.WarehouseUnitItems;
+using esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseUnitItem;
 using esWMS.Application.Functions.WarehouseUnitItems.Queries.GetSortedFilteredWarehouseUnitItems;
+using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Controllers.Utils;
 using esWMS.Services;
 using MediatR;
@@ -32,6 +34,15 @@ namespace esWMS.Controllers
             ([FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredWarehouseUnitItemsQuery(sieveModel));
+
+            return result.HandleOkResult(this);
+        }
+
+        [HttpPost("move-items")]
+        public async Task<ActionResult<WarehouseUnitDto>> MoveWarehouseUnitItems
+            ([FromBody] MoveWarehouseUnitItemCommand moveWarehouseUnitItem)
+        {
+            var result = await _mediator.Send(moveWarehouseUnitItem);
 
             return result.HandleOkResult(this);
         }

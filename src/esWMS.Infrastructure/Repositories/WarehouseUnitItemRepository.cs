@@ -42,6 +42,21 @@ namespace esWMS.Infrastructure.Repositories
             }
         }
 
+        public async Task<IList<WarehouseUnitItem>> CreateRangeAsync(IList<WarehouseUnitItem> warehouseUnitItems)
+        {
+            try
+            {
+                await _context.WarehouseUnitItems.AddRangeAsync(warehouseUnitItems);
+                await _context.SaveChangesAsync();
+                return warehouseUnitItems;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating entity");
+                throw;
+            }
+        }
+
         public async Task<PagedResult<WarehouseUnitItem>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             try

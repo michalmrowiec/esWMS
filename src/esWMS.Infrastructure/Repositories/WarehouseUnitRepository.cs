@@ -28,11 +28,9 @@ namespace esWMS.Infrastructure.Repositories
                 {
                     foreach (var wui in wu.WarehouseUnitItems)
                     {
-                        // Jeśli blokujemy, ustaw BlockedQuantity na ilość. Jeśli odblokowujemy, ustaw na 0.
                         wui.BlockedQuantity = block ? wui.Quantity : 0;
                     }
 
-                    // Ustawienie statusu IsBlocked na podstawie parametru block.
                     wu.IsBlocked = block;
                 }
 
