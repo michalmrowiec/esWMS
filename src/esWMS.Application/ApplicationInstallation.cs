@@ -1,4 +1,4 @@
-﻿using esWMS.Application.Functions.Services;
+﻿using esWMS.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 

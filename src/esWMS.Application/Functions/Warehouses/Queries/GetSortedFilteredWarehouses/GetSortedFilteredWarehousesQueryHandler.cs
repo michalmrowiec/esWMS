@@ -2,9 +2,9 @@
 using esMWS.Domain.Entities.WarehouseEnviroment;
 using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
-using esWMS.Application.Functions.Services;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
 using MediatR;
 
 namespace esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouses

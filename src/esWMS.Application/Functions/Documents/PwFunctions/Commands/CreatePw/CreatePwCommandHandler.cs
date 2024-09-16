@@ -3,8 +3,8 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Functions.Products;
-using esWMS.Application.Functions.Services;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
 using MediatR;
 
 namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw

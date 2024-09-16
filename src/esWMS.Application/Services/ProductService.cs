@@ -3,7 +3,7 @@ using esWMS.Application.Functions.Products;
 using MediatR;
 using Sieve.Models;
 
-namespace esWMS.Application.Functions.Services
+namespace esWMS.Application.Services
 {
     public interface IProductService
     {
