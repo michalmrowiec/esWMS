@@ -4,6 +4,7 @@ using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
+using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
 using esWMS.Application.Responses;
 using MediatR;
 
@@ -25,7 +26,8 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
 
         public async Task<BaseResponse<PzDto>> Handle(ApprovePzItemsCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await new ApprovePzItemsValidator(_mediator).ValidateAsync(request, cancellationToken);
+            var validationResult = await new ApprovePzItemsValidator(_mediator)
+                .ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -43,40 +45,63 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                 var docItem = document.DocumentItems
                     .First(di => di.DocumentItemId.Equals(itemAssignment.DocumentItemId));
 
-                //docItem.IsApproved = true;
-                //docItem.ModifiedBy = request.ModifiedBy;
-                //docItem.ModifiedAt = DateTime.Now;
-
                 var warUnit = warehouseUnits
                     .First(wu => wu.WarehouseUnitId.Equals(itemAssignment.WarehouseUnitId));
 
-                //warUnit.ModifiedBy = request.ModifiedBy;
-                //warUnit.ModifiedAt = DateTime.Now;
-                var newWarehouseUnitItem = new WarehouseUnitItem(
-                    warehouseUnitId: warUnit.WarehouseId,
-                    productId: docItem.ProductId,
-                    quantity: itemAssignment.Quantity,
-                    blockedQuantity: itemAssignment.Quantity,
-                    bestBefore: docItem.BestBefore,
-                    batchLot: docItem.BatchLot,
-                    serialNumber: docItem.SerialNumber,
-                    price: docItem.Price,
-                    createdBy: request.ModifiedBy,
-                    isMediaOfWarehouseUnit: itemAssignment.IsMedia ?? false);
 
-                var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
-                {
-                    DocumentItemId = docItem.DocumentItemId,
-                    WarehouseUnitItemId = newWarehouseUnitItem.WarehouseUnitItemId,
-                    Quantity = itemAssignment.Quantity,
-                    CreatedAt = DateTime.Now,
-                    CreatedBy = request.ModifiedBy
-                };
+                var newWarehouseUnitItem =
+                    CreateWarehouseUnitItem(warUnit, docItem, itemAssignment, request.ModifiedBy);
+                var newDocumentWarehouseUnitItem =
+                    CreateDocumentWarehouseUnitItem(docItem, newWarehouseUnitItem, itemAssignment, request.ModifiedBy);
 
                 warUnit.WarehouseUnitItems.Add(newWarehouseUnitItem);
                 docItem.DocumentWarehouseUnitItems.Add(newDocumentWarehouseUnitItem);
             }
 
+            ApproveDocumentItems(document, request.ModifiedBy);
+
+            try
+            {
+                return await CommitChangesAsync(document, warehouseUnits);
+            }
+            catch (Exception ex)
+            {
+                await _transactionManager.RollbackTransactionAsync();
+                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
+            }
+        }
+
+        private WarehouseUnitItem CreateWarehouseUnitItem
+            (WarehouseUnit warehouseUnit, DocumentItem docItem, ReceivingItemAssignment itemAssignment, string? modifiedBy)
+        {
+            return new WarehouseUnitItem(
+                warehouseUnitId: warehouseUnit.WarehouseUnitId,
+                productId: docItem.ProductId,
+                quantity: itemAssignment.Quantity,
+                blockedQuantity: itemAssignment.Quantity,
+                bestBefore: docItem.BestBefore,
+                batchLot: docItem.BatchLot,
+                serialNumber: docItem.SerialNumber,
+                price: docItem.Price,
+                createdBy: modifiedBy,
+                isMediaOfWarehouseUnit: itemAssignment.IsMedia ?? false);
+        }
+
+        private DocumentWarehouseUnitItem CreateDocumentWarehouseUnitItem
+            (DocumentItem docItem, WarehouseUnitItem warehouseUnitItem, ReceivingItemAssignment itemAssignment, string? modifiedBy)
+        {
+            return new DocumentWarehouseUnitItem
+            {
+                DocumentItemId = docItem.DocumentItemId,
+                WarehouseUnitItemId = warehouseUnitItem.WarehouseUnitItemId,
+                Quantity = itemAssignment.Quantity,
+                CreatedAt = DateTime.Now,
+                CreatedBy = modifiedBy
+            };
+        }
+
+        private void ApproveDocumentItems(BaseDocument document, string? modifiedBy)
+        {
             foreach (var documentItem in document.DocumentItems)
             {
                 var totalQuantitySoFar = documentItem.DocumentWarehouseUnitItems.Sum(x => x.Quantity);
@@ -84,31 +109,24 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                 if (totalQuantitySoFar == documentItem.Quantity)
                 {
                     documentItem.IsApproved = true;
-                    documentItem.ModifiedBy = request.ModifiedBy;
-                    documentItem.ModifiedAt = DateTime.Now;
                 }
+
+                documentItem.ModifiedBy = modifiedBy;
+                documentItem.ModifiedAt = DateTime.Now;
             }
+        }
 
-            PzDto mappedUpdatedDocument;
+        private async Task<BaseResponse<PzDto>> CommitChangesAsync
+            (PZ document, IEnumerable<WarehouseUnit> warehouseUnits)
+        {
+            await _transactionManager.BeginTransactionAsync();
 
-            try
-            {
-                await _transactionManager.BeginTransactionAsync();
+            var updatedWarehouseUnits = await _warehouseUnitRepository.UpdateWarehouseUnitsAsync(warehouseUnits.ToArray());
+            var updatedDocument = await _pzRepozitory.UpdateAsync(document);
 
-                var updatedWarehouseUnits = await _warehouseUnitRepository.UpdateWarehouseUnitsAsync(warehouseUnits.ToArray());
-                var updatedDocument = await _pzRepozitory.UpdateAsync(document);
+            await _transactionManager.CommitTransactionAsync();
 
-                await _transactionManager.CommitTransactionAsync();
-
-                mappedUpdatedDocument = _mapper.Map<PzDto>(updatedDocument);
-            }
-            catch (Exception ex)
-            {
-                await _transactionManager.RollbackTransactionAsync();
-
-                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
-            }
-
+            var mappedUpdatedDocument = _mapper.Map<PzDto>(updatedDocument);
             return new BaseResponse<PzDto>(mappedUpdatedDocument);
         }
     }
