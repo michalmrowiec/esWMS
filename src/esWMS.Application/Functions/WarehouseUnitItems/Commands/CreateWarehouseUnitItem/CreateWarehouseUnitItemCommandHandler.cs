@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Responses;
 using MediatR;
@@ -34,7 +35,7 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehous
 
             var entity = _mapper.Map<WarehouseUnitItem>(request);
 
-            entity.WarehouseUnitItemId = Guid.NewGuid().ToString();
+            entity.WarehouseUnitItemId = WarehouseUnitIdGenerator.WarehouseUnitItemId();
 
             var createdEntity = await _repository.CreateAsync(entity);
 

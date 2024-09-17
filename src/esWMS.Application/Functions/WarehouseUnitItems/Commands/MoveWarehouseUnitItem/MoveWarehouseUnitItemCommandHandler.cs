@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.WarehouseUnits;
@@ -87,7 +88,7 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseU
                     var newWui = new WarehouseUnitItem
                     {
                         WarehouseUnitId = request.NewWarehouseUnitId,
-                        WarehouseUnitItemId = Guid.NewGuid().ToString(),
+                        WarehouseUnitItemId = WarehouseUnitIdGenerator.WarehouseUnitItemId(),
                         Quantity = wuiq.Quantity,
                         BlockedQuantity = 0,
                         IsMediaOfWarehouseUnit = false,
