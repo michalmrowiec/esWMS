@@ -1,0 +1,138 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Product
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<CreateLocationVM> locationDataService
+@inject IDataService<ZoneVM> zoneDataService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<MudDialog>
+    <TitleContent>
+        Nowa lokalizacja
+    </TitleContent>
+    <DialogContent>
+        <MudTable Items="WarehouseUnitItemsToMove"
+                  Context="WuiContext"
+                  Hover="true"
+                  Breakpoint="Breakpoint.Sm"
+                  Elevation="0"
+                  Dense
+                  Bordered
+                  RowEditPreview="BackupItem"
+                  RowEditCancel="ResetItemToOriginalValues">
+            <HeaderContent>
+                <MudTh>Id pozycji</MudTh>
+                <MudTh>Id magazynu</MudTh>
+                <MudTh>Id produktu</MudTh>
+                <MudTh>Nazwa produktu</MudTh>
+                <MudTh>Ilość</MudTh>
+                <MudTh>Zablokowane</MudTh>
+                <MudTh>Dostępne</MudTh>
+                <MudTh>Nośnik</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
+                <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
+                <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
+                <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
+                <MudTd DataLabel="Nośnik">
+                    <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
+                                 Size="Size.Small"
+                                 Disabled />
+                </MudTd>
+            </RowTemplate>
+            <RowEditingTemplate>
+                <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
+                <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
+                <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
+                <MudTd DataLabel="Ilość">
+                    <MudTextField @bind-Value="WuiContext.Quantity" Required />
+                </MudTd>
+                <MudTd DataLabel="Nośnik">
+                    <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
+                                 Size="Size.Small"
+                                 Disabled />
+                </MudTd>
+            </RowEditingTemplate>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (responseErrors.Any())
+{
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+            @foreach (var error in responseErrors)
+            {
+                <MudText Color="@Color.Error">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+}
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm form;
+    private CreateLocationVM model = new();
+    private CreateLocationVMValidator validator = new();
+    private List<string> responseErrors = new();
+
+    [Parameter]
+    public List<WarehouseUnitItemVM> WarehouseUnitItemsToMove { get; set; } = [];
+
+    [Parameter]
+    public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+
+    private WarehouseUnitItemVM elementBeforeEdit;
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        responseErrors = new();
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            // var response = await locationDataService.Create(@"api/v1/Location", model);
+            // if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            // {
+            //     var content = await response.Content.ReadAsStringAsync();
+            //     var newLocation = JsonConvert.DeserializeObject<LocationVM>(content) ?? new();
+
+            //     Snackbar.Configuration.PositionClass = "Bottom-End";
+            //     Snackbar.Add(new MarkupString($"Utworzono <strong>{newLocation.LocationId}</strong>"), Severity.Success);
+            //     MudDialog.Close(DialogResult.Ok(true));
+            //     FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+            // }
+            // else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            // {
+            //     var json = await response.Content.ReadAsStringAsync();
+            //     responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            // }
+        }
+    }
+
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new()
+            {
+                Quantity = ((WarehouseUnitItemVM)element).Quantity,
+            };
+    }
+
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((WarehouseUnitItemVM)element).Quantity = elementBeforeEdit.Quantity;
+    }
+}
