@@ -121,21 +121,21 @@
         <MudTd>
             @if (wuIdShow[context.WarehouseUnitId])
             {
-                <MudButton Variant="Variant.Outlined"
-                           Size="Size.Small"
-                           EndIcon="@Icons.Material.Filled.KeyboardArrowUp"
-                           OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
-                    Pozycje (@context.WarehouseUnitItems.Count)
-                </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Size="Size.Small"
+                               EndIcon="@Icons.Material.Filled.KeyboardArrowUp"
+                               OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
+                        Pozycje (@context.WarehouseUnitItems.Count)
+                    </MudButton>
             }
             else
             {
-                <MudButton Variant="Variant.Outlined"
-                           Size="Size.Small"
-                           EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
-                           OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
-                    Pozycje (@context.WarehouseUnitItems.Count)
-                </MudButton>
+                    <MudButton Variant="Variant.Outlined"
+                               Size="Size.Small"
+                               EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+                               OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
+                        Pozycje (@context.WarehouseUnitItems.Count)
+                    </MudButton>
             }
         </MudTd>
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
@@ -147,8 +147,8 @@
             Disabled="false" /> *@
             @if (context.IsBlocked)
             {
-                <MudIcon Icon="@Icons.Material.Filled.Block"
-                         Size="Size.Small" />
+                    <MudIcon Icon="@Icons.Material.Filled.Block"
+                             Size="Size.Small" />
             }
         </MudTd>
         <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
@@ -165,70 +165,70 @@
         </MudTh>
         @if (context.WarehouseUnitItems.Count == 0)
         {
-            <MudTh>
-                <MudIconButton Size="@Size.Small"
-                               Icon="@Icons.Material.Outlined.Delete"
-                               OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
-            </MudTh>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Delete"
+                                   OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
+                </MudTh>
         }
     </RowTemplate>
     <ChildRowContent>
         @if (wuIdShow[context.WarehouseUnitId] == true)
         {
-            <MudTr>
-                <td colspan="4">
-                    <MudCard Elevation="0" Style="margin-left:50px;">
-                        <MudCardHeader>
-                        </MudCardHeader>
-                        <MudCardContent Class="pa-0">
-                            <MudTable Items="@context.WarehouseUnitItems.OrderBy(x => x.ProductId)"
-                                      Context="WuiContext"
-                                      Hover="true"
-                                      Breakpoint="Breakpoint.Sm"
-                                      Elevation="0"
-                                      Dense
-                                      Bordered
-                                      RowClass="child-row">
-                                <ColGroup>
-                                    <col />
-                                    <col />
-                                    <col />
-                                    <col />
-                                    <col />
-                                    <col />
-                                    <col />
-                                    <col />
-                                </ColGroup>
-                                <HeaderContent>
-                                    <MudTh>Id pozycji</MudTh>
-                                    <MudTh>Id magazynu</MudTh>
-                                    <MudTh>Id produktu</MudTh>
-                                    <MudTh>Nazwa produktu</MudTh>
-                                    <MudTh>Ilość</MudTh>
-                                    <MudTh>Zablokowane</MudTh>
-                                    <MudTh>Dostępne</MudTh>
-                                    <MudTh>Nośnik</MudTh>
-                                </HeaderContent>
-                                <RowTemplate>
-                                    <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
-                                    <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
-                                    <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
-                                    <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
-                                    <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
-                                    <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
-                                    <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
-                                    <MudTd DataLabel="Nośnik">
-                                        <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
-                                                     Size="Size.Small"
-                                                     Disabled />
-                                    </MudTd>
-                                </RowTemplate>
-                            </MudTable>
-                        </MudCardContent>
-                    </MudCard>
-                </td>
-            </MudTr>
-            <MudDivider />
+                <MudTr>
+                    <td colspan="4">
+                        <MudCard Elevation="0" Style="margin-left:50px;">
+                            <MudCardHeader>
+                            </MudCardHeader>
+                            <MudCardContent Class="pa-0">
+                                <MudTable Items="@context.WarehouseUnitItems.OrderBy(x => x.ProductId)"
+                                          Context="WuiContext"
+                                          Hover="true"
+                                          Breakpoint="Breakpoint.Sm"
+                                          Elevation="0"
+                                          Dense
+                                          Bordered
+                                          RowClass="child-row">
+                                    <ColGroup>
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                    </ColGroup>
+                                    <HeaderContent>
+                                        <MudTh>Id pozycji</MudTh>
+                                        <MudTh>Id magazynu</MudTh>
+                                        <MudTh>Id produktu</MudTh>
+                                        <MudTh>Nazwa produktu</MudTh>
+                                        <MudTh>Ilość</MudTh>
+                                        <MudTh>Zablokowane</MudTh>
+                                        <MudTh>Dostępne</MudTh>
+                                        <MudTh>Nośnik</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                        <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
+                                        <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
+                                        <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                                        <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
+                                        <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
+                                        <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
+                                        <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                                        <MudTd DataLabel="Nośnik">
+                                            <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
+                                                         Size="Size.Small"
+                                                         Disabled />
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+                    </td>
+                </MudTr>
+                <MudDivider />
         }
     </ChildRowContent>
     <NoRecordsContent>
@@ -244,25 +244,25 @@
 
 @if (TypeOfSelection == SelectionType.Multi)
 {
-    <MudButton @onclick="SubmitSelection"
-               Variant="Variant.Filled"
-               Color="Color.Primary"
-               hidden="@(TypeOfSelection != SelectionType.Multi)">
-        Potwierdź
-    </MudButton>
+        <MudButton @onclick="SubmitSelection"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   hidden="@(TypeOfSelection != SelectionType.Multi)">
+            Potwierdź
+        </MudButton>
 }
 
 @if (responseErrors.Any())
 {
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
+        <MudItem xs="12" sm="5">
+            <MudPaper Class="pa-4 mud-height-full">
+                <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
             @foreach (var error in responseErrors)
             {
-                <MudText Color="@Color.Error">@error</MudText>
+                        <MudText Color="@Color.Error">@error</MudText>
             }
-        </MudPaper>
-    </MudItem>
+            </MudPaper>
+        </MudItem>
 }
 
 @code {
@@ -390,7 +390,12 @@
         }
         else if (TypeOfSelection == SelectionType.None) // im not sure about that <-
         {
-            // open details tab
+            await onePageState.AddTab(
+                new TabView("Szczegóły jednostki" ?? " ",
+                new WarehouseUnitDetails(),
+                Guid.NewGuid(),
+                Icons.Material.Filled.Info,
+                new() { { "WarehouseUnitId", tableRowClickEventArgs?.Item.WarehouseUnitId } }));
         }
     }
 

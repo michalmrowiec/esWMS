@@ -1,0 +1,126 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<WarehouseUnitVM> warehouseUnitService
+
+@if (warehouseUnit == null)
+{
+    <MudText>Ladowanie...</MudText>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12" md="4">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.subtitle1">Szczegóły jednostki magazynowej</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText>Identyfikator jednostki magazynowej: @warehouseUnit.WarehouseUnitId</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Identyfikator magazynu: @warehouseUnit.WarehouseId</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Identyfikator lokalizacji: @(warehouseUnit.LocationId ?? "Brak")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Całkowita waga: @(warehouseUnit.TotalWeight.HasValue ? $"{warehouseUnit.TotalWeight} kg" : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Całkowita długość: @(warehouseUnit.TotalLength.HasValue ? $"{warehouseUnit.TotalLength} m" : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Całkowita szerokość: @(warehouseUnit.TotalWidth.HasValue ? $"{warehouseUnit.TotalWidth} m" : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Całkowita wysokość: @(warehouseUnit.TotalHeight.HasValue ? $"{warehouseUnit.TotalHeight} m" : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Zablokowana jednostka: @(warehouseUnit.IsBlocked ? "Tak" : "Nie")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Może być piętrzona: @(warehouseUnit.CanBeStacked.HasValue ? (warehouseUnit.CanBeStacked.Value ? "Tak" : "Nie") : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Identyfikator piętrzenia: @(warehouseUnit.StackOnId ?? "Brak")</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="8">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.subtitle1">Przedmioty w jednostce magazynowej</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable Items="@warehouseUnit.WarehouseUnitItems"
+                              Context="WuiContext"
+                              Hover="true"
+                              Breakpoint="Breakpoint.Sm"
+                              Elevation="0"
+                              Dense
+                              Bordered>
+                        <ColGroup>
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>Id produktu</MudTh>
+                            <MudTh>Nazwa produktu</MudTh>
+                            <MudTh>Ilość</MudTh>
+                            <MudTh>Zablokowane</MudTh>
+                            <MudTh>Dostępne</MudTh>
+                            <MudTh>Nośnik</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                            <MudTd DataLabel="Nazwa produktu">@WuiContext.Product?.ProductName</MudTd>
+                            <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
+                            <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
+                            <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                            <MudTd DataLabel="Nośnik">
+                                <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
+                                             Size="Size.Small"
+                                             Disabled />
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public string WarehouseUnitId { get; set; }
+
+    private WarehouseUnitVM? warehouseUnit;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await warehouseUnitService.Get(@"api/v1/warehouseUnit", new() { { "WarehouseUnitId", WarehouseUnitId } });
+        if (response == null)
+        {
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var resObj = JsonConvert.DeserializeObject<List<WarehouseUnitVM>>(json);
+
+        warehouseUnit = resObj?.First() ?? new();
+
+        StateHasChanged();
+    }
+}
