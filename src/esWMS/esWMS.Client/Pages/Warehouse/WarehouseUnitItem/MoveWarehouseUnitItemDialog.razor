@@ -1,9 +1,9 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Pages.Product
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
-@inject IDataService<CreateLocationVM> locationDataService
-@inject IDataService<ZoneVM> zoneDataService
+@inject IDataService<WarehouseUnitItemVM> WarehouseUnitItemService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
@@ -22,19 +22,13 @@
                   RowEditPreview="BackupItem"
                   RowEditCancel="ResetItemToOriginalValues">
             <HeaderContent>
-                <MudTh>Id pozycji</MudTh>
-                <MudTh>Id magazynu</MudTh>
-                <MudTh>Id produktu</MudTh>
+                <MudTh>Kod produktu</MudTh>
                 <MudTh>Nazwa produktu</MudTh>
                 <MudTh>Ilość</MudTh>
-                <MudTh>Zablokowane</MudTh>
-                <MudTh>Dostępne</MudTh>
                 <MudTh>Nośnik</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
-                <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
-                <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                <MudTd DataLabel="Kod produktu">@WuiContext.Product.ProductCode</MudTd>
                 <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
                 <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
                 <MudTd DataLabel="Nośnik">
@@ -44,12 +38,10 @@
                 </MudTd>
             </RowTemplate>
             <RowEditingTemplate>
-                <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
-                <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
-                <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                <MudTd DataLabel="Kod produktu">@WuiContext.Product.ProductCode</MudTd>
                 <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
                 <MudTd DataLabel="Ilość">
-                    <MudTextField @bind-Value="WuiContext.Quantity" Required />
+                    <MudNumericField @bind-Value="WuiContext.Quantity" Required />
                 </MudTd>
                 <MudTd DataLabel="Nośnik">
                     <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
@@ -58,10 +50,14 @@
                 </MudTd>
             </RowEditingTemplate>
         </MudTable>
+
+        <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Single"
+                            SelectedWarehouseUnits="OnGet"
+                            WarehouseIdFilter="@WarehouseId" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Przenieś</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -88,51 +84,60 @@
 
     [Parameter]
     public List<WarehouseUnitItemVM> WarehouseUnitItemsToMove { get; set; } = [];
-
+    [Parameter]
+    public string WarehouseId { get; set; }
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
 
-    private WarehouseUnitItemVM elementBeforeEdit;
+    private WarehouseUnitItemVM _elementBeforeEdit;
+    private WarehouseUnitVM _newWarehouseUnit;
 
     private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
         responseErrors = new();
-        await form.Validate();
 
-        if (form.IsValid)
+        var model = new
         {
-            // var response = await locationDataService.Create(@"api/v1/Location", model);
-            // if (response.StatusCode == System.Net.HttpStatusCode.Created)
-            // {
-            //     var content = await response.Content.ReadAsStringAsync();
-            //     var newLocation = JsonConvert.DeserializeObject<LocationVM>(content) ?? new();
+            WarehouseUnitItemWithQuantity = WarehouseUnitItemsToMove.Select(x => new
+            {
+                WarehouseUnitItemId = x.WarehouseUnitItemId,
+                Quantity = x.Quantity
+            }).ToList(),
+            NewWarehouseUnitId = _newWarehouseUnit.WarehouseUnitId
+        };
 
-            //     Snackbar.Configuration.PositionClass = "Bottom-End";
-            //     Snackbar.Add(new MarkupString($"Utworzono <strong>{newLocation.LocationId}</strong>"), Severity.Success);
-            //     MudDialog.Close(DialogResult.Ok(true));
-            //     FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
-            // }
-            // else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            // {
-            //     var json = await response.Content.ReadAsStringAsync();
-            //     responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
-            // }
+        var response = await WarehouseUnitItemService.CreateObject(@"api/v1/WarehouseUnitItem/move-items", model);
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            Snackbar.Add(new MarkupString($"Przeniesiono pozycje magazynowe"), Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+            FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
         }
+        else
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+        }
+    }
+
+    private void OnGet(HashSet<WarehouseUnitVM> warehouseUnits)
+    {
+        _newWarehouseUnit = warehouseUnits.FirstOrDefault();
+        StateHasChanged();
     }
 
     private void BackupItem(object element)
     {
-        elementBeforeEdit = new()
+        _elementBeforeEdit = new()
             {
                 Quantity = ((WarehouseUnitItemVM)element).Quantity,
             };
     }
 
-
     private void ResetItemToOriginalValues(object element)
     {
-        ((WarehouseUnitItemVM)element).Quantity = elementBeforeEdit.Quantity;
+        ((WarehouseUnitItemVM)element).Quantity = _elementBeforeEdit.Quantity;
     }
 }
