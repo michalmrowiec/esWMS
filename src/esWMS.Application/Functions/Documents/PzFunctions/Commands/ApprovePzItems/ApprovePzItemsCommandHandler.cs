@@ -4,8 +4,8 @@ using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
 using MediatR;
 
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems
@@ -48,71 +48,27 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzIt
                 var warUnit = warehouseUnits
                     .First(wu => wu.WarehouseUnitId.Equals(itemAssignment.WarehouseUnitId));
 
-
                 var newWarehouseUnitItem =
-                    CreateWarehouseUnitItem(warUnit, docItem, itemAssignment, request.ModifiedBy);
+                    WarehouseUnitItemService.CreateWarehouseUnitItem(warUnit, docItem, itemAssignment, request.ModifiedBy);
                 var newDocumentWarehouseUnitItem =
-                    CreateDocumentWarehouseUnitItem(docItem, newWarehouseUnitItem, itemAssignment, request.ModifiedBy);
+                    WarehouseUnitItemService.CreateDocumentWarehouseUnitItem(docItem, newWarehouseUnitItem, itemAssignment, request.ModifiedBy);
 
                 warUnit.WarehouseUnitItems.Add(newWarehouseUnitItem);
                 docItem.DocumentWarehouseUnitItems.Add(newDocumentWarehouseUnitItem);
             }
 
-            ApproveDocumentItems(document, request.ModifiedBy);
+            document.ApproveDocumentItems(request.ModifiedBy);
 
             try
             {
-                return await CommitChangesAsync(document, warehouseUnits);
+                //return await CommitChangesAsync(document, warehouseUnits);
+                return await DocumentWarehouseTransactionService.CommitChangesAsync<PZ, PzDto>
+                    (document, warehouseUnits, _transactionManager, _warehouseUnitRepository, _pzRepozitory, _mapper);
             }
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
-            }
-        }
-
-        private WarehouseUnitItem CreateWarehouseUnitItem
-            (WarehouseUnit warehouseUnit, DocumentItem docItem, ReceivingItemAssignment itemAssignment, string? modifiedBy)
-        {
-            return new WarehouseUnitItem(
-                warehouseUnitId: warehouseUnit.WarehouseUnitId,
-                productId: docItem.ProductId,
-                quantity: itemAssignment.Quantity,
-                blockedQuantity: itemAssignment.Quantity,
-                bestBefore: docItem.BestBefore,
-                batchLot: docItem.BatchLot,
-                serialNumber: docItem.SerialNumber,
-                price: docItem.Price,
-                createdBy: modifiedBy,
-                isMediaOfWarehouseUnit: itemAssignment.IsMedia ?? false);
-        }
-
-        private DocumentWarehouseUnitItem CreateDocumentWarehouseUnitItem
-            (DocumentItem docItem, WarehouseUnitItem warehouseUnitItem, ReceivingItemAssignment itemAssignment, string? modifiedBy)
-        {
-            return new DocumentWarehouseUnitItem
-            {
-                DocumentItemId = docItem.DocumentItemId,
-                WarehouseUnitItemId = warehouseUnitItem.WarehouseUnitItemId,
-                Quantity = itemAssignment.Quantity,
-                CreatedAt = DateTime.Now,
-                CreatedBy = modifiedBy
-            };
-        }
-
-        private void ApproveDocumentItems(BaseDocument document, string? modifiedBy)
-        {
-            foreach (var documentItem in document.DocumentItems)
-            {
-                var totalQuantitySoFar = documentItem.DocumentWarehouseUnitItems.Sum(x => x.Quantity);
-
-                if (totalQuantitySoFar == documentItem.Quantity)
-                {
-                    documentItem.IsApproved = true;
-                }
-
-                documentItem.ModifiedBy = modifiedBy;
-                documentItem.ModifiedAt = DateTime.Now;
             }
         }
 

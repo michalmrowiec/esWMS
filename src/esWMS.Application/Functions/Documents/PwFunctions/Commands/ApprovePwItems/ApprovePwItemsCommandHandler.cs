@@ -4,7 +4,9 @@ using esMWS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
+using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
 using MediatR;
 
 namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwItems
@@ -47,66 +49,27 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwIt
                 var warUnit = warehouseUnits
                     .First(wu => wu.WarehouseUnitId.Equals(itemAssignment.WarehouseUnitId));
 
-                var newWarehouseUnitItem = new WarehouseUnitItem(
-                    warehouseUnitId: warUnit.WarehouseId,
-                    productId: docItem.ProductId,
-                    quantity: itemAssignment.Quantity,
-                    blockedQuantity: itemAssignment.Quantity,
-                    bestBefore: docItem.BestBefore,
-                    batchLot: docItem.BatchLot,
-                    serialNumber: docItem.SerialNumber,
-                    price: docItem.Price,
-                    createdBy: request.ModifiedBy,
-                    isMediaOfWarehouseUnit: itemAssignment.IsMedia ?? false);
-
-                var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
-                {
-                    DocumentItemId = docItem.DocumentItemId,
-                    WarehouseUnitItemId = newWarehouseUnitItem.WarehouseUnitItemId,
-                    Quantity = itemAssignment.Quantity,
-                    CreatedAt = DateTime.Now,
-                    CreatedBy = request.ModifiedBy
-                };
+                var newWarehouseUnitItem =
+                    WarehouseUnitItemService.CreateWarehouseUnitItem(warUnit, docItem, itemAssignment, request.ModifiedBy);
+                var newDocumentWarehouseUnitItem =
+                    WarehouseUnitItemService.CreateDocumentWarehouseUnitItem(docItem, newWarehouseUnitItem, itemAssignment, request.ModifiedBy);
 
                 warUnit.WarehouseUnitItems.Add(newWarehouseUnitItem);
                 docItem.DocumentWarehouseUnitItems.Add(newDocumentWarehouseUnitItem);
             }
 
-            foreach (var documentItem in document.DocumentItems)
-            {
-                var totalQuantitySoFar = documentItem.DocumentWarehouseUnitItems.Sum(x => x.Quantity);
-
-                if (totalQuantitySoFar == documentItem.Quantity)
-                {
-                    documentItem.IsApproved = true;
-                    documentItem.ModifiedBy = request.ModifiedBy;
-                    documentItem.ModifiedAt = DateTime.Now;
-                }
-            }
-
-            PwDto mappedUpdatedDocument;
+            document.ApproveDocumentItems(request.ModifiedBy);
 
             try
             {
-                await _transactionManager.BeginTransactionAsync();
-
-                var updatedWarehouseUnits = await _warehouseUnitRepository
-                    .UpdateWarehouseUnitsAsync(warehouseUnits.ToArray());
-
-                var updatedDocument = await _pwRepozitory.UpdateAsync(document);
-
-                await _transactionManager.CommitTransactionAsync();
-
-                mappedUpdatedDocument = _mapper.Map<PwDto>(updatedDocument);
+                return await DocumentWarehouseTransactionService.CommitChangesAsync<PW, PwDto>
+                    (document, warehouseUnits, _transactionManager, _warehouseUnitRepository, _pwRepozitory, _mapper);
             }
             catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
-
                 return new BaseResponse<PwDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
-
-            return new BaseResponse<PwDto>(mappedUpdatedDocument);
         }
     }
 }
