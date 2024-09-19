@@ -14,40 +14,89 @@ else
     <MudGrid>
         <MudItem xs="12" lg="4">
             <MudCard>
-                <MudCardHeader>
-                    <MudText Typo="Typo.subtitle1">Szczegóły jednostki magazynowej</MudText>
-                </MudCardHeader>
                 <MudCardContent>
                     <MudGrid>
                         <MudItem xs="12">
-                            <MudText>Identyfikator jednostki magazynowej: @_warehouseUnit.WarehouseUnitId</MudText>
+                            <MudTextField ShrinkLabel @bind-Value="_warehouseUnit.WarehouseUnitId"
+                                          Label="Identyfikator"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense" />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudText>Identyfikator magazynu: @_warehouseUnit.WarehouseId</MudText>
+                            <MudTextField @bind-Value="_warehouseUnit.WarehouseId"
+                                          Label="Identyfikator magazynu"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense" />
                         </MudItem>
+
                         <MudItem xs="12">
-                            <MudText>Identyfikator lokalizacji: @(_warehouseUnit.LocationId ?? "Brak")</MudText>
+                            <MudGrid>
+                                <MudItem xs="9">
+                                    <MudTextField ShrinkLabel @bind-Value="_warehouseUnit.LocationId"
+                                                  Label="Identyfikator lokalizacji"
+                                                  Variant="Variant.Outlined"
+                                                  ReadOnly
+                                                  Margin="Margin.Dense" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudButton OnClick="OpenEditLocationDialogAsync"
+                                               Variant="Variant.Filled"
+                                               EndIcon="@Icons.Material.Outlined.EditLocation"
+                                               Color="Color.Default"
+                                               Size="Size.Medium"
+                                               Class="w-100">
+                                        Edytuj
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
                         </MudItem>
+
                         <MudItem xs="12">
-                            <MudText>Całkowita waga: @(_warehouseUnit.TotalWeight.HasValue ? $"{_warehouseUnit.TotalWeight} kg" : "Brak danych")</MudText>
+                            <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalWeight"
+                                             Label="Całkowita waga (kg)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
                         </MudItem>
+
                         <MudItem xs="12">
-                            <MudText>Całkowita długość: @(_warehouseUnit.TotalLength.HasValue ? $"{_warehouseUnit.TotalLength} m" : "Brak danych")</MudText>
+                            <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalLength"
+                                             Label="Całkowita długość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
                         </MudItem>
+
                         <MudItem xs="12">
-                            <MudText>Całkowita szerokość: @(_warehouseUnit.TotalWidth.HasValue ? $"{_warehouseUnit.TotalWidth} m" : "Brak danych")</MudText>
+                            <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalWidth"
+                                             Label="Całkowita szerokość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+
                         </MudItem>
+
                         <MudItem xs="12">
-                            <MudText>Całkowita wysokość: @(_warehouseUnit.TotalHeight.HasValue ? $"{_warehouseUnit.TotalHeight} m" : "Brak danych")</MudText>
+                            <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalHeight"
+                                             Label="Całkowita wysokość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
                         </MudItem>
+
                         <MudItem xs="12">
-                            <MudText>Zablokowana jednostka: @(_warehouseUnit.IsBlocked ? "Tak" : "Nie")</MudText>
+                            <MudCheckBox @bind-Value="_warehouseUnit.IsBlocked"
+                                         Label="Zablokowana jednostka"
+                                         ReadOnly />
+
+                            <MudCheckBox @bind-Value="_warehouseUnit.CanBeStacked"
+                                         Label="Może być piętrzona" />
                         </MudItem>
+
                         <MudItem xs="12">
-                            <MudText>Może być piętrzona: @(_warehouseUnit.CanBeStacked.HasValue ? (_warehouseUnit.CanBeStacked.Value ? "Tak" : "Nie") : "Brak danych")</MudText>
-                        </MudItem>
-                        <MudItem xs="12">
-                            <MudText>Identyfikator piętrzenia: @(_warehouseUnit.StackOnId ?? "Brak")</MudText>
+                            <MudTextField ShrinkLabel @bind-Value="_warehouseUnit.StackOnId"
+                                          Label="Piętrzona na"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense" />
                         </MudItem>
                     </MudGrid>
                 </MudCardContent>
@@ -160,5 +209,16 @@ else
         _warehouseUnit = resObj?.First() ?? new();
 
         StateHasChanged();
+    }
+
+    private Task OpenEditLocationDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true, MaxWidth = MaxWidth.Medium };
+        var parameters = new DialogParameters<SetLocationModalDialog>
+        {
+            { x => x.WarehouseUnit, _warehouseUnit },
+            { x => x.FuncsOnSubmit, new List<EventCallback>() { EventCallback.Factory.Create(this, ReloadWarehouseUnit) } }
+        };
+        return DialogService.ShowAsync<SetLocationModalDialog>(null, parameters, options);
     }
 }
