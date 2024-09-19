@@ -72,6 +72,41 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
         public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, string op, string[] values) =>
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
 
+        public IQueryable<WarehouseUnit> ProductName
+    (IQueryable<WarehouseUnit> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return source;
+            }
+
+            var value = values.First();
+
+            switch (op)
+            {
+                case "@=":
+                    source = source
+                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName.Contains(value)));
+                    break;
+                case "!@=":
+                    source = source
+                        .Where(wu => wu.WarehouseUnitItems.Any(wui => !wui.Product.ProductName.Contains(value)));
+                    break;
+                case "==":
+                    source = source
+                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName == value));
+                    break;
+                case "!=":
+                    source = source
+                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName != value));
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
         public IQueryable<WarehouseUnit> ItemCount(
             IQueryable<WarehouseUnit> source, string op, string[] values)
         {
@@ -106,47 +141,6 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
 
             return source;
         }
-
-        //public IQueryable<WarehouseUnit> Items
-        //    (IQueryable<WarehouseUnit> source, string op, string[] values)
-        //{
-        //    if (values == null || values.Length == 0)
-        //    {
-        //        return source;
-        //    }
-
-        //    string searchTerm = values[0].ToLower();
-
-        //    switch (op)
-        //    {
-        //        case "==":
-        //            source = source.Where(warehouseUnit =>
-        //                warehouseUnit.WarehouseUnitItems.Any(item =>
-        //                    item.Product != null &&
-        //                    (item.Product.ProductId.ToLower() == searchTerm ||
-        //                     item.Product.ProductCode.ToLower() == searchTerm ||
-        //                     item.Product.EanCode.ToLower() == searchTerm ||
-        //                     item.Product.ProductName.ToLower().Contains(searchTerm) ||
-        //                     item.Product.ShortProductName.ToLower().Contains(searchTerm))
-        //                ));
-        //            break;
-        //        case "!=":
-        //            source = source.Where(warehouseUnit =>
-        //                warehouseUnit.WarehouseUnitItems.All(item =>
-        //                    item.Product != null &&
-        //                    (item.Product.ProductId.ToLower() != searchTerm &&
-        //                     item.Product.ProductCode.ToLower() != searchTerm &&
-        //                     item.Product.EanCode.ToLower() != searchTerm &&
-        //                     !item.Product.ProductName.ToLower().Contains(searchTerm) &&
-        //                     !item.Product.ShortProductName.ToLower().Contains(searchTerm))
-        //                ));
-        //            break;
-        //        default:
-        //            break;
-        //    }
-
-        //    return source;
-        //}
 
         public IQueryable<Location> IsFull
             (IQueryable<Location> source, string op, string[] values)
