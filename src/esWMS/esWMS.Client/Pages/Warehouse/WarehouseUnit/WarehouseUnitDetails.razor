@@ -1,0 +1,164 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<WarehouseUnitVM> WarehouseUnitService
+@inject IDialogService DialogService
+
+@if (_warehouseUnit == null)
+{
+    <MudText>Ladowanie...</MudText>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12" lg="4">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.subtitle1">Szczegóły jednostki magazynowej</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText>Identyfikator jednostki magazynowej: @_warehouseUnit.WarehouseUnitId</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Identyfikator magazynu: @_warehouseUnit.WarehouseId</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Identyfikator lokalizacji: @(_warehouseUnit.LocationId ?? "Brak")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Całkowita waga: @(_warehouseUnit.TotalWeight.HasValue ? $"{_warehouseUnit.TotalWeight} kg" : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Całkowita długość: @(_warehouseUnit.TotalLength.HasValue ? $"{_warehouseUnit.TotalLength} m" : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Całkowita szerokość: @(_warehouseUnit.TotalWidth.HasValue ? $"{_warehouseUnit.TotalWidth} m" : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Całkowita wysokość: @(_warehouseUnit.TotalHeight.HasValue ? $"{_warehouseUnit.TotalHeight} m" : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Zablokowana jednostka: @(_warehouseUnit.IsBlocked ? "Tak" : "Nie")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Może być piętrzona: @(_warehouseUnit.CanBeStacked.HasValue ? (_warehouseUnit.CanBeStacked.Value ? "Tak" : "Nie") : "Brak danych")</MudText>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText>Identyfikator piętrzenia: @(_warehouseUnit.StackOnId ?? "Brak")</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" lg="8">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.subtitle1">Przedmioty w jednostce magazynowej</MudText>
+                    <MudSpacer />
+                    <MudButton @onclick="OpenDialogAsync"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="@(!_selectedItems.Any())">
+                        Przenieś
+                    </MudButton>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudTable Items="@_warehouseUnit.WarehouseUnitItems"
+                              Context="WuiContext"
+                              Hover="true"
+                              Breakpoint="Breakpoint.Sm"
+                              Elevation="0"
+                              Dense
+                              Bordered
+                              MultiSelection
+                              @bind-SelectedItems="_selectedItems">
+                        <ColGroup>
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>Id produktu</MudTh>
+                            <MudTh>Nazwa produktu</MudTh>
+                            <MudTh>Ilość</MudTh>
+                            <MudTh>Zablokowane</MudTh>
+                            <MudTh>Dostępne</MudTh>
+                            <MudTh>Nośnik</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                            <MudTd DataLabel="Nazwa produktu">@WuiContext.Product?.ProductName</MudTd>
+                            <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
+                            <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
+                            <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                            <MudTd DataLabel="Nośnik">
+                                <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
+                                             Size="Size.Small"
+                                             Disabled />
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public string WarehouseUnitId { get; set; }
+
+    private WarehouseUnitVM? _warehouseUnit;
+    private HashSet<WarehouseUnitItemVM> _selectedItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadWarehouseUnit();
+    }
+
+    private Task OpenDialogAsync()
+    {
+        if (!_selectedItems.Any())
+            return Task.CompletedTask;
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<MoveWarehouseUnitItemDialog>
+        {
+            { x => x.WarehouseId, _warehouseUnit?.WarehouseId },
+            { x => x.WarehouseUnitItemsToMove, _selectedItems.ToList() },
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, ReloadWarehouseUnit) } }
+        };
+        return DialogService.ShowAsync<MoveWarehouseUnitItemDialog>(null, parameters, options);
+    }
+
+    private async Task ReloadWarehouseUnit()
+    {
+        var response = await WarehouseUnitService.Get(@"api/v1/WarehouseUnit", new() { { "WarehouseUnitId", WarehouseUnitId } });
+        if (response == null)
+        {
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var resObj = JsonConvert.DeserializeObject<List<WarehouseUnitVM>>(json);
+
+        _warehouseUnit = resObj?.First() ?? new();
+
+        StateHasChanged();
+    }
+}

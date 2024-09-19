@@ -5,6 +5,7 @@ using esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
+using esWMS.Application.Functions.WarehouseUnits.Queries.GetWarehouseUnitsByIds;
 using esWMS.Controllers.Utils;
 using esWMS.Services;
 using MediatR;
@@ -41,6 +42,14 @@ namespace esWMS.Controllers
             var result = await _mediator.Send(createWarehouseUnit);
 
             return result.HandleCreatedResult(this, "");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<WarehouseUnitDto>>> GetWarehouseUnitsDetails([FromQuery] string[] warehouseUnitId)
+        {
+            var result = await _mediator.Send(new GetWarehouseUnitsByIdsQuery(warehouseUnitId));
+
+            return result.HandleOkResult(this);
         }
 
         [HttpPost("get-filtered")]

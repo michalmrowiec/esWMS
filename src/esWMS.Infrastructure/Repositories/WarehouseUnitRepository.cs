@@ -87,6 +87,7 @@ namespace esWMS.Infrastructure.Repositories
                 return await _context.WarehouseUnits
                     .Where(wu => warehouseUnitIds.Contains(wu.WarehouseUnitId))
                     .Include(wu => wu.WarehouseUnitItems)
+                        .ThenInclude(wui => wui.Product)
                     .ToListAsync();
             }
             catch (Exception ex)

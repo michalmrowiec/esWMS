@@ -59,7 +59,7 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseU
                         (BaseResponse.ResponseStatus.BadQuery, "Cannot move items to a blocked warehouse unit");
             }
 
-            IList<WarehouseUnitItem> newWArehouseUnitItems = [];
+            IList<WarehouseUnitItem> newWarehouseUnitItems = [];
 
             foreach (var wuiq in request.WarehouseUnitItemWithQuantity)
             {
@@ -70,16 +70,14 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseU
                     return new BaseResponse<WarehouseUnitDto>
                         (BaseResponse.ResponseStatus.BadQuery, "Cannot move more items than available");
                 }
-
-                if (wuiq.Quantity == wui.Quantity)
+                else if (wuiq.Quantity == wui.Quantity)
                 {
                     wui.WarehouseUnitId = request.NewWarehouseUnitId;
                     wui.IsMediaOfWarehouseUnit = false;
                     wui.ModifiedAt = DateTime.Now;
                     wui.ModifiedBy = request.ModifiedBy;
                 }
-
-                if (wuiq.Quantity < wui.Quantity)
+                else if (wuiq.Quantity < wui.Quantity)
                 {
                     wui.Quantity -= wuiq.Quantity;
                     wui.ModifiedAt = DateTime.Now;
@@ -90,13 +88,21 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseU
                         WarehouseUnitId = request.NewWarehouseUnitId,
                         WarehouseUnitItemId = WarehouseUnitIdGenerator.WarehouseUnitItemId(),
                         Quantity = wuiq.Quantity,
+                        BatchLot = wui.BatchLot,
+                        BestBefore = wui.BestBefore,
+                        Currency = wui.Currency,
+                        Price = wui.Price,
+                        ProductId = wui.ProductId,
+                        Unit = wui.Unit,
+                        SerialNumber = wui.SerialNumber,
+                        VatRate = wui.VatRate,
                         BlockedQuantity = 0,
                         IsMediaOfWarehouseUnit = false,
                         CreatedAt = DateTime.Now,
                         CreatedBy = request.ModifiedBy
                     };
 
-                    newWArehouseUnitItems.Add(newWui);
+                    newWarehouseUnitItems.Add(newWui);
                 }
             }
 
@@ -106,13 +112,13 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseU
             {
                 await _transactionManager.BeginTransactionAsync();
                 await _wuiRepository.UpdateWarehouseUnitItemsAsync(warehouseUnitItems.ToArray());
-                await _wuiRepository.CreateRangeAsync(newWArehouseUnitItems);
+                await _wuiRepository.CreateRangeAsync(newWarehouseUnitItems);
                 await _transactionManager.CommitTransactionAsync();
 
                 var warehouseUnitWithNewItems = await _wuRepository.GetWarehouseUnitsWithItemsByIdsAsync(request.NewWarehouseUnitId);
                 warehouseUnitDto = _mapper.Map<WarehouseUnitDto>(warehouseUnitWithNewItems.First());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return new BaseResponse<WarehouseUnitDto>
