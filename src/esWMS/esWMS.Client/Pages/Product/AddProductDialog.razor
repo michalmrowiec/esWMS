@@ -5,6 +5,7 @@
 @inject IDataService<CategoryVM> categoryService
 @inject IDataService<ContractorVM> contractorService
 @inject ISnackbar Snackbar
+@inject AlertService AlertService
 
 <MudDialog>
     <TitleContent>
@@ -127,26 +128,12 @@
     </DialogActions>
 </MudDialog>
 
-@if (_responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({_responseErrors.Count})")</MudText>
-            @foreach (var error in _responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     private MudForm _form;
     private CreateProductVM _model = new();
     private CreateProductVMValidator _validator = new();
-    private List<string> _responseErrors = new();
     private List<CategoryVM> _categories = new();
     private List<ContractorVM> _contractors = new();
     [Parameter]
@@ -158,7 +145,6 @@
 
     private async Task Submit()
     {
-        _responseErrors = new();
         await _form.Validate();
 
         if (_form.IsValid)
@@ -170,10 +156,9 @@
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                _responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
             }
         }
     }

@@ -17,11 +17,16 @@ namespace esWMS.Application.Functions.Products.Commands.CreateProduct
                 .NotEmpty()
                 .MaximumLength(250);
 
+            RuleFor(x => x.ShortProductName)
+                .NotEmpty()
+                .MaximumLength(35);
+
             RuleFor(x => x.CategoryId)
                 .NotEmpty()
                 .MaximumLength(50);
 
             RuleFor(x => x.Unit)
+                .NotEmpty()
                 .MaximumLength(10);
 
             RuleFor(x => x.IsWeight)
@@ -30,17 +35,45 @@ namespace esWMS.Application.Functions.Products.Commands.CreateProduct
             RuleFor(x => x.IsMedia)
                 .NotNull();
 
-            //RuleFor(x => x.MediaTypeAlias)
-            //    .MaximumLength(10);
-
             RuleFor(x => x.Price)
-                .NotNull();
+                .NotNull()
+                .GreaterThan(0);
 
             RuleFor(x => x.IsActive)
                 .NotNull();
 
             RuleFor(x => x.CreatedBy)
                 .MaximumLength(60);
+
+            RuleFor(x => x.TotalWeight)
+                .GreaterThanOrEqualTo(0);
+
+            RuleFor(x => x.TotalLength)
+                .GreaterThanOrEqualTo(0);
+
+            RuleFor(x => x.TotalWidth)
+                .GreaterThanOrEqualTo(0);
+
+            RuleFor(x => x.TotalHeight)
+                .GreaterThanOrEqualTo(0);
+
+            RuleFor(x => x.MinStorageTemperature)
+                .GreaterThanOrEqualTo(-100)
+                .LessThanOrEqualTo(100);
+
+            RuleFor(x => x.MaxStorageTemperature)
+                .GreaterThanOrEqualTo(x => x.MinStorageTemperature)
+                .LessThanOrEqualTo(100);
+
+            RuleFor(x => x.VatRate)
+                .GreaterThanOrEqualTo(0)
+                .LessThanOrEqualTo(100);
+
+            RuleFor(x => x.SupplierContractorId)
+                .MaximumLength(50);
+
+            RuleFor(x => x.Currency)
+                .MaximumLength(5);
         }
     }
 }
