@@ -4,13 +4,14 @@
 @inject IDataService<LocationVM> locationService
 @inject IDataService<WarehouseUnitVM> warehouseUnitService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudDialog Class="width">
     <TitleContent>
         Przypisanie lokalizacji
     </TitleContent>
     <DialogContent>
-        <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6" @ref="tabs">
+        <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6" @ref="_tabs">
             <MudTabPanel Text="Lokalizacja" Icon="@Icons.Material.Filled.LocationOn" ID="@("location")">
                 <MudText>Przypisz jednostkę magazynową do lokalizacji - tylko jednoski wolnostojące i podstawy jednostek piętrowanych (automatycznie przypisze lokalizację do piętrowanych).</MudText>
                 <MudText>Jeśli lokalizacja nie zostanie wybrana z listy, usunie lokalizację.</MudText>
@@ -24,7 +25,7 @@
                               Label="Aktualna lokalizacja"
                               Disabled />
 
-                <MudAutocomplete @bind-Value="@searchString"
+                <MudAutocomplete @bind-Value="@_searchString"
                                  SearchFunc="Search"
                                  Variant="Variant.Text"
                                  Label="Nowa lokalizacja"
@@ -34,7 +35,7 @@
             <MudTabPanel Text="Piętrowanie" Icon="@Icons.Material.Filled.Layers" ID="@("stacking")">
                 <MudText>Piętruj jednoskię na innej. Przypisuje lokalizację wybranej jednoski, na której jest piętrowana.</MudText>
                 <MudText>Jeśli jednoska nie zostanie wybrana z listy, usunie piętrowanie.</MudText>
-                <MudText>Piętrowane na: @stackOn?.WarehouseUnitId</MudText>
+                <MudText>Piętrowane na: @_stackOn?.WarehouseUnitId</MudText>
 
                 <WarehouseUnitTable ExceptWarehouseUnitIdFilter="new() { WarehouseUnit.WarehouseUnitId }"
                                     WarehouseIdFilter="@WarehouseUnit.WarehouseId"
@@ -54,7 +55,7 @@
                               Label="Aktualna lokalizacja"
                               Disabled />
 
-                <MudAutocomplete @bind-Value="@searchString"
+                <MudAutocomplete @bind-Value="@_searchString"
                                  SearchFunc="Search"
                                  Variant="Variant.Text"
                                  Label="Nowa lokalizacja"
@@ -69,38 +70,21 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-
     [Parameter]
     public WarehouseUnitVM WarehouseUnit { get; set; }
-
     [Parameter]
     public List<EventCallback>? FuncsOnSubmit { get; set; } = new();
-
-    private List<string> locations = new();
-    private string searchString { get; set; } = "";
-    private List<string> responseErrors = new();
-    private MudTabs tabs;
-    private WarehouseUnitVM? stackOn;
+    private List<string> _locations = new();
+    private string _searchString { get; set; } = "";
+    private MudTabs _tabs;
+    private WarehouseUnitVM? _stackOn;
 
     private void OnSelected(HashSet<WarehouseUnitVM> warehouseUnits)
     {
-        stackOn = warehouseUnits.FirstOrDefault();
+        _stackOn = warehouseUnits.FirstOrDefault();
         StateHasChanged();
     }
 
@@ -119,24 +103,24 @@
             filters = $"IsFull==false,LocationId@={WarehouseUnit.WarehouseId!.ToUpper()},{value.ToUpper()}";
 
         var locationResponse = await locationService.GetPagedResult(@"api/v1/Location/get-filtered", new SieveModelVM(1, 10, filters));
-        locations = locationResponse.Items.Select(x => x.LocationId).ToList();
+        _locations = locationResponse.Items.Select(x => x.LocationId).ToList();
 
         if (string.IsNullOrWhiteSpace(value))
-            return locations;
+            return _locations;
 
-        return locations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        return _locations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
 
     private async Task Submit()
     {
         HttpResponseMessage response = new();
-        switch (tabs.ActivePanel.ID)
+        switch (_tabs.ActivePanel.ID)
         {
             case "location":
                 var requestBodyLocation = new
                 {
                     WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
-                    LocationId = searchString
+                    LocationId = _searchString
                 };
 
                 response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-location", requestBodyLocation);
@@ -145,7 +129,7 @@
                 var requestBodyStacking = new
                 {
                     WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
-                    StackOnWarehouseUnitId = stackOn?.WarehouseUnitId
+                    StackOnWarehouseUnitId = _stackOn?.WarehouseUnitId
                 };
 
                 response = await warehouseUnitService.Patch(@"api/v1/WarehouseUnit/set-stack-on", requestBodyStacking);
@@ -154,7 +138,7 @@
                 var requestBodyStackingOff = new
                 {
                     WarehouseUnitId = WarehouseUnit.WarehouseUnitId,
-                    LocationId = searchString,
+                    LocationId = _searchString,
                     RemoveFromStack = true
                 };
 
@@ -172,8 +156,7 @@
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 

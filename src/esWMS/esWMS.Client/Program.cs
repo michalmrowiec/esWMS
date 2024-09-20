@@ -14,7 +14,7 @@ builder.Services.AddTransient(http => new HttpClient
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
 
-builder.Services.AddSingleton<AlertService>();
+builder.Services.AddSingleton<IAlertService, AlertService>();
 builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
 builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();
 builder.Services.AddMudServices();

@@ -6,24 +6,25 @@
 @inject IDataService<WarehouseVM> warehouseDataService
 @inject ISnackbar Snackbar
 @inject IDataService<LocationVM> locationService
+@inject IAlertService AlertService
 
 <MudDialog>
     <TitleContent>
         Nowa jednostka magazynowa
     </TitleContent>
     <DialogContent>
-        <MudForm Model="@model"
-                 @ref="@form"
-                 Validation="@(validator.ValidateValue)"
+        <MudForm Model="@_model"
+                 @ref="@_form"
+                 Validation="@(_validator.ValidateValue)"
                  ValidationDelay="0">
             <MudCardContent>
                 <MudSelect T="string"
-                           @bind-Value="model.WarehouseId"
+                           @bind-Value="_model.WarehouseId"
                            Label="Magazyn"
                            AnchorOrigin="Origin.BottomCenter"
-                           For="@(() => model.WarehouseId)"
+                           For="@(() => _model.WarehouseId)"
                            Immediate="true">
-                    @foreach (var warehouse in warehouses)
+                    @foreach (var warehouse in _warehouses)
                     {
                         <MudSelectItem Value="@warehouse.WarehouseId">
                             [@warehouse.WarehouseId] @warehouse.WarehouseName
@@ -31,11 +32,11 @@
                     }
                 </MudSelect>
 
-                <MudAutocomplete @bind-Value="@model.LocationId"
+                <MudAutocomplete @bind-Value="@_model.LocationId"
                                  SearchFunc="Search"
                                  Variant="Variant.Text"
                                  Label="Lokalizacja"
-                                 Disabled="@(string.IsNullOrEmpty(model.WarehouseId))"
+                                 Disabled="@(string.IsNullOrEmpty(_model.WarehouseId))"
                                  Dense="false"
                                  Clearable="true" />
 
@@ -48,27 +49,27 @@
                 }
                 </MudSelect> *@
 
-                <MudNumericField @bind-Value="model.TotalWeight"
-                                 For="@(() => model.TotalWeight)"
+                <MudNumericField @bind-Value="_model.TotalWeight"
+                                 For="@(() => _model.TotalWeight)"
                                  Label="Waga całkowita (kg)"
                                  Immediate="true" />
 
-                <MudNumericField @bind-Value="model.TotalLength"
-                                 For="@(() => model.TotalLength)"
+                <MudNumericField @bind-Value="_model.TotalLength"
+                                 For="@(() => _model.TotalLength)"
                                  Label="Długość całkowita (m)"
                                  Immediate="true" />
 
-                <MudNumericField @bind-Value="model.TotalWidth"
-                                 For="@(() => model.TotalWidth)"
+                <MudNumericField @bind-Value="_model.TotalWidth"
+                                 For="@(() => _model.TotalWidth)"
                                  Label="Szerokość całkowita (m)"
                                  Immediate="true" />
 
-                <MudNumericField @bind-Value="model.TotalHeight"
-                                 For="@(() => model.TotalHeight)"
+                <MudNumericField @bind-Value="_model.TotalHeight"
+                                 For="@(() => _model.TotalHeight)"
                                  Label="Wysokość całkowita (m)"
                                  Immediate="true" />
 
-                <MudCheckBox @bind-Value="model.CanBeStacked">Może być piętrowany</MudCheckBox>
+                <MudCheckBox @bind-Value="_model.CanBeStacked">Może być piętrowany</MudCheckBox>
 
                 @*                 <MudSelect T="string" @bind-Value="model.StackOnId" Label="Jednostka nadrzędna" For="@(() => model.StackOnId)" Immediate="true">
                 @foreach (var unit in stackableUnits)
@@ -87,53 +88,36 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-    private MudForm form;
-    private CreateWarehouseUnitVM model = new();
-    private CreateWarehouseUnitVMValidator validator = new();
-    private List<string> responseErrors = new();
-    private List<WarehouseVM> warehouses = new();
-    // private List<MediaVM> mediaItems = new();
-    // private List<LocationVM> locations = new();
-    private List<WarehouseUnitVM> stackableUnits = new();
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
-    private List<string> locations = new();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm _form;
+    private CreateWarehouseUnitVM _model = new();
+    private CreateWarehouseUnitVMValidator _validator = new();
+    private List<WarehouseVM> _warehouses = new();
+    private List<WarehouseUnitVM> _stackableUnits = new();
+    private List<string> _locations = new();
+
     private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
-        responseErrors = new();
-        await form.Validate();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
-            var response = await createWarehouseUnitDataService.Create(@"api/v1/WarehouseUnit", model);
+            var response = await createWarehouseUnitDataService.Create(@"api/v1/WarehouseUnit", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 Snackbar.Add(new MarkupString($"Utworzono jednostkę magazynową"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            else 
             {
-                var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
             }
         }
     }
@@ -141,7 +125,7 @@
     protected override async Task OnInitializedAsync()
     {
         var warehouseResponse = await warehouseDataService.GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
-        warehouses = warehouseResponse.Items.ToList();
+        _warehouses = warehouseResponse.Items.ToList();
 
         // mediaItems = (await warehouseUnitService.GetMediaItems()).ToList();
         // locations = (await warehouseUnitService.GetLocations()).ToList();
@@ -152,17 +136,17 @@
     {
         string filters = "";
 
-        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(model.WarehouseId))
-            filters = $"IsFull==false,LocationId@={model.WarehouseId!.ToUpper()}";
+        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrEmpty(_model.WarehouseId))
+            filters = $"IsFull==false,LocationId@={_model.WarehouseId!.ToUpper()}";
         else
-            filters = $"IsFull==false,LocationId@={model.WarehouseId!.ToUpper()},{value.ToUpper()}";
+            filters = $"IsFull==false,LocationId@={_model.WarehouseId!.ToUpper()},{value.ToUpper()}";
 
         var locationResponse = await locationService.GetPagedResult(@"api/v1/Location/get-filtered", new SieveModelVM(1, 10, filters));
-        locations = locationResponse.Items.Select(x => x.LocationId).ToList();
+        _locations = locationResponse.Items.Select(x => x.LocationId).ToList();
 
         if (string.IsNullOrWhiteSpace(value))
-            return locations;
+            return _locations;
 
-        return locations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        return _locations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
 }

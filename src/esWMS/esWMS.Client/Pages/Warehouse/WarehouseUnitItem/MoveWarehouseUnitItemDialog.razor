@@ -6,6 +6,7 @@
 @inject IDataService<WarehouseUnitItemVM> WarehouseUnitItemService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IAlertService AlertService
 
 <MudDialog>
     <TitleContent>
@@ -61,34 +62,18 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-    private MudForm form;
-    private CreateLocationVM model = new();
-    private CreateLocationVMValidator validator = new();
-    private List<string> responseErrors = new();
-
     [Parameter]
     public List<WarehouseUnitItemVM> WarehouseUnitItemsToMove { get; set; } = [];
     [Parameter]
     public string WarehouseId { get; set; }
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
-
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm _form;
+    private CreateLocationVM _model = new();
+    private CreateLocationVMValidator _validator = new();
     private WarehouseUnitItemVM _elementBeforeEdit;
     private WarehouseUnitVM _newWarehouseUnit;
 
@@ -96,8 +81,6 @@
 
     private async Task Submit()
     {
-        responseErrors = new();
-
         var model = new
         {
             WarehouseUnitItemWithQuantity = WarehouseUnitItemsToMove.Select(x => new
@@ -117,8 +100,7 @@
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 

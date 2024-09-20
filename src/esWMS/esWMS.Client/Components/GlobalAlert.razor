@@ -1,5 +1,5 @@
 ﻿@using esWMS.Components.Alert
-@inject AlertService AlertService
+@inject IAlertService AlertService
 
 <style>
     .global-alert-container {
@@ -49,7 +49,7 @@
 
     protected override void OnInitialized()
     {
-        AlertService.OnShow += ShowAlert;
+        AlertService.Subscribe(ShowAlert);
     }
 
     protected record Alert(Guid Id, MarkupString Message, Severity Severity);

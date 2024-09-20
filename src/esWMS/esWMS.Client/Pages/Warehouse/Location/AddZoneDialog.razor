@@ -5,24 +5,25 @@
 @inject IDataService<CreateZoneVM> zoneDataService
 @inject IDataService<WarehouseVM> warehouseDataService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudDialog>
     <TitleContent>
         Nowa strefa
     </TitleContent>
     <DialogContent>
-        <MudForm Model="@model"
-                 @ref="@form"
-                 Validation="@(validator.ValidateValue)"
+        <MudForm Model="@_model"
+                 @ref="@_form"
+                 Validation="@(_validator.ValidateValue)"
                  ValidationDelay="0">
             <MudCardContent>
                 <MudSelect T="string"
-                           @bind-Value="model.WarehouseId"
+                           @bind-Value="_model.WarehouseId"
                            Label="Magazyn"
                            AnchorOrigin="Origin.BottomCenter"
-                           For="@(() => model.WarehouseId)"
+                           For="@(() => _model.WarehouseId)"
                            Immediate="true">
-                    @foreach (var warehouse in warehouses)
+                    @foreach (var warehouse in _warehouses)
                     {
                         <MudSelectItem Value="@warehouse.WarehouseId">
                             [@warehouse.WarehouseId] @warehouse.WarehouseName
@@ -30,21 +31,21 @@
                     }
                 </MudSelect>
 
-                <MudTextField @bind-Value="model.ZoneName"
-                              For="@(() => model.ZoneName)"
-                                 Immediate="true"
-                                 Label="Nazwa"
-                                 MaxLength="30" />
+                <MudTextField @bind-Value="_model.ZoneName"
+                              For="@(() => _model.ZoneName)"
+                              Immediate="true"
+                              Label="Nazwa"
+                              MaxLength="30" />
 
-                <MudTextField @bind-Value="model.ZoneAlias"
-                              For="@(() => model.ZoneAlias)"
+                <MudTextField @bind-Value="_model.ZoneAlias"
+                              For="@(() => _model.ZoneAlias)"
                               Immediate="true"
                               Label="Alias"
                               MaxLength="1"
-                              TextChanged="@(() => model.ZoneAlias = model.ZoneAlias?.ToString()?.ToUpper().ToCharArray()?.First() ?? null)" />
+                              TextChanged="@(() => _model.ZoneAlias = _model.ZoneAlias?.ToString()?.ToUpper().ToCharArray()?.First() ?? null)" />
 
-                <MudNumericField @bind-Value="model.AvgTemperature"
-                                 For="@(() => model.AvgTemperature)"
+                <MudNumericField @bind-Value="_model.AvgTemperature"
+                                 For="@(() => _model.AvgTemperature)"
                                  Label="Średnia temperatura (°C)"
                                  Immediate="true"
                                  Min="-999"
@@ -58,40 +59,25 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-    private MudForm form;
-    private CreateZoneVM model = new();
-    private CreateZoneVMValidator validator = new();
-    private List<string> responseErrors = new();
-    private List<WarehouseVM> warehouses = new();
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm _form;
+    private CreateZoneVM _model = new();
+    private CreateZoneVMValidator _validator = new();
+    private List<WarehouseVM> _warehouses = new();
 
     private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
-        responseErrors = new();
-        await form.Validate();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
-            var response = await zoneDataService.Create(@"api/v1/Zone", model);
+            var response = await zoneDataService.Create(@"api/v1/Zone", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -102,10 +88,9 @@
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
             }
         }
     }
@@ -113,6 +98,6 @@
     protected override async Task OnInitializedAsync()
     {
         var warehouseResponse = await warehouseDataService.GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500));
-        warehouses = warehouseResponse.Items.ToList();
+        _warehouses = warehouseResponse.Items.ToList();
     }
 }

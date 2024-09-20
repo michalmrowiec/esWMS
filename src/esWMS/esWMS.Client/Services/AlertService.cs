@@ -3,9 +3,20 @@ using MudBlazor;
 
 namespace esWMS.Components.Alert
 {
-    public class AlertService
+    public interface IAlertService
     {
-        public Action<MarkupString, Severity>? OnShow;
+        void Subscribe(Action<MarkupString, Severity> showAction);
+        void ShowAlert(MarkupString message, Severity severity = Severity.Error);
+    }
+
+    public class AlertService : IAlertService
+    {
+        private Action<MarkupString, Severity>? OnShow;
+
+        public void Subscribe(Action<MarkupString, Severity> showAction)
+        {
+            OnShow = showAction;
+        }
 
         public void ShowAlert(MarkupString message, Severity severity = Severity.Error)
         {

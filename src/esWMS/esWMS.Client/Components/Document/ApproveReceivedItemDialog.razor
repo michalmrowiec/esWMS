@@ -8,6 +8,7 @@
 @inject ISnackbar Snackbar
 @inject IDataService<WarehouseUnitVM> warehouseUnitDataService
 @inject IDataService<ProductVM> productDataService
+@inject IAlertService AlertService
 
 <MudDialog>
     <TitleContent>
@@ -16,18 +17,18 @@
     <DialogContent>
         <MudText Typo="Typo.subtitle1"><strong>Id pozycji dokumentu:</strong> @DocumentItemVM.DocumentItemId</MudText>
 
-        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
+        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + _documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
 
         <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Single"
                             SelectedWarehouseUnits="OnGet"
-                            WarehouseIdFilter="@WarehouseId"/>
+                            WarehouseIdFilter="@WarehouseId" />
 
         <MudNumericField Label="Ilość"
-                         @bind-Value="quantity" />
+                         @bind-Value="_quantity" />
 
-        @if (canBeMedia)
+        @if (_canBeMedia)
         {
-            <MudCheckBox @bind-Value="setMediaOfWarehouseUnit" Label="Ustaw jako nośnik jednoski magazynowej" />
+            <MudCheckBox @bind-Value="_setMediaOfWarehouseUnit" Label="Ustaw jako nośnik jednoski magazynowej" />
         }
 
         <MudButton Color="Color.Primary" OnClick="SubmitWarehouseUnit">Dodaj</MudButton>
@@ -35,7 +36,7 @@
 
 
         <MudDataGrid T="DocumentWarehouseUnitItemVM"
-                     Items="@documentItemWithAssignments"
+                     Items="@_documentItemWithAssignments"
                      EditMode="DataGridEditMode.Cell"
                      Dense
                      Bordered
@@ -52,7 +53,7 @@
                         <MudStack Row>
                             <MudIconButton Size="@Size.Small"
                                            Icon="@Icons.Material.Outlined.Delete"
-                                           OnClick="@(() => { documentItemWithAssignments.Remove(item.Item); StateHasChanged(); })" />
+                                           OnClick="@(() => { _documentItemWithAssignments.Remove(item.Item); StateHasChanged(); })" />
                         </MudStack>
                     </CellTemplate>
                 </TemplateColumn>
@@ -76,7 +77,7 @@
                 <TemplateColumn CellClass="d-flex justify-end" Title="Id jednostki magazynowej">
                     <CellTemplate Context="item">
                         <MudStack Row>
-                            <MudText>@warehouseUnitVMs.FirstOrDefault(x => x.WarehouseUnitItems.Any(x => x.WarehouseUnitItemId.Equals(item.Item.WarehouseUnitItemId)))?.WarehouseUnitId</MudText>
+                            <MudText>@_warehouseUnitVMs.FirstOrDefault(x => x.WarehouseUnitItems.Any(x => x.WarehouseUnitItemId.Equals(item.Item.WarehouseUnitItemId)))?.WarehouseUnitId</MudText>
                         </MudStack>
                     </CellTemplate>
                 </TemplateColumn>
@@ -91,76 +92,56 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-
     [Parameter]
     public List<EventCallback>? FuncsOnAdded { get; set; } = new();
-
     [Parameter]
     public DocumentItemVM DocumentItemVM { get; set; }
-
     [Parameter]
     public string? WarehouseId { get; set; }
-
     [Parameter]
     public string Uri { get; set; }
-
-    private string? selectedWarehouseUnitId = "";
-    private List<DocumentWarehouseUnitItemVM> documentItemWithAssignments = new();
-    private List<string> responseErrors = new();
-    private List<WarehouseUnitVM> warehouseUnitVMs = new();
-
-    private WarehouseUnitVM? selected;
-    private bool canBeMedia = false;
-    private bool setMediaOfWarehouseUnit = false;
-    private int quantity = 0;
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private string? _selectedWarehouseUnitId = "";
+    private List<DocumentWarehouseUnitItemVM> _documentItemWithAssignments = new();
+    private List<WarehouseUnitVM> _warehouseUnitVMs = new();
+    private WarehouseUnitVM? _selected;
+    private bool _canBeMedia = false;
+    private bool _setMediaOfWarehouseUnit = false;
+    private int _quantity = 0;
 
     protected override void OnParametersSet()
     {
-        quantity = DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity));
+        _quantity = DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + _documentItemWithAssignments.Sum(x => x.Quantity));
     }
 
     private void OnGet(HashSet<WarehouseUnitVM> warehouseUnits)
     {
-        selected = warehouseUnits.FirstOrDefault();
+        _selected = warehouseUnits.FirstOrDefault();
         StateHasChanged();
     }
 
     private void SubmitWarehouseUnit()
     {
-        if (selected != null && quantity > 0)
+        if (_selected != null && _quantity > 0)
         {
-            documentItemWithAssignments.Add(new(DocumentItemVM.DocumentItemId, selected?.WarehouseUnitId, quantity, isMedia: setMediaOfWarehouseUnit));
-            selected = null;
-            setMediaOfWarehouseUnit = false;
-            quantity = DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + documentItemWithAssignments.Sum(x => x.Quantity));
+            _documentItemWithAssignments.Add(new(DocumentItemVM.DocumentItemId, _selected?.WarehouseUnitId, _quantity, isMedia: _setMediaOfWarehouseUnit));
+            _selected = null;
+            _setMediaOfWarehouseUnit = false;
+            _quantity = DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + _documentItemWithAssignments.Sum(x => x.Quantity));
             StateHasChanged();
         }
     }
 
     private async Task Submit()
     {
-        if (selectedWarehouseUnitId != null)
+        if (_selectedWarehouseUnitId != null)
         {
             var requestBody = new
             {
                 DocumentId = DocumentItemVM.DocumentId,
-                DocumentItemsWithAssignment = documentItemWithAssignments
+                DocumentItemsWithAssignment = _documentItemWithAssignments
             };
 
             var response = await documentService.ApproveDocument(Uri, requestBody);
@@ -177,8 +158,7 @@
             }
             else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
             }
         }
     }
@@ -198,12 +178,12 @@
 
         var response = await warehouseUnitDataService.GetPagedResult(@"api/v1/WarehouseUnit/get-filtered", sm);
 
-        warehouseUnitVMs = response.Items.ToList();
+        _warehouseUnitVMs = response.Items.ToList();
 
         var productResponse = await productDataService.GetPagedResult(@"api/v1/Product/get-filtered", new SieveModelVM { Page = 1, PageSize = 1, Filters = $"ProductId=={DocumentItemVM.ProductId},IsMedia==true" });
         if (productResponse.Items.Count == 1)
         {
-            canBeMedia = true;
+            _canBeMedia = true;
         }
 
         StateHasChanged();

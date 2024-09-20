@@ -7,13 +7,14 @@
 @inject IDataService<WarehouseVM> warehouseDataService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IAlertService AlertService
 
-<MudForm Model="@model"
-         @ref="@form"
-         Validation="@(validator.ValidateValue)"
+<MudForm Model="@_model"
+         @ref="@_form"
+         Validation="@(_validator.ValidateValue)"
          ValidationDelay="0" Spacing="4">
 
-    @if (showInfoAlert)
+    @if (_showInfoAlert)
     {
         <MudAlert Severity="Severity.Info"
                   ContentAlignment="HorizontalAlignment.Left"
@@ -22,13 +23,13 @@
     }
 
     <MudSelect T="string"
-               @bind-Value="model.IssueWarehouseId"
+               @bind-Value="_model.IssueWarehouseId"
                Label="Magazyn wydający"
                AnchorOrigin="Origin.BottomCenter"
-               For="@(() => model.IssueWarehouseId)"
+               For="@(() => _model.IssueWarehouseId)"
                Immediate="true"
                Disabled="@(warehouseUnits.Count > 0)">
-        @foreach (var warehouse in warehouses)
+        @foreach (var warehouse in _warehouses)
         {
             <MudSelectItem Value="@warehouse.WarehouseId">
                 [@warehouse.WarehouseId] @warehouse.WarehouseName
@@ -37,31 +38,31 @@
     </MudSelect>
 
     <MudDatePicker Label="Data wystawienia dokumentu"
-                   @bind-Date="model.DocumentIssueDate"
-                   For="@(() => model.DocumentIssueDate)" />
+                   @bind-Date="_model.DocumentIssueDate"
+                   For="@(() => _model.DocumentIssueDate)" />
 
     <MudTextField T="string"
-                  @bind-Value="model.Comment"
-                  For="@(() => model.Comment)"
+                  @bind-Value="_model.Comment"
+                  For="@(() => _model.Comment)"
                   Immediate="true"
                   Label="Uwagi"
                   Lines="3" />
 
-    <MudTextField @bind-Value="model.AssignedEmployeeId"
-                  For="@(() => model.AssignedEmployeeId)"
+    <MudTextField @bind-Value="_model.AssignedEmployeeId"
+                  For="@(() => _model.AssignedEmployeeId)"
                   Label="Przypisany pracownik"
                   Disabled />
 
     <MudDatePicker Label="Data wydania"
-                   @bind-Date="model.GoodsReleaseDate"
-                   For="@(() => model.GoodsReleaseDate)" />
+                   @bind-Date="_model.GoodsReleaseDate"
+                   For="@(() => _model.GoodsReleaseDate)" />
 
     <MudSelect T="string"
-               @bind-Value="model.ToWarehouseId"
+               @bind-Value="_model.ToWarehouseId"
                Label="Odbiorca"
                AnchorOrigin="Origin.BottomCenter"
-               For="@(() => model.ToWarehouseId)">
-        @foreach (var warehouse in warehouses)
+               For="@(() => _model.ToWarehouseId)">
+        @foreach (var warehouse in _warehouses)
         {
             <MudSelectItem Value="@warehouse.WarehouseId">
                 [@warehouse.WarehouseId] @warehouse.WarehouseName
@@ -72,7 +73,7 @@
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
                Color="Color.Primary"
-               Disabled="@(model.IssueWarehouseId == null)">
+               Disabled="@(_model.IssueWarehouseId == null)">
         Dodaj pozycje
     </MudButton>
 
@@ -97,44 +98,30 @@
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary" Class="ml-auto"
                OnClick="@(async () => await Submit())"
-               Disabled="@(warehouseUnits.Count == 0 || model.ToWarehouseId == null)">
+               Disabled="@(warehouseUnits.Count == 0 || _model.ToWarehouseId == null)">
         Utwórz
     </MudButton>
 </MudForm>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    private CreateMmmVM model = new();
-    private MudForm form;
-    private CreateMmmVMValidator validator = new();
-    private List<WarehouseVM> warehouses = new();
-    private List<string> responseErrors = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
-    private bool showInfoAlert = true;
     public IList<WarehouseUnitVM> warehouseUnits { get; set; } = [];
+    private CreateMmmVM _model = new();
+    private MudForm _form;
+    private CreateMmmVMValidator _validator = new();
+    private List<WarehouseVM> _warehouses = new();
+    private bool _showInfoAlert = true;
 
     private void CloseInfo()
     {
-        showInfoAlert = false;
+        _showInfoAlert = false;
     }
 
     protected override async Task OnInitializedAsync()
     {
         var warehouseResponse = await warehouseDataService.GetPagedResult(@"api/v1/Warehouse/get-filtered", new SieveModelVM(1, 500, "", ""));
-        warehouses = warehouseResponse.Items.ToList();
+        _warehouses = warehouseResponse.Items.ToList();
     }
 
     private Task OpenDialogAsync()
@@ -144,7 +131,7 @@
         {
             { x => x.WarehouseUnitVMs, EventCallback.Factory.Create<List<WarehouseUnitVM>>(this, OnGet) },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
-            { x => x.WarehouseId, model.IssueWarehouseId }
+            { x => x.WarehouseId, _model.IssueWarehouseId }
         };
         return DialogService.ShowAsync<AddMmmItemDialog>(null, parameters, options);
     }
@@ -156,16 +143,15 @@
 
     private async Task Submit()
     {
-        model.WarehouseUnitIds = warehouseUnits.Select(x => x.WarehouseUnitId).ToList();
-        responseErrors = new();
-        await form.Validate();
+        _model.WarehouseUnitIds = warehouseUnits.Select(x => x.WarehouseUnitId).ToList();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
-            var response = await createMmmDataService.Create(@"api/v1/Mmm", model);
+            var response = await createMmmDataService.Create(@"api/v1/Mmm", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                model = new();
+                _model = new();
                 var json = await response.Content.ReadAsStringAsync();
                 var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
 
@@ -175,8 +161,7 @@
             }
             else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
                 StateHasChanged();
             }
         }

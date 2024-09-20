@@ -6,7 +6,7 @@ namespace esWMS.Client.Services
 {
     public static class ApiResponseHandler
     {
-        public static async Task HandleFailure(this HttpResponseMessage response, AlertService alertService)
+        public static async Task HandleFailure(this HttpResponseMessage response, IAlertService alertService)
         {
             var json = await response.Content.ReadAsStringAsync();
             try

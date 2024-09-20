@@ -7,6 +7,7 @@
 @inject IDataService<PwVM> pzDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @PwVM.DocumentId
@@ -111,27 +112,11 @@ else
     </MudButton>
 }
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5" Class="mb-3">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
     [Parameter]
     public PwVM PwVM { get; set; } = new();
-
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
-
-    private List<string> responseErrors = new();
 
     private Task OpenDialogAsync(DocumentItemVM documentItem)
     {
@@ -180,8 +165,7 @@ else
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 }

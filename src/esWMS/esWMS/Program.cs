@@ -23,7 +23,7 @@ try
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
 
-    builder.Services.AddSingleton<AlertService>();
+    builder.Services.AddSingleton<IAlertService, AlertService>();
     builder.Services.AddSingleton<OnePageState>();
     builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
     builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();

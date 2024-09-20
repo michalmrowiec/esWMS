@@ -6,6 +6,7 @@
 @inject IDataService<MmmVM> mmmDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @MmmVM.DocumentId
@@ -71,12 +72,6 @@
                     <MudCheckBox Value="@context.Item.IsApproved" Disabled />
                     @if (!context.Item.IsApproved)
                     {
-                        @* <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
-                    Size="@Size.Small"
-                    Variant="@Variant.Filled"
-                    Color="@Color.Primary">
-                    Zatwierdź
-                    </MudButton> *@
                         <MudButton Disabled
                                    Size="@Size.Small"
                                    Variant="@Variant.Filled"
@@ -122,39 +117,11 @@ else
     </MudButton>
 }
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5" Class="mb-3">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
     [Parameter]
     public MmmVM MmmVM { get; set; } = new();
-
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
-
-    private List<string> responseErrors = new();
-
-    // private Task OpenDialogAsync(DocumentItemVM documentItem)
-    // {
-    //     InvokeAsync(RefreshWz);
-    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-    //     var parameters = new DialogParameters<ApproveWzItemDialogForm>
-    //     {
-    //         { x => x.DocumentItemVM, documentItem},
-    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
-    //     };
-    //     return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
-    // }
 
     private async Task RefreshMmm()
     {
@@ -189,8 +156,7 @@ else
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 }
