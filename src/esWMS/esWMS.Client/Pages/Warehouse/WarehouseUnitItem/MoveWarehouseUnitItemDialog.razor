@@ -9,7 +9,7 @@
 
 <MudDialog>
     <TitleContent>
-        Nowa lokalizacja
+        Przenieś/Podziel
     </TitleContent>
     <DialogContent>
         <MudTable Items="WarehouseUnitItemsToMove"
@@ -57,7 +57,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Przenieś</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Przenieś/Podziel</MudButton>
     </DialogActions>
 </MudDialog>
 

@@ -11,47 +11,47 @@
         Nowy produkt
     </TitleContent>
     <DialogContent>
-        <MudForm Model="@model"
-                 @ref="@form"
-                 Validation="@(validator.ValidateValue)"
+        <MudForm Model="@_model"
+                 @ref="@_form"
+                 Validation="@(_validator.ValidateValue)"
                  ValidationDelay="0">
             <MudCardContent>
-                <MudTextField @bind-Value="model.ProductCode"
-                              For="@(() => model.ProductCode)"
+                <MudTextField @bind-Value="_model.ProductCode"
+                              For="@(() => _model.ProductCode)"
                               Immediate="true"
                               Label="Kod produktu"
                               MaxLength="100" />
 
-                <MudTextField @bind-Value="model.EanCode"
-                              For="@(() => model.EanCode)"
+                <MudTextField @bind-Value="_model.EanCode"
+                              For="@(() => _model.EanCode)"
                               Immediate="true"
                               Label="Kod EAN"
                               MaxLength="100" />
 
-                <MudTextField @bind-Value="model.ProductName"
-                              For="@(() => model.ProductName)"
+                <MudTextField @bind-Value="_model.ProductName"
+                              For="@(() => _model.ProductName)"
                               Immediate="true"
                               Label="Nazwa produktu"
                               MaxLength="250" />
 
-                <MudTextField @bind-Value="model.ShortProductName"
-                              For="@(() => model.ShortProductName)"
+                <MudTextField @bind-Value="_model.ShortProductName"
+                              For="@(() => _model.ShortProductName)"
                               Immediate="true"
                               Label="Skrócona nazwa"
                               MaxLength="35" />
 
-                <MudTextField @bind-Value="model.ProductDescription"
-                              For="@(() => model.ProductDescription)"
+                <MudTextField @bind-Value="_model.ProductDescription"
+                              For="@(() => _model.ProductDescription)"
                               Immediate="true"
                               Label="Opis produktu" />
 
                 <MudSelect T="string"
-                           @bind-Value="model.CategoryId"
+                           @bind-Value="_model.CategoryId"
                            Label="Kategoria"
                            AnchorOrigin="Origin.BottomCenter"
-                           For="@(() => model.CategoryId)"
+                           For="@(() => _model.CategoryId)"
                            Immediate="true">
-                    @foreach (var category in categories)
+                    @foreach (var category in _categories)
                     {
                         <MudSelectItem Value="@category.CategoryId">
                             @category.CategoryName
@@ -59,61 +59,57 @@
                     }
                 </MudSelect>
 
-                <MudSelect T="string"
-                           @bind-Value="model.Unit"
-                           For="@(() => model.Unit)"
-                           Immediate="true"
-                           Label="Jednostka">
-                    <MudSelectItem Value="@("SZT")">SZT</MudSelectItem>
-                    <MudSelectItem Value="@("4-PAK")">4-PAK</MudSelectItem>
-                    <MudSelectItem Value="@("KG")">KG</MudSelectItem>
-                </MudSelect>
+                <MudAutocomplete @bind-Value="_model.Unit"
+                                 SearchFunc="@(async (value, ct) => await Search(value, ct))"
+                                 Variant="Variant.Text"
+                                 Label="Jednostka"
+                                 CoerceValue="true" />
 
-                <MudCheckBox @bind-Value="model.IsWeight" Label="Artykuł wagowy" />
+                <MudCheckBox @bind-Value="_model.IsWeight" Label="Artykuł wagowy" />
 
-                <MudTextField @bind-Value="model.TotalWeight"
-                              For="@(() => model.TotalWeight)"
-                              Immediate="true"
-                              Label="Waga na jednostkę (kg)" />
+                <MudNumericField @bind-Value="_model.TotalWeight"
+                                 For="@(() => _model.TotalWeight)"
+                                 Immediate="true"
+                                 Label="Waga na jednostkę (kg)" />
 
-                <MudTextField @bind-Value="model.TotalHeight"
-                              For="@(() => model.TotalHeight)"
-                              Immediate="true"
-                              Label="Wysokość (m)" />
+                <MudNumericField @bind-Value="_model.TotalHeight"
+                                 For="@(() => _model.TotalHeight)"
+                                 Immediate="true"
+                                 Label="Wysokość (m)" />
 
-                <MudTextField @bind-Value="model.TotalWidth"
-                              For="@(() => model.TotalWidth)"
-                              Immediate="true"
-                              Label="Szerokość (m)" />
+                <MudNumericField @bind-Value="_model.TotalWidth"
+                                 For="@(() => _model.TotalWidth)"
+                                 Immediate="true"
+                                 Label="Szerokość (m)" />
 
-                <MudTextField @bind-Value="model.TotalLength"
-                              For="@(() => model.TotalLength)"
+                <MudTextField @bind-Value="_model.TotalLength"
+                              For="@(() => _model.TotalLength)"
                               Immediate="true"
                               Label="Długość (m)" />
 
-                <MudTextField @bind-Value="model.MinStorageTemperature"
-                              For="@(() => model.MinStorageTemperature)"
-                              Immediate="true"
-                              Label="Minimalna temperatura przechowywania (°C)" />
+                <MudNumericField @bind-Value="_model.MinStorageTemperature"
+                                 For="@(() => _model.MinStorageTemperature)"
+                                 Immediate="true"
+                                 Label="Minimalna temperatura przechowywania (°C)" />
 
-                <MudTextField @bind-Value="model.MaxStorageTemperature"
-                              For="@(() => model.MaxStorageTemperature)"
-                              Immediate="true"
-                              Label="Maksymalna temperatura przechowywania (°C)" />
+                <MudNumericField @bind-Value="_model.MaxStorageTemperature"
+                                 For="@(() => _model.MaxStorageTemperature)"
+                                 Immediate="true"
+                                 Label="Maksymalna temperatura przechowywania (°C)" />
 
-                <MudCheckBox @bind-Value="model.IsMedia" Label="Artykuł jest nośnikiem" />
+                <MudCheckBox @bind-Value="_model.IsMedia" Label="Artykuł jest nośnikiem" />
 
-                <MudTextField @bind-Value="model.Price"
-                              For="@(() => model.Price)"
-                              Immediate="true"
-                              Label="Cena" />
+                <MudNumericField @bind-Value="_model.Price"
+                                 For="@(() => _model.Price)"
+                                 Immediate="true"
+                                 Label="Cena" />
 
                 <MudSelect T="string"
-                           @bind-Value="model.SupplierContractorId"
-                           For="@(() => model.SupplierContractorId)"
+                           @bind-Value="_model.SupplierContractorId"
+                           For="@(() => _model.SupplierContractorId)"
                            Immediate="true"
                            Label="Identyfikator dostawcy">
-                    @foreach (var contractor in contractors)
+                    @foreach (var contractor in _contractors)
                     {
                         <MudSelectItem Value="@contractor.ContractorId">
                             [@contractor.ContractorId] @contractor.ContractorName
@@ -121,7 +117,7 @@
                     }
                 </MudSelect>
 
-                <MudCheckBox @bind-Value="model.IsActive" Label="Aktywny" />
+                <MudCheckBox @bind-Value="_model.IsActive" Label="Aktywny" />
             </MudCardContent>
         </MudForm>
     </DialogContent>
@@ -131,12 +127,12 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
+@if (_responseErrors.Any())
 {
     <MudItem xs="12" sm="5">
         <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
+            <MudText Typo="Typo.subtitle2">@($"Errors ({_responseErrors.Count})")</MudText>
+            @foreach (var error in _responseErrors)
             {
                 <MudText Color="@Color.Error">@error</MudText>
             }
@@ -147,36 +143,37 @@
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-    private MudForm form;
-    private CreateProductVM model = new();
-    private CreateProductVMValidator validator = new();
-    private List<string> responseErrors = new();
-    private List<CategoryVM> categories = new();
-    private List<ContractorVM> contractors = new();
+    private MudForm _form;
+    private CreateProductVM _model = new();
+    private CreateProductVMValidator _validator = new();
+    private List<string> _responseErrors = new();
+    private List<CategoryVM> _categories = new();
+    private List<ContractorVM> _contractors = new();
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+
+    private string[] _units = new string[] { "szt", "m", "m2", "m3", "kg", "l", "usługa", "2-PAK", "3-PAK", "4-PAK", };
 
     private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
-        responseErrors = new();
-        await form.Validate();
+        _responseErrors = new();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
-            var response = await productService.Create(@"api/v1/Product", model);
+            var response = await productService.Create(@"api/v1/Product", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                Snackbar.Configuration.PositionClass = "Bottom-End";
-                Snackbar.Add(new MarkupString($"Utworzono <strong>{model.ProductCode}</strong>"), Severity.Success);
+                Snackbar.Add(new MarkupString($"Utworzono <b>{_model.ProductCode}</b>"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                _responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
             }
         }
     }
@@ -184,9 +181,17 @@
     protected override async Task OnInitializedAsync()
     {
         var res = await categoryService.GetPagedResult(@"api/v1/Category/get-filtered", new SieveModelVM(1, 500, "", ""));
-        categories = res.Items.ToList();
+        _categories = res.Items.ToList();
 
         var res2 = await contractorService.GetPagedResult(@"api/v1/Contractor/get-filtered", new SieveModelVM(1, 500, "IsSupplier==true", ""));
-        contractors = res2.Items.ToList();
+        _contractors = res2.Items.ToList();
+    }
+
+    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value))
+            return _units;
+
+        return _units.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
 }
