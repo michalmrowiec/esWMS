@@ -1,0 +1,42 @@
+﻿@using esWMS.Components.Alert
+@inject AlertService AlertService
+
+
+@if (_alerts.Any())
+{
+    @foreach (var alert in _alerts.TakeLast(_alertMaxVisible))
+    {
+        <MudAlert Severity="@alert.Severity"
+                  Variant="Variant.Filled"
+                  ShowCloseIcon="true"
+                  CloseIconClicked="@(() => HideAlert(alert.Id))">
+            @alert.Message
+        </MudAlert>
+    }
+}
+
+@code {
+    private List<Alert> _alerts = new();
+    private int _alertMaxVisible = 5;
+
+    private void ShowAlert(MarkupString message, Severity severity)
+    {
+        _alerts.Add(new Alert(Guid.NewGuid(), message, severity));
+
+        StateHasChanged();
+    }
+
+    private void HideAlert(Guid id)
+    {
+        _alerts.RemoveAll(a => a.Id == id);
+
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        AlertService.OnShow += ShowAlert;
+    }
+
+    protected record Alert(Guid Id, MarkupString Message, Severity Severity);
+}

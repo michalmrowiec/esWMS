@@ -96,7 +96,7 @@
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="IsBlocked" T="WarehouseUnitVM">
-                Zablokowana
+                Blokada
             </MudTableSortLabel>
             <BoolColumnTableFilter Disabled="ShowOnlyUnblocked"
                                    SearchOptions="searchOptions"
@@ -153,7 +153,7 @@
         </MudTd>
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
-        <MudTd DataLabel="Zablokowana">
+        <MudTd DataLabel="Blokada">
             @if (context.IsBlocked)
             {
                 <MudIcon Icon="@Icons.Material.Filled.Block"
@@ -315,7 +315,6 @@
     {
         if (selectedWarehouseUnits.Contains(item))
         {
-            Console.WriteLine("selectedrow!");
             return "selected-row";
         }
         return string.Empty;

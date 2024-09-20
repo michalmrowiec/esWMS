@@ -1,5 +1,6 @@
 using esWMS.Client.Pages.OnePage;
 using esWMS.Client.Services;
+using esWMS.Components.Alert;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
@@ -13,6 +14,7 @@ builder.Services.AddTransient(http => new HttpClient
     BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
 });
 
+builder.Services.AddSingleton<AlertService>();
 builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
 builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();
 builder.Services.AddMudServices();
