@@ -28,11 +28,9 @@ namespace esWMS.Infrastructure.Repositories
                 {
                     foreach (var wui in wu.WarehouseUnitItems)
                     {
-                        // Jeśli blokujemy, ustaw BlockedQuantity na ilość. Jeśli odblokowujemy, ustaw na 0.
                         wui.BlockedQuantity = block ? wui.Quantity : 0;
                     }
 
-                    // Ustawienie statusu IsBlocked na podstawie parametru block.
                     wu.IsBlocked = block;
                 }
 
@@ -89,6 +87,7 @@ namespace esWMS.Infrastructure.Repositories
                 return await _context.WarehouseUnits
                     .Where(wu => warehouseUnitIds.Contains(wu.WarehouseUnitId))
                     .Include(wu => wu.WarehouseUnitItems)
+                        .ThenInclude(wui => wui.Product)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -111,6 +110,103 @@ namespace esWMS.Infrastructure.Repositories
                 _logger.LogError(ex, "Error updating warehouse units");
                 throw;
             }
+        }
+
+        public async Task<IList<WarehouseUnit>> GetStackedWarehouseUnitsAboveAsync(string warehouseUnitId)
+        {
+            List<WarehouseUnit> stackAbove = new List<WarehouseUnit>();
+            try
+            {
+                var result = await _context.WarehouseUnits
+                    .Include(x => x.WarehouseUnitItems)
+                        .ThenInclude(x => x.Product)
+                    .FirstOrDefaultAsync(x => x.WarehouseUnitId.Equals(warehouseUnitId));
+
+                if (result == null)
+                {
+                    throw new KeyNotFoundException("The object with the given id was not found.");
+                }
+
+                stackAbove.Add(result);
+
+                await LoadStackAboveOnIteratively(result, stackAbove);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving entity with Id: {EntityId}", warehouseUnitId);
+                throw;
+            }
+            return stackAbove;
+        }
+
+        private async Task LoadStackAboveOnIteratively(WarehouseUnit warehouseUnit, List<WarehouseUnit> stack)
+        {
+            var currentUnit = warehouseUnit;
+            while (currentUnit != null)
+            {
+                var nextUnit = await _context.WarehouseUnits
+                    .Include(x => x.WarehouseUnitItems)
+                        .ThenInclude(x => x.Product)
+                    .FirstOrDefaultAsync(x => x.StackOnId == currentUnit.WarehouseUnitId);
+
+                if (nextUnit == null) break;
+
+                if (!stack.Contains(nextUnit))
+                {
+                    stack.Add(nextUnit);
+                }
+
+                currentUnit = nextUnit;
+            }
+        }
+
+        private async Task LoadStackBelowOnIteratively(WarehouseUnit warehouseUnit, List<WarehouseUnit> stack)
+        {
+            var currentUnit = warehouseUnit;
+            while (currentUnit?.StackOnId != null)
+            {
+                var nextUnit = await _context.WarehouseUnits
+                    .Include(x => x.WarehouseUnitItems)
+                        .ThenInclude(x => x.Product)
+                    .FirstOrDefaultAsync(x => x.WarehouseUnitId == currentUnit.StackOnId);
+
+                if (nextUnit == null) break;
+
+                if (!stack.Contains(nextUnit))
+                {
+                    stack.Add(nextUnit);
+                }
+
+                currentUnit = nextUnit;
+            }
+        }
+
+        public async Task<IList<WarehouseUnit>> GetFullWarehouseUnitStackAsync(string warehouseUnitId)
+        {
+            List<WarehouseUnit> fullStack = new List<WarehouseUnit>();
+            try
+            {
+                var result = await _context.WarehouseUnits
+                    .Include(x => x.WarehouseUnitItems)
+                        .ThenInclude(x => x.Product)
+                    .FirstOrDefaultAsync(x => x.WarehouseUnitId.Equals(warehouseUnitId));
+
+                if (result == null)
+                {
+                    throw new KeyNotFoundException("The object with the given id was not found.");
+                }
+
+                fullStack.Add(result);
+
+                await LoadStackBelowOnIteratively(result, fullStack);
+                await LoadStackAboveOnIteratively(result, fullStack);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving entity with Id: {EntityId}", warehouseUnitId);
+                throw;
+            }
+            return fullStack;
         }
     }
 }

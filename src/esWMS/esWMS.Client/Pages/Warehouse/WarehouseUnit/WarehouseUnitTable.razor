@@ -10,6 +10,7 @@
 @inject OnePageState onePageState
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <style>
     .selected-row {
@@ -26,19 +27,32 @@
           ServerData="ServerReload"
           Dense="true"
           Hover="true"
-          @ref="table"
+          @ref="_table"
           RowClass="cursor-pointer"
           RowClassFunc="GetRowClass"
           OnRowClick="RowClickEvent"
           MultiSelection="@(TypeOfSelection == SelectionType.Multi)"
-          @bind-SelectedItems="selectedWarehouseUnits"
+          @bind-SelectedItems="_selectedWarehouseUnits"
           FixedHeader
           Height="80%">
     <ToolBarContent>
         <MudText Typo="Typo.h6" Class="me-3">Jednostki magazynowe</MudText>
-        <ExpandCollapseGroupsButtons ExpandAction="@(() => { wuIdShow = wuIdShow.ToDictionary(pair => pair.Key, pair => true); } )"
-                                     CollapseAction="@(() => { wuIdShow = wuIdShow.ToDictionary(pair => pair.Key, pair => false); })" />
+        <ExpandCollapseGroupsButtons ExpandAction="@(() => { _wuIdShow = _wuIdShow.ToDictionary(pair => pair.Key, pair => true); } )"
+                                     CollapseAction="@(() => { _wuIdShow = _wuIdShow.ToDictionary(pair => pair.Key, pair => false); })" />
         <MudSpacer />
+        <MudCollapse Expanded="@_additionalFiltersIsExpanded">
+            <MudInputLabel>Nazwa produktu</MudInputLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="ProductName"
+                                  OnChangedAction="OnSearch" />
+        </MudCollapse>
+        <MudButton @onclick="@(() => _additionalFiltersIsExpanded = !_additionalFiltersIsExpanded)"
+                   Variant="Variant.Filled"
+                   EndIcon="@Icons.Material.Filled.FilterAlt"
+                   Color="Color.Default"
+                   Class="me-3">
+            Więcej filtrów
+        </MudButton>
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
                    Color="Color.Primary"
@@ -49,14 +63,22 @@
                        OnClick="OnSearch" />
     </ToolBarContent>
     <ColGroup>
-        <col style="width:20%;" />
+        <col style="width:15%;" />
         <col />
         <col style="width:15%;" />
         <col style="width:10%;" />
         <col />
     </ColGroup>
     <HeaderContent>
-        <MudTh></MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ItemCount" T="WarehouseUnitVM">
+                Liczba pozycji
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="ItemCount"
+                                  OnChangedAction="OnSearch"
+                                  TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" />
+        </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="WarehouseUnitId" T="WarehouseUnitVM">
                 Id
@@ -75,7 +97,7 @@
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="IsBlocked" T="WarehouseUnitVM">
-                Zablokowana
+                Blokada
             </MudTableSortLabel>
             <BoolColumnTableFilter Disabled="ShowOnlyUnblocked"
                                    SearchOptions="searchOptions"
@@ -90,46 +112,83 @@
                                   Column="LocationId"
                                   OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="CanBeStacked" T="WarehouseUnitVM">
+                Możliwość piętrowania
+            </MudTableSortLabel>
+            <BoolColumnTableFilter SearchOptions="searchOptions"
+                                   Column="CanBeStacked"
+                                   OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="StackOnId" T="WarehouseUnitVM">
+                Piętrowana na jednostce
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="StackOnId"
+                                  OnChangedAction="OnSearch" />
+        </MudTh>
         <MudTh></MudTh>
         <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd>
-            <MudButton Variant="Variant.Outlined"
-                       Size="Size.Small"
-                       OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
-                @((wuIdShow[context.WarehouseUnitId] == true) ? $"Ukryj pozycje ({context.WarehouseUnitItems.Count})" : $"Pokaż pozycje ({context.WarehouseUnitItems.Count})")
-            </MudButton>
+            @if (_wuIdShow[context.WarehouseUnitId])
+            {
+                <MudButton Variant="Variant.Outlined"
+                           Size="Size.Small"
+                           EndIcon="@Icons.Material.Filled.KeyboardArrowUp"
+                           OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
+                    Pozycje (@context.WarehouseUnitItems.Count)
+                </MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Outlined"
+                           Size="Size.Small"
+                           EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+                           OnClick="@(() => ShowBtnPress(context.WarehouseUnitId))">
+                    Pozycje (@context.WarehouseUnitItems.Count)
+                </MudButton>
+            }
         </MudTd>
         <MudTd DataLabel="Id">@context.WarehouseUnitId</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
-        <MudTd DataLabel="Zablokowana">
-            <MudCheckBox @bind-Value="@context.IsBlocked"
+        <MudTd DataLabel="Blokada">
+            @if (context.IsBlocked)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Block"
+                         Size="Size.Small" />
+            }
+        </MudTd>
+        <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
+        <MudTd DataLabel="Możliwość piętrowania">
+            <MudCheckBox @bind-Value="@context.CanBeStacked"
                          Size="Size.Small"
                          Disabled />
         </MudTd>
-        <MudTd DataLabel="Id lokalizacji">@context.LocationId</MudTd>
+        <MudTd DataLabel="Piętrowana na jednostce">@context.StackOnId</MudTd>
         <MudTh>
             <MudIconButton Size="@Size.Small"
                            Icon="@Icons.Material.Outlined.EditLocation"
                            OnClick="@(async () => await OpenEditLocationDialogAsync(context))" />
         </MudTh>
-                <MudTh>
-            <MudIconButton Size="@Size.Small"
-                           Icon="@Icons.Material.Outlined.Delete"
-                           OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
-        </MudTh>
+        @if (context.WarehouseUnitItems.Count == 0)
+        {
+            <MudTh>
+                <MudIconButton Size="@Size.Small"
+                               Icon="@Icons.Material.Outlined.Delete"
+                               OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
+            </MudTh>
+        }
     </RowTemplate>
     <ChildRowContent>
-        @if (wuIdShow[context.WarehouseUnitId] == true)
+        @if (_wuIdShow[context.WarehouseUnitId] == true)
         {
             <MudTr>
                 <td colspan="4">
                     <MudCard Elevation="0" Style="margin-left:50px;">
                         <MudCardHeader>
-                            <CardHeaderContent>
-                                <MudText Typo="Typo.body2">Pozycje jednostki: <strong>@context.WarehouseUnitId</strong></MudText>
-                            </CardHeaderContent>
                         </MudCardHeader>
                         <MudCardContent Class="pa-0">
                             <MudTable Items="@context.WarehouseUnitItems.OrderBy(x => x.ProductId)"
@@ -203,50 +262,45 @@
     </MudButton>
 }
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
     [Parameter]
     public SelectionType TypeOfSelection { get; set; } = SelectionType.None;
     [Parameter]
     public string? WarehouseIdFilter { get; set; }
     [Parameter]
+    public HashSet<string>? ExceptWarehouseUnitIdFilter { get; set; }
+    [Parameter]
+    public HashSet<string>? WarehouseUnitIdFilter { get; set; }
+    [Parameter]
+    public bool ShowOnlyCanStack { get; set; } = false;
+    [Parameter]
     public bool ShowOnlyUnblocked { get; set; } = false;
     [Parameter]
     public EventCallback<HashSet<WarehouseUnitVM>> SelectedWarehouseUnits { get; set; }
 
-    private HashSet<WarehouseUnitVM> selectedWarehouseUnits { get; set; } = new();
-    private IEnumerable<WarehouseUnitVM> pagedData;
-    private MudTable<WarehouseUnitVM> table;
-    private Dictionary<string, bool> wuIdShow = new();
-    private int totalItems;
+    private HashSet<WarehouseUnitVM> _selectedWarehouseUnits { get; set; } = new();
+    private IEnumerable<WarehouseUnitVM> _pagedData;
+    private MudTable<WarehouseUnitVM> _table;
+    private Dictionary<string, bool> _wuIdShow = new();
+    private int _totalItems;
+    private bool _additionalFiltersIsExpanded = false;
 
-    private List<string> responseErrors = new();
-
-    private Dictionary<string, FilterOption> searchOptions = new()
+    public Dictionary<string, FilterOption> searchOptions = new()
     {
+        { "ItemCount", new("ItemCount", ">", string.Empty) },
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") },
         { "IsBlocked", new("IsBlocked", "==", string.Empty) },
-        { "LocationId", new("LocationId") }
+        { "LocationId", new("LocationId") },
+        { "CanBeStacked", new("CanBeStacked", "==", string.Empty) },
+        { "StackOnId", new("StackOnId") },
+        { "ProductName", new("ProductName") }
     };
 
     private string GetRowClass(WarehouseUnitVM item, int rowIndex)
     {
-        if (selectedWarehouseUnits.Contains(item))
+        if (_selectedWarehouseUnits.Contains(item))
         {
-            Console.WriteLine("selectedrow!");
             return "selected-row";
         }
         return string.Empty;
@@ -254,7 +308,7 @@
 
     private void ShowBtnPress(string id)
     {
-        wuIdShow[id] = !wuIdShow[id];
+        _wuIdShow[id] = !_wuIdShow[id];
     }
 
     protected override void OnInitialized()
@@ -268,6 +322,27 @@
         {
             searchOptions["IsBlocked"].Operator = "==";
             searchOptions["IsBlocked"].Value = "false";
+        }
+        if (ExceptWarehouseUnitIdFilter != null)
+        {
+            if (ExceptWarehouseUnitIdFilter.Count > 0)
+            {
+                searchOptions["WarehouseUnitId"].Operator = "!=";
+                searchOptions["WarehouseUnitId"].Value = string.Join("|", ExceptWarehouseUnitIdFilter);
+            }
+        }
+        if (WarehouseUnitIdFilter != null)
+        {
+            if (WarehouseUnitIdFilter.Count > 0)
+            {
+                searchOptions["WarehouseUnitId"].Operator = "==";
+                searchOptions["WarehouseUnitId"].Value = string.Join("|", WarehouseUnitIdFilter);
+            }
+        }
+        if (ShowOnlyCanStack)
+        {
+            searchOptions["CanBeStacked"].Operator = "==";
+            searchOptions["CanBeStacked"].Value = "true";
         }
     }
 
@@ -288,36 +363,46 @@
 
         var response = await warehouseUnitService.GetPagedResult(@"api/v1/WarehouseUnit/get-filtered", sm);
 
-        wuIdShow = response.Items.ToDictionary(key => key.WarehouseUnitId, value => false);
+        _wuIdShow = response.Items.ToDictionary(key => key.WarehouseUnitId, value => false);
 
         return new TableData<WarehouseUnitVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
 
     private void OnSearch()
     {
-        table.ReloadServerData();
+        _table.ReloadServerData();
     }
 
     private async Task RowClickEvent(TableRowClickEventArgs<WarehouseUnitVM> tableRowClickEventArgs)
     {
+        if (tableRowClickEventArgs.Item is not WarehouseUnitVM)
+        {
+            return;
+        }
+
         if (TypeOfSelection == SelectionType.Single)
         {
             if (tableRowClickEventArgs.Item != null)
             {
-                selectedWarehouseUnits.Clear();
-                selectedWarehouseUnits.Add(tableRowClickEventArgs.Item);
+                _selectedWarehouseUnits.Clear();
+                _selectedWarehouseUnits.Add(tableRowClickEventArgs.Item);
             }
-            await SelectedWarehouseUnits.InvokeAsync(selectedWarehouseUnits);
+            await SelectedWarehouseUnits.InvokeAsync(_selectedWarehouseUnits);
         }
         else if (TypeOfSelection == SelectionType.None) // im not sure about that <-
         {
-            // open details tab
+            await onePageState.AddTab(
+                new TabView("Szczegóły jednostki" ?? " ",
+                new WarehouseUnitDetails(),
+                Guid.NewGuid(),
+                Icons.Material.Filled.Info,
+                new() { { "WarehouseUnitId", tableRowClickEventArgs?.Item.WarehouseUnitId } }));
         }
     }
 
     private async Task SubmitSelection()
     {
-        await SelectedWarehouseUnits.InvokeAsync(selectedWarehouseUnits);
+        await SelectedWarehouseUnits.InvokeAsync(_selectedWarehouseUnits);
     }
 
     private Task OpenDialogAsync()
@@ -325,18 +410,18 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true };
         var parameters = new DialogParameters<AddWarehouseUnitDialog>
         {
-            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddWarehouseUnitDialog>(null, parameters, options);
     }
 
     private Task OpenEditLocationDialogAsync(WarehouseUnitVM warehouseUnit)
     {
-        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true, MaxWidth = MaxWidth.Medium };
         var parameters = new DialogParameters<SetLocationModalDialog>
         {
             { x => x.WarehouseUnit, warehouseUnit },
-            { x => x.FuncsOnSubmit, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+            { x => x.FuncsOnSubmit, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<SetLocationModalDialog>(null, parameters, options);
     }
@@ -353,7 +438,7 @@
         var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
         var result = await dialog.Result;
 
-        if(!result?.Canceled ?? false)
+        if (!result?.Canceled ?? false)
         {
             await DeleteAsync(warehouseUnitVM);
         }
@@ -365,12 +450,11 @@
         if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
         {
             Snackbar.Add(new MarkupString("Usunięto jednostkę magazynową"), Severity.Success);
-            await table.ReloadServerData();
+            await _table.ReloadServerData();
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 

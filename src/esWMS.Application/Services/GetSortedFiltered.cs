@@ -4,7 +4,7 @@ using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Responses;
 using Sieve.Models;
 
-namespace esWMS.Application.Functions.Services
+namespace esWMS.Application.Services
 {
     internal static class GetSortedFiltered
     {

@@ -10,24 +10,33 @@
     </TitleContent>
     <DialogContent>
 
-        <MudTextField @bind-Value="test"
-                      Label="Wybrany produkt"
-                      Disabled />
+        <MudStack Spacing="2">
+            <MudGrid>
+                <MudItem xs="9">
+                    <MudTextField @bind-Value="_productInfo"
+                                  Label="Wybrany artykuł"
+                                  ReadOnly />
+                </MudItem>
+                <MudItem xs="3">
+                    <MudButton OnClick="@(() => _warehouseStockExpanded = !_warehouseStockExpanded)"
+                               Disabled="@(_warehouseUnitItems.Count != 0)"
+                               StartIcon="@(_warehouseStockExpanded ? Icons.Material.Outlined.SearchOff : Icons.Material.Outlined.Search)">
+                        @(_warehouseStockExpanded ? "Zamknij" : "Szukaj")
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
 
-        @if (documentItemWithAssignments.Count == 0)
-        {
-            <WarehouseStockTable SelectedStock="OnStockProductSelected" WarehouseId="@WarehouseId" />
-        }
-
-        <MudNumericField Label="Ilość"
-                         Disabled
-                         @bind-Value="quantity" />
+            <MudDivider />
+            <MudCollapse Expanded="_warehouseStockExpanded">
+                <WarehouseStockTable SelectedStock="OnStockProductSelected" WarehouseId="@WarehouseId" />
+            </MudCollapse>
+        </MudStack>
 
         <MudNumericField Label="Cena"
-                         @bind-Value="price" />
+                         @bind-Value="_price" />
 
         <MudSelect T="string"
-                   @bind-Value="currency"
+                   @bind-Value="_currency"
                    Label="Waluta"
                    AnchorOrigin="Origin.BottomCenter"
                    Immediate="true">
@@ -38,32 +47,59 @@
 
         </MudSelect>
 
+        <MudTable Items="@_warehouseUnitItems"
+                  Hover
+                  Dense
+                  RowEditPreview="BackupItem"
+                  RowEditCancel="ResetItemToOriginalValues">
+            <HeaderContent>
+                <MudTh>Id pozycji</MudTh>
+                <MudTh>Id jednostki</MudTh>
+                <MudTh>Ilość</MudTh>
+                <MudTh>Cena</MudTh>
+                <MudTd></MudTd>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id pozycji">@context.WarehouseUnitItemId</MudTd>
+                <MudTd DataLabel="Id jednostki">@context.WarehouseUnitId</MudTd>
+                <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
+                <MudTd DataLabel="Cena">@context.Price</MudTd>
+                <MudTd>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Delete"
+                                   OnClick="@(() => { _warehouseUnitItems.Remove(context);  StateHasChanged(); })" />
+                </MudTd>
+            </RowTemplate>
+            <RowEditingTemplate>
+                <MudTd DataLabel="Kod produktu">@context.WarehouseUnitItemId</MudTd>
+                <MudTd DataLabel="Nazwa produktu">@context.WarehouseUnitId</MudTd>
+                <MudTd DataLabel="Ilość">
+                    <MudNumericField @bind-Value="context.Quantity" Required />
+                </MudTd>
+                <MudTd DataLabel="Cena">@context.Price</MudTd>
+            </RowEditingTemplate>
+            <FooterContent>
+                <MudTFootRow>
+                    <MudTd Style="text-align:right">Suma:</MudTd>
+                    <MudTd Style="text-align:left">@_warehouseUnitItems.Sum(x => x.Quantity)</MudTd>
+                </MudTFootRow>
+                <MudTFootRow>
+                    <MudTd Style="text-align:right">Wartość:</MudTd>
+                    <MudTd Style="text-align:left">@_warehouseUnitItems.Sum(x => x.Quantity * x.Price)</MudTd>
+                </MudTFootRow>
+                <MudTFootRow>
+                    <MudTd Style="text-align:right">Średnia cena:</MudTd>
+                    <MudTd Style="text-align:left">@CalcWeightedAverage().ToString("0.00")</MudTd>
+                </MudTFootRow>
+            </FooterContent>
+        </MudTable>
+
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
                    Color="Color.Primary">
             Dodaj pozycję
         </MudButton>
 
-        <MudDataGrid T="DocumentWarehouseUnitItemVM"
-                     Items="@documentItemWithAssignments"
-                     EditMode="DataGridEditMode.Cell"
-                     Dense>
-            <Columns>
-                <PropertyColumn Property="x => x.WarehouseUnitItemId" />
-                <PropertyColumn Property="x => x.WarehouseUnitId" />
-                <PropertyColumn Property="x => x.DocumentItemId" />
-                <PropertyColumn Property="x => x.Quantity" />
-                <TemplateColumn CellClass="d-flex justify-end">
-                    <CellTemplate Context="item">
-                        <MudStack Row>
-                            <MudIconButton Size="@Size.Small"
-                                           Icon="@Icons.Material.Outlined.Delete"
-                                           OnClick="@(() => { documentItemWithAssignments.Remove(item.Item); quantity -= item.Item.Quantity; StateHasChanged(); })" />
-                        </MudStack>
-                    </CellTemplate>
-                </TemplateColumn>
-            </Columns>
-        </MudDataGrid>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
@@ -71,39 +107,52 @@
     </DialogActions>
 </MudDialog>
 @code {
+    [Parameter]
+    public List<EventCallback>? FuncsOnAdded { get; set; } = new();
+    [Parameter]
+    public List<DocumentItemVM> DocumentItemVMs { get; set; }
+    [Parameter]
+    public string? WarehouseId { get; set; }
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
 
-    [Parameter]
-    public List<EventCallback>? FuncsOnAdded { get; set; } = new();
-
-    [Parameter]
-    public List<DocumentItemVM> DocumentItemVMs { get; set; }
-
-    [Parameter]
-    public string? WarehouseId { get; set; }
-
-    private WarehouseStockVM? selectedStockProduct;
-    private int quantity = 0;
-    private decimal price = 0;
-    private string currency = "PLN";
-    private string test = "";
-    private HashSet<DocumentWarehouseUnitItemVM> documentItemWithAssignments = new();
+    private MudDataGrid<WarehouseUnitItemVM> _mudDataGrid;
+    private WarehouseStockVM? _selectedStockProduct;
+    private decimal _price = 0;
+    private string _currency = "PLN";
+    private string _productInfo = "";
+    private HashSet<DocumentWarehouseUnitItemVM> _documentItemWithAssignments = new();
+    private HashSet<WarehouseUnitItemVM> _warehouseUnitItems = new();
+    private WarehouseUnitItemVM _elementBeforeEdit;
+    private bool _warehouseStockExpanded = true;
 
     private void Submit()
     {
-        if (selectedStockProduct != null)
+        if (_selectedStockProduct != null)
         {
+            // _documentItemWithAssignments.Add(
+            //     new("",
+            //         item.warehouseUnitItem.WarehouseUnitId,
+            //         item.quantity,
+            //         item.warehouseUnitItem.WarehouseUnitItemId));
+
             DocumentItemVMs.Add(new DocumentItemVM()
                 {
-                    ProductId = selectedStockProduct.ProductId,
+                    ProductId = _selectedStockProduct.ProductId,
                     ProductCode = "",
                     EanCode = "",
-                    ProductName = selectedStockProduct.ProductName,
-                    Quantity = quantity,
-                    Price = price,
-                    Currency = currency,
-                    DocumentWarehouseUnitItems = documentItemWithAssignments.ToList()
+                    ProductName = _selectedStockProduct.ProductName,
+                    //Quantity = _quantity,
+                    Quantity = _warehouseUnitItems.Sum(x => x.Quantity),
+                    Price = _price,
+                    Currency = _currency,
+                    //DocumentWarehouseUnitItems = _documentItemWithAssignments.ToList()
+                    DocumentWarehouseUnitItems = _warehouseUnitItems.Select(x =>
+                        new DocumentWarehouseUnitItemVM(
+                            "",
+                            x.WarehouseUnitId,
+                            x.Quantity,
+                            x.WarehouseUnitItemId)).ToList()
                 });
         }
 
@@ -116,8 +165,12 @@
 
     private void OnStockProductSelected(WarehouseStockVM stockProduct)
     {
-        selectedStockProduct = stockProduct;
-        test = stockProduct.ProductName;
+        if (_warehouseUnitItems.Count != 0)
+            return;
+
+        _selectedStockProduct = stockProduct;
+        _productInfo = $"{stockProduct.ProductName}";
+        _warehouseStockExpanded = false;
         StateHasChanged();
     }
 
@@ -128,23 +181,47 @@
         {
             { x => x.WarehouseUnitItem, EventCallback.Factory.Create<(WarehouseUnitItemVM, int)>(this, OnGet) },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
-            { x => x.ProductIdFilter, selectedStockProduct?.ProductId ?? "" },
+            { x => x.ProductIdFilter, _selectedStockProduct?.ProductId ?? "" },
             { x => x.WarehouseIdFilter, WarehouseId ?? "" },
-            { x => x.ExceptWarehouseUnitItem, documentItemWithAssignments?.Select(x => x.WarehouseUnitItemId)?.ToHashSet() ?? null }
+            { x => x.ExceptWarehouseUnitItem, _warehouseUnitItems?.Select(x => x.WarehouseUnitItemId)?.ToHashSet() ?? null }
         };
         return DialogService.ShowAsync<WarehouseUnitItemTableDialog>(null, parameters, options);
     }
 
     private void OnGet((WarehouseUnitItemVM warehouseUnitItem, int quantity) item)
     {
-        documentItemWithAssignments.Add(
-            new("",
-                item.warehouseUnitItem.WarehouseUnitId,
-                item.quantity,
-                item.warehouseUnitItem.WarehouseUnitItemId));
+        _warehouseUnitItems.Add(item.warehouseUnitItem);
 
-        quantity += item.quantity;
+        if (_price == 0)
+            _price = item.warehouseUnitItem.Price ?? 0;
 
         StateHasChanged();
+    }
+
+    private void BackupItem(object element)
+    {
+        _elementBeforeEdit = new()
+            {
+                Quantity = ((WarehouseUnitItemVM)element).Quantity,
+            };
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        ((WarehouseUnitItemVM)element).Quantity = _elementBeforeEdit.Quantity;
+    }
+
+    private decimal CalcWeightedAverage()
+    {
+        if (_warehouseUnitItems.Count == 0)
+            return 0;
+
+        var sum = _warehouseUnitItems.Sum(x => x.Quantity * x.Price) ?? 0;
+        var quantity = _warehouseUnitItems.Sum(x => x.Quantity);
+
+        if (sum == 0 || quantity == 0)
+            return 0;
+
+        return sum / quantity;
     }
 }

@@ -12,7 +12,7 @@ namespace esMWS.Domain.Services
                 throw new ArgumentException("Document IDs cannot be null", nameof(documentIds));
             }
 
-            string pattern = @"^[A-Z]{2,3}/([A-Z]|\d){3}/\d{4}/[0-1]\d/[0-3]\d/\d{3}$";
+            string pattern = @"^([A-Z]{2}[+-]|[A-Z]{2,3})/([A-Z]|\d){3}/\d{4}/[0-1]\d/[0-3]\d/\d{3}$";
             var regex = new Regex(pattern);
 
             int documentNumber = 0;
@@ -53,6 +53,18 @@ namespace esMWS.Domain.Services
 
             DateTime issueDate = document.DocumentIssueDate;
             string documentType = document.GetType().Name;
+
+            switch(documentType)
+            {
+                case nameof(MMP):
+                    documentType = "MM+";
+                    break;
+                case nameof(MMM):
+                    documentType = "MM-";
+                    break;
+                default:
+                    break;
+            }
 
             return $"{documentType}/{document.IssueWarehouseId}/{issueDate.Year}/{issueDate.Month:D2}/{issueDate.Day:D2}/{documentNumber:D3}";
         }

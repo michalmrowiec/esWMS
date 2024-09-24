@@ -4,7 +4,7 @@ using esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Queries.GetSortedFilteredMmm;
 using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById;
-using esWMS.Application.Responses;
+using esWMS.Controllers.Utils;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -39,21 +39,7 @@ namespace esWMS.Controllers.Documents
 
             var result = await _mediator.Send(createMmmCommand);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Created("", result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleCreatedResult(this, "");
         }
 
         [HttpPost("approve")]
@@ -65,21 +51,7 @@ namespace esWMS.Controllers.Documents
 
             var result = await _mediator.Send(approveMmmCommand);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpPost("get-filtered")]
@@ -88,43 +60,15 @@ namespace esWMS.Controllers.Documents
         {
             var result = await _mediator.Send(new GetSortedFilteredMmmQuery(sieveModel));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
-        [HttpGet("{documentId}")]
-        public async Task<ActionResult<MmmDto>> GetMmm([FromRoute] string documentId)
+        [HttpGet]
+        public async Task<ActionResult<MmmDto>> GetMmm([FromQuery] string documentId)
         {
             var result = await _mediator.Send(new GetMmmByIdQuery(documentId));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
     }
 }

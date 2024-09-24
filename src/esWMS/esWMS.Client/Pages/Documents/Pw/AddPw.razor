@@ -8,20 +8,21 @@
 @inject IDataService<CreatePwVM> dataService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IAlertService AlertService
 
-<MudForm Model="@model"
-         @ref="@form"
-         Validation="@(validator.ValidateValue)"
+<MudForm Model="@_model"
+         @ref="@_form"
+         Validation="@(_validator.ValidateValue)"
          ValidationDelay="0" Spacing="4">
 
     <MudSelect T="string"
-               @bind-Value="model.IssueWarehouseId"
+               @bind-Value="_model.IssueWarehouseId"
                Label="Magazyn wydający"
                AnchorOrigin="Origin.BottomCenter"
-               For="@(() => model.IssueWarehouseId)"
+               For="@(() => _model.IssueWarehouseId)"
                Immediate="true"
-               Disabled="@(model.DocumentItems.Count > 0)">
-        @foreach (var warehouse in warehouses)
+               Disabled="@(_model.DocumentItems.Count > 0)">
+        @foreach (var warehouse in _warehouses)
         {
             <MudSelectItem Value="@warehouse.WarehouseId">
                 [@warehouse.WarehouseId] @warehouse.WarehouseName
@@ -30,94 +31,62 @@
     </MudSelect>
 
     <MudTextField T="string"
-                  @bind-Value="model.DepartmentName"
-                  For="@(() => model.DepartmentName)"
+                  @bind-Value="_model.DepartmentName"
+                  For="@(() => _model.DepartmentName)"
                   Immediate="true"
                   Label="Źródło" />
 
     <MudDatePicker Label="Data wystawienia dokumentu"
-                   @bind-Date="model.DocumentIssueDate"
-                   For="@(() => model.DocumentIssueDate)" />
+                   @bind-Date="_model.DocumentIssueDate"
+                   For="@(() => _model.DocumentIssueDate)" />
 
     <MudDatePicker Label="Data przyjęcia"
-                   @bind-Date="model.GoodsReceiptDate"
-                   For="@(() => model.GoodsReceiptDate)" />
+                   @bind-Date="_model.GoodsReceiptDate"
+                   For="@(() => _model.GoodsReceiptDate)" />
 
     <MudTextField T="string"
-                  @bind-Value="model.Comment"
-                  For="@(() => model.Comment)"
+                  @bind-Value="_model.Comment"
+                  For="@(() => _model.Comment)"
                   Immediate="true"
                   Label="Uwagi"
                   Lines="3" />
 
-    <MudTextField @bind-Value="model.AssignedEmployeeId"
-                  For="@(() => model.AssignedEmployeeId)"
+    <MudTextField @bind-Value="_model.AssignedEmployeeId"
+                  For="@(() => _model.AssignedEmployeeId)"
                   Label="Przypisany pracownik"
                   Disabled />
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
                Color="Color.Primary"
-               Disabled="@(string.IsNullOrEmpty(model.IssueWarehouseId))">
+               Disabled="@(string.IsNullOrEmpty(_model.IssueWarehouseId))">
         Dodaj pozycję
     </MudButton>
 
-    <MudDataGrid T="DocumentItemVM"
-                 Items="@model.DocumentItems"
-                 EditMode="DataGridEditMode.Cell"
-                 Dense>
-        <Columns>
-            <PropertyColumn Property="x => x.ProductId" />
-            <PropertyColumn Property="x => x.ProductCode" />
-            <PropertyColumn Property="x => x.ProductName" />
-            <PropertyColumn Property="x => x.Quantity" />
-            <TemplateColumn CellClass="d-flex justify-end">
-                <CellTemplate Context="item">
-                    <MudStack Row>
-                        <MudIconButton Size="@Size.Small"
-                                       Icon="@Icons.Material.Outlined.Delete"
-                                       OnClick="@(() => { model.DocumentItems.Remove(item.Item); StateHasChanged(); })" />
-                    </MudStack>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-    </MudDataGrid>
+    <DocumentItemsTable DocumentItems="@_model.DocumentItems"
+                        TableType="DocumentItemsTable.DocumentItemTableType.DocumentCreation" />
 
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                Class="ml-auto"
                OnClick="@(async () => await Submit())"
-               Disabled="@(model.DocumentItems.Count == 0)">
+               Disabled="@(_model.DocumentItems.Count == 0)">
         Utwórz
     </MudButton>
 </MudForm>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    private CreatePwVM model = new();
-    private MudForm form;
-    private CreatePwVMValidator validator = new();
-    private List<WarehouseVM> warehouses = new();
-    private List<string> responseErrors = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+    private CreatePwVM _model = new();
+    private MudForm _form;
+    private CreatePwVMValidator _validator = new();
+    private List<WarehouseVM> _warehouses = new();
 
     protected override async Task OnInitializedAsync()
     {
         var warehouseResponse = await warehouseService.GetPagedResult(@"api/v1/warehouse/get-filtered", new SieveModelVM(1, 500));
-        warehouses = warehouseResponse.Items.ToList();
+        _warehouses = warehouseResponse.Items.ToList();
     }
 
     private Task OpenDialogAsync()
@@ -125,7 +94,7 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
         var parameters = new DialogParameters<AddReceivedItemDialog>
         {
-            { x => x.DocumentItemVMs, model.DocumentItems },
+            { x => x.DocumentItemVMs, _model.DocumentItems },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
         };
         return DialogService.ShowAsync<AddReceivedItemDialog>(null, parameters, options);
@@ -133,15 +102,14 @@
 
     private async Task Submit()
     {
-        responseErrors = new();
-        await form.Validate();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
-            var response = await dataService.Create(@"api/v1/Pw", model);
+            var response = await dataService.Create(@"api/v1/Pw", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                model = new();
+                _model = new();
                 var json = await response.Content.ReadAsStringAsync();
                 var responseObj = JsonConvert.DeserializeObject<PwVM>(json);
 
@@ -151,8 +119,7 @@
             }
             else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
                 StateHasChanged();
             }
         }

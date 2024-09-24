@@ -1,11 +1,15 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
 @inject IDataService<MmpVM> mmpDataService
+@inject IDataService<WarehouseUnitVM> warehouseUnitDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @MmpVM.DocumentId
@@ -51,44 +55,14 @@
     [@MmpVM.FromWarehouseId] @MmpVM.FromWarehouse?.WarehouseName
 </MudText>
 
-<MudDataGrid T="DocumentItemVM"
-             Items="@MmpVM.DocumentItems"
-             EditMode="DataGridEditMode.Cell"
-             Class="mb-3"
-             Dense
-             Hover
-             Bordered>
-    <Columns>
-        <PropertyColumn Property="x => x.DocumentItemId" Title="Id" />
-        <PropertyColumn Property="x => x.DocumentId" Title="Id dokumentu" />
-        <PropertyColumn Property="x => x.ProductId" Title="Id produktu" />
-        <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
-        <PropertyColumn Property="x => x.ProductName" Title="Nazwa" />
-        <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
-        <TemplateColumn CellClass="d-flex" Title="Zatwierdzenie">
-            <CellTemplate>
-                <MudStack Row>
-                    <MudCheckBox Value="@context.Item.IsApproved" Disabled />
-                    @if (!context.Item.IsApproved)
-                    {
-                        @* <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
-                    Size="@Size.Small"
-                    Variant="@Variant.Filled"
-                    Color="@Color.Primary">
-                    Zatwierdź
-                    </MudButton> *@
-                        <MudButton Disabled
-                                   Size="@Size.Small"
-                                   Variant="@Variant.Filled"
-                                   Color="@Color.Primary">
-                            Zatwierdź
-                        </MudButton>
-                    }
-                </MudStack>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
+<DocumentItemsTable DocumentItems="@MmpVM.DocumentItems"
+                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails" />
+
+@if (!MmpVM.IsApproved && _warehouseUnitIds.Count > 0)
+{
+    <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
+                        TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.None" />
+}
 
 @if (MmpVM.DocumentItems.All(x => x.IsApproved) &&
 !MmpVM.IsApproved)
@@ -122,39 +96,31 @@ else
     </MudButton>
 }
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5" Class="mb-3">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
     [Parameter]
     public MmpVM MmpVM { get; set; } = new();
-
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+    public HashSet<string> _warehouseUnitIds = new();
 
-    private List<string> responseErrors = new();
+    protected override async Task OnInitializedAsync()
+    {
+        if (!MmpVM.IsApproved)
+        {
+            var idsResponse = await mmpDataService.Get(@"api/v1/Mmp/warehouse-unit-ids", new() { { "DocumentId", MmpVM.DocumentId } });
+            if (idsResponse == null)
+            {
+                return;
+            }
 
-    // private Task OpenDialogAsync(DocumentItemVM documentItem)
-    // {
-    //     InvokeAsync(RefreshWz);
-    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-    //     var parameters = new DialogParameters<ApproveWzItemDialogForm>
-    //     {
-    //         { x => x.DocumentItemVM, documentItem},
-    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
-    //     };
-    //     return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
-    // }
+            var json = await idsResponse.Content.ReadAsStringAsync();
+            var resObj = JsonConvert.DeserializeObject<string[]>(json);
+
+            _warehouseUnitIds = resObj?.ToHashSet<string>() ?? new();
+
+            StateHasChanged();
+        }
+    }
 
     private async Task RefreshMmp()
     {
@@ -186,12 +152,10 @@ else
             await RefreshMmp();
 
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{MmpVM.DocumentId}</b>"), Severity.Success);
-
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 }

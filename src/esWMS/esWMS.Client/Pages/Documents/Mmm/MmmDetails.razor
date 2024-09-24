@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -6,6 +7,7 @@
 @inject IDataService<MmmVM> mmmDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @MmmVM.DocumentId
@@ -51,44 +53,8 @@
     [@MmmVM.ToWarehouseId] @MmmVM.ToWarehouse?.WarehouseName
 </MudText>
 
-<MudDataGrid T="DocumentItemVM"
-             Items="@MmmVM.DocumentItems"
-             EditMode="DataGridEditMode.Cell"
-             Class="mb-3"
-             Dense
-             Hover
-             Bordered>
-    <Columns>
-        <PropertyColumn Property="x => x.DocumentItemId" Title="Id" />
-        <PropertyColumn Property="x => x.DocumentId" Title="Id dokumentu" />
-        <PropertyColumn Property="x => x.ProductId" Title="Id produktu" />
-        <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
-        <PropertyColumn Property="x => x.ProductName" Title="Nazwa" />
-        <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
-        <TemplateColumn CellClass="d-flex" Title="Zatwierdzenie">
-            <CellTemplate>
-                <MudStack Row>
-                    <MudCheckBox Value="@context.Item.IsApproved" Disabled />
-                    @if (!context.Item.IsApproved)
-                    {
-                        @* <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
-                    Size="@Size.Small"
-                    Variant="@Variant.Filled"
-                    Color="@Color.Primary">
-                    Zatwierdź
-                    </MudButton> *@
-                        <MudButton Disabled
-                                   Size="@Size.Small"
-                                   Variant="@Variant.Filled"
-                                   Color="@Color.Primary">
-                            Zatwierdź
-                        </MudButton>
-                    }
-                </MudStack>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
+<DocumentItemsTable DocumentItems="@MmmVM.DocumentItems"
+                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails" />
 
 @if (MmmVM.DocumentItems.All(x => x.IsApproved) &&
 !MmmVM.IsApproved)
@@ -122,39 +88,11 @@ else
     </MudButton>
 }
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5" Class="mb-3">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
     [Parameter]
     public MmmVM MmmVM { get; set; } = new();
-
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
-
-    private List<string> responseErrors = new();
-
-    // private Task OpenDialogAsync(DocumentItemVM documentItem)
-    // {
-    //     InvokeAsync(RefreshWz);
-    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-    //     var parameters = new DialogParameters<ApproveWzItemDialogForm>
-    //     {
-    //         { x => x.DocumentItemVM, documentItem},
-    //         { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshWz) } }
-    //     };
-    //     return DialogService.ShowAsync<ApproveWzItemDialogForm>(null, parameters, options);
-    // }
 
     private async Task RefreshMmm()
     {
@@ -186,12 +124,10 @@ else
             await RefreshMmm();
 
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{MmmVM.DocumentId}</b>"), Severity.Success);
-
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 }

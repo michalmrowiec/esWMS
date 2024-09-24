@@ -3,9 +3,9 @@ using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Functions.Documents.PzFunctions;
-using esWMS.Application.Functions.Services;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
 using MediatR;
 
 namespace esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouses

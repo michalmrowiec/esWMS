@@ -7,6 +7,7 @@
 @inject IDataService<WzVM> wzDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @WzVM.DocumentId
@@ -48,39 +49,12 @@
     [@WzVM.RecipientContractorId] @WzVM.RecipientContractor?.ContractorName
 </MudText>
 
-<MudDataGrid T="DocumentItemVM"
-             Items="@WzVM.DocumentItems"
-             EditMode="DataGridEditMode.Cell"
-             Class="mb-3"
-             Dense
-             Hover
-             Bordered>
-    <Columns>
-        <PropertyColumn Property="x => x.ProductId" Title="Id" />
-        <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
-        <PropertyColumn Property="x => x.ProductName" Title="Nazwa" />
-        <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
-        <TemplateColumn CellClass="d-flex" Title="Zatwierdzenie">
-            <CellTemplate>
-                <MudStack Row>
-                    <MudCheckBox Value="@context.Item.IsApproved" Disabled />
-                    @if (!context.Item.IsApproved)
-                    {
-                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
-                                   Size="@Size.Small"
-                                   Variant="@Variant.Filled"
-                                   Color="@Color.Primary">
-                            Zatwierdź
-                        </MudButton>
-                    }
-                </MudStack>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
+<DocumentItemsTable DocumentItems="@WzVM.DocumentItems"
+                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
+                    OnApprove="OpenDialogAsync" />
 
 @if (WzVM.DocumentItems.All(x => x.IsApproved) &&
- !WzVM.IsApproved)
+!WzVM.IsApproved)
 {
     <MudButton OnClick="@(() => ApproveWz())"
                Size="@Size.Small"
@@ -111,27 +85,11 @@ else
     </MudButton>
 }
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5" Class="mb-3">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
     [Parameter]
     public WzVM WzVM { get; set; } = new();
-
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
-
-    private List<string> responseErrors = new();
 
     private Task OpenDialogAsync(DocumentItemVM documentItem)
     {
@@ -180,8 +138,7 @@ else
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 }

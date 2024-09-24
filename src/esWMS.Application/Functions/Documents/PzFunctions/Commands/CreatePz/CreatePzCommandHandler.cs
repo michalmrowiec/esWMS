@@ -2,62 +2,62 @@
 using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
-using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
+using esWMS.Application.Functions.Products;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
 using MediatR;
-using Sieve.Models;
 
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 {
     internal class CreatePzCommandHandler
         (IPzRepository repository,
-        IMediator mediator,
-        IMapper mapper,
-        ITransactionManager transactionManager)
+        IProductService productService,
+        IMapper mapper)
         : IRequestHandler<CreatePzCommand, BaseResponse<PzDto>>
     {
         private readonly IPzRepository _repository = repository;
-        private readonly IMediator _mediator = mediator;
+        private readonly IProductService _productService = productService;
         private readonly IMapper _mapper = mapper;
-        private readonly ITransactionManager _transactionManager = transactionManager;
 
-        public async Task<BaseResponse<PzDto>> Handle(CreatePzCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<PzDto>> Handle
+            (CreatePzCommand request, CancellationToken cancellationToken)
         {
-            var productResponse = await _mediator.Send(
-                new GetSortedFilteredProductsQuery(
-                    new SieveModel()
-                    {
-                        Page = 1,
-                        PageSize = 500,
-                        Filters = "ProductId==" + string.Join('|', request.DocumentItems.Select(x => x.ProductId).Distinct())
-                    }));
+            var productsResponse = await _productService.GetProductsAsync(request.DocumentItems.Select(x => x.ProductId));
 
-            var products = productResponse.ReturnedObj?.Items ?? [];
-
-            if (!productResponse.IsSuccess() || products.Count == 0)
+            if (!productsResponse.IsSuccess)
             {
                 return new BaseResponse<PzDto>(
-                    productResponse.Status,
-                    "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
+                    BaseResponse.ResponseStatus.ServerError,
+                    "Error retrieving products for the document.");
             }
 
-            var validationResult = await new CreatePzValidator(products).ValidateAsync(request, cancellationToken);
+            var validationResult = await new CreatePzValidator(productsResponse.Products)
+                .ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
                 return new BaseResponse<PzDto>(validationResult);
             }
 
-            var entity = _mapper.Map<PZ>(request);
+            var entity = await CreatePz(request, productsResponse.Products);
 
             if (entity == null)
             {
-                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
+                return new BaseResponse<PzDto>
+                    (BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
-            var lastNumber = await _repository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
+            return await SavePzEntityAsync(entity);
+        }
 
+        private async Task<PZ?> CreatePz(CreatePzCommand request, IEnumerable<ProductDto> products)
+        {
+            var entity = _mapper.Map<PZ>(request);
+
+            if (entity == null)
+                return null;
+
+            var lastNumber = await _repository.GetAllDocumentIdForDay(entity.DocumentIssueDate);
             entity.DocumentId = entity.GenerateDocumentId(lastNumber);
             entity.CreatedAt = DateTime.Now;
 
@@ -73,20 +73,22 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
                 item.ProductName = product.ProductName;
             }
 
-            PzDto entityDto;
+            return entity;
+        }
 
+        private async Task<BaseResponse<PzDto>> SavePzEntityAsync(PZ entity)
+        {
             try
             {
                 var createdEntity = await _repository.CreateAsync(entity);
+                var entityDto = _mapper.Map<PzDto>(createdEntity);
 
-                entityDto = _mapper.Map<PzDto>(createdEntity);
+                return new BaseResponse<PzDto>(entityDto);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
+                return new BaseResponse<PzDto>(BaseResponse.ResponseStatus.ServerError, "Error saving the document.");
             }
-
-            return new BaseResponse<PzDto>(entityDto);
         }
     }
 }

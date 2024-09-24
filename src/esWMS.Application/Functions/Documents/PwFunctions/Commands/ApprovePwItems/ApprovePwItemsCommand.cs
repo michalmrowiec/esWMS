@@ -7,7 +7,7 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwIt
     public class ApprovePwItemsCommand : IRequest<BaseResponse<PwDto>>
     {
         public string DocumentId { get; set; } = null!;
-        public List<CreateDocumentWarehouseUnitItemCommand> DocumentItemsWithAssignment { get; set; } = null!;
+        public List<ReceivingItemAssignment> DocumentItemsWithAssignment { get; set; } = null!;
 
         public string? ModifiedBy { get; set; }
     }

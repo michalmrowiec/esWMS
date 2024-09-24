@@ -22,7 +22,7 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                     }
                 });
 
-            RuleFor(x => x.NewLocationId)
+            RuleFor(x => x.LocationId)
                 .Custom((value, context) =>
                 {
                     if (string.IsNullOrWhiteSpace(value))
@@ -50,6 +50,28 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                     if (newLocationResponse.ReturnedObj.IsFull)
                     {
                         context.AddFailure($"Location with ID: {value} is full.");
+                    }
+                });
+
+            RuleFor(x => x)
+                .Custom((value, context) =>
+                {
+                    if (warehouseUnit!.StackOnId != null
+                        && !value.RemoveFromStack)
+                    {
+                        //optional change message
+                        context.AddFailure(
+                            "WarehouseUnitId",
+                            $"Warehouse unit with ID: {value} is stacked on another unit.");
+                    }
+
+                    if (warehouseUnit!.StackOnId != null
+                        && !value.RemoveFromStack
+                        && string.IsNullOrWhiteSpace(value.LocationId))
+                    {
+                        context.AddFailure(
+                            "LocationId",
+                            "Location ID is required to move stacked warehouse unit.");
                     }
                 });
         }

@@ -4,6 +4,7 @@
 @using esWMS.Client.ViewModels.Documents
 @inject IDocumentDataService documentService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudDialog>
     <TitleContent>
@@ -21,33 +22,15 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-
     [Parameter]
     public List<EventCallback>? FuncsOnAdded { get; set; } = new();
-
     [Parameter]
     public DocumentItemVM DocumentItemVM { get; set; }
-
     [Parameter]
     public string Uri { get; set; }
-
-    private List<string> responseErrors = new();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
 
     private async Task Submit()
     {
@@ -71,8 +54,7 @@
         }
         else
         {
-            var json = await response.Content.ReadAsStringAsync();
-            responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+            await response.HandleFailure(AlertService);
         }
     }
 

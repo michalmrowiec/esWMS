@@ -22,7 +22,7 @@ namespace esWMS.Client.ViewModels.Documents
         public DateTime? GoodsReleaseDate { get; set; } = DateTime.Now;
         public string? ToWarehouseId { get; set; }
 
-        public List<WarehouseUnitVM> WarehouseUnits { get; set; } = [];
+        public List<string> WarehouseUnitIds { get; set; } = [];
     }
 
     public class CreateMmmVMValidator : AbstractValidator<CreateMmmVM>

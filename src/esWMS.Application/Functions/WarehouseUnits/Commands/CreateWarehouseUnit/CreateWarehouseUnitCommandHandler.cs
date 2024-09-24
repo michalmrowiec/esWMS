@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using esMWS.Domain.Entities.WarehouseEnviroment;
+using esMWS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
-using esWMS.Application.Functions.Locations.Queries.GetLocationById;
 using esWMS.Application.Responses;
 using MediatR;
 
@@ -30,13 +30,13 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUni
 
             var warehouseUnitEntity = _mapper.Map<WarehouseUnit>(request);
 
-            warehouseUnitEntity.WarehouseUnitId = Guid.NewGuid().ToString();
+            warehouseUnitEntity.WarehouseUnitId = WarehouseUnitIdGenerator.WarehouseUnitId();
 
             foreach (var item in request.WarehouseUnitItems)
             {
                 var warehouseUnitItemEntity = _mapper.Map<WarehouseUnitItem>(item);
 
-                warehouseUnitItemEntity.WarehouseUnitItemId = Guid.NewGuid().ToString();
+                warehouseUnitItemEntity.WarehouseUnitItemId = WarehouseUnitIdGenerator.WarehouseUnitItemId();
                 warehouseUnitItemEntity.WarehouseUnitId = warehouseUnitEntity.WarehouseUnitId;
 
                 warehouseUnitEntity.WarehouseUnitItems.Add(warehouseUnitItemEntity);

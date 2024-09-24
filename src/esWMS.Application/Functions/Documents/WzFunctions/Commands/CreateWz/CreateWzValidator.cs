@@ -10,31 +10,16 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
     internal class CreateWzValidator : CreateBaseDocumentValidator<CreateWzCommand>
     {
         private readonly IMediator _mediator;
-        public CreateWzValidator(IList<ProductDto> productsFromDocumentItems, IMediator mediator)
+        public CreateWzValidator(IEnumerable<ProductDto> productsFromDocumentItems, IMediator mediator) : base(productsFromDocumentItems)
         {
             _mediator = mediator;
+
             RuleForEach(x => x.DocumentItems)
                 .ChildRules(items => items.RuleForEach(x => x.DocumentWarehouseUnitItems)
                     .ChildRules(itemsASsignment =>
                         itemsASsignment.RuleFor(x => x.WarehouseUnitItemId)
                         .NotEmpty()
                         .NotNull()));
-
-            RuleFor(x => x.DocumentItems)
-                .Custom((value, context) =>
-                {
-                    var requestedProductIds = value.Select(x => x.ProductId).Distinct().ToList();
-                    var foundProductIds = productsFromDocumentItems?.Select(x => x.ProductId).Distinct().ToList() ?? new List<string>();
-
-                    var missingProductIds = requestedProductIds.Except(foundProductIds).ToList();
-
-                    if (missingProductIds.Any())
-                    {
-                        context.AddFailure(
-                            "DocumentItems",
-                            $"There are no products with the given IDs: {string.Join(", ", missingProductIds)}");
-                    }
-                });
 
             RuleFor(x => x)
                 .CustomAsync(async (value, context, cancellationToken) =>

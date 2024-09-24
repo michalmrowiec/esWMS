@@ -3,29 +3,30 @@
 @using esWMS.Client.ViewModels
 @inject IDataService<CategoryVM> categoryService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudDialog>
     <TitleContent>
         Nowa kategoria
     </TitleContent>
     <DialogContent>
-        <MudForm Model="@model"
-                 @ref="@form"
-                 Validation="@(validator.ValidateValue)"
+        <MudForm Model="@_model"
+                 @ref="@_form"
+                 Validation="@(_validator.ValidateValue)"
                  ValidationDelay="0">
             <MudCardContent>
-                <MudTextField @bind-Value="model.CategoryName"
-                              For="@(() => model.CategoryName)"
+                <MudTextField @bind-Value="_model.CategoryName"
+                              For="@(() => _model.CategoryName)"
                               Immediate="true"
                               Label="Nazwa" />
 
                 <MudSelect T="string"
-                           @bind-Value="model.ParentCategoryId"
+                           @bind-Value="_model.ParentCategoryId"
                            Label="Kategoria nadrzędna"
                            AnchorOrigin="Origin.BottomCenter"
-                           For="@(() => model.ParentCategoryId)"
+                           For="@(() => _model.ParentCategoryId)"
                            Immediate="true">
-                    @foreach (var pCategory in parentCategories)
+                    @foreach (var pCategory in _parentCategories)
                     {
                         <MudSelectItem Value="@pCategory.CategoryId">
                             @pCategory.CategoryName
@@ -41,52 +42,35 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
-
 @code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-    private MudForm form;
-    private CategoryVM model = new();
-    private CreateCategoryVMValidator validator = new();
-    private List<string> responseErrors = new();
-    private List<CategoryVM> parentCategories = new();
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm _form;
+    private CategoryVM _model = new();
+    private CreateCategoryVMValidator _validator = new();
+    private List<CategoryVM> _parentCategories = new();
 
     private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
-        responseErrors = new();
-        await form.Validate();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
-            var response = await categoryService.Create(@"api/v1/Category", model);
+            var response = await categoryService.Create(@"api/v1/Category", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 //Snackbar.Configuration.PositionClass = "Bottom-End";
-                Snackbar.Add(new MarkupString($"Utworzono <strong>{model.CategoryName}</strong>"), Severity.Success);
+                Snackbar.Add(new MarkupString($"Utworzono <strong>{_model.CategoryName}</strong>"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
             }
         }
     }
@@ -94,6 +78,6 @@
     protected override async Task OnInitializedAsync()
     {
         var res = await categoryService.GetPagedResult(@"api/v1/Category/get-filtered", new SieveModelVM(1, 500));
-        parentCategories = res.Items.ToList();
+        _parentCategories = res.Items.ToList();
     }
 }

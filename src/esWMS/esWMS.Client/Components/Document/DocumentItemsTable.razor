@@ -1,0 +1,105 @@
+﻿@using esWMS.Client.ViewModels.Documents
+
+<MudTable T="DocumentItemVM"
+          Items="DocumentItems"
+          Hover
+          Dense
+          Bordered>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductId)">
+                Id produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductCode)">
+                Kod produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductName)">
+                Nazwa produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Quantity)">
+                Ilość
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Price ?? 0)">
+                Cena
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTd>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Price * x.Quantity ?? 0)">
+                Wartość
+            </MudTableSortLabel>
+        </MudTd>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.IsApproved)">
+                @(TableType == DocumentItemTableType.DocumentDetails ? "Zatwierdzony" : "")
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
+        <MudTd DataLabel="Kod produktu">@context.ProductCode</MudTd>
+        <MudTd DataLabel="Nazwa produktu">@context.ProductName</MudTd>
+        <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
+        <MudTd DataLabel="Cena">@context.Price</MudTd>
+        <MudTd DataLabel="Cena">@(context.Quantity * context.Price)</MudTd>
+        <MudTd>
+            @if (TableType == DocumentItemTableType.DocumentDetails)
+            {
+                @if (!context.IsApproved)
+                {
+                    <MudButton OnClick="@(async () => await OnApprove?.Invoke(context))"
+                               Size="@Size.Small"
+                               Variant="@Variant.Filled"
+                               Color="@Color.Primary">
+                        Zatwierdź
+                    </MudButton>
+                }
+                else
+                {
+                    <MudCheckBox Value="@context.IsApproved" ReadOnly />
+                }
+            }
+            else if (TableType == DocumentItemTableType.DocumentCreation)
+            {
+                <MudIconButton Size="@Size.Small"
+                               Icon="@Icons.Material.Outlined.Delete"
+                               OnClick="@(() => DocumentItems.Remove(context))" />
+            }
+        </MudTd>
+    </RowTemplate>
+    <FooterContent>
+        <MudTFootRow>
+            <MudTd Style="text-align:right">Wartość całkowita:</MudTd>
+            <MudTd Style="text-align:left">@DocumentItems.Sum(x => x.Quantity * x.Price)</MudTd>
+        </MudTFootRow>
+    </FooterContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public IList<DocumentItemVM> DocumentItems { get; set; }
+    [Parameter]
+    public DocumentItemTableType TableType { get; set; }
+    [Parameter]
+    public Func<DocumentItemVM, Task>? OnApprove { get; set; }
+
+    public enum DocumentItemTableType
+    {
+        DocumentDetails,
+        DocumentCreation
+    }
+}

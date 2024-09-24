@@ -22,10 +22,11 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
             (SetLocationForWarehouseUnitCommand request, CancellationToken cancellationToken)
         {
             WarehouseUnit? warehouseUnit;
+            IList<WarehouseUnit> allStackOfWarehouseUnit;
             try
             {
                 warehouseUnit = await _warehouseUnitRepository.GetByIdAsync(request.WarehouseUnitId);
-
+                allStackOfWarehouseUnit = await _warehouseUnitRepository.GetStackedWarehouseUnitsAboveAsync(request.WarehouseUnitId);
             }
             catch (Exception ex)
             {
@@ -34,10 +35,10 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
             }
 
             BaseResponse<LocationDto>? newLocationResponse = null;
-            if (!string.IsNullOrWhiteSpace(request.NewLocationId))
+            if (!string.IsNullOrWhiteSpace(request.LocationId))
             {
                 newLocationResponse = await _mediator.Send(
-                    new GetLocationByIdQuery(request.NewLocationId));
+                    new GetLocationByIdQuery(request.LocationId));
             }
 
             var validationResult = await new SetLocationForWarehouseUnitValidator
@@ -48,13 +49,28 @@ namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWare
                 return new BaseResponse<WarehouseUnitDto>(validationResult);
             }
 
-            if (!string.IsNullOrWhiteSpace(request.NewLocationId))
+            if (!string.IsNullOrWhiteSpace(request.LocationId))
             {
                 warehouseUnit.LocationId = newLocationResponse!.ReturnedObj!.LocationId;
+
+                if(request.RemoveFromStack)
+                {
+                    warehouseUnit.StackOnId = null;
+                }
+
+                foreach (var wu in allStackOfWarehouseUnit)
+                {
+                    wu.LocationId = newLocationResponse!.ReturnedObj!.LocationId;
+                }
             }
             else
             {
                 warehouseUnit.LocationId = null;
+
+                foreach (var wu in allStackOfWarehouseUnit)
+                {
+                    wu.LocationId = null;
+                }
             }
             warehouseUnit.ModifiedAt = DateTime.Now;
             warehouseUnit.ModifiedBy = request.ModifiedBy;

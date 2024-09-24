@@ -1,4 +1,5 @@
 ﻿using esMWS.Domain.Entities.Documents;
+using esMWS.Domain.Services;
 using System.ComponentModel;
 
 namespace esMWS.Domain.Entities.WarehouseEnviroment
@@ -42,7 +43,7 @@ namespace esMWS.Domain.Entities.WarehouseEnviroment
             string? createdBy,
             bool isMediaOfWarehouseUnit = false)
         {
-            WarehouseUnitItemId = Guid.NewGuid().ToString();
+            WarehouseUnitItemId = WarehouseUnitIdGenerator.WarehouseUnitItemId();
             WarehouseUnitId = warehouseUnitId;
             ProductId = productId;
             Quantity = quantity;

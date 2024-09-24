@@ -1,7 +1,6 @@
 ﻿using esWMS.Client.ViewModels;
 using Newtonsoft.Json;
 using System.Text;
-using static MudBlazor.CategoryTypes;
 
 namespace esWMS.Client.Services
 {
@@ -9,6 +8,7 @@ namespace esWMS.Client.Services
         where T : class
     {
         Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel, Dictionary<string, string>? queryParams = null);
+        Task<HttpResponseMessage> Get(string uri, Dictionary<string, string>? queryParams = null);
         Task<HttpResponseMessage> Create(string uri, T item);
         Task<HttpResponseMessage> CreateObject(string uri, object item);
         Task<HttpResponseMessage> Patch(string uri, object item);
@@ -46,6 +46,21 @@ namespace esWMS.Client.Services
         public async Task<HttpResponseMessage> Delete(string uri)
         {
             using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> Get(string uri, Dictionary<string, string>? queryParams = null)
+        {
+            if (queryParams != null && queryParams.Count > 0)
+            {
+                var query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
+                uri = $"{uri}?{query}";
+            }
+
+            using var request = new HttpRequestMessage(HttpMethod.Get, uri);
 
             var response = await _httpClient.SendAsync(request);
 

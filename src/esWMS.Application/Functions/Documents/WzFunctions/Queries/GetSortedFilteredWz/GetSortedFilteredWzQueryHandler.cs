@@ -2,8 +2,8 @@
 using esMWS.Domain.Entities.Documents;
 using esMWS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
-using esWMS.Application.Functions.Services;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
 using MediatR;
 
 namespace esWMS.Application.Functions.Documents.WzFunctions.Queries.GetSortedFilteredWz

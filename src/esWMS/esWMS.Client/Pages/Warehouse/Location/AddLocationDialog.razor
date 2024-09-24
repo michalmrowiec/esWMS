@@ -6,24 +6,25 @@
 @inject IDataService<ZoneVM> zoneDataService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@inject IAlertService AlertService
 
 <MudDialog>
     <TitleContent>
         Nowa lokalizacja
     </TitleContent>
     <DialogContent>
-        <MudForm Model="@model"
-                 @ref="@form"
-                 Validation="@(validator.ValidateValue)"
+        <MudForm Model="@_model"
+                 @ref="@_form"
+                 Validation="@(_validator.ValidateValue)"
                  ValidationDelay="0">
             <MudCardContent>
                 <MudSelect T="string"
-                           @bind-Value="model.ZoneId"
+                           @bind-Value="_model.ZoneId"
                            Label="Strefa składowania"
                            AnchorOrigin="Origin.BottomCenter"
-                           For="@(() => model.ZoneId)"
+                           For="@(() => _model.ZoneId)"
                            Immediate="true">
-                    @foreach (var zone in zones)
+                    @foreach (var zone in _zones)
                     {
                         <MudSelectItem Value="@zone.ZoneId">
                             [@zone.ZoneId] @zone.ZoneName
@@ -31,74 +32,74 @@
                     }
                 </MudSelect>
 
-                <MudNumericField @bind-Value="model.Row"
-                                 For="@(() => model.Row)"
+                <MudNumericField @bind-Value="_model.Row"
+                                 For="@(() => _model.Row)"
                                  Immediate="true"
                                  Label="Regał"
                                  Min="0"
                                  Max="99" />
 
-                <MudTextField @bind-Value="model.Column"
-                              For="@(() => model.Column)"
+                <MudTextField @bind-Value="_model.Column"
+                              For="@(() => _model.Column)"
                               Immediate="true"
                               Label="Kolumna"
                               MaxLength="1"
-                              TextChanged="@(() => model.Column = model.Column?.ToString()?.ToUpper().ToCharArray()?.First() ?? null)" />
+                              TextChanged="@(() => _model.Column = _model.Column?.ToString()?.ToUpper().ToCharArray()?.First() ?? null)" />
 
-                <MudNumericField @bind-Value="model.Level"
-                                 For="@(() => model.Level)"
+                <MudNumericField @bind-Value="_model.Level"
+                                 For="@(() => _model.Level)"
                                  Immediate="true"
                                  Label="Poziom"
                                  Min="0"
                                  Max="9" />
 
-                <MudNumericField @bind-Value="model.Cell"
-                                 For="@(() => model.Cell)"
+                <MudNumericField @bind-Value="_model.Cell"
+                                 For="@(() => _model.Cell)"
                                  Immediate="true"
                                  Label="Komórka"
                                  Min="0"
                                  Max="9" />
 
-                <MudNumericField @bind-Value="model.Capacity"
-                                 For="@(() => model.Capacity)"
+                <MudNumericField @bind-Value="_model.Capacity"
+                                 For="@(() => _model.Capacity)"
                                  Immediate="true"
                                  Label="Pojemność"
                                  Min="1"
                                  Max="99999" />
 
-                <MudNumericField @bind-Value="model.MaxLength"
-                                 For="@(() => model.MaxLength)"
+                <MudNumericField @bind-Value="_model.MaxLength"
+                                 For="@(() => _model.MaxLength)"
                                  Label="Maksymalna długość (m)"
                                  Immediate="true"
                                  Min="0"
                                  Max="99999" />
 
-                <MudNumericField @bind-Value="model.MaxWidth"
-                                 For="@(() => model.MaxWidth)"
+                <MudNumericField @bind-Value="_model.MaxWidth"
+                                 For="@(() => _model.MaxWidth)"
                                  Label="Maksymalna szerokość (m)"
                                  Immediate="true"
                                  Min="0"
                                  Max="99999" />
 
-                <MudNumericField @bind-Value="model.MaxHeight"
-                                 For="@(() => model.MaxHeight)"
+                <MudNumericField @bind-Value="_model.MaxHeight"
+                                 For="@(() => _model.MaxHeight)"
                                  Label="Maksymalna wysokość (m)"
                                  Immediate="true"
                                  Min="0"
                                  Max="99999" />
 
-                <MudNumericField @bind-Value="model.MaxWeight"
-                                 For="@(() => model.MaxWeight)"
+                <MudNumericField @bind-Value="_model.MaxWeight"
+                                 For="@(() => _model.MaxWeight)"
                                  Label="Maksymalne obciążenie (kg)"
                                  Immediate="true"
                                  Min="0"
                                  Max="99999" />
 
-                <MudTextField Value="@mediaInfo"
+                <MudTextField Value="@_mediaInfo"
                               Label="Domyślny nośnik"
                               Disabled />
                 <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => {model.DefaultMediaTypeId = null; mediaInfo = string.Empty; StateHasChanged();})">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => {_model.DefaultMediaTypeId = null; _mediaInfo = string.Empty; StateHasChanged();})">
                         Wyczyść
                     </MudIconButton>
                     <MudButton OnClick="OpenDialogAsync">Wybierz nośnik</MudButton>
@@ -112,30 +113,16 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-    private MudForm form;
-    private CreateLocationVM model = new();
-    private CreateLocationVMValidator validator = new();
-    private List<string> responseErrors = new();
-    private List<ZoneVM> zones = new();
-    private string mediaInfo = string.Empty;
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm _form;
+    private CreateLocationVM _model = new();
+    private CreateLocationVMValidator _validator = new();
+    private List<ZoneVM> _zones = new();
+    private string _mediaInfo = string.Empty;
 
     private void Cancel() => MudDialog.Cancel();
 
@@ -150,7 +137,7 @@
         var parameters = new DialogParameters<ProductTableDialog>
         {
             { x => x.ShowMediasOnly, true },
-            { x => x.SelectedProduct, EventCallback.Factory.Create<ProductVM>(this, (product) => {model.DefaultMediaTypeId = product.ProductId; mediaInfo = $"[{product.ProductId}] {product.ProductName}"; }) },
+            { x => x.SelectedProduct, EventCallback.Factory.Create<ProductVM>(this, (product) => {_model.DefaultMediaTypeId = product.ProductId; _mediaInfo = $"[{product.ProductId}] {product.ProductName}"; }) },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
         };
         return DialogService.ShowAsync<ProductTableDialog>(null, parameters, options);
@@ -158,12 +145,11 @@
 
     private async Task Submit()
     {
-        responseErrors = new();
-        await form.Validate();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
-            var response = await locationDataService.Create(@"api/v1/Location", model);
+            var response = await locationDataService.Create(@"api/v1/Location", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 var content = await response.Content.ReadAsStringAsync();
@@ -174,10 +160,9 @@
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
             }
         }
     }
@@ -185,6 +170,6 @@
     protected override async Task OnInitializedAsync()
     {
         var res = await zoneDataService.GetPagedResult(@"api/v1/Zone/get-filtered", new SieveModelVM(1, 500));
-        zones = res.Items.ToList();
+        _zones = res.Items.ToList();
     }
 }

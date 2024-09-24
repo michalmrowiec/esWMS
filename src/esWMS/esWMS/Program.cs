@@ -2,6 +2,7 @@ using esWMS.Application;
 using esWMS.Client.Pages.OnePage;
 using esWMS.Client.Services;
 using esWMS.Components;
+using esWMS.Components.Alert;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
@@ -22,6 +23,7 @@ try
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
 
+    builder.Services.AddSingleton<IAlertService, AlertService>();
     builder.Services.AddSingleton<OnePageState>();
     builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
     builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();

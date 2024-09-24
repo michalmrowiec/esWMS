@@ -1,14 +1,12 @@
 using esMWS.Domain.Models;
-using esWMS.Application.Functions.Categories.Commands.CreateCategory;
-using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Locations;
+using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 using esWMS.Application.Functions.Locations.Queries.GetSortedFilteredLocations;
-using esWMS.Application.Responses;
+using esWMS.Controllers.Utils;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 
 namespace esWMS.Controllers
 {
@@ -36,21 +34,7 @@ namespace esWMS.Controllers
         {
             var result = await _mediator.Send(new GetSortedFilteredLocationsQuery(sieveModel));
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Ok(result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleOkResult(this);
         }
 
         [HttpPost]
@@ -62,21 +46,7 @@ namespace esWMS.Controllers
 
             var result = await _mediator.Send(createLocationCommand);
 
-            switch (result.Status)
-            {
-                case BaseResponse.ResponseStatus.Success:
-                    return Created("", result.ReturnedObj);
-                case BaseResponse.ResponseStatus.ValidationError:
-                    return BadRequest(result.ValidationErrors);
-                case BaseResponse.ResponseStatus.ServerError:
-                    return StatusCode(500);
-                case BaseResponse.ResponseStatus.NotFound:
-                    return NotFound();
-                case BaseResponse.ResponseStatus.BadQuery:
-                    return BadRequest(result.Message);
-                default:
-                    return BadRequest();
-            }
+            return result.HandleCreatedResult(this, "");
         }
     }
 }

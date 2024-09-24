@@ -72,6 +72,76 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
         public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, string op, string[] values) =>
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
 
+        public IQueryable<WarehouseUnit> ProductName
+    (IQueryable<WarehouseUnit> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return source;
+            }
+
+            var value = values.First();
+
+            switch (op)
+            {
+                case "@=":
+                    source = source
+                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName.Contains(value)));
+                    break;
+                case "!@=":
+                    source = source
+                        .Where(wu => wu.WarehouseUnitItems.Any(wui => !wui.Product.ProductName.Contains(value)));
+                    break;
+                case "==":
+                    source = source
+                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName == value));
+                    break;
+                case "!=":
+                    source = source
+                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName != value));
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
+        public IQueryable<WarehouseUnit> ItemCount(
+            IQueryable<WarehouseUnit> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0 || !int.TryParse(values[0], out int itemCount))
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    source = source.Where(warehouseUnit => warehouseUnit.WarehouseUnitItems.Count == itemCount);
+                    break;
+                case "!=":
+                    source = source.Where(warehouseUnit => warehouseUnit.WarehouseUnitItems.Count != itemCount);
+                    break;
+                case ">":
+                    source = source.Where(warehouseUnit => warehouseUnit.WarehouseUnitItems.Count > itemCount);
+                    break;
+                case "<":
+                    source = source.Where(warehouseUnit => warehouseUnit.WarehouseUnitItems.Count < itemCount);
+                    break;
+                case ">=":
+                    source = source.Where(warehouseUnit => warehouseUnit.WarehouseUnitItems.Count >= itemCount);
+                    break;
+                case "<=":
+                    source = source.Where(warehouseUnit => warehouseUnit.WarehouseUnitItems.Count <= itemCount);
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
         public IQueryable<Location> IsFull
             (IQueryable<Location> source, string op, string[] values)
         {

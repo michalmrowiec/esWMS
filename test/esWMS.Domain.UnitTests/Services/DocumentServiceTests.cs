@@ -25,8 +25,18 @@ namespace esWMS.Domain.UnitTests.Services
                     DocumentIssueDate = new DateTime(2034, 11, 8),
                     IssueWarehouseId = "W10"
                 },
-                new string[] { "MMP/W10/2034/11/08/996", "MMP/W10/2034/11/08/998", "MMP/W10/2034/11/08/100" },
-                "MMP/W10/2034/11/08/999"
+                new string[] { "MMP/W10/2034/11/08/996", "MMP/W10/2034/11/08/998", "MMP/W10/2034/11/08/100", "MM+/W10/2034/11/08/102" },
+                "MM+/W10/2034/11/08/999"
+            },
+            new object[]
+            {
+                new MMM()
+                {
+                    DocumentIssueDate = new DateTime(2034, 11, 8),
+                    IssueWarehouseId = "WPO"
+                },
+                new string[] { "MM-/WPO/2034/11/08/996", "MMM/WPO/2034/11/08/998", "MM-/WPO/2034/11/08/101", "MMM/WPO/2034/11/08/100" },
+                "MM-/WPO/2034/11/08/999"
             },
             new object[]
             {

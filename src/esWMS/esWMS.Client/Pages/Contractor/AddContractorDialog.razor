@@ -3,74 +3,75 @@
 @using esWMS.Client.ViewModels
 @inject IDataService<CreateContractorVM> contractorService
 @inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <MudDialog>
     <TitleContent>
         Nowa kontrahent
     </TitleContent>
     <DialogContent>
-        <MudForm Model="@model"
-                 @ref="@form"
-                 Validation="@(validator.ValidateValue)"
+        <MudForm Model="@_model"
+                 @ref="@_form"
+                 Validation="@(_validator.ValidateValue)"
                  ValidationDelay="0">
             <MudCardContent>
-                <MudTextField @bind-Value="model.ContractorId"
-                              For="@(() => model.ContractorId)"
+                <MudTextField @bind-Value="_model.ContractorId"
+                              For="@(() => _model.ContractorId)"
                               Immediate="true"
                               Label="Nazwa"
                               MaxLength="3"
-                              TextChanged="@(() => model.ContractorId = model.ContractorId?.ToUpper() ?? null)" />
+                              TextChanged="@(() => _model.ContractorId = _model.ContractorId?.ToUpper() ?? null)" />
 
-                <MudTextField @bind-Value="model.ContractorName"
-                              For="@(() => model.ContractorName)"
+                <MudTextField @bind-Value="_model.ContractorName"
+                              For="@(() => _model.ContractorName)"
                               Immediate="true"
                               Label="Nazwa kontrahenta" />
 
-                <MudTextField @bind-Value="model.VatId"
-                              For="@(() => model.VatId)"
+                <MudTextField @bind-Value="_model.VatId"
+                              For="@(() => _model.VatId)"
                               Immediate="true"
                               Label="VAT ID" />
 
-                <MudCheckBox @bind-Value="model.IsSupplier" Label="Dostawca" />
+                <MudCheckBox @bind-Value="_model.IsSupplier" Label="Dostawca" />
 
-                <MudCheckBox @bind-Value="model.IsRecipient" Label="Odbiorca" />
+                <MudCheckBox @bind-Value="_model.IsRecipient" Label="Odbiorca" />
 
-                <MudTextField @bind-Value="model.Country"
-                              For="@(() => model.Country)"
+                <MudTextField @bind-Value="_model.Country"
+                              For="@(() => _model.Country)"
                               Immediate="true"
                               Label="Kraj" />
 
-                <MudTextField @bind-Value="model.City"
-                              For="@(() => model.City)"
+                <MudTextField @bind-Value="_model.City"
+                              For="@(() => _model.City)"
                               Immediate="true"
                               Label="Miasto" />
 
-                <MudTextField @bind-Value="model.Region"
-                              For="@(() => model.Region)"
+                <MudTextField @bind-Value="_model.Region"
+                              For="@(() => _model.Region)"
                               Immediate="true"
                               Label="Region" />
 
-                <MudTextField @bind-Value="model.PostalCode"
-                              For="@(() => model.PostalCode)"
+                <MudTextField @bind-Value="_model.PostalCode"
+                              For="@(() => _model.PostalCode)"
                               Immediate="true"
                               Label="Kod pocztowy" />
 
-                <MudTextField @bind-Value="model.Address"
-                              For="@(() => model.Address)"
+                <MudTextField @bind-Value="_model.Address"
+                              For="@(() => _model.Address)"
                               Immediate="true"
                               Label="Adres" />
 
-                <MudTextField @bind-Value="model.EmailAddress"
-                              For="@(() => model.EmailAddress)"
+                <MudTextField @bind-Value="_model.EmailAddress"
+                              For="@(() => _model.EmailAddress)"
                               Immediate="true"
                               Label="Adres email" />
 
-                <MudTextField @bind-Value="model.PhoneNumber"
-                              For="@(() => model.PhoneNumber)"
+                <MudTextField @bind-Value="_model.PhoneNumber"
+                              For="@(() => _model.PhoneNumber)"
                               Immediate="true"
                               Label="Numer telefonu" />
 
-                <MudCheckBox @bind-Value="model.IsActive" Label="Aktywny" />
+                <MudCheckBox @bind-Value="_model.IsActive" Label="Aktywny" />
             </MudCardContent>
         </MudForm>
     </DialogContent>
@@ -80,50 +81,34 @@
     </DialogActions>
 </MudDialog>
 
-@if (responseErrors.Any())
-{
-    <MudItem xs="12" sm="5">
-        <MudPaper Class="pa-4 mud-height-full">
-            <MudText Typo="Typo.subtitle2">@($"Errors ({responseErrors.Count})")</MudText>
-            @foreach (var error in responseErrors)
-            {
-                <MudText Color="@Color.Error">@error</MudText>
-            }
-        </MudPaper>
-    </MudItem>
-}
-
 @code {
-    [CascadingParameter]
-    private MudDialogInstance MudDialog { get; set; }
-    private MudForm form;
-    private CreateContractorVM model = new();
-    private CreateContractorVMValidator validator = new();
-    private List<string> responseErrors = new();
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm _form;
+    private CreateContractorVM _model = new();
+    private CreateContractorVMValidator _validator = new();
 
     private void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
-        responseErrors = new();
-        await form.Validate();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
-            var response = await contractorService.Create("api/v1/Contractor", model);
+            var response = await contractorService.Create("api/v1/Contractor", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
                 Snackbar.Configuration.PositionClass = "Bottom-End";
-                Snackbar.Add(new MarkupString($"Utworzono <strong>{model.ContractorId}</strong>"), Severity.Success);
+                Snackbar.Add(new MarkupString($"Utworzono <strong>{_model.ContractorId}</strong>"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
-            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            else
             {
-                var json = await response.Content.ReadAsStringAsync();
-                responseErrors = JsonConvert.DeserializeObject<List<string>>(json) ?? new() { "Coś poszło nie tak." };
+                await response.HandleFailure(AlertService);
             }
         }
     }

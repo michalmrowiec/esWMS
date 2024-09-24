@@ -50,49 +50,77 @@
             <MudTableSortLabel SortLabel="WarehouseUnitItemId" T="WarehouseUnitItemVM">
                 Id pozycji
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseUnitItemId" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="WarehouseUnitItemId"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="WarehouseUnitId" T="WarehouseUnitItemVM">
                 Id jednostki
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseUnitId" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="WarehouseUnitId"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="WarehouseId" T="WarehouseUnitItemVM">
                 Id magazynu
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseId" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="WarehouseId"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="ProductId" T="WarehouseUnitItemVM">
                 Id produktu
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="ProductId" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="ProductId"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="ProductName" T="WarehouseUnitItemVM">
                 Nazwa produktu
             </MudTableSortLabel>
-            <DefaultColumntFilter SearchOptions="searchOptions" Column="ProductName" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter SearchOptions="searchOptions"
+                                  Column="ProductName"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="Quantity" T="WarehouseUnitItemVM">
                 Ilość
             </MudTableSortLabel>
-            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Quantity" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric"
+                                  SearchOptions="searchOptions"
+                                  Column="Quantity"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="BlockedQuantity" T="WarehouseUnitItemVM">
                 Zablokowane
             </MudTableSortLabel>
-            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="BlockedQuantity" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric"
+                                  SearchOptions="searchOptions"
+                                  Column="BlockedQuantity"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="Available" T="WarehouseUnitItemVM">
                 Dostępne
             </MudTableSortLabel>
-            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric" SearchOptions="searchOptions" Column="Available" OnChangedAction="OnSearch" />
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric"
+                                  SearchOptions="searchOptions"
+                                  Column="Available"
+                                  OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Price" T="WarehouseUnitItemVM">
+                Cena
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric"
+                                  SearchOptions="searchOptions"
+                                  Column="Price"
+                                  OnChangedAction="OnSearch" />
         </MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -104,6 +132,7 @@
         <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
         <MudTd DataLabel="Zablokowane">@context.BlockedQuantity</MudTd>
         <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
+        <MudTd DataLabel="Cena">@context.Price</MudTd>
     </RowTemplate>
     <GroupHeaderTemplate>
         <MudTh onclick="@(() => OnClickGroup(context.Key))"
@@ -111,10 +140,10 @@
                colspan="3">@($"{context.GroupName}: {context.Key}")</MudTh>
     </GroupHeaderTemplate>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <TableNoRecordsContent />
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
         <MudTablePager />
@@ -148,7 +177,8 @@
         { "ProductName", new("ProductName") },
         { "Quantity", new("Quantity", ">") },
         { "BlockedQuantity", new("BlockedQuantity", ">") },
-        { "Available", new("Available", ">") }
+        { "Available", new("Available", ">") },
+        { "Price", new("Price", ">") }
     };
 
     private TableGroupDefinition<WarehouseUnitItemVM> _groupDefinition = new()
