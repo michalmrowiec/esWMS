@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Pages.Documents
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
@@ -22,9 +23,9 @@
                Immediate="true">
         @foreach (var warehouse in _warehouses)
         {
-                <MudSelectItem Value="@warehouse.WarehouseId">
-                    [@warehouse.WarehouseId] @warehouse.WarehouseName
-                </MudSelectItem>
+            <MudSelectItem Value="@warehouse.WarehouseId">
+                [@warehouse.WarehouseId] @warehouse.WarehouseName
+            </MudSelectItem>
         }
     </MudSelect>
 
@@ -60,26 +61,8 @@
         Dodaj pozycję
     </MudButton>
 
-    <MudDataGrid T="DocumentItemVM"
-                 Items="@_model.DocumentItems"
-                 EditMode="DataGridEditMode.Cell"
-                 Dense>
-        <Columns>
-            <PropertyColumn Property="x => x.ProductId" />
-            <PropertyColumn Property="x => x.ProductCode" />
-            <PropertyColumn Property="x => x.ProductName" />
-            <PropertyColumn Property="x => x.Quantity" />
-            <TemplateColumn CellClass="d-flex justify-end">
-                <CellTemplate Context="item">
-                    <MudStack Row>
-                        <MudIconButton Size="@Size.Small"
-                                       Icon="@Icons.Material.Outlined.Delete"
-                                       OnClick="@(() => { _model.DocumentItems.Remove(item.Item); StateHasChanged(); })" />
-                    </MudStack>
-                </CellTemplate>
-            </TemplateColumn>
-        </Columns>
-    </MudDataGrid>
+    <DocumentItemsTable DocumentItems="@_model.DocumentItems"
+                        TableType="DocumentItemsTable.DocumentItemTableType.DocumentCreation" />
 
     <MudButton Variant="Variant.Filled"
                Color="Color.Primary"

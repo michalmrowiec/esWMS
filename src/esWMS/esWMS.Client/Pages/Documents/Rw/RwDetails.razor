@@ -49,36 +49,9 @@
     @RwVM.DepartmentName
 </MudText>
 
-<MudDataGrid T="DocumentItemVM"
-             Items="@RwVM.DocumentItems"
-             EditMode="DataGridEditMode.Cell"
-             Class="mb-3"
-             Dense
-             Hover
-             Bordered>
-    <Columns>
-        <PropertyColumn Property="x => x.ProductId" Title="Id" />
-        <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
-        <PropertyColumn Property="x => x.ProductName" Title="Nazwa" />
-        <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
-        <TemplateColumn CellClass="d-flex" Title="Zatwierdzenie">
-            <CellTemplate>
-                <MudStack Row>
-                    <MudCheckBox Value="@context.Item.IsApproved" Disabled />
-                    @if (!context.Item.IsApproved)
-                    {
-                        <MudButton OnClick="@(() => OpenDialogAsync(context.Item))"
-                                   Size="@Size.Small"
-                                   Variant="@Variant.Filled"
-                                   Color="@Color.Primary">
-                            Zatwierdź
-                        </MudButton>
-                    }
-                </MudStack>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
+<DocumentItemsTable DocumentItems="@RwVM.DocumentItems"
+                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
+                    OnApprove="OpenDialogAsync" />
 
 @if (RwVM.DocumentItems.All(x => x.IsApproved) &&
 !RwVM.IsApproved)

@@ -1,4 +1,5 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
 @using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
@@ -54,38 +55,8 @@
     [@MmpVM.FromWarehouseId] @MmpVM.FromWarehouse?.WarehouseName
 </MudText>
 
-<MudDataGrid T="DocumentItemVM"
-             Items="@MmpVM.DocumentItems"
-             EditMode="DataGridEditMode.Cell"
-             Class="mb-3"
-             Dense
-             Hover
-             Bordered>
-    <Columns>
-        <PropertyColumn Property="x => x.DocumentItemId" Title="Id" />
-        <PropertyColumn Property="x => x.DocumentId" Title="Id dokumentu" />
-        <PropertyColumn Property="x => x.ProductId" Title="Id produktu" />
-        <PropertyColumn Property="x => x.ProductCode" Title="Kod" />
-        <PropertyColumn Property="x => x.ProductName" Title="Nazwa" />
-        <PropertyColumn Property="x => x.Quantity" Title="Ilość" />
-        <TemplateColumn CellClass="d-flex" Title="Zatwierdzenie">
-            <CellTemplate>
-                <MudStack Row>
-                    <MudCheckBox Value="@context.Item.IsApproved" Disabled />
-                    @if (!context.Item.IsApproved)
-                    {
-                        <MudButton Disabled
-                                   Size="@Size.Small"
-                                   Variant="@Variant.Filled"
-                                   Color="@Color.Primary">
-                            Zatwierdź
-                        </MudButton>
-                    }
-                </MudStack>
-            </CellTemplate>
-        </TemplateColumn>
-    </Columns>
-</MudDataGrid>
+<DocumentItemsTable DocumentItems="@MmpVM.DocumentItems"
+                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails" />
 
 @if (!MmpVM.IsApproved && _warehouseUnitIds.Count > 0)
 {

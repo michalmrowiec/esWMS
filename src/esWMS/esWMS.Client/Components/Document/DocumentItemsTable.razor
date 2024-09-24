@@ -6,13 +6,48 @@
           Dense
           Bordered>
     <HeaderContent>
-        <MudTh>Id produktu</MudTh>
-        <MudTh>Kod produktu</MudTh>
-        <MudTh>Nazwa produktu</MudTh>
-        <MudTh>Ilość</MudTh>
-        <MudTh>Cena</MudTh>
-        <MudTd>Wartość</MudTd>
-        <MudTh>@(TableType == DocumentItemTableType.DocumentDetails ? "Zatwierdzony" : "")</MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductId)">
+                Id produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductCode)">
+                Kod produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductName)">
+                Nazwa produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Quantity)">
+                Ilość
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Price ?? 0)">
+                Cena
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTd>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Price * x.Quantity ?? 0)">
+                Wartość
+            </MudTableSortLabel>
+        </MudTd>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.IsApproved)">
+                @(TableType == DocumentItemTableType.DocumentDetails ? "Zatwierdzony" : "")
+            </MudTableSortLabel>
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
