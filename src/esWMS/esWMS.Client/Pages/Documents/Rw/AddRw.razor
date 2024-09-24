@@ -30,6 +30,12 @@
         }
     </MudSelect>
 
+    <MudTextField T="string"
+                  @bind-Value="_model.DepartmentName"
+                  For="@(() => _model.DepartmentName)"
+                  Immediate="true"
+                  Label="Odbiorca" />
+
     <MudDatePicker Label="Data wystawienia dokumentu"
                    @bind-Date="_model.DocumentIssueDate"
                    For="@(() => _model.DocumentIssueDate)" />
@@ -49,12 +55,6 @@
     <MudDatePicker Label="Data wydania"
                    @bind-Date="_model.GoodsReleaseDate"
                    For="@(() => _model.GoodsReleaseDate)" />
-
-    <MudTextField T="string"
-                  @bind-Value="_model.DepartmentName"
-                  For="@(() => _model.DepartmentName)"
-                  Immediate="true"
-                  Label="Odbiorca" />
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"
