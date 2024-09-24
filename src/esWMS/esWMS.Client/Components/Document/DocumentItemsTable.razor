@@ -1,0 +1,70 @@
+﻿@using esWMS.Client.ViewModels.Documents
+
+<MudTable T="DocumentItemVM"
+          Items="DocumentItems"
+          Hover
+          Dense
+          Bordered>
+    <HeaderContent>
+        <MudTh>Id produktu</MudTh>
+        <MudTh>Kod produktu</MudTh>
+        <MudTh>Nazwa produktu</MudTh>
+        <MudTh>Ilość</MudTh>
+        <MudTh>Cena</MudTh>
+        <MudTd>Wartość</MudTd>
+        <MudTh>@(TableType == DocumentItemTableType.DocumentDetails ? "Zatwierdzony" : "")</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
+        <MudTd DataLabel="Kod produktu">@context.ProductCode</MudTd>
+        <MudTd DataLabel="Nazwa produktu">@context.ProductName</MudTd>
+        <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
+        <MudTd DataLabel="Cena">@context.Price</MudTd>
+        <MudTd DataLabel="Cena">@(context.Quantity * context.Price)</MudTd>
+        <MudTd>
+            @if (TableType == DocumentItemTableType.DocumentDetails)
+            {
+                @if (!context.IsApproved)
+                {
+                    <MudButton OnClick="@(async () => await OnApprove?.Invoke(context))"
+                               Size="@Size.Small"
+                               Variant="@Variant.Filled"
+                               Color="@Color.Primary">
+                        Zatwierdź
+                    </MudButton>
+                }
+                else
+                {
+                    <MudCheckBox Value="@context.IsApproved" ReadOnly />
+                }
+            }
+            else if (TableType == DocumentItemTableType.DocumentCreation)
+            {
+                <MudIconButton Size="@Size.Small"
+                               Icon="@Icons.Material.Outlined.Delete"
+                               OnClick="@(() => DocumentItems.Remove(context))" />
+            }
+        </MudTd>
+    </RowTemplate>
+    <FooterContent>
+        <MudTFootRow>
+            <MudTd Style="text-align:right">Wartość całkowita:</MudTd>
+            <MudTd Style="text-align:left">@DocumentItems.Sum(x => x.Quantity * x.Price)</MudTd>
+        </MudTFootRow>
+    </FooterContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public IList<DocumentItemVM> DocumentItems { get; set; }
+    [Parameter]
+    public DocumentItemTableType TableType { get; set; }
+    [Parameter]
+    public Func<DocumentItemVM, Task>? OnApprove { get; set; }
+
+    public enum DocumentItemTableType
+    {
+        DocumentDetails,
+        DocumentCreation
+    }
+}
