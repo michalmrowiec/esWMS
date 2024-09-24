@@ -89,7 +89,7 @@
                 </MudTFootRow>
                 <MudTFootRow>
                     <MudTd Style="text-align:right">Średnia cena:</MudTd>
-                    <MudTd Style="text-align:left">@_warehouseUnitItems.Average(x => x.Price)</MudTd>
+                    <MudTd Style="text-align:left">@CalcWeightedAverage().ToString("0.00")</MudTd>
                 </MudTFootRow>
             </FooterContent>
         </MudTable>
@@ -209,5 +209,19 @@
     private void ResetItemToOriginalValues(object element)
     {
         ((WarehouseUnitItemVM)element).Quantity = _elementBeforeEdit.Quantity;
+    }
+
+    private decimal CalcWeightedAverage()
+    {
+        if (_warehouseUnitItems.Count == 0)
+            return 0;
+
+        var sum = _warehouseUnitItems.Sum(x => x.Quantity * x.Price) ?? 0;
+        var quantity = _warehouseUnitItems.Sum(x => x.Quantity);
+
+        if (sum == 0 || quantity == 0)
+            return 0;
+
+        return sum / quantity;
     }
 }
