@@ -1,7 +1,7 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 using System.ComponentModel;
 
-namespace esMWS.Domain.Entities.Documents
+namespace esWMS.Domain.Entities.Documents
 {
     public class DocumentItem
     {

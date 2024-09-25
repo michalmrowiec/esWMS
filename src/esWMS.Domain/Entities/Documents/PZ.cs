@@ -1,6 +1,6 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.SystemActors;
 
-namespace esMWS.Domain.Entities.Documents
+namespace esWMS.Domain.Entities.Documents
 {
     public class PZ : BaseDocument
     {

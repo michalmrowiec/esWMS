@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\esMWS.Domain\esMWS.Domain.csproj" />
+    <ProjectReference Include="..\esWMS.Domain\esWMS.Domain.csproj" />
   </ItemGroup>
 
 </Project>

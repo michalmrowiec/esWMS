@@ -1,6 +1,6 @@
-﻿using esMWS.Domain.Entities.Documents;
+﻿using esWMS.Domain.Entities.Documents;
 
-namespace esMWS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Domain.Entities.WarehouseEnviroment
 {
     public class Warehouse
     {

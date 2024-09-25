@@ -1,6 +1,6 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 
-namespace esMWS.Domain.Entities.Documents
+namespace esWMS.Domain.Entities.Documents
 {
     public class MMM : BaseDocument
     {

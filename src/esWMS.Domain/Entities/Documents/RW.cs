@@ -1,4 +1,4 @@
-﻿namespace esMWS.Domain.Entities.Documents
+﻿namespace esWMS.Domain.Entities.Documents
 {
     public class RW : BaseDocument
     {

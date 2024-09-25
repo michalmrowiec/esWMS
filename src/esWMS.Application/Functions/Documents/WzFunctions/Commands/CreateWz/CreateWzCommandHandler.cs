@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Services;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;

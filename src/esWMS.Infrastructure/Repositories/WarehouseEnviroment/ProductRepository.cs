@@ -1,5 +1,5 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

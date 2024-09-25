@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Models;
+﻿using esWMS.Domain.Models;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Categories.Queries.GetSortedFilteredCategories;

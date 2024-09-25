@@ -1,6 +1,6 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.SystemActors;
-using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.SystemActors;
+using esWMS.Domain.Entities.WarehouseEnviroment;
 using Microsoft.EntityFrameworkCore;
 
 namespace esWMS.Infrastructure

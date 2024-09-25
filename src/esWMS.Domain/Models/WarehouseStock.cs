@@ -1,6 +1,6 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 
-namespace esMWS.Domain.Models
+namespace esWMS.Domain.Models
 {
     public class WarehouseStock
     {

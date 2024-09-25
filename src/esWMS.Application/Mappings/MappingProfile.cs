@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.SystemActors;
-using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.SystemActors;
+using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Models;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Contractors;

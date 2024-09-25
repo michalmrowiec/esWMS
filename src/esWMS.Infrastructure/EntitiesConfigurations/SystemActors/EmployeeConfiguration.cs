@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.SystemActors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

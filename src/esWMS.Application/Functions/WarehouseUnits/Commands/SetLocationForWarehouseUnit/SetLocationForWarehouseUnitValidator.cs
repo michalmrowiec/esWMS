@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Responses;
 using FluentValidation;

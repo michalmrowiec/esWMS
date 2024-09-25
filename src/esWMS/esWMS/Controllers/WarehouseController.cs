@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Models;
+﻿using esWMS.Domain.Models;
 using esWMS.Application.Functions.Warehouses;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouseStocks;

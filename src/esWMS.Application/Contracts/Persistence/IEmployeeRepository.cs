@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.SystemActors;
 
 namespace esWMS.Application.Contracts.Persistence
 {

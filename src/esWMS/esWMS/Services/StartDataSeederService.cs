@@ -1,5 +1,5 @@
-﻿using esMWS.Domain.Entities.SystemActors;
-using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.SystemActors;
+using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Infrastructure;
 
 namespace esWMS.Services

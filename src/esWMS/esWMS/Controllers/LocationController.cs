@@ -1,4 +1,4 @@
-using esMWS.Domain.Models;
+using esWMS.Domain.Models;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 using esWMS.Application.Functions.Locations.Queries.GetSortedFilteredLocations;

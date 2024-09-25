@@ -1,4 +1,4 @@
-using esMWS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.Documents;
 using esWMS.Application.Contracts.Persistence.Documents;
 using Microsoft.Extensions.Logging;
 using Sieve.Services;

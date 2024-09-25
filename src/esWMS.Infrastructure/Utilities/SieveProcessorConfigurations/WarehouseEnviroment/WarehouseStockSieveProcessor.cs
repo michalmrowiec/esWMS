@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Models;
+﻿using esWMS.Domain.Models;
 using Sieve.Services;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseEnviroment

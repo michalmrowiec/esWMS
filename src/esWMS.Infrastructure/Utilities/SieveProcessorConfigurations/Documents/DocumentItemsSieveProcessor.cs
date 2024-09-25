@@ -1,4 +1,4 @@
-using esMWS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.Documents;
 using Sieve.Services;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents

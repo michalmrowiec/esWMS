@@ -1,7 +1,7 @@
-﻿using esMWS.Domain.Entities.Documents;
+﻿using esWMS.Domain.Entities.Documents;
 using System.Text.RegularExpressions;
 
-namespace esMWS.Domain.Services
+namespace esWMS.Domain.Services
 {
     public static class DocumentService
     {

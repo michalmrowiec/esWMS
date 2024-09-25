@@ -1,8 +1,8 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Services;
+﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Services;
 using System.ComponentModel;
 
-namespace esMWS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Domain.Entities.WarehouseEnviroment
 {
     public class WarehouseUnitItem
     {

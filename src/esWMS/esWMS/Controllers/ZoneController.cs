@@ -1,4 +1,4 @@
-using esMWS.Domain.Models;
+using esWMS.Domain.Models;
 using esWMS.Application.Functions.Zones;
 using esWMS.Application.Functions.Zones.Commands.CreateZone;
 using esWMS.Application.Functions.Zones.Queries.GetSortedFilteredZones;

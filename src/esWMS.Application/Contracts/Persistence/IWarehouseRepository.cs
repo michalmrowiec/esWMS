@@ -1,5 +1,5 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Models;
 using Sieve.Models;
 
 namespace esWMS.Application.Contracts.Persistence

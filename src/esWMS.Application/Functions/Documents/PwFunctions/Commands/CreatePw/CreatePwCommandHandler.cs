@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Services;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Responses;

@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Models;
+﻿using esWMS.Domain.Models;
 using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
 using esWMS.Application.Functions.Contractors.Queries.GetSortedFilteredContractors;

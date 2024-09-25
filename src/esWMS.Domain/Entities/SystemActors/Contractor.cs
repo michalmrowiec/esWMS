@@ -1,7 +1,7 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnviroment;
 
-namespace esMWS.Domain.Entities.SystemActors
+namespace esWMS.Domain.Entities.SystemActors
 {
     public class Contractor
     {

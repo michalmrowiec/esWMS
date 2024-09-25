@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.SystemActors;
 using Sieve.Services;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.SystemActors

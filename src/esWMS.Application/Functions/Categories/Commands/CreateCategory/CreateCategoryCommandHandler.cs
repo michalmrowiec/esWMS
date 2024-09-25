@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Responses;
 using MediatR;

@@ -1,7 +1,7 @@
-﻿using esMWS.Domain.Entities.SystemActors;
-using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.SystemActors;
+using esWMS.Domain.Entities.WarehouseEnviroment;
 
-namespace esMWS.Domain.Entities.Documents
+namespace esWMS.Domain.Entities.Documents
 {
     public abstract class BaseDocument
     {

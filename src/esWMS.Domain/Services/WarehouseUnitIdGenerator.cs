@@ -1,6 +1,6 @@
 ﻿using NanoidDotNet;
 
-namespace esMWS.Domain.Services
+namespace esWMS.Domain.Services
 {
     public static class WarehouseUnitIdGenerator
     {

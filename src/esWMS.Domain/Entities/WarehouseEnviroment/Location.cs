@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace esMWS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Domain.Entities.WarehouseEnviroment
 {
     public class Location
     {

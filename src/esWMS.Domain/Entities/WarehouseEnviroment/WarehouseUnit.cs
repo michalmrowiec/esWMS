@@ -1,4 +1,4 @@
-﻿namespace esMWS.Domain.Entities.WarehouseEnviroment
+﻿namespace esWMS.Domain.Entities.WarehouseEnviroment
 {
     public class WarehouseUnit
     {

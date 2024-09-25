@@ -1,4 +1,4 @@
-﻿namespace esMWS.Domain.Models
+﻿namespace esWMS.Domain.Models
 {
     public class PagedResult<T>
     {

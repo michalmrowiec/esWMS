@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Models;
+﻿using esWMS.Domain.Models;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUnit;

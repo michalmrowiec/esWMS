@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Models;
+﻿using esWMS.Domain.Models;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Commands.CreateProduct;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;

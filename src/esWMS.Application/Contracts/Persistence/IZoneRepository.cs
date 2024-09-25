@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 
 namespace esWMS.Application.Contracts.Persistence
 {

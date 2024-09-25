@@ -1,7 +1,7 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.SystemActors;
 
-namespace esMWS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Domain.Entities.WarehouseEnviroment
 {
     public class Product
     {
