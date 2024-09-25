@@ -291,6 +291,7 @@
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") },
         { "IsBlocked", new("IsBlocked", "==", string.Empty) },
+        { "AnyBlockedItem", new("AnyBlockedItem", "==", string.Empty) },
         { "LocationId", new("LocationId") },
         { "CanBeStacked", new("CanBeStacked", "==", string.Empty) },
         { "StackOnId", new("StackOnId") },
@@ -322,6 +323,9 @@
         {
             searchOptions["IsBlocked"].Operator = "==";
             searchOptions["IsBlocked"].Value = "false";
+
+            searchOptions["AnyBlockedItem"].Operator = "==";
+            searchOptions["AnyBlockedItem"].Value = "false";
         }
         if (ExceptWarehouseUnitIdFilter != null)
         {

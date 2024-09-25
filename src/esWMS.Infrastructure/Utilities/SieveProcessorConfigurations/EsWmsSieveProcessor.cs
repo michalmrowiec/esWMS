@@ -72,8 +72,37 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
         public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, string op, string[] values) =>
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
 
+        public IQueryable<WarehouseUnit> AnyBlockedItem
+        (IQueryable<WarehouseUnit> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0 || !bool.TryParse(values[0], out bool anyBlockedItem))
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    if (anyBlockedItem)
+                        source = source.Where(wu => wu.WarehouseUnitItems.Any(wui => wui.BlockedQuantity > 0));
+                    else
+                        source = source.Where(wu => wu.WarehouseUnitItems.All(wui => wui.BlockedQuantity == 0));
+                    break;
+                case "!=":
+                    if (anyBlockedItem)
+                        source = source.Where(wu => wu.WarehouseUnitItems.All(wui => wui.BlockedQuantity == 0));
+                    else
+                        source = source.Where(wu => wu.WarehouseUnitItems.Any(wui => wui.BlockedQuantity > 0));
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
         public IQueryable<WarehouseUnit> ProductName
-    (IQueryable<WarehouseUnit> source, string op, string[] values)
+            (IQueryable<WarehouseUnit> source, string op, string[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -107,8 +136,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             return source;
         }
 
-        public IQueryable<WarehouseUnit> ItemCount(
-            IQueryable<WarehouseUnit> source, string op, string[] values)
+        public IQueryable<WarehouseUnit> ItemCount
+            (IQueryable<WarehouseUnit> source, string op, string[] values)
         {
             if (values == null || values.Length == 0 || !int.TryParse(values[0], out int itemCount))
             {
