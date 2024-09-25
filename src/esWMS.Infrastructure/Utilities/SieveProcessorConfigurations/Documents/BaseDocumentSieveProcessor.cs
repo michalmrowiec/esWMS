@@ -1,4 +1,5 @@
 ﻿using esWMS.Domain.Entities.Documents;
+using Microsoft.Extensions.Hosting;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
 {
@@ -35,8 +36,34 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
                 default:
                     break;
             }
-
             return source;
         }
+
+        public IQueryable<T> DocumentIssueDateSort<T>
+            (IQueryable<T> source, bool useThenBy, bool desc)
+            where T : BaseDocument
+        {
+            IOrderedQueryable<T> result;
+
+            if (useThenBy)
+            {
+                result = desc ?
+                    ((IOrderedQueryable<T>)source).ThenByDescending(p => p.DocumentIssueDate) :
+                    ((IOrderedQueryable<T>)source).ThenBy(p => p.DocumentIssueDate);
+            }
+            else
+            {
+                result = desc ?
+                    source.OrderByDescending(p => p.DocumentIssueDate) :
+                    source.OrderBy(p => p.DocumentIssueDate);
+
+                result = result
+                    .ThenBy(p => p.DocumentId)
+                    .ThenBy(p => p.IsApproved);
+            }
+
+            return result;
+        }
+
     }
 }

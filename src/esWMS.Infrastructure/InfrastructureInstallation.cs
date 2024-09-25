@@ -60,6 +60,7 @@ namespace esWMS.Infrastructure
 
             services.AddScoped<ITransactionManager, EfTransactionManager>();
             services.AddScoped<ISieveCustomFilterMethods, SieveCustomFilterMethods>();
+            services.AddScoped<ISieveCustomSortMethods, SieveCustomSortMethods>();
             services.AddScoped<ISieveProcessor, EsWmsSieveProcessor>();
 
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
