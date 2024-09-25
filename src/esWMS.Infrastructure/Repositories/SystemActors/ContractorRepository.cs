@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Sieve.Models;
 using Sieve.Services;
 
-namespace esWMS.Infrastructure.Repositories
+namespace esWMS.Infrastructure.Repositories.SystemActors
 {
     internal class ContractorRepository
         (EsWmsDbContext context,

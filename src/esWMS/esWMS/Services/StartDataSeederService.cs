@@ -8,6 +8,11 @@ namespace esWMS.Services
     {
         public static void SeedStartData(this EsWmsDbContext dbContext)
         {
+            //if (!dbContext.Employees.Any())
+            //{
+
+            //}
+
             if (!dbContext.Categories.Any())
             {
                 dbContext.Categories.AddRange(Categories);

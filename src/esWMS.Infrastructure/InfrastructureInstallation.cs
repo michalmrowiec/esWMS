@@ -4,9 +4,10 @@ using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Infrastructure.Repositories;
 using esWMS.Infrastructure.Repositories.Documents;
+using esWMS.Infrastructure.Repositories.SystemActors;
+using esWMS.Infrastructure.Repositories.WarehouseEnviroment;
 using esWMS.Infrastructure.Utilities;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
-using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -79,6 +80,7 @@ namespace esWMS.Infrastructure
             services.AddScoped<IPwRepository, PwRepository>();
             services.AddScoped<IRwRepository, RwRepository>();
             services.AddScoped<IZwRepository, ZwRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         }
     }
 }

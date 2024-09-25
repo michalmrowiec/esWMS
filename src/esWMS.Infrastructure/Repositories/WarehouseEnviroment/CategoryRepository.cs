@@ -6,18 +6,24 @@ using Microsoft.Extensions.Logging;
 using Sieve.Models;
 using Sieve.Services;
 
-namespace esWMS.Infrastructure.Repositories
+namespace esWMS.Infrastructure.Repositories.WarehouseEnviroment
 {
-    internal class ProductRepository(EsWmsDbContext context, ILogger<ProductRepository> logger, ISieveProcessor sieveProcessor)
-        : BaseRepository<Product>(context, logger), IProductRepository
+    internal class CategoryRepository(EsWmsDbContext context, ILogger<CategoryRepository> logger, ISieveProcessor sieveProcessor)
+        : BaseRepository<Category>(context, logger), ICategoryRepository
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
-        public async Task<PagedResult<Product>> GetSortedFilteredAsync(SieveModel sieveModel)
+        public Task<IList<Category>> GetCategoryWithChilds(string idParentCategory)
         {
-            var products = _context.Products
-                .Include(p => p.Category)
+            throw new NotImplementedException();
+        }
+
+        public async Task<PagedResult<Category>> GetSortedFilteredAsync(SieveModel sieveModel)
+        {
+            var products = _context.Categories
+                .Include(p => p.ChildCategories)
+                .Include(p => p.ParentCategory)
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -29,7 +35,7 @@ namespace esWMS.Infrastructure.Repositories
                 .Apply(sieveModel, products, applyPagination: false, applySorting: false)
                 .CountAsync();
 
-            return new PagedResult<Product>(filteredProducts, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
+            return new PagedResult<Category>(filteredProducts, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
         }
     }
 }
