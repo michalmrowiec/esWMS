@@ -61,7 +61,7 @@ else
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudNumericField  ShrinkLabel @bind-Value="_product.TotalLength"
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalLength"
                                              Label="Całkowita długość (m)"
                                              Variant="Variant.Outlined"
                                              Margin="Margin.Dense" />
@@ -124,6 +124,7 @@ else
                                          Label="Aktywny" />
                         </MudItem>
                         <MudItem xs="12">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadProduct">Resetuj</MudButton>
                             <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateProduct">Zaktualizuj</MudButton>
                         </MudItem>
                     </MudGrid>
