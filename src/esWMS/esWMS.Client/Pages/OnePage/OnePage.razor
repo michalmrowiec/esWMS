@@ -1,13 +1,13 @@
 ﻿@page "/"
-@inject OnePageState onePageState
+@inject OnePageState OnePageState
 
 <PageTitle>esWMS</PageTitle>
 
-<MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@onePageState.UserIndex"
+<MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@OnePageState.UserIndex"
                 CloseTab="@CloseTabCallback"
                 CloseIconToolTip="Close tab. All data will be lost"
                 PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-    @foreach (var tab in onePageState.UserTabs)
+    @foreach (var tab in OnePageState.UserTabs)
     {
         <MudTabPanel ID="@tab.Id" Text="@tab.Label" Icon="@tab.Icon" ShowCloseIcon="true">
             @GetRenderFragment(tab.Content.GetType(), tab.ComponentParameters)
@@ -44,18 +44,18 @@
     {
         base.OnInitialized();
 
-        onePageState.OnAddTab += async () => await InvokeAsync(StateHasChanged);
+        OnePageState.OnAddTab += async () => await InvokeAsync(StateHasChanged);
     }
 
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        if (onePageState.StateHasChanged)
+        if (OnePageState.StateHasChanged)
         {
-            onePageState.StateHasChanged = false;
+            OnePageState.StateHasChanged = false;
             StateHasChanged();
         }
     }
 
-    void CloseTabCallback(MudTabPanel panel) => onePageState.RemoveTab((Guid)panel.ID);
+    void CloseTabCallback(MudTabPanel panel) => OnePageState.RemoveTab((Guid)panel.ID);
 }

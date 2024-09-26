@@ -7,7 +7,7 @@
 @using esWMS.Client.Components.TableColumnsFilters
 @rendermode InteractiveAuto
 @inject IDataService<WarehouseUnitVM> warehouseUnitService
-@inject OnePageState onePageState
+@inject OnePageState OnePageState
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
@@ -395,7 +395,7 @@
         }
         else if (TypeOfSelection == SelectionType.None) // im not sure about that <-
         {
-            await onePageState.AddTab(
+            await OnePageState.AddTab(
                 new TabView("Szczegóły jednostki" ?? " ",
                 new WarehouseUnitDetails(),
                 Guid.NewGuid(),

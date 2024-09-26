@@ -45,7 +45,8 @@ namespace esWMS.Controllers.WarehouseEnviroment
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<WarehouseUnitDto>>> GetWarehouseUnitsDetails([FromQuery] string[] warehouseUnitId)
+        public async Task<ActionResult<List<WarehouseUnitDto>>> GetWarehouseUnitsDetails
+            ([FromQuery] string[] warehouseUnitId)
         {
             var result = await _mediator.Send(new GetWarehouseUnitsByIdsQuery(warehouseUnitId));
 
@@ -53,7 +54,8 @@ namespace esWMS.Controllers.WarehouseEnviroment
         }
 
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<PagedResult<WarehouseUnitDto>>> GetSortedAndFilteredWarehouseUnits([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<WarehouseUnitDto>>> GetSortedAndFilteredWarehouseUnits
+            ([FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredWarehouseUnitsQuery(sieveModel));
 

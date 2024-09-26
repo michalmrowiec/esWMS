@@ -1,10 +1,13 @@
 ﻿@page "/products"
 @using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
+@using static esWMS.Client.Pages.Warehouse.WarehouseUnit.WarehouseUnitTable
 @rendermode InteractiveAuto
-@inject IDataService<ProductVM> dataService
+@inject IDataService<ProductVM> DataService
 @inject IDialogService DialogService
+@inject OnePageState OnePageState
 
 <MudTable T="ProductVM"
           ServerData="ServerReload"
@@ -83,6 +86,8 @@
     public int[]? PageSize { get; set; }
     [Parameter]
     public bool? ShowMediasOnly { get; set; }
+    [Parameter]
+    public SelectionType TypeOfSelection { get; set; } = SelectionType.None;
 
     private IEnumerable<ProductVM> Products = [];
     private IEnumerable<ProductVM> pagedData;
@@ -124,7 +129,7 @@
                 sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
         }
 
-        var response = await dataService.GetPagedResult(@"api/v1/Product/get-filtered", sm);
+        var response = await DataService.GetPagedResult(@"api/v1/Product/get-filtered", sm);
 
         return new TableData<ProductVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
@@ -136,7 +141,25 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<ProductVM> tableRowClickEventArgs)
     {
-        await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
+        if (tableRowClickEventArgs.Item is not ProductVM
+            && string.IsNullOrWhiteSpace(tableRowClickEventArgs?.Item?.ProductId))
+        {
+            return;
+        }
+
+        if (TypeOfSelection == SelectionType.Single)
+        {
+            await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
+        }
+        else if (TypeOfSelection == SelectionType.None)
+        {
+            await OnePageState.AddTab(
+                new TabView("Szczegóły artykułu" ?? " ",
+                new ProductDetails(),
+                Guid.NewGuid(),
+                Icons.Material.Filled.Info,
+                new() { { "ProductId", tableRowClickEventArgs.Item.ProductId } }));
+        }
     }
 
     private Task OpenDialogAsync()

@@ -24,4 +24,6 @@ builder.Services.AddMudBlazorSnackbar(config =>
     config.PositionClass = Defaults.Classes.Position.BottomEnd;
 });
 
+Console.WriteLine($"BaseAddress: {builder.HostEnvironment.BaseAddress}");
+
 await builder.Build().RunAsync();

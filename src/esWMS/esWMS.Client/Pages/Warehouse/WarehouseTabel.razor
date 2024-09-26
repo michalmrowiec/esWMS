@@ -5,7 +5,7 @@
 @using esWMS.Client.ViewModels
 @rendermode InteractiveAuto
 @inject IDataService<WarehouseVM> dataService
-@inject OnePageState onePageState
+@inject OnePageState OnePageState
 
 <MudTable T="WarehouseVM"
           ServerData="ServerReload"
@@ -125,7 +125,7 @@
 
     private void RowClickEvent(TableRowClickEventArgs<WarehouseVM> tableRowClickEventArgs)
     {
-        //onePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid()));
+        //OnePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid()));
         //open warehouse details
     }
 

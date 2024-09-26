@@ -6,7 +6,7 @@
 @using esWMS.Client.ViewModels.Documents
 @rendermode InteractiveAuto
 @inject IDataService<WzVM> dataService
-@inject OnePageState onePageState
+@inject OnePageState OnePageState
 
 <MudTable T="WzVM"
           ServerData="ServerReload"
@@ -107,11 +107,11 @@
 
         callbacksOnAddPz = new List<EventCallback>
         {
-            EventCallback.Factory.Create(this, () => onePageState.RemoveTab(tabId)),
+            EventCallback.Factory.Create(this, () => OnePageState.RemoveTab(tabId)),
             EventCallback.Factory.Create(this, table.ReloadServerData)
         };
 
-        onePageState.AddTab(new TabView("Tworzenie WZ", new AddWz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
+        OnePageState.AddTab(new TabView("Tworzenie WZ", new AddWz(), tabId, Icons.Material.Filled.NoteAdd, new() { { "EventCallbacks", callbacksOnAddPz } }));
     }
 
     private async Task<TableData<WzVM>> ServerReload(TableState state, CancellationToken token)
@@ -136,7 +136,7 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<WzVM> tableRowClickEventArgs)
     {
-        await onePageState.AddTab(
+        await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new WzDetails(),
             Guid.NewGuid(),

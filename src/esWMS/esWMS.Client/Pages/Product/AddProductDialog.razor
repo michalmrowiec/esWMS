@@ -106,6 +106,14 @@
                                  Immediate="true"
                                  Label="Cena" />
 
+                <MudSelect @bind-Value="_model.Currency"
+                           Label="Waluta"
+                           Immediate="true">
+                    <MudSelectItem Value="@(new string("PLN"))">
+                        PLN
+                    </MudSelectItem>
+                </MudSelect>
+
                 <MudSelect T="string"
                            @bind-Value="_model.SupplierContractorId"
                            For="@(() => _model.SupplierContractorId)"

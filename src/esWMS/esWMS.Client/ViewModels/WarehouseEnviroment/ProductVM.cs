@@ -47,7 +47,7 @@ namespace esWMS.Client.ViewModels
         public decimal? MaxStorageTemperature { get; set; }
         public bool IsMedia { get; set; }
         public decimal? Price { get; set; }
-        public string? Currency { get; set; }
+        public string? Currency { get; set; } = "PLN";
         public int? VatRate { get; set; }
         public string? SupplierContractorId { get; set; }
         public bool IsActive { get; set; } = true;

@@ -1,8 +1,9 @@
-﻿using esWMS.Domain.Models;
-using esWMS.Application.Functions.Products;
+﻿using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Commands.CreateProduct;
+using esWMS.Application.Functions.Products.Queries.GetProductById;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -28,8 +29,18 @@ namespace esWMS.Controllers.WarehouseEnviroment
             _userContextService = userContextService;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<ProductDto>> GetProductDetails
+            ([FromQuery] string productId)
+        {
+            var result = await _mediator.Send(new GetProductByIdQuery(productId));
+
+            return result.HandleOkResult(this);
+        }
+
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<PagedResult<ProductDto>>> GetSortedAndFilteredProducts([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<ProductDto>>> GetSortedAndFilteredProducts
+            ([FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredProductsQuery(sieveModel));
 
