@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers
+namespace esWMS.Controllers.SystemActors
 {
     [ApiController]
     [Route("api/v1/[controller]")]

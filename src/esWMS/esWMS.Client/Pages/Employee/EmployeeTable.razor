@@ -1,0 +1,16 @@
+﻿@page "/employee"
+@using esWMS.Client.Pages.OnePage
+@inject OnePageState OnePageState
+
+<h3>Pracownicy</h3>
+
+<MudButton Variant="Variant.Filled"
+           Color="Color.Primary"
+           Class="ml-auto"
+           OnClick="@(async () => await OnePageState.AddTab(new TabView("Tworzenie praconika", new CreateEmployee(), Guid.NewGuid(), Icons.Material.Filled.Add)))">
+    Utwórz pracownika
+</MudButton>
+
+@code {
+
+}

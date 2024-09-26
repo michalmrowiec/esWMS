@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.SystemActors
 @inject IDataService<CreateContractorVM> contractorService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
@@ -101,8 +102,7 @@
             var response = await contractorService.Create("api/v1/Contractor", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                Snackbar.Configuration.PositionClass = "Bottom-End";
-                Snackbar.Add(new MarkupString($"Utworzono <strong>{_model.ContractorId}</strong>"), Severity.Success);
+                Snackbar.Add(new MarkupString($"Utworzono <b>{_model.ContractorId}</b>"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }

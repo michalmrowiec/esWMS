@@ -1,6 +1,6 @@
 ﻿namespace esWMS.Application.Functions.Employees
 {
-    internal class EmployeeDto
+    public class EmployeeDto
     {
         public string EmployeeId { get; set; } = null!;
         public string RoleId { get; set; } = null!;

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace esWMS.Client.ViewModels
+namespace esWMS.Client.ViewModels.SystemActors
 {
     public class ContractorVM
     {
