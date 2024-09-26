@@ -146,11 +146,7 @@
 
 @code {
     [Parameter]
-    public EventCallback<ContractorVM> SelectedProduct { get; set; }
-    [Parameter]
     public int[]? PageSize { get; set; }
-    [Parameter]
-    public bool? ShowMediasOnly { get; set; }
 
     private IEnumerable<ContractorVM> pagedData;
     private MudTable<ContractorVM> table;
@@ -172,15 +168,6 @@
         { "IsSupplier", new("IsSupplier", "==", string.Empty) },
         { "IsRecipient", new("IsRecipient", "==", string.Empty) }
     };
-
-    protected override void OnInitialized()
-    {
-        if (ShowMediasOnly == true)
-        {
-            searchOptions["IsMedia"].Operator = "==";
-            searchOptions["IsMedia"].Value = "true";
-        }
-    }
 
     private async Task<TableData<ContractorVM>> ServerReload(TableState state, CancellationToken token)
     {
