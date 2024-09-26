@@ -33,8 +33,7 @@ namespace esWMS.Client.ViewModels.SystemActors
         public string? Region { get; set; }
         public string? PostalCode { get; set; }
         public string? Address { get; set; }
-        public bool IsActive { get; set; }
-        public string? CreatedBy { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class CreateEmployeeVMValidator : AbstractValidator<CreateEmployeeVM>

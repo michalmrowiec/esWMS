@@ -10,53 +10,84 @@
          ValidationDelay="0">
     <MudGrid>
         <MudItem xs="6">
-            <MudTextField Label="Employee ID" @bind-Value="_model.EmployeeId" Required="true" />
+            <MudTextField Label="Employee ID"
+                          @bind-Value="_model.EmployeeId"
+                          Required />
         </MudItem>
         <MudItem xs="6">
-            <MudTextField Label="First Name" @bind-Value="_model.FirstName" Required="true" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Last Name" @bind-Value="_model.LastName" Required="true" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Password" @bind-Value="_model.Password" Password="true" Required="true" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Repeat Password" @bind-Value="_model.RepeatPassword" Password="true" Required="true" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Email Address" @bind-Value="_model.EmailAddress" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Phone Number" @bind-Value="_model.PhoneNumber" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Country" @bind-Value="_model.Country" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="City" @bind-Value="_model.City" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Region" @bind-Value="_model.Region" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Postal Code" @bind-Value="_model.PostalCode" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudTextField Label="Address" @bind-Value="_model.Address" />
-        </MudItem>
-        <MudItem xs="6">
-            <MudSelect Label="Role" @bind-Value="_model.RoleId" Required="true">
+            <MudSelect Label="Role"
+                       @bind-Value="_model.RoleId"
+                       Required>
                 <MudSelectItem Value="@("ADM")">Admin</MudSelectItem>
                 <MudSelectItem Value="@("MNG")">Manager</MudSelectItem>
                 <MudSelectItem Value="@("OPE")">Operator</MudSelectItem>
             </MudSelect>
         </MudItem>
         <MudItem xs="6">
-            <MudCheckBox @bind-Value="_model.IsActive" Label="Is Active" />
+            <MudTextField Label="First Name"
+                          @bind-Value="_model.FirstName"
+                          Required />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Last Name"
+                          @bind-Value="_model.LastName"
+                          Required />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Password"
+                          @bind-Value="_model.Password"
+                          InputType="InputType.Password"
+                          autocomplete="new-password"
+                          Required />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Repeat Password"
+                          @bind-Value="_model.RepeatPassword"
+                          InputType="InputType.Password"
+                          autocomplete="new-password"
+                          Required />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Email Address"
+                          @bind-Value="_model.EmailAddress"
+                          InputType="InputType.Email" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Phone Number"
+                          @bind-Value="_model.PhoneNumber"
+                          InputType="InputType.Telephone" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Country"
+                          @bind-Value="_model.Country" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="City"
+                          @bind-Value="_model.City" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Region"
+                          @bind-Value="_model.Region" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Postal Code"
+                          @bind-Value="_model.PostalCode" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTextField Label="Address"
+                          @bind-Value="_model.Address" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudCheckBox @bind-Value="_model.IsActive"
+                         Label="Is Active" />
         </MudItem>
         <MudItem xs="12">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Class="ml-auto"
+                       OnClick="@(async () => await Submit())">
+                Utwórz
+            </MudButton>
         </MudItem>
     </MudGrid>
 </MudForm>
@@ -75,9 +106,8 @@
             var response = await EmployeeService.Create("api/v1/Employee", _model);
             if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                _model = new();
-
                 Snackbar.Add(new MarkupString($"Utworzono <b>{_model.EmployeeId}</b>"), Severity.Success);
+                _model = new();
             }
             else
             {
