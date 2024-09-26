@@ -37,6 +37,11 @@
                     OnClick="@(async () => await OnePageState.AddTab(new TabView("Kontrahenci", new ContractorTable(), Guid.NewGuid(), Icons.Material.Filled.Group)))">
             Kontrahenci
         </MudNavLink>
+        <MudNavLink Match="NavLinkMatch.Prefix"
+                    Icon="@Icons.Material.Filled.SupervisedUserCircle"
+                    OnClick="@(async () => await OnePageState.AddTab(new TabView("Pracownicy", new EmployeeTable(), Guid.NewGuid(), Icons.Material.Filled.SupervisedUserCircle)))">
+            Pracownicy
+        </MudNavLink>
     </MudNavGroup>
     <MudNavGroup Title="Magazyny" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
         <MudNavLink Match="NavLinkMatch.Prefix"
@@ -116,11 +121,6 @@
             Utwórz MM
         </MudNavLink>
     </MudNavGroup>
-    <MudNavLink Match="NavLinkMatch.Prefix"
-                Icon="@Icons.Material.Filled.SupervisedUserCircle"
-                OnClick="@(async () => await OnePageState.AddTab(new TabView("Zarządzanie pracownikami", new EmployeeTable(), Guid.NewGuid(), Icons.Material.Filled.SupervisedUserCircle)))">
-        Pracownicy
-    </MudNavLink>
 </MudNavMenu>
 
 @code {

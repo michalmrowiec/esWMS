@@ -35,6 +35,12 @@
             <DefaultColumntFilter SearchOptions="searchOptions" Column="EmployeeId" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh>
+            <MudTableSortLabel SortLabel="RoleId" T="EmployeeVM">
+                Rola
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="RoleId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
             <MudTableSortLabel SortLabel="FirstName" T="EmployeeVM">
                 Imię
             </MudTableSortLabel>
@@ -97,6 +103,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.EmployeeId</MudTd>
+        <MudTd DataLabel="Rola">@context.RoleId</MudTd>
         <MudTd DataLabel="Imię">@context.FirstName</MudTd>
         <MudTd DataLabel="Nazwisko">@context.LastName</MudTd>
         <MudTd DataLabel="Email">@context.EmailAddress</MudTd>
@@ -135,6 +142,7 @@
     private Dictionary<string, FilterOption> searchOptions = new()
     {
         { "EmployeeId", new("EmployeeId") },
+        { "RoleId", new("RoleId") },
         { "FirstName", new("FirstName") },
         { "LastName", new("LastName") },
         { "EmailAddress", new("EmailAddress") },
