@@ -7,8 +7,9 @@ using MediatR;
 namespace esWMS.Application.Functions.Contractors.Commands.CreateContractor
 {
     public class CreateContractorCommandHandler
-        (IContractorRepository repository, IMapper mapper)
-                : IRequestHandler<CreateContractorCommand, BaseResponse<ContractorDto>>
+        (IContractorRepository repository,
+        IMapper mapper)
+        : IRequestHandler<CreateContractorCommand, BaseResponse<ContractorDto>>
     {
         private readonly IContractorRepository _repository = repository;
         private readonly IMapper _mapper = mapper;

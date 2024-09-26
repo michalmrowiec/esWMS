@@ -44,8 +44,7 @@ namespace esWMS.Application.Functions.Locations.Commands.CreateLocation
             }
             catch (Exception ex)
             {
-
-                throw;
+                return new BaseResponse<LocationDto>(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             return new BaseResponse<LocationDto>(entityDto);

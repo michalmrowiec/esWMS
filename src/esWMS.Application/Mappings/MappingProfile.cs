@@ -36,6 +36,8 @@ using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
 using esWMS.Application.Functions.Zones;
 using esWMS.Application.Functions.Zones.Commands.CreateZone;
+using esWMS.Application.Functions.Employees.Command.CreateEmployee;
+using esWMS.Application.Functions.Employees;
 
 namespace esWMS.Application.Mappings
 {
@@ -131,6 +133,9 @@ namespace esWMS.Application.Mappings
 
             CreateMap<WarehouseStock, WarehouseStockDto>()
                 .ReverseMap();
+
+            CreateMap<CreateEmployeeCommand, Employee>();
+            CreateMap<Employee, EmployeeDto>();
         }
     }
 }
