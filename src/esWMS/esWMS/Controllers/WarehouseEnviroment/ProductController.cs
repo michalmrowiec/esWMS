@@ -1,5 +1,6 @@
 ﻿using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Commands.CreateProduct;
+using esWMS.Application.Functions.Products.Commands.UpdateProduct;
 using esWMS.Application.Functions.Products.Queries.GetProductById;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Controllers.Utils;
@@ -57,6 +58,18 @@ namespace esWMS.Controllers.WarehouseEnviroment
             var result = await _mediator.Send(createProductCommand);
 
             return result.HandleCreatedResult(this, "");
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<ProductDto>> UpdateProduct
+            ([FromBody] UpdateProductCommand updateProductCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                updateProductCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(updateProductCommand);
+
+            return result.HandleOkResult(this);
         }
     }
 }

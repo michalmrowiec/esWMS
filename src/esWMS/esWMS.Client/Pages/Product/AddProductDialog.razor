@@ -114,6 +114,11 @@
                     </MudSelectItem>
                 </MudSelect>
 
+                <MudNumericField @bind-Value="_model.VatRate"
+                                 For="@(() => _model.VatRate)"
+                                 Immediate="true"
+                                 Label="Stawka VAT (%)" />
+
                 <MudSelect T="string"
                            @bind-Value="_model.SupplierContractorId"
                            For="@(() => _model.SupplierContractorId)"

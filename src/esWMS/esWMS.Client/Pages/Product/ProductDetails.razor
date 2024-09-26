@@ -2,7 +2,8 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @inject IDataService<ProductVM> ProductService
-@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 @if (_product == null)
 {
@@ -53,35 +54,35 @@ else
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudNumericField Format="0.00" ShrinkLabel @bind-Value="_product.TotalWeight"
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalWeight"
                                              Label="Całkowita waga (kg)"
                                              Variant="Variant.Outlined"
                                              Margin="Margin.Dense" />
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudNumericField Format="0.00" ShrinkLabel @bind-Value="_product.TotalLength"
+                            <MudNumericField  ShrinkLabel @bind-Value="_product.TotalLength"
                                              Label="Całkowita długość (m)"
                                              Variant="Variant.Outlined"
                                              Margin="Margin.Dense" />
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudNumericField Format="0.00" ShrinkLabel @bind-Value="_product.TotalWidth"
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalWidth"
                                              Label="Całkowita szerokość (m)"
                                              Variant="Variant.Outlined"
                                              Margin="Margin.Dense" />
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudNumericField Format="0.00" ShrinkLabel @bind-Value="_product.TotalHeight"
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalHeight"
                                              Label="Całkowita wysokość (m)"
                                              Variant="Variant.Outlined"
                                              Margin="Margin.Dense" />
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudNumericField Format="0.00" ShrinkLabel @bind-Value="_product.Price"
+                            <MudNumericField ShrinkLabel @bind-Value="_product.Price"
                                              Label="Cena"
                                              Variant="Variant.Outlined"
                                              Margin="Margin.Dense" />
@@ -105,8 +106,8 @@ else
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudNumericField Format="0.00" ShrinkLabel @bind-Value="_product.VatRate"
-                                             Label="Stawka VAT"
+                            <MudNumericField ShrinkLabel @bind-Value="_product.VatRate"
+                                             Label="Stawka VAT (%)"
                                              Variant="Variant.Outlined"
                                              Margin="Margin.Dense" />
                         </MudItem>
@@ -121,6 +122,9 @@ else
                         <MudItem xs="12" md="6">
                             <MudCheckBox @bind-Value="_product.IsActive"
                                          Label="Aktywny" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateProduct">Zaktualizuj</MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudCardContent>
@@ -152,5 +156,19 @@ else
         _product = JsonConvert.DeserializeObject<ProductVM>(json);
 
         StateHasChanged();
+    }
+
+    private async Task UpdateProduct()
+    {
+        var response = await ProductService.Put(@"api/v1/Product", _product);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Produkt został zaktualizowany."), Severity.Success);
+            await ReloadProduct();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
     }
 }
