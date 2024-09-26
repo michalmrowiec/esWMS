@@ -8,7 +8,9 @@ using Sieve.Services;
 
 namespace esWMS.Infrastructure.Repositories.WarehouseEnviroment
 {
-    internal class ProductRepository(EsWmsDbContext context, ILogger<ProductRepository> logger, ISieveProcessor sieveProcessor)
+    internal class ProductRepository(EsWmsDbContext context,
+        ILogger<ProductRepository> logger,
+        ISieveProcessor sieveProcessor)
         : BaseRepository<Product>(context, logger), IProductRepository
     {
         private readonly EsWmsDbContext _context = context;
@@ -29,7 +31,8 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnviroment
                 .Apply(sieveModel, products, applyPagination: false, applySorting: false)
                 .CountAsync();
 
-            return new PagedResult<Product>(filteredProducts, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
+            return new PagedResult<Product>
+                (filteredProducts, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
         }
     }
 }

@@ -3,44 +3,41 @@ using Sieve.Services;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.SystemActors
 {
-    internal class ContractorSieveProcessor : ISieveConfiguration
+    internal class EmployeeSieveProcessor : ISieveConfiguration
     {
         public void Configure(SievePropertyMapper mapper)
         {
-            mapper.Property<Contractor>(x => x.ContractorId)
+            mapper.Property<Employee>(x => x.EmployeeId)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<Contractor>(x => x.VatId)
+            mapper.Property<Employee>(x => x.RoleId)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<Contractor>(x => x.ContractorName)
+            mapper.Property<Employee>(x => x.FirstName)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<Contractor>(x => x.EmailAddress)
+            mapper.Property<Employee>(x => x.LastName)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<Contractor>(x => x.PhoneNumber)
+            mapper.Property<Employee>(x => x.EmailAddress)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<Contractor>(x => x.City)
+            mapper.Property<Employee>(x => x.PhoneNumber)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<Contractor>(x => x.Address)
+            mapper.Property<Employee>(x => x.City)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<Employee>(x => x.Address)
                 .CanSort()
                 .CanFilter();
             mapper.Property<Contractor>(x => x.PostalCode)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<Contractor>(x => x.Region)
+            mapper.Property<Employee>(x => x.Region)
                 .CanSort()
                 .CanFilter();
-            mapper.Property<Contractor>(x => x.IsActive)
-                .CanSort()
-                .CanFilter();
-            mapper.Property<Contractor>(x => x.IsSupplier)
-                .CanSort()
-                .CanFilter();
-            mapper.Property<Contractor>(x => x.IsRecipient)
+            mapper.Property<Employee>(x => x.IsActive)
                 .CanSort()
                 .CanFilter();
         }

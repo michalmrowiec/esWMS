@@ -1,9 +1,14 @@
-﻿using esWMS.Application.Functions.Employees;
+﻿using esWMS.Application.Functions.Contractors.Queries.GetSortedFilteredContractors;
+using esWMS.Application.Functions.Contractors;
+using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Employees.Command.CreateEmployee;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
+using esWMS.Application.Functions.Employees.Queries.GetSortedFilteredEmployees;
 
 namespace esWMS.Controllers
 {
@@ -23,6 +28,15 @@ namespace esWMS.Controllers
             _mediator = mediator;
             _logger = logger;
             _userContextService = userContextService;
+        }
+
+        [HttpPost("get-filtered")]
+        public async Task<ActionResult<PagedResult<EmployeeDto>>> GetSortedAndFilteredEmployees
+            ([FromBody] SieveModel sieveModel)
+        {
+            var result = await _mediator.Send(new GetSortedFilteredEmployeessQuery(sieveModel));
+
+            return result.HandleOkResult(this);
         }
 
         [HttpPost]
