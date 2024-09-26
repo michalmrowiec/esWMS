@@ -1,5 +1,6 @@
 ﻿using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Employees.Command.CreateEmployee;
+using esWMS.Application.Functions.Employees.Command.LoginEmployee;
 using esWMS.Application.Functions.Employees.Queries.GetSortedFilteredEmployees;
 using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
@@ -47,6 +48,14 @@ namespace esWMS.Controllers
             var result = await _mediator.Send(createEmployeeCommand);
 
             return result.HandleCreatedResult(this, "");
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<LogedEmployeeDto>> Login([FromBody] LoginEmployeeCommand loginEmployeeCommand)
+        {
+            var result = await _mediator.Send(loginEmployeeCommand);
+
+            return result.HandleOkResult(this);
         }
     }
 }

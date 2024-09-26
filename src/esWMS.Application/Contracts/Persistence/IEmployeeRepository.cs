@@ -6,5 +6,6 @@ namespace esWMS.Application.Contracts.Persistence
         : ISieve<Employee>
     {
         Task<Employee> CreateEmployeeAsync(Employee employee);
+        Task<Employee> GetByIdAsync(string id);
     }
 }

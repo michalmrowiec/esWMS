@@ -15,6 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Sieve.Services;
 using System.Text;
+using esWMS.Application.Contracts.Services;
+using esWMS.Infrastructure.Services;
 
 namespace esWMS.Infrastructure
 {
@@ -48,16 +50,15 @@ namespace esWMS.Infrastructure
                 };
             });
 
-            services.AddSingleton(authenticationSettings);
-
-            services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
-
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 29));
 
             services.AddDbContext<EsWmsDbContext>(
                 dbContextOptions => dbContextOptions
                     .UseMySql(configuration.GetConnectionString("ContainerDb"), serverVersion));
 
+            services.AddSingleton(authenticationSettings);
+            services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<ITransactionManager, EfTransactionManager>();
             services.AddScoped<ISieveCustomFilterMethods, SieveCustomFilterMethods>();
             services.AddScoped<ISieveCustomSortMethods, SieveCustomSortMethods>();

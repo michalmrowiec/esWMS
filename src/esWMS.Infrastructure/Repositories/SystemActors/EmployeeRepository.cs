@@ -34,6 +34,20 @@ namespace esWMS.Infrastructure.Repositories.SystemActors
             }
         }
 
+        public async Task<Employee> GetByIdAsync(string id)
+        {
+            try
+            {
+                var result = await _context.Employees.FindAsync(id);
+                return result ?? throw new KeyNotFoundException("The object with the given id was not found.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving entity with Id: {EntityId}", id);
+                throw;
+            }
+        }
+
         public async Task<PagedResult<Employee>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             var employees = _context.Employees
