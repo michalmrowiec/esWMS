@@ -1,9 +1,13 @@
 ﻿@using Newtonsoft.Json
+@using esWMS.Client.Components
+@using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @inject IDataService<ProductVM> ProductService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+@inject IDialogService DialogService
+@inject OnePageState OnePageState
 
 @if (_product == null)
 {
@@ -125,7 +129,8 @@ else
                         </MudItem>
                         <MudItem xs="12">
                             <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadProduct">Resetuj</MudButton>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="UpdateProduct">Zaktualizuj</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="UpdateProduct">Zaktualizuj</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Error" EndIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialogAsync">Usuń</MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudCardContent>
@@ -137,7 +142,8 @@ else
 @code {
     [Parameter]
     public string ProductId { get; set; }
-
+    [Parameter]
+    public Guid TabId { get; set; }
     private ProductVM? _product;
 
     protected override async Task OnInitializedAsync()
@@ -166,6 +172,39 @@ else
         {
             Snackbar.Add(new MarkupString("Produkt został zaktualizowany."), Severity.Success);
             await ReloadProduct();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OpenDeleteDialogAsync()
+    {
+        var parameters = new DialogParameters<DeleteConfirmDialog>
+        {
+            { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć artykuł: {_product?.ProductCode} {_product?.ProductName}"}
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result?.Canceled ?? false
+            && _product != null)
+        {
+            await DeleteAsync(_product!);
+        }
+    }
+
+    private async Task DeleteAsync(ProductVM product)
+    {
+        var response = await ProductService.Delete(@"api/v1/Product/" + product.ProductId);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto produkt"), Severity.Success);
+            await OnePageState.RemoveTab(TabId);
         }
         else
         {

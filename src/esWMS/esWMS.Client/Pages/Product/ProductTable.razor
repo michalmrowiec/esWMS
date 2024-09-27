@@ -92,8 +92,15 @@
     private IEnumerable<ProductVM> Products = [];
     private IEnumerable<ProductVM> pagedData;
     private MudTable<ProductVM> table;
-
     private int totalItems;
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender)
+            table.ReloadServerData();
+
+        return base.OnAfterRenderAsync(firstRender);
+    }
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
@@ -153,12 +160,13 @@
         }
         else if (TypeOfSelection == SelectionType.None)
         {
+            var tabid = Guid.NewGuid();
             await OnePageState.AddTab(
                 new TabView("Szczegóły artykułu" ?? " ",
                 new ProductDetails(),
-                Guid.NewGuid(),
+                tabid,
                 Icons.Material.Filled.Info,
-                new() { { "ProductId", tableRowClickEventArgs.Item.ProductId } }));
+                new() { { "ProductId", tableRowClickEventArgs.Item.ProductId }, { "TabId", tabid } }));
         }
     }
 
