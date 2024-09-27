@@ -39,6 +39,7 @@ using esWMS.Application.Functions.Zones.Commands.CreateZone;
 using esWMS.Application.Functions.Employees.Command.CreateEmployee;
 using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Products.Commands.UpdateProduct;
+using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
 
 namespace esWMS.Application.Mappings
 {
@@ -51,12 +52,15 @@ namespace esWMS.Application.Mappings
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
                 .ReverseMap();
             CreateMap<UpdateProductCommand, Product>()
-            .ForMember(dest => dest.ProductId, opt => opt.Ignore())
-            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+                .ForMember(dest => dest.ProductId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CreateCategoryCommand, Category>();
             CreateMap<Category, CategoryDto>()
                 .ReverseMap();
+            CreateMap<UpdateCategoryCommand, Category>()
+                .ForMember(dest => dest.CategoryId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<Warehouse, FlatWarehouseDto>();

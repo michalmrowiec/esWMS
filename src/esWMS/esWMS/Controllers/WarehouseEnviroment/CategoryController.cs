@@ -7,6 +7,9 @@ using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using esWMS.Application.Functions.Products.Commands.UpdateProduct;
+using esWMS.Application.Functions.Products;
+using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
@@ -38,7 +41,8 @@ namespace esWMS.Controllers.WarehouseEnviroment
         }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryDto>> CreateCategory([FromBody] CreateCategoryCommand createCategoryCommand)
+        public async Task<ActionResult<CategoryDto>> CreateCategory
+            ([FromBody] CreateCategoryCommand createCategoryCommand)
         {
             if (_userContextService.GetUserId is not null)
                 createCategoryCommand.CreatedBy = _userContextService.GetUserId.ToString();
@@ -46,6 +50,18 @@ namespace esWMS.Controllers.WarehouseEnviroment
             var result = await _mediator.Send(createCategoryCommand);
 
             return result.HandleCreatedResult(this, "");
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<CategoryDto>> UpdateCategory
+            ([FromBody] UpdateCategoryCommand updateCategoryCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                updateCategoryCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(updateCategoryCommand);
+
+            return result.HandleOkResult(this);
         }
     }
 }
