@@ -45,6 +45,7 @@
         <col />
         <col />
         <col />
+        <col />
     </ColGroup>
     <HeaderContent>
         <MudTh>
@@ -71,24 +72,30 @@
             </MudTableSortLabel>
             <DefaultColumntFilter SearchOptions="searchOptions" Column="ParentCategoryId" OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Category Name">@context.CategoryName</MudTd>
         <MudTd DataLabel="Parent Category Name">@context.ParentCategory?.CategoryName</MudTd>
         <MudTd DataLabel="Nr">@context.CategoryId</MudTd>
         <MudTd DataLabel="Parent Category">@context.ParentCategoryId</MudTd>
+        <MudTh>
+            <MudIconButton Size="@Size.Small"
+                           Icon="@Icons.Material.Outlined.Edit"
+                           OnClick="@(async () => await OpenEditDialogAsync(context))" />
+        </MudTh>
     </RowTemplate>
     <GroupHeaderTemplate>
         <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"{context.GroupName}: {context.Key}")</MudTh>
     </GroupHeaderTemplate>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <TableNoRecordsContent />
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
-        <MudTablePager PageSizeOptions="new int[] {100,500}" />
+        <TablePager />
     </PagerContent>
 </MudTable>
 
@@ -146,7 +153,23 @@
             };
         var parameters = new DialogParameters<AddCategoryDialog>
         {
-            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } },
+        };
+        return DialogService.ShowAsync<AddCategoryDialog>(null, parameters, options);
+    }
+
+    private Task OpenEditDialogAsync(CategoryVM category)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true
+            };
+        var parameters = new DialogParameters<AddCategoryDialog>
+        {
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } },
+            { x => x.DialogType, AddCategoryDialog.TypeOfCategoryDialog.Update },
+            { x => x.CategoryToUpdate, category }
         };
         return DialogService.ShowAsync<AddCategoryDialog>(null, parameters, options);
     }
