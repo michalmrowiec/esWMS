@@ -80,6 +80,8 @@
 </MudTable>
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public EventCallback<ProductVM> SelectedProduct { get; set; }
     [Parameter]
@@ -94,14 +96,6 @@
     private MudTable<ProductVM> table;
     private int totalItems;
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
-    {
-        if(!firstRender)
-            table.ReloadServerData();
-
-        return base.OnAfterRenderAsync(firstRender);
-    }
-
     private Dictionary<string, FilterOption> searchOptions = new()
     {
         { "ProductCode", new("ProductCode") },
@@ -111,6 +105,15 @@
         { "Unit", new("Unit") },
         { "IsMedia", new("IsMedia", "==") },
     };
+
+    protected override void OnParametersSet()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                table.ReloadServerData();
+        }
+    }
 
     protected override void OnInitialized()
     {

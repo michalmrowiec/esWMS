@@ -10,9 +10,10 @@
     @foreach (var tab in OnePageState.UserTabs)
     {
         <MudTabPanel ID="@tab.Id" Text="@tab.Label" Icon="@tab.Icon" ShowCloseIcon="true">
-            @GetRenderFragment(tab.Content.GetType(), tab.ComponentParameters)
+            <CascadingValue Value="@(tab.Id == OnePageState.UserTabs[OnePageState.UserIndex].Id)">
+                @GetRenderFragment(tab.Content.GetType(), tab.ComponentParameters)
+            </CascadingValue>
         </MudTabPanel>
-
     }
 </MudDynamicTabs>
 
