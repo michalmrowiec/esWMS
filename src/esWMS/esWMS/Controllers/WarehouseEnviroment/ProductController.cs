@@ -1,5 +1,6 @@
 ﻿using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Commands.CreateProduct;
+using esWMS.Application.Functions.Products.Commands.DeleteProduct;
 using esWMS.Application.Functions.Products.Commands.UpdateProduct;
 using esWMS.Application.Functions.Products.Queries.GetProductById;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
@@ -70,6 +71,14 @@ namespace esWMS.Controllers.WarehouseEnviroment
             var result = await _mediator.Send(updateProductCommand);
 
             return result.HandleOkResult(this);
+        }
+
+        [HttpDelete("{productId}")]
+        public async Task<ActionResult> DeleteEmptyWarehouseUnit([FromRoute] string productId)
+        {
+            var result = await _mediator.Send(new DeleteProductCommand(productId));
+
+            return result.HandleNoContentResult(this);
         }
     }
 }
