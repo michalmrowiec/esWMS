@@ -9,6 +9,7 @@
 @inject IAlertService AlertService
 @inject IDialogService DialogService
 @inject OnePageState OnePageState
+@inject IConfirmDialogService ConfirmDialogService
 
 @if (_contractor == null)
 {
@@ -108,7 +109,20 @@ else
 
                         <MudItem xs="12">
                             <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadContractor">Resetuj</MudButton>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="UpdateContractor">Zaktualizuj</MudButton>
+                            @*                             <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="UpdateContractor">Zaktualizuj</MudButton>
+                        *@
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Class="me-2"
+                                       EndIcon="@Icons.Material.Filled.Build"
+                                       OnClick="@(async () => {
+                                            await ConfirmDialogService.OpenDeleteDialogAsync(
+                                                "Zaktualizuj kontrahenta",
+                                                $"Kontrahent {_contractor.ContractorId} został zaktualizowany.",
+                                                Services.ConfirmDialogService.ButtonDialogType.Edit,
+                                                EventCallback.Factory.Create(this, UpdateContractor));})">
+                                Zaktualizuj
+                            </MudButton>
                             <MudButton Variant="Variant.Filled" Color="Color.Error" EndIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialogAsync">Usuń</MudButton>
                         </MudItem>
                     </MudGrid>
