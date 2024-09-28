@@ -12,6 +12,7 @@ namespace esWMS.Client.Services
         Task<HttpResponseMessage> Create(string uri, T item);
         Task<HttpResponseMessage> CreateObject(string uri, object item);
         Task<HttpResponseMessage> Patch(string uri, object item);
+        Task<HttpResponseMessage> Put(string uri, object item);
         Task<HttpResponseMessage> Delete(string uri);
     }
 
@@ -93,6 +94,18 @@ namespace esWMS.Client.Services
             var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
 
             using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
+            request.Content = postJson;
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> Put(string uri, object item)
+        {
+            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
+
+            using var request = new HttpRequestMessage(HttpMethod.Put, uri);
             request.Content = postJson;
 
             var response = await _httpClient.SendAsync(request);

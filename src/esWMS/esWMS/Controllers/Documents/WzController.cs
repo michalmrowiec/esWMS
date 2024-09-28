@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Models;
+﻿using esWMS.Domain.Models;
 using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWz;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzItems;

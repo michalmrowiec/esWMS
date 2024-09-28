@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Models;
+using esWMS.Domain.Models;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
 using esWMS.Application.Responses;

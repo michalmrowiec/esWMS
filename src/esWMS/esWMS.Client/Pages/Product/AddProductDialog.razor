@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Services
-@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels;
+@using esWMS.Client.ViewModels.SystemActors
 @inject IDataService<CreateProductVM> productService
 @inject IDataService<CategoryVM> categoryService
 @inject IDataService<ContractorVM> contractorService
@@ -104,6 +105,19 @@
                                  For="@(() => _model.Price)"
                                  Immediate="true"
                                  Label="Cena" />
+
+                <MudSelect @bind-Value="_model.Currency"
+                           Label="Waluta"
+                           Immediate="true">
+                    <MudSelectItem Value="@(new string("PLN"))">
+                        PLN
+                    </MudSelectItem>
+                </MudSelect>
+
+                <MudNumericField @bind-Value="_model.VatRate"
+                                 For="@(() => _model.VatRate)"
+                                 Immediate="true"
+                                 Label="Stawka VAT (%)" />
 
                 <MudSelect T="string"
                            @bind-Value="_model.SupplierContractorId"

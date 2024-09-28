@@ -1,23 +1,28 @@
 ﻿@page "/contractor"
 @using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.SystemActors
 @rendermode InteractiveAuto
 @inject IDataService<ContractorVM> contractorService
 @inject IDialogService DialogService
+@inject OnePageState OnePageState
 
 <MudTable T="ContractorVM"
           ServerData="ServerReload"
-          Dense="true"
-          Hover="true"
+          Dense
+          Hover
           @ref="table"
-          RowClass="cursor-pointer">
+          RowClass="cursor-pointer"
+          OnRowClick="RowClickEvent">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Artykuły</MudText>
         <MudSpacer />
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
-                   Color="Color.Primary">
+                   Color="Color.Primary"
+                   EndIcon="@Icons.Material.Filled.Add">
             Dodaj kontrahenta
         </MudButton>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
@@ -29,7 +34,6 @@
                 Id
             </MudTableSortLabel>
             <DefaultColumntFilter SearchOptions="searchOptions" Column="ContractorId" OnChangedAction="OnSearch" />
-
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="ContractorName" T="ContractorVM">
@@ -43,7 +47,6 @@
                 NIP
             </MudTableSortLabel>
             <DefaultColumntFilter SearchOptions="searchOptions" Column="VatId" OnChangedAction="OnSearch" />
-
         </MudTh>
         <MudTh>
             <MudTableSortLabel SortLabel="EmailAddress" T="ContractorVM">
@@ -144,12 +147,10 @@
 </MudTable>
 
 @code {
-    [Parameter]
-    public EventCallback<ContractorVM> SelectedProduct { get; set; }
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public int[]? PageSize { get; set; }
-    [Parameter]
-    public bool? ShowMediasOnly { get; set; }
 
     private IEnumerable<ContractorVM> pagedData;
     private MudTable<ContractorVM> table;
@@ -172,12 +173,12 @@
         { "IsRecipient", new("IsRecipient", "==", string.Empty) }
     };
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        if (ShowMediasOnly == true)
+        if (IsActive)
         {
-            searchOptions["IsMedia"].Operator = "==";
-            searchOptions["IsMedia"].Value = "true";
+            if (table != null)
+                table.ReloadServerData();
         }
     }
 
@@ -220,5 +221,23 @@
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddContractorDialog>(null, parameters, options);
+    }
+
+    private async Task RowClickEvent(TableRowClickEventArgs<ContractorVM> tableRowClickEventArgs)
+    {
+        Console.WriteLine("ENTRY");
+        if (tableRowClickEventArgs.Item is not ContractorVM
+            && string.IsNullOrWhiteSpace(tableRowClickEventArgs?.Item?.ContractorId))
+        {
+            return;
+        }
+
+        var tabid = Guid.NewGuid();
+        await OnePageState.AddTab(
+            new TabView("Szczegóły kontrahenta" ?? " ",
+            new ContractorDetails(),
+            tabid,
+            Icons.Material.Filled.Info,
+            new() { { "ContractorId", tableRowClickEventArgs.Item.ContractorId }, { "TabId", tabid } }));
     }
 }

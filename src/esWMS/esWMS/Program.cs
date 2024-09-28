@@ -6,7 +6,6 @@ using esWMS.Components.Alert;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
-using Microsoft.AspNetCore.Components;
 using Microsoft.OpenApi.Models;
 using MudBlazor.Services;
 using NLog;
@@ -27,6 +26,7 @@ try
     builder.Services.AddSingleton<OnePageState>();
     builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
     builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();
+    builder.Services.AddTransient<IConfirmDialogService, ConfirmDialogService>();
     builder.Services.AddHttpClient();
 
     builder.Services.AddMudServices();
@@ -100,7 +100,6 @@ try
     else
     {
         app.UseExceptionHandler("/Error", createScopeForErrors: true);
-        // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
     }
 

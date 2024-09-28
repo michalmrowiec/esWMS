@@ -7,7 +7,7 @@
 @using esWMS.Client.Components.TableColumnsFilters
 @rendermode InteractiveAuto
 @inject IDataService<WarehouseUnitVM> warehouseUnitService
-@inject OnePageState onePageState
+@inject OnePageState OnePageState
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
@@ -291,6 +291,7 @@
         { "WarehouseUnitId", new("WarehouseUnitId") },
         { "WarehouseId", new("WarehouseId") },
         { "IsBlocked", new("IsBlocked", "==", string.Empty) },
+        { "AnyBlockedItem", new("AnyBlockedItem", "==", string.Empty) },
         { "LocationId", new("LocationId") },
         { "CanBeStacked", new("CanBeStacked", "==", string.Empty) },
         { "StackOnId", new("StackOnId") },
@@ -322,6 +323,9 @@
         {
             searchOptions["IsBlocked"].Operator = "==";
             searchOptions["IsBlocked"].Value = "false";
+
+            searchOptions["AnyBlockedItem"].Operator = "==";
+            searchOptions["AnyBlockedItem"].Value = "false";
         }
         if (ExceptWarehouseUnitIdFilter != null)
         {
@@ -391,7 +395,7 @@
         }
         else if (TypeOfSelection == SelectionType.None) // im not sure about that <-
         {
-            await onePageState.AddTab(
+            await OnePageState.AddTab(
                 new TabView("Szczegóły jednostki" ?? " ",
                 new WarehouseUnitDetails(),
                 Guid.NewGuid(),

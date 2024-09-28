@@ -7,7 +7,7 @@
 
 <MudDialog>
     <TitleContent>
-        Nowa kategoria
+        @(DialogType == TypeOfCategoryDialog.Update ? "Modyfikacja kategorii" : "Tworzenie kategorii")
     </TitleContent>
     <DialogContent>
         <MudForm Model="@_model"
@@ -38,13 +38,19 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">
+            @(DialogType == TypeOfCategoryDialog.Update ? "Zmodyfikuj" : "Utwórz")
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [Parameter]
     public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+    [Parameter]
+    public TypeOfCategoryDialog DialogType { get; set; } = TypeOfCategoryDialog.Add;
+    [Parameter]
+    public CategoryVM CategoryToUpdate { get; set; }
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
     private MudForm _form;
@@ -60,24 +66,51 @@
 
         if (_form.IsValid)
         {
-            var response = await categoryService.Create(@"api/v1/Category", _model);
-            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            if (DialogType == TypeOfCategoryDialog.Update)
             {
-                //Snackbar.Configuration.PositionClass = "Bottom-End";
-                Snackbar.Add(new MarkupString($"Utworzono <strong>{_model.CategoryName}</strong>"), Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
-                FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+                var response = await categoryService.Put(@"api/v1/Category", _model);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add(new MarkupString($"Zmodyfikowano <b>{_model.CategoryName}</b>"), Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                    FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+                }
+                else
+                {
+                    await response.HandleFailure(AlertService);
+                }
             }
             else
             {
-                await response.HandleFailure(AlertService);
+                var response = await categoryService.Create(@"api/v1/Category", _model);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add(new MarkupString($"Utworzono <b>{_model.CategoryName}</b>"), Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                    FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+                }
+                else
+                {
+                    await response.HandleFailure(AlertService);
+                }
             }
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
+        if (DialogType == TypeOfCategoryDialog.Update)
+        {
+            _model = CategoryToUpdate;
+        }
+
         var res = await categoryService.GetPagedResult(@"api/v1/Category/get-filtered", new SieveModelVM(1, 500));
         _parentCategories = res.Items.ToList();
+    }
+
+    public enum TypeOfCategoryDialog
+    {
+        Add,
+        Update
     }
 }

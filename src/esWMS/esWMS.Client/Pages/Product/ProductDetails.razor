@@ -1,0 +1,214 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Components
+@using esWMS.Client.Pages.OnePage
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@inject IDataService<ProductVM> ProductService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
+@inject IDialogService DialogService
+@inject OnePageState OnePageState
+
+@if (_product == null)
+{
+    <MudText>Ladowanie...</MudText>
+}
+else
+{
+    <MudGrid>
+        <MudItem md="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_product.ProductId"
+                                          Label="Identyfikator Produktu"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_product.ProductCode"
+                                          Label="Kod Produktu"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_product.EanCode"
+                                          Label="Kod EAN"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_product.ProductName"
+                                          Label="Nazwa Produktu"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Lines="2" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_product.ProductDescription"
+                                          Label="Opis Produktu"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Lines="3" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalWeight"
+                                             Label="Całkowita waga (kg)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalLength"
+                                             Label="Całkowita długość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalWidth"
+                                             Label="Całkowita szerokość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalHeight"
+                                             Label="Całkowita wysokość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.Price"
+                                             Label="Cena"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_product.IsWeight"
+                                         Label="Czy na wagę?" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_product.IsMedia"
+                                         Label="Czy media?" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_product.Currency"
+                                          Label="Waluta"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.VatRate"
+                                             Label="Stawka VAT (%)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_product.SupplierContractorId"
+                                          Label="Identyfikator Dostawcy"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_product.IsActive"
+                                         Label="Aktywny" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadProduct">Resetuj</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="UpdateProduct">Zaktualizuj</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Error" EndIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialogAsync">Usuń</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public string ProductId { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
+    private ProductVM? _product;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadProduct();
+    }
+
+    private async Task ReloadProduct()
+    {
+        var response = await ProductService.Get(@"api/v1/Product", new() { { "ProductId", ProductId } });
+        if (response == null)
+        {
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        _product = JsonConvert.DeserializeObject<ProductVM>(json);
+
+        StateHasChanged();
+    }
+
+    private async Task UpdateProduct()
+    {
+        var response = await ProductService.Put(@"api/v1/Product", _product);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Produkt został zaktualizowany."), Severity.Success);
+            await ReloadProduct();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OpenDeleteDialogAsync()
+    {
+        var parameters = new DialogParameters<DeleteConfirmDialog>
+        {
+            { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć artykuł: {_product?.ProductCode} {_product?.ProductName}"}
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result?.Canceled ?? false
+            && _product != null)
+        {
+            await DeleteAsync(_product!);
+        }
+    }
+
+    private async Task DeleteAsync(ProductVM product)
+    {
+        var response = await ProductService.Delete(@"api/v1/Product/" + product.ProductId);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto produkt"), Severity.Success);
+            await OnePageState.RemoveTab(TabId);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+}

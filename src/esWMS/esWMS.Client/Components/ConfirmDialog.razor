@@ -1,0 +1,46 @@
+﻿@using static esWMS.Client.Services.ConfirmDialogService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.subtitle1">
+            @TittleText
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>@ContentText</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        @GetDialogButton()
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public string TittleText { get; set; }
+    [Parameter]
+    public string ContentText { get; set; }
+    [Parameter]
+    public ButtonDialogType ButtonType { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private RenderFragment GetDialogButton()
+    {
+        switch (ButtonType)
+        {
+            case ButtonDialogType.Ok:
+                return @<MudButton Color="@Color.Primary" Variant="Variant.Filled" OnClick="Submit">OK</MudButton>;
+            case ButtonDialogType.Edit:
+                return @<MudButton Color="@Color.Primary" Variant="Variant.Filled" OnClick="Submit">Zaktualizuj</MudButton>;
+            case ButtonDialogType.Delete:
+                return @<MudButton Color="@Color.Error" Variant="Variant.Filled" OnClick="Submit">Usuń</MudButton>;
+            default:
+                return @<MudButton Color="@Color.Default" Variant="Variant.Outlined">OK</MudButton>;
+        }
+    }
+}

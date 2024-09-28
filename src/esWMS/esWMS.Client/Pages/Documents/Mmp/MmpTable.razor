@@ -6,7 +6,7 @@
 @using esWMS.Client.ViewModels.Documents
 @rendermode InteractiveAuto
 @inject IDataService<MmpVM> dataService
-@inject OnePageState onePageState
+@inject OnePageState OnePageState
 
 <MudTable T="MmpVM"
           ServerData="ServerReload"
@@ -117,7 +117,7 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<MmpVM> tableRowClickEventArgs)
     {
-        await onePageState.AddTab(
+        await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new MmpDetails(),
             Guid.NewGuid(),

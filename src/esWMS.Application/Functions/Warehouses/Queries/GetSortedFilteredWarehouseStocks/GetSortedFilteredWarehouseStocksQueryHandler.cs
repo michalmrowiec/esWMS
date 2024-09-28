@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Models;
+using esWMS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Responses;
 using MediatR;

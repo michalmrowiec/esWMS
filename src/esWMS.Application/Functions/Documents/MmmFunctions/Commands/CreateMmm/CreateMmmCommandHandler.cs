@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
-using esMWS.Domain.Services;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Models;
+using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;

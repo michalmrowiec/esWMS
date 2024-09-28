@@ -1,4 +1,4 @@
-using esMWS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.Documents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

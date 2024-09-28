@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 using Sieve.Services;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseEnviroment
@@ -11,6 +11,9 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseE
                 .CanSort()
                 .CanFilter();
             mapper.Property<Product>(x => x.ProductName)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<Product>(x => x.CategoryId)
                 .CanSort()
                 .CanFilter();
             mapper.Property<Product>(x => x.Category.CategoryName)

@@ -1,5 +1,5 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Models;
+﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Models;
 using Sieve.Models;
 
 namespace esWMS.Application.Contracts.Persistence.Documents

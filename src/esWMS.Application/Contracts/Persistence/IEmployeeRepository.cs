@@ -1,8 +1,11 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.SystemActors;
 
 namespace esWMS.Application.Contracts.Persistence
 {
     public interface IEmployeeRepository
-        : IBaseRepository<Employee>
-    { }
+        : ISieve<Employee>
+    {
+        Task<Employee> CreateEmployeeAsync(Employee employee);
+        Task<Employee> GetByIdAsync(string id);
+    }
 }

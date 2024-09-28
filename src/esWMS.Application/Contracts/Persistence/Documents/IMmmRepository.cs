@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.Documents;
+﻿using esWMS.Domain.Entities.Documents;
 
 namespace esWMS.Application.Contracts.Persistence.Documents
 {

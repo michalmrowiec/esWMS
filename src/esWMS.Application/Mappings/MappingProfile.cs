@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.SystemActors;
-using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.SystemActors;
+using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Models;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Contractors;
@@ -36,6 +36,11 @@ using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
 using esWMS.Application.Functions.Zones;
 using esWMS.Application.Functions.Zones.Commands.CreateZone;
+using esWMS.Application.Functions.Employees.Command.CreateEmployee;
+using esWMS.Application.Functions.Employees;
+using esWMS.Application.Functions.Products.Commands.UpdateProduct;
+using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
+using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
 
 namespace esWMS.Application.Mappings
 {
@@ -47,10 +52,16 @@ namespace esWMS.Application.Mappings
             CreateMap<Product, ProductDto>()
                 .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
                 .ReverseMap();
+            CreateMap<UpdateProductCommand, Product>()
+                .ForMember(dest => dest.ProductId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CreateCategoryCommand, Category>();
             CreateMap<Category, CategoryDto>()
                 .ReverseMap();
+            CreateMap<UpdateCategoryCommand, Category>()
+                .ForMember(dest => dest.CategoryId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<Warehouse, FlatWarehouseDto>();
@@ -92,9 +103,11 @@ namespace esWMS.Application.Mappings
             CreateMap<Location, LocationDto>()
                 .ReverseMap();
 
+            CreateMap<Contractor, ContractorDto>();
             CreateMap<CreateContractorCommand, Contractor>()
                 .ForMember(dest => dest.ContractorId, opt => opt.MapFrom(src => src.ContractorId.ToUpper()));
-            CreateMap<Contractor, ContractorDto>();
+            CreateMap<UpdateContractorCommand, Contractor>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CreateDocumentItemCommand, DocumentItem>();
             CreateMap<DocumentItem, DocumentItemDto>()
@@ -131,6 +144,9 @@ namespace esWMS.Application.Mappings
 
             CreateMap<WarehouseStock, WarehouseStockDto>()
                 .ReverseMap();
+
+            CreateMap<CreateEmployeeCommand, Employee>();
+            CreateMap<Employee, EmployeeDto>();
         }
     }
 }

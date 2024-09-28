@@ -4,7 +4,8 @@ using Microsoft.Extensions.Logging;
 
 namespace esWMS.Infrastructure.Repositories
 {
-    internal class BaseRepository<TEntity, TId>(EsWmsDbContext context, ILogger logger)
+    internal class BaseRepository<TEntity, TId>
+        (EsWmsDbContext context, ILogger logger)
         : IBaseRepository<TEntity, TId>
         where TEntity : class
     {

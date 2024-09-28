@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Services;
+using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.WarehouseUnits;

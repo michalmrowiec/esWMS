@@ -1,5 +1,5 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Services;
+﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Services;
 using FluentAssertions;
 
 namespace esWMS.Domain.UnitTests.Services

@@ -1,10 +1,13 @@
 ﻿@page "/products"
 @using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
+@using static esWMS.Client.Pages.Warehouse.WarehouseUnit.WarehouseUnitTable
 @rendermode InteractiveAuto
-@inject IDataService<ProductVM> dataService
+@inject IDataService<ProductVM> DataService
 @inject IDialogService DialogService
+@inject OnePageState OnePageState
 
 <MudTable T="ProductVM"
           ServerData="ServerReload"
@@ -77,17 +80,20 @@
 </MudTable>
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public EventCallback<ProductVM> SelectedProduct { get; set; }
     [Parameter]
     public int[]? PageSize { get; set; }
     [Parameter]
     public bool? ShowMediasOnly { get; set; }
+    [Parameter]
+    public SelectionType TypeOfSelection { get; set; } = SelectionType.None;
 
     private IEnumerable<ProductVM> Products = [];
     private IEnumerable<ProductVM> pagedData;
     private MudTable<ProductVM> table;
-
     private int totalItems;
 
     private Dictionary<string, FilterOption> searchOptions = new()
@@ -99,6 +105,15 @@
         { "Unit", new("Unit") },
         { "IsMedia", new("IsMedia", "==") },
     };
+
+    protected override void OnParametersSet()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                table.ReloadServerData();
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -124,7 +139,7 @@
                 sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
         }
 
-        var response = await dataService.GetPagedResult(@"api/v1/Product/get-filtered", sm);
+        var response = await DataService.GetPagedResult(@"api/v1/Product/get-filtered", sm);
 
         return new TableData<ProductVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
@@ -136,7 +151,26 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<ProductVM> tableRowClickEventArgs)
     {
-        await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
+        if (tableRowClickEventArgs.Item is not ProductVM
+            && string.IsNullOrWhiteSpace(tableRowClickEventArgs?.Item?.ProductId))
+        {
+            return;
+        }
+
+        if (TypeOfSelection == SelectionType.Single)
+        {
+            await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
+        }
+        else if (TypeOfSelection == SelectionType.None)
+        {
+            var tabid = Guid.NewGuid();
+            await OnePageState.AddTab(
+                new TabView("Szczegóły artykułu" ?? " ",
+                new ProductDetails(),
+                tabid,
+                Icons.Material.Filled.Info,
+                new() { { "ProductId", tableRowClickEventArgs.Item.ProductId }, { "TabId", tabid } }));
+        }
     }
 
     private Task OpenDialogAsync()

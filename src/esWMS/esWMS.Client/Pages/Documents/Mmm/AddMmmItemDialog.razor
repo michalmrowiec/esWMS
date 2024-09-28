@@ -22,13 +22,10 @@
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-
     [Parameter]
     public List<EventCallback>? FuncsOnAdded { get; set; } = new();
-
     [Parameter]
     public EventCallback<List<WarehouseUnitVM>> WarehouseUnitVMs { get; set; }
-
     [Parameter]
     public string? WarehouseId { get; set; }
 

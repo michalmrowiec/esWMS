@@ -1,12 +1,13 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.SystemActors;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Infrastructure.Repositories;
 using esWMS.Infrastructure.Repositories.Documents;
+using esWMS.Infrastructure.Repositories.SystemActors;
+using esWMS.Infrastructure.Repositories.WarehouseEnviroment;
 using esWMS.Infrastructure.Utilities;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
-using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Sieve.Services;
 using System.Text;
+using esWMS.Application.Contracts.Services;
+using esWMS.Infrastructure.Services;
 
 namespace esWMS.Infrastructure
 {
@@ -47,18 +50,18 @@ namespace esWMS.Infrastructure
                 };
             });
 
-            services.AddSingleton(authenticationSettings);
-
-            services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
-
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 29));
 
             services.AddDbContext<EsWmsDbContext>(
                 dbContextOptions => dbContextOptions
                     .UseMySql(configuration.GetConnectionString("ContainerDb"), serverVersion));
 
+            services.AddSingleton(authenticationSettings);
+            services.AddScoped<IPasswordHasher<Employee>, PasswordHasher<Employee>>();
+            services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<ITransactionManager, EfTransactionManager>();
             services.AddScoped<ISieveCustomFilterMethods, SieveCustomFilterMethods>();
+            services.AddScoped<ISieveCustomSortMethods, SieveCustomSortMethods>();
             services.AddScoped<ISieveProcessor, EsWmsSieveProcessor>();
 
             services.AddScoped(typeof(IBaseRepository<,>), typeof(BaseRepository<,>));
@@ -79,6 +82,7 @@ namespace esWMS.Infrastructure
             services.AddScoped<IPwRepository, PwRepository>();
             services.AddScoped<IRwRepository, RwRepository>();
             services.AddScoped<IZwRepository, ZwRepository>();
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         }
     }
 }

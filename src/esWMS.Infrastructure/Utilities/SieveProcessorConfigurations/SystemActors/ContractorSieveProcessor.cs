@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.SystemActors;
 using Sieve.Services;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.SystemActors
@@ -17,6 +17,9 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.SystemActo
                 .CanSort()
                 .CanFilter();
             mapper.Property<Contractor>(x => x.EmailAddress)
+                .CanSort()
+                .CanFilter();
+            mapper.Property<Contractor>(x => x.PhoneNumber)
                 .CanSort()
                 .CanFilter();
             mapper.Property<Contractor>(x => x.City)

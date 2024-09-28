@@ -1,9 +1,10 @@
-﻿using esMWS.Domain.Entities.Documents;
-using esMWS.Domain.Entities.WarehouseEnviroment;
-using esMWS.Domain.Models;
+﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Models;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.SystemActors;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseEnviroment;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;
@@ -12,8 +13,9 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
 {
     public class EsWmsSieveProcessor
         (IOptions<SieveOptions> options,
-        ISieveCustomFilterMethods customFilterMethods)
-        : SieveProcessor(options, customFilterMethods)
+        ISieveCustomFilterMethods customFilterMethods,
+        ISieveCustomSortMethods customSortMethods)
+        : SieveProcessor(options, customSortMethods, customFilterMethods)
     {
         protected override SievePropertyMapper MapProperties(SievePropertyMapper mapper)
         {
@@ -22,6 +24,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             new CategorySieveProcessor().Configure(mapper);
 
             new ContractorSieveProcessor().Configure(mapper);
+
+            new EmployeeSieveProcessor().Configure(mapper);
 
             new LocationSieveProcessor().Configure(mapper);
 
@@ -72,8 +76,37 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
         public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, string op, string[] values) =>
             new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
 
+        public IQueryable<WarehouseUnit> AnyBlockedItem
+        (IQueryable<WarehouseUnit> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0 || !bool.TryParse(values[0], out bool anyBlockedItem))
+            {
+                return source;
+            }
+
+            switch (op)
+            {
+                case "==":
+                    if (anyBlockedItem)
+                        source = source.Where(wu => wu.WarehouseUnitItems.Any(wui => wui.BlockedQuantity > 0));
+                    else
+                        source = source.Where(wu => wu.WarehouseUnitItems.All(wui => wui.BlockedQuantity == 0));
+                    break;
+                case "!=":
+                    if (anyBlockedItem)
+                        source = source.Where(wu => wu.WarehouseUnitItems.All(wui => wui.BlockedQuantity == 0));
+                    else
+                        source = source.Where(wu => wu.WarehouseUnitItems.Any(wui => wui.BlockedQuantity > 0));
+                    break;
+                default:
+                    break;
+            }
+
+            return source;
+        }
+
         public IQueryable<WarehouseUnit> ProductName
-    (IQueryable<WarehouseUnit> source, string op, string[] values)
+            (IQueryable<WarehouseUnit> source, string op, string[] values)
         {
             if (values == null || values.Length == 0)
             {
@@ -107,8 +140,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
             return source;
         }
 
-        public IQueryable<WarehouseUnit> ItemCount(
-            IQueryable<WarehouseUnit> source, string op, string[] values)
+        public IQueryable<WarehouseUnit> ItemCount
+            (IQueryable<WarehouseUnit> source, string op, string[] values)
         {
             if (values == null || values.Length == 0 || !int.TryParse(values[0], out int itemCount))
             {
@@ -371,5 +404,23 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
 
             return source;
         }
+    }
+
+    public class SieveCustomSortMethods : ISieveCustomSortMethods
+    {
+        public IQueryable<PZ> DocumentIssueDate(IQueryable<PZ> source, bool useThenBy, bool desc) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateSort(source, useThenBy, desc);
+        public IQueryable<WZ> DocumentIssueDate(IQueryable<WZ> source, bool useThenBy, bool desc) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateSort(source, useThenBy, desc);
+        public IQueryable<MMM> DocumentIssueDate(IQueryable<MMM> source, bool useThenBy, bool desc) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateSort(source, useThenBy, desc);
+        public IQueryable<MMP> DocumentIssueDate(IQueryable<MMP> source, bool useThenBy, bool desc) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateSort(source, useThenBy, desc);
+        public IQueryable<PW> DocumentIssueDate(IQueryable<PW> source, bool useThenBy, bool desc) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateSort(source, useThenBy, desc);
+        public IQueryable<RW> DocumentIssueDate(IQueryable<RW> source, bool useThenBy, bool desc) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateSort(source, useThenBy, desc);
+        public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, bool useThenBy, bool desc) =>
+            new BaseDocumentSieveProcessor().DocumentIssueDateSort(source, useThenBy, desc);
     }
 }

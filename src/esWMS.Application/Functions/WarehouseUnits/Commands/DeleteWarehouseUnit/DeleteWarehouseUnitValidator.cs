@@ -1,4 +1,4 @@
-﻿using esMWS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 using FluentValidation;
 
 namespace esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUnit
