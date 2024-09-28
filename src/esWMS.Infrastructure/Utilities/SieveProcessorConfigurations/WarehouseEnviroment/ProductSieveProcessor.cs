@@ -13,6 +13,9 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseE
             mapper.Property<Product>(x => x.ProductName)
                 .CanSort()
                 .CanFilter();
+            mapper.Property<Product>(x => x.CategoryId)
+                .CanSort()
+                .CanFilter();
             mapper.Property<Product>(x => x.Category.CategoryName)
                 .CanSort()
                 .CanFilter()

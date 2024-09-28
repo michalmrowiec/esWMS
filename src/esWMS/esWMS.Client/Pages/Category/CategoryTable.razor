@@ -1,10 +1,13 @@
 ﻿@page "/categories"
+@using esWMS.Client.Components
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @rendermode InteractiveAuto
 @inject IDataService<CategoryVM> dataService
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
 
 <style>
     .mud-table-cell-custom-group {
@@ -73,6 +76,7 @@
             <DefaultColumntFilter SearchOptions="searchOptions" Column="ParentCategoryId" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh></MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Category Name">@context.CategoryName</MudTd>
@@ -83,6 +87,11 @@
             <MudIconButton Size="@Size.Small"
                            Icon="@Icons.Material.Outlined.Edit"
                            OnClick="@(async () => await OpenEditDialogAsync(context))" />
+        </MudTh>
+        <MudTh>
+            <MudIconButton Size="@Size.Small"
+                           Icon="@Icons.Material.Outlined.Delete"
+                           OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
         </MudTh>
     </RowTemplate>
     <GroupHeaderTemplate>
@@ -172,5 +181,37 @@
             { x => x.CategoryToUpdate, category }
         };
         return DialogService.ShowAsync<AddCategoryDialog>(null, parameters, options);
+    }
+
+    private async Task OpenDeleteDialogAsync(CategoryVM category)
+    {
+        var parameters = new DialogParameters<DeleteConfirmDialog>
+        {
+            { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć kategorię: {category.CategoryName}"}
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result?.Canceled ?? false)
+        {
+            await DeleteAsync(category);
+        }
+    }
+
+    private async Task DeleteAsync(CategoryVM category)
+    {
+        var response = await dataService.Delete(@"api/v1/Category/" + category.CategoryId);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto kategorię"), Severity.Success);
+            await table.ReloadServerData();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
     }
 }
