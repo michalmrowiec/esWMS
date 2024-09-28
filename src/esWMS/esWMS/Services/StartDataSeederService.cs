@@ -93,6 +93,7 @@ namespace esWMS.Services
                 ProductId = "PROD-001",
                 ProductCode = "NRZ-001",
                 ProductName = "Młotek ślusarski 500g",
+                ShortProductName = "Młotek ślusarski 500g",
                 ProductDescription = "Młotek ślusarski 500g z rękojeścią z włókna szklanego",
                 CategoryId = "CAT-002",
                 Unit = "szt",
@@ -107,6 +108,7 @@ namespace esWMS.Services
                 ProductId = "PROD-002",
                 ProductCode = "NRZ-002",
                 ProductName = "Klucz płaski 13mm chromowany",
+                ShortProductName = "Klucz płaski 13mm",
                 ProductDescription = "Klucz płaski 13mm chromowany, wytrzymały na korozję",
                 CategoryId = "CAT-002",
                 Unit = "szt",
@@ -121,6 +123,7 @@ namespace esWMS.Services
                 ProductId = "PROD-003",
                 ProductCode = "ELEK-001",
                 ProductName = "Wiertarka akumulatorowa 18V Li-Ion",
+                ShortProductName = "Wiertarka akumulatorowa 18V",
                 ProductDescription = "Wiertarka akumulatorowa 18V Li-Ion, z akumulatorem 2.0Ah",
                 CategoryId = "CAT-003",
                 Unit = "szt",
@@ -135,6 +138,7 @@ namespace esWMS.Services
                 ProductId = "PROD-004",
                 ProductCode = "ELEK-002",
                 ProductName = "Szlifierka kątowa 125mm 1000W",
+                ShortProductName = "Szlifierka kątowa 125mm",
                 ProductDescription = "Szlifierka kątowa 125mm, moc 1000W, z systemem antywibracyjnym",
                 CategoryId = "CAT-003",
                 Unit = "szt",
@@ -149,6 +153,7 @@ namespace esWMS.Services
                 ProductId = "PROD-005",
                 ProductCode = "MP-001",
                 ProductName = "Blacha stalowa ocynkowana 2mm",
+                ShortProductName = "Blacha stalowa ocynkowana 2mm",
                 ProductDescription = "Blacha stalowa ocynkowana 2mm, wymiary 2000x1000mm, gatunek S235JR",
                 CategoryId = "CAT-005",
                 Unit = "szt",
@@ -163,6 +168,7 @@ namespace esWMS.Services
                 ProductId = "PROD-006",
                 ProductCode = "MP-002",
                 ProductName = "Profil aluminiowy 40x40mm",
+                ShortProductName = "Profil aluminiowy 40x40mm",
                 ProductDescription = "Profil aluminiowy 40x40mm, anodowany, długość 6m",
                 CategoryId = "CAT-005",
                 Unit = "szt",
@@ -177,6 +183,7 @@ namespace esWMS.Services
                 ProductId = "PROD-007",
                 ProductCode = "ME-001",
                 ProductName = "Papier ścierny P80 230x280mm",
+                ShortProductName = "Papier ścierny P80",
                 ProductDescription = "Papier ścierny P80, format 230x280mm, do obróbki drewna",
                 CategoryId = "CAT-006",
                 Unit = "szt",
@@ -191,6 +198,7 @@ namespace esWMS.Services
                 ProductId = "PROD-008",
                 ProductCode = "ME-002",
                 ProductName = "Olej maszynowy Shell Tellus S2 M 46",
+                ShortProductName = "Olej maszynowy Shell Tellus 20L",
                 ProductDescription = "Olej maszynowy Shell Tellus S2 M 46, opakowanie 20L",
                 CategoryId = "CAT-006",
                 Unit = "szt",
@@ -205,6 +213,7 @@ namespace esWMS.Services
                 ProductId = "PROD-009",
                 ProductCode = "ME-003",
                 ProductName = "Filtr przemysłowy Donaldson P191280",
+                ShortProductName = "Filtr Donaldson P191280",
                 ProductDescription = "Filtr przemysłowy Donaldson P191280, do sprężarek powietrza",
                 CategoryId = "CAT-006",
                 Unit = "szt",
@@ -219,6 +228,7 @@ namespace esWMS.Services
                 ProductId = "PROD-010",
                 ProductCode = "ME-004",
                 ProductName = "Smar techniczny Molykote 111",
+                ShortProductName = "Smar techniczny Molykote 111",
                 ProductDescription = "Smar techniczny Molykote 111, do uszczelek i zaworów, opakowanie 1kg",
                 CategoryId = "CAT-006",
                 Unit = "szt",
@@ -233,6 +243,7 @@ namespace esWMS.Services
                 ProductId = "PROD-011",
                 ProductCode = "NOS-001",
                 ProductName = "Europaleta EPAL 1200x800mm",
+                ShortProductName = "Europaleta EPAL 1200x800mm",
                 ProductDescription = "Europaleta EPAL o wymiarach 1200x800mm, nośność 1500 kg",
                 CategoryId = "CAT-007",
                 Unit = "szt",
@@ -247,6 +258,7 @@ namespace esWMS.Services
                 CreatedAt = DateTime.Now
             }
         };
+
 
         public static List<Warehouse> Warehouses = new List<Warehouse>
         {
