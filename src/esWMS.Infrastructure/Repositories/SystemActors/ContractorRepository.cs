@@ -1,7 +1,6 @@
-﻿using esWMS.Domain.Entities.SystemActors;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Application.Contracts.Persistence;
+using esWMS.Domain.Entities.SystemActors;
 using esWMS.Domain.Models;
-using esWMS.Application.Contracts.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Models;
@@ -17,6 +16,7 @@ namespace esWMS.Infrastructure.Repositories.SystemActors
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
+        private readonly ILogger<ContractorRepository> _logger = logger;
 
         public async Task<PagedResult<Contractor>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
@@ -33,6 +33,24 @@ namespace esWMS.Infrastructure.Repositories.SystemActors
                 .CountAsync();
 
             return new PagedResult<Contractor>(filteredContractors, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
+        }
+
+        public override async Task<Contractor> GetByIdAsync(string id)
+        {
+            try
+            {
+                var result = await _context.Contractors
+                    .Include(x => x.PZDocuments)
+                    .Include(x => x.WZDocuments)
+                    .FirstOrDefaultAsync(x => x.ContractorId.Equals(id));
+
+                return result ?? throw new KeyNotFoundException("The object with the given id was not found.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving entity with Id: {EntityId}", id);
+                throw;
+            }
         }
     }
 }
