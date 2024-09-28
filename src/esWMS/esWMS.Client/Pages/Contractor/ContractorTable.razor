@@ -1,24 +1,28 @@
 ﻿@page "/contractor"
 @using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.SystemActors
 @rendermode InteractiveAuto
 @inject IDataService<ContractorVM> contractorService
 @inject IDialogService DialogService
+@inject OnePageState OnePageState
 
 <MudTable T="ContractorVM"
           ServerData="ServerReload"
-          Dense="true"
-          Hover="true"
+          Dense
+          Hover
           @ref="table"
-          RowClass="cursor-pointer">
+          RowClass="cursor-pointer"
+          OnRowClick="RowClickEvent">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Artykuły</MudText>
         <MudSpacer />
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
-                   Color="Color.Primary">
+                   Color="Color.Primary"
+                   EndIcon="@Icons.Material.Filled.Add">
             Dodaj kontrahenta
         </MudButton>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
@@ -145,6 +149,8 @@
 </MudTable>
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public int[]? PageSize { get; set; }
 
@@ -168,6 +174,15 @@
         { "IsSupplier", new("IsSupplier", "==", string.Empty) },
         { "IsRecipient", new("IsRecipient", "==", string.Empty) }
     };
+
+    protected override void OnParametersSet()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                table.ReloadServerData();
+        }
+    }
 
     private async Task<TableData<ContractorVM>> ServerReload(TableState state, CancellationToken token)
     {
@@ -208,5 +223,23 @@
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddContractorDialog>(null, parameters, options);
+    }
+
+    private async Task RowClickEvent(TableRowClickEventArgs<ContractorVM> tableRowClickEventArgs)
+    {
+        Console.WriteLine("ENTRY");
+        if (tableRowClickEventArgs.Item is not ContractorVM
+            && string.IsNullOrWhiteSpace(tableRowClickEventArgs?.Item?.ContractorId))
+        {
+            return;
+        }
+
+        var tabid = Guid.NewGuid();
+        await OnePageState.AddTab(
+            new TabView("Szczegóły kontrahenta" ?? " ",
+            new ContractorDetails(),
+            tabid,
+            Icons.Material.Filled.Info,
+            new() { { "ContractorId", tableRowClickEventArgs.Item.ContractorId }, { "TabId", tabid } }));
     }
 }

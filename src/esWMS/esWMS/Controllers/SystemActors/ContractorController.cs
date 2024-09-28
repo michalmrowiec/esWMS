@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using esWMS.Application.Functions.Categories.Commands.DeleteCategory;
 using esWMS.Application.Functions.Contractors.Commands.DeleteContractor;
+using esWMS.Application.Functions.Products.Queries.GetProductById;
+using esWMS.Application.Functions.Products;
+using esWMS.Application.Functions.Contractors.Queries.GetContractorById;
 
 namespace esWMS.Controllers.SystemActors
 {
@@ -57,6 +60,15 @@ namespace esWMS.Controllers.SystemActors
             var result = await _mediator.Send(new DeleteContractorCommand(contractorId));
 
             return result.HandleNoContentResult(this);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ContractorDto>> GetContractorDetails
+            ([FromQuery] string contractorId)
+        {
+            var result = await _mediator.Send(new GetContractorByIdQuery(contractorId));
+
+            return result.HandleOkResult(this);
         }
     }
 }
