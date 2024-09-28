@@ -25,7 +25,6 @@ else
                             <MudTextField ShrinkLabel @bind-Value="_contractor.ContractorId"
                                           Label="Identyfikator Kontrahenta"
                                           Variant="Variant.Outlined"
-                                          ReadOnly
                                           Margin="Margin.Dense" />
                         </MudItem>
                         <MudItem xs="12" md="6">
@@ -150,7 +149,7 @@ else
         var response = await ContractorService.Put(@"api/v1/Contractor", _contractor);
         if (response.IsSuccessStatusCode)
         {
-            Snackbar.Add(new MarkupString("Kontrahent został zaktualizowany."), Severity.Success);
+            Snackbar.Add(new MarkupString($"Kontrahent {_contractor.ContractorId} został zaktualizowany."), Severity.Success);
             await ReloadContractor();
         }
         else

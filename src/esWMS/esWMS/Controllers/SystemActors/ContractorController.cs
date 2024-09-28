@@ -1,17 +1,17 @@
-﻿using esWMS.Domain.Models;
+﻿using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
+using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
+using esWMS.Application.Functions.Contractors.Commands.DeleteContractor;
+using esWMS.Application.Functions.Contractors.Queries.GetContractorById;
 using esWMS.Application.Functions.Contractors.Queries.GetSortedFilteredContractors;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.Categories.Commands.DeleteCategory;
-using esWMS.Application.Functions.Contractors.Commands.DeleteContractor;
-using esWMS.Application.Functions.Products.Queries.GetProductById;
-using esWMS.Application.Functions.Products;
-using esWMS.Application.Functions.Contractors.Queries.GetContractorById;
+using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
 
 namespace esWMS.Controllers.SystemActors
 {
@@ -67,6 +67,18 @@ namespace esWMS.Controllers.SystemActors
             ([FromQuery] string contractorId)
         {
             var result = await _mediator.Send(new GetContractorByIdQuery(contractorId));
+
+            return result.HandleOkResult(this);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<ContractorDto>> UpdateContractor
+            ([FromBody] UpdateContractorCommand updateContractorCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                updateContractorCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(updateContractorCommand);
 
             return result.HandleOkResult(this);
         }
