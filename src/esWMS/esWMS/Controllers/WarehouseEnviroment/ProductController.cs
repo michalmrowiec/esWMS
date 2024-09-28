@@ -74,7 +74,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
         }
 
         [HttpDelete("{productId}")]
-        public async Task<ActionResult> DeleteEmptyWarehouseUnit([FromRoute] string productId)
+        public async Task<ActionResult> DeleteProduct([FromRoute] string productId)
         {
             var result = await _mediator.Send(new DeleteProductCommand(productId));
 
