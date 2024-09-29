@@ -1,0 +1,45 @@
+﻿@page "/login"
+@using MudBlazor
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.SystemActors
+@inject ISnackbar Snackbar
+
+<MudPaper Class="d-flex justify-center align-center min-height-100">
+    <MudCard Class="pa-4" MaxWidth="400px">
+        <MudCardContent>
+            <MudText Typo="Typo.h5" Align="Align.Center">Logowanie</MudText>
+
+            <MudForm @ref="form" @validSubmit="LoginAsync">
+                <MudTextField @bind-Value="_loginModel.EmployeeId"
+                              Label="Identyfikator pracownika"
+                              Variant="Variant.Filled"
+                              Margin="Margin.Dense"
+                              Required
+                              Immediate
+                              ValidationError="Wprowadź poprawny identyfikator"
+                              For="@(() => _loginModel.EmployeeId)" />
+
+                <MudTextField @bind-Value="_loginModel.Password"
+                              Label="Hasło"
+                              Variant="Variant.Filled"
+                              Margin="Margin.Dense"
+                              InputType="InputType.Password"
+                              Required="true"
+                              Immediate="true"
+                              For="@(() => _loginModel.Password)" />
+
+                <MudSpacer />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary">
+                    Zaloguj
+                </MudButton>
+            </MudForm>
+
+        </MudCardContent>
+    </MudCard>
+</MudPaper>
+
+@code {
+    private MudForm form;
+    private EmployeeLoginVM _loginModel = new EmployeeLoginVM();
+
+}
