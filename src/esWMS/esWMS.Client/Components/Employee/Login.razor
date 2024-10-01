@@ -1,15 +1,20 @@
 ﻿@page "/login"
 @using MudBlazor
+@using Newtonsoft.Json
+@using System.Text
+@using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.SystemActors
 @inject ISnackbar Snackbar
+@inject HttpClient HttpClient
+@inject IAlertService AlertService
 
 <MudPaper Class="d-flex justify-center align-center min-height-100">
-    <MudCard Class="pa-4" MaxWidth="400px">
+    <MudCard Class="pa-4">
         <MudCardContent>
             <MudText Typo="Typo.h5" Align="Align.Center">Logowanie</MudText>
 
-            <MudForm @ref="form" @validSubmit="LoginAsync">
+            <MudForm @ref="form">
                 <MudTextField @bind-Value="_loginModel.EmployeeId"
                               Label="Identyfikator pracownika"
                               Variant="Variant.Filled"
@@ -33,7 +38,6 @@
                     Zaloguj
                 </MudButton>
             </MudForm>
-
         </MudCardContent>
     </MudCard>
 </MudPaper>

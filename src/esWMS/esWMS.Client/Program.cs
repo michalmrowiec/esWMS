@@ -1,6 +1,7 @@
-using esWMS.Client.Pages.OnePage;
 using esWMS.Client.Services;
+using esWMS.Client.States;
 using esWMS.Components.Alert;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
@@ -16,6 +17,7 @@ builder.Services.AddTransient(http => new HttpClient
 
 builder.Services.AddSingleton<OnePageState>();
 builder.Services.AddSingleton<IAlertService, AlertService>();
+builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
 builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();
 builder.Services.AddTransient<IConfirmDialogService, ConfirmDialogService>();

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace esWMS.Client.Pages.OnePage
+namespace esWMS.Client.States
 {
     public class OnePageState
     {
