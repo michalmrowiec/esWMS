@@ -9,6 +9,7 @@
 @inject HttpClient HttpClient
 @inject IAlertService AlertService
 @inject IAuthService AuthService
+@inject NavigationManager Navigation
 
 <MudPaper Class="d-flex justify-center align-center min-height-100">
     <MudCard Class="pa-4">
@@ -69,6 +70,7 @@
             var content = await response.Content.ReadAsStringAsync();
             var empl = JsonConvert.DeserializeObject<LogedEmployee>(content);
             await AuthService.Login(empl);
+            Navigation.NavigateTo("/", true);
         }
         else
         {
