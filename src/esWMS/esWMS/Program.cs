@@ -24,6 +24,7 @@ try
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
 
+    builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
     builder.Services.AddAuthorization();
     builder.Services.AddCascadingAuthenticationState();

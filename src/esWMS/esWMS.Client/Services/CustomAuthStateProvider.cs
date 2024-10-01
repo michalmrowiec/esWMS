@@ -26,5 +26,12 @@ namespace esWMS.Client.Services
             NotifyAuthenticationStateChanged(
                 Task.FromResult(new AuthenticationState(user)));
         }
+
+        public void LogoutUser()
+        {
+            var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
+            NotifyAuthenticationStateChanged(
+                Task.FromResult(new AuthenticationState(anonymousUser)));
+        }
     }
 }
