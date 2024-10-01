@@ -32,4 +32,5 @@ builder.Services.AddMudBlazorSnackbar(config =>
 });
 
 Console.WriteLine($"BaseAddress: {builder.HostEnvironment.BaseAddress}");
+
 await builder.Build().RunAsync();

@@ -3,6 +3,7 @@
 @using esWMS.Client.Services
 @inherits LayoutComponentBase
 @inject IAuthService AuthService
+@inject NavigationManager Navigation
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
@@ -44,6 +45,8 @@
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
     private MudTheme? _theme = null;
+    private bool _isAuthenticated = false;
+    private bool _isLoading = true;
 
     protected override void OnInitialized()
     {

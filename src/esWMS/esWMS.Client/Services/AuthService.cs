@@ -1,5 +1,6 @@
 ﻿using esWMS.Client.ViewModels.SystemActors;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
 namespace esWMS.Client.Services
 {
@@ -7,7 +8,8 @@ namespace esWMS.Client.Services
     {
         Task Login(LogedEmployee logedEmployee);
         Task Logout();
-        Task CheckLogin();
+        Task<bool> CheckLogin();
+        Task<ClaimsPrincipal> GetAuthenticationStateAsync();
     }
 
     public class AuthService : IAuthService
@@ -21,14 +23,25 @@ namespace esWMS.Client.Services
             _localStorageService = localStorageService;
         }
 
-        public async Task CheckLogin()
+        public async Task<ClaimsPrincipal> GetAuthenticationStateAsync()
+        {
+            var authState = await ((CustomAuthStateProvider)_authenticationStateProvider)
+                .GetAuthenticationStateAsync();
+            return authState.User;
+        }
+
+        public async Task<bool> CheckLogin()
         {
             var logedEmployee = await _localStorageService.GetItemAsync<LogedEmployee>("jwt");
             if (logedEmployee != null)
             {
                 ((CustomAuthStateProvider)_authenticationStateProvider)
                     .AuthenticateUser(logedEmployee.EmployeeId, logedEmployee.RoleId);
+
+                return true;
             }
+
+            return false;
         }
 
         public async Task Login(LogedEmployee logedEmployee)
