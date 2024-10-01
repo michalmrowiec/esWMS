@@ -8,11 +8,21 @@
 @inject ISnackbar Snackbar
 @inject HttpClient HttpClient
 @inject IAlertService AlertService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <MudPaper Class="d-flex justify-center align-center min-height-100">
     <MudCard Class="pa-4">
         <MudCardContent>
             <MudText Typo="Typo.h5" Align="Align.Center">Logowanie</MudText>
+
+            <AuthorizeView>
+                <Authorized>
+                    <p>Hello, @context.User.Identity?.Name! [@context.User.IsInRole("MNG")]</p>
+                </Authorized>
+                <NotAuthorized>
+                    <p>You're not authorized.</p>
+                </NotAuthorized>
+            </AuthorizeView>
 
             <MudForm @ref="form">
                 <MudTextField @bind-Value="_loginModel.EmployeeId"
@@ -21,7 +31,6 @@
                               Margin="Margin.Dense"
                               Required
                               Immediate
-                              ValidationError="Wprowadź poprawny identyfikator"
                               For="@(() => _loginModel.EmployeeId)" />
 
                 <MudTextField @bind-Value="_loginModel.Password"
@@ -34,7 +43,7 @@
                               For="@(() => _loginModel.Password)" />
 
                 <MudSpacer />
-                <MudButton Variant="Variant.Filled" Color="Color.Primary">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LogIn">
                     Zaloguj
                 </MudButton>
             </MudForm>
@@ -46,4 +55,25 @@
     private MudForm form;
     private EmployeeLoginVM _loginModel = new EmployeeLoginVM();
 
+    private async Task LogIn()
+    {
+        var postJson = new StringContent(JsonConvert.SerializeObject(_loginModel), Encoding.UTF8, "application/json");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, @"api/v1/Employee/login");
+        request.Content = postJson;
+
+        var response = await HttpClient.SendAsync(request);
+
+        if(response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            var empl = JsonConvert.DeserializeObject<LogedEmployee>(content);
+            ((CustomAuthStateProvider)AuthenticationStateProvider)
+            .AuthenticateUser(empl.EmployeeId, empl.RoleId);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
 }

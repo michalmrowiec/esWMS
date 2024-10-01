@@ -6,6 +6,7 @@ using esWMS.Components.Alert;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.OpenApi.Models;
 using MudBlazor.Services;
@@ -23,6 +24,9 @@ try
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
 
+    builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+    builder.Services.AddAuthorization();
+    builder.Services.AddCascadingAuthenticationState();
     builder.Services.AddSingleton<IAlertService, AlertService>();
     builder.Services.AddSingleton<OnePageState>();
     builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
