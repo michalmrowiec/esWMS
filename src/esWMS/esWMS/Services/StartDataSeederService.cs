@@ -1,43 +1,57 @@
-﻿using esWMS.Domain.Entities.SystemActors;
+﻿using esWMS.Application.Functions.Employees.Command.CreateEmployee;
+using esWMS.Domain.Entities.SystemActors;
 using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Models;
 using esWMS.Infrastructure;
+using MediatR;
 
 namespace esWMS.Services
 {
     internal static class StartDataSeederService
     {
-        public static void SeedStartData(this EsWmsDbContext dbContext)
+        public static async Task SeedStartData(this EsWmsDbContext dbContext, IMediator mediator)
         {
-            //if (!dbContext.Employees.Any())
-            //{
-
-            //}
+            if (!dbContext.Employees.Any())
+            {
+                await mediator.Send(StartAdmin);
+            }
 
             if (!dbContext.Categories.Any())
             {
-                dbContext.Categories.AddRange(Categories);
+                await dbContext.Categories.AddRangeAsync(Categories);
             }
 
             if (!dbContext.Products.Any())
             {
-                dbContext.Products.AddRange(Products);
+                await dbContext.Products.AddRangeAsync(Products);
             }
 
             if (!dbContext.Warehouses.Any())
             {
-                dbContext.Warehouses.AddRange(Warehouses);
+                await dbContext.Warehouses.AddRangeAsync(Warehouses);
             }
 
             if (!dbContext.Contractors.Any())
             {
-                dbContext.Contractors.AddRange(Contractors);
+                await dbContext.Contractors.AddRangeAsync(Contractors);
             }
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
 
-        public static List<Category> Categories = new List<Category>
+        public static CreateEmployeeCommand StartAdmin = new()
         {
+            EmployeeId = "admin",
+            RoleId = Roles.Admin,
+            FirstName = "admin",
+            LastName = "admin",
+            Password = "admin",
+            RepeatPassword = "admin",
+            IsActive = true
+        };
+
+        public static List<Category> Categories =
+        [
             new Category
             {
                 CategoryId = "CAT-001",
@@ -84,10 +98,10 @@ namespace esWMS.Services
                 CategoryName = "Nośniki",
                 CreatedAt = DateTime.Now
             }
-        };
+        ];
 
-        public static List<Product> Products = new List<Product>
-        {
+        public static List<Product> Products =
+        [
             new Product
             {
                 ProductId = "PROD-001",
@@ -257,11 +271,11 @@ namespace esWMS.Services
                 IsActive = true,
                 CreatedAt = DateTime.Now
             }
-        };
+        ];
 
 
-        public static List<Warehouse> Warehouses = new List<Warehouse>
-        {
+        public static List<Warehouse> Warehouses =
+        [
             new Warehouse
             {
                 WarehouseId = "MWS",
@@ -286,10 +300,10 @@ namespace esWMS.Services
                 WarehouseName = "Magazyn Produkcji",
                 CreatedAt = DateTime.Now
             }
-        };
+        ];
 
-        public static List<Contractor> Contractors = new List<Contractor>
-        {
+        public static List<Contractor> Contractors =
+        [
             new Contractor
             {
                 ContractorId = "PTK",
@@ -308,6 +322,6 @@ namespace esWMS.Services
                 IsActive = true,
                 CreatedAt= DateTime.Now
             }
-        };
+        ];
     }
 }

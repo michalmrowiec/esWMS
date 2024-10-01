@@ -6,6 +6,7 @@ using esWMS.Components.Alert;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.OpenApi.Models;
@@ -92,12 +93,14 @@ try
     var dbContext = scope.ServiceProvider
         .GetRequiredService<EsWmsDbContext>();
 
+    var mediator = scope.ServiceProvider
+        .GetRequiredService<IMediator>();
+
     dbContext.UpdateDatabase(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
 
-    // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
-        dbContext.SeedStartData();
+        await dbContext.SeedStartData(mediator);
 
         app.UseWebAssemblyDebugging();
 
