@@ -10,6 +10,7 @@ namespace esWMS.Client.Services
         Task Logout();
         Task<bool> CheckLogin();
         Task<ClaimsPrincipal> GetAuthenticationStateAsync();
+        Task<string> GetJwtToken();
     }
 
     public class AuthService : IAuthService
@@ -58,6 +59,12 @@ namespace esWMS.Client.Services
                 .LogoutUser();
 
             await _localStorageService.RemoveItemAsync("jwt");
+        }
+
+        public async Task<string> GetJwtToken()
+        {
+            var logedData = await _localStorageService.GetItemAsync<LogedEmployee>("jwt");
+            return logedData.JwtToken;
         }
     }
 }

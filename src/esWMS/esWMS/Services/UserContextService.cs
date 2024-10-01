@@ -4,7 +4,7 @@ namespace esWMS.Services
 {
     public interface IUserContextService
     {
-        Guid? GetUserId { get; }
+        string? GetUserId { get; }
         ClaimsPrincipal? User { get; }
     }
 
@@ -18,6 +18,6 @@ namespace esWMS.Services
 
         public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 
-        public Guid? GetUserId => User?.FindFirstValue(ClaimTypes.NameIdentifier) is null ? null : Guid.Parse(User!.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        public string? GetUserId => User?.FindFirstValue(ClaimTypes.NameIdentifier) is null ? null : User!.FindFirstValue(ClaimTypes.NameIdentifier!);
     };
 }

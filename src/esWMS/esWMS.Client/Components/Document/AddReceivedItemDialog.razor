@@ -14,7 +14,8 @@
                       Disabled />
 
         <ProductTable SelectedProduct="OnProductSelected"
-                      PageSize="new int[] {5,10,25,50}" />
+                      PageSize="new int[] {5,10,25,50}"
+                      TypeOfSelection="Pages.Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.Single"/>
 
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />

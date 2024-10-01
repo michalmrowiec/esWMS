@@ -12,9 +12,11 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
+using Microsoft.AspNetCore.Authorization;
 
 namespace esWMS.Controllers.SystemActors
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class ContractorController : ControllerBase
@@ -42,6 +44,7 @@ namespace esWMS.Controllers.SystemActors
             return result.HandleOkResult(this);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpPost]
         public async Task<ActionResult<ContractorDto>> CreateContractor
             ([FromBody] CreateContractorCommand createContractorCommand)
@@ -54,6 +57,7 @@ namespace esWMS.Controllers.SystemActors
             return result.HandleCreatedResult(this, "");
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpDelete("{contractorId}")]
         public async Task<ActionResult> DeleteCategory([FromRoute] string contractorId)
         {
@@ -71,6 +75,7 @@ namespace esWMS.Controllers.SystemActors
             return result.HandleOkResult(this);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpPut]
         public async Task<ActionResult<ContractorDto>> UpdateContractor
             ([FromBody] UpdateContractorCommand updateContractorCommand)

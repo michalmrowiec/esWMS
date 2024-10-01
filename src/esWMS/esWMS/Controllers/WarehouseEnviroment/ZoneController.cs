@@ -7,9 +7,11 @@ using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class ZoneController : ControllerBase
@@ -37,6 +39,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleOkResult(this);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpPost]
         public async Task<ActionResult<ZoneDto>> CreateLocation
             ([FromBody] CreateZoneCommand createZoneCommand)

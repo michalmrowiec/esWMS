@@ -7,11 +7,13 @@ using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class CategoryController : ControllerBase
@@ -39,6 +41,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleOkResult(this);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpPost]
         public async Task<ActionResult<CategoryDto>> CreateCategory
             ([FromBody] CreateCategoryCommand createCategoryCommand)
@@ -51,6 +54,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleCreatedResult(this, "");
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpPut]
         public async Task<ActionResult<CategoryDto>> UpdateCategory
             ([FromBody] UpdateCategoryCommand updateCategoryCommand)
@@ -63,7 +67,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleOkResult(this);
         }
 
-
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpDelete("{categoryId}")]
         public async Task<ActionResult> DeleteCategory([FromRoute] string categoryId)
         {

@@ -1,4 +1,5 @@
-﻿@using esWMS.Client.Pages
+﻿@using Microsoft.AspNetCore.Authorization
+@using esWMS.Client.Pages
 @using esWMS.Client.Pages.Category
 @using esWMS.Client.Pages.Contractor
 @using esWMS.Client.Pages.Documents.Mmm
@@ -38,11 +39,15 @@
                     OnClick="@(async () => await OnePageState.AddTab(new TabView("Kontrahenci", new ContractorTable(), Guid.NewGuid(), Icons.Material.Filled.Group)))">
             Kontrahenci
         </MudNavLink>
-        <MudNavLink Match="NavLinkMatch.Prefix"
-                    Icon="@Icons.Material.Filled.SupervisedUserCircle"
-                    OnClick="@(async () => await OnePageState.AddTab(new TabView("Pracownicy", new EmployeeTable(), Guid.NewGuid(), Icons.Material.Filled.SupervisedUserCircle)))">
-            Pracownicy
-        </MudNavLink>
+        <AuthorizeView Roles="ADM, MNG">
+            <Authorized>
+                <MudNavLink Match="NavLinkMatch.Prefix"
+                            Icon="@Icons.Material.Filled.SupervisedUserCircle"
+                            OnClick="@(async () => await OnePageState.AddTab(new TabView("Pracownicy", new EmployeeTable(), Guid.NewGuid(), Icons.Material.Filled.SupervisedUserCircle)))">
+                    Pracownicy
+                </MudNavLink>
+            </Authorized>
+        </AuthorizeView>
     </MudNavGroup>
     <MudNavGroup Title="Magazyny" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
         <MudNavLink Match="NavLinkMatch.Prefix"

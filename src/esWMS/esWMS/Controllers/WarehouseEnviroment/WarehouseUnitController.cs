@@ -11,9 +11,11 @@ using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class WarehouseUnitController : ControllerBase

@@ -8,6 +8,12 @@ namespace esWMS.Client.Services
     {
         public static async Task HandleFailure(this HttpResponseMessage response, IAlertService alertService)
         {
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                alertService.ShowAlert(new("Brak dostępu."), Severity.Error);
+                return;
+            }
+
             var json = await response.Content.ReadAsStringAsync();
             try
             {

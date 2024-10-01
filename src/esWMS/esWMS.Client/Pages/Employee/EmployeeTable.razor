@@ -19,12 +19,16 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Pracownicy</MudText>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Class="ml-auto"
-                   OnClick="@(async () => await OnePageState.AddTab(new TabView("Tworzenie pracownika", new CreateEmployee(), Guid.NewGuid(), Icons.Material.Filled.PersonAddAlt1)))">
-            Utwórz pracownika
-        </MudButton>
+        <AuthorizeView Roles="ADM">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto"
+                           OnClick="@(async () => await OnePageState.AddTab(new TabView("Tworzenie pracownika", new CreateEmployee(), Guid.NewGuid(), Icons.Material.Filled.PersonAddAlt1)))">
+                    Utwórz pracownika
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>

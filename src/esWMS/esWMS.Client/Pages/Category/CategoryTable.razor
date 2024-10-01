@@ -35,13 +35,16 @@
         <ExpandCollapseGroupsButtons ExpandAction="table.ExpandAllGroups"
                                      CollapseAction="table.CollapseAllGroups" />
         <MudSpacer />
-        <MudButton @onclick="OpenDialogAsync"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary">
-            Utwórz kategorię
-        </MudButton>
-        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
-                       OnClick="OnSearch" />
+        <AuthorizeView Roles="ADM, MNG">
+            <Authorized>
+                <MudButton @onclick="OpenDialogAsync"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary">
+                    Utwórz kategorię
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+
     </ToolBarContent>
     <ColGroup>
         <col style="width: 60px;" />
@@ -83,16 +86,20 @@
         <MudTd DataLabel="Parent Category Name">@context.ParentCategory?.CategoryName</MudTd>
         <MudTd DataLabel="Nr">@context.CategoryId</MudTd>
         <MudTd DataLabel="Parent Category">@context.ParentCategoryId</MudTd>
-        <MudTh>
-            <MudIconButton Size="@Size.Small"
-                           Icon="@Icons.Material.Outlined.Edit"
-                           OnClick="@(async () => await OpenEditDialogAsync(context))" />
-        </MudTh>
-        <MudTh>
-            <MudIconButton Size="@Size.Small"
-                           Icon="@Icons.Material.Outlined.Delete"
-                           OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
-        </MudTh>
+        <AuthorizeView Roles="ADM, MNG" Context="context2">
+            <Authorized>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Edit"
+                                   OnClick="@(async () => await OpenEditDialogAsync(context))" />
+                </MudTh>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Delete"
+                                   OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
+                </MudTh>
+            </Authorized>
+        </AuthorizeView>
     </RowTemplate>
     <GroupHeaderTemplate>
         <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"{context.GroupName}: {context.Key}")</MudTh>

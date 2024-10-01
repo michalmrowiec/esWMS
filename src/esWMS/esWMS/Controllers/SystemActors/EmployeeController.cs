@@ -6,11 +6,13 @@ using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
 namespace esWMS.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class EmployeeController : ControllerBase
@@ -38,6 +40,7 @@ namespace esWMS.Controllers
             return result.HandleOkResult(this);
         }
 
+        [Authorize(Roles = $"{Roles.Admin}")]
         [HttpPost]
         public async Task<ActionResult<EmployeeDto>> CreateEmployee
             ([FromBody] CreateEmployeeCommand createEmployeeCommand)
@@ -50,6 +53,7 @@ namespace esWMS.Controllers
             return result.HandleCreatedResult(this, "");
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<LogedEmployeeDto>> Login([FromBody] LoginEmployeeCommand loginEmployeeCommand)
         {
