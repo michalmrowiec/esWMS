@@ -14,7 +14,7 @@ namespace esWMS.Controllers.Utils
                 BaseResponse.ResponseStatus.Success => controller.Ok(result.ReturnedObj),
                 BaseResponse.ResponseStatus.ValidationError => controller.BadRequest(result.ValidationErrors),
                 BaseResponse.ResponseStatus.ServerError => controller.StatusCode(500, result.Message),
-                BaseResponse.ResponseStatus.NotFound => controller.NotFound(),
+                BaseResponse.ResponseStatus.NotFound => controller.NotFound(result.Message),
                 BaseResponse.ResponseStatus.BadQuery => controller.BadRequest(result.Message),
                 _ => controller.BadRequest(),
             };
@@ -28,7 +28,7 @@ namespace esWMS.Controllers.Utils
                 BaseResponse.ResponseStatus.Success => controller.NoContent(),
                 BaseResponse.ResponseStatus.ValidationError => controller.BadRequest(result.ValidationErrors),
                 BaseResponse.ResponseStatus.ServerError => controller.StatusCode(500, result.Message),
-                BaseResponse.ResponseStatus.NotFound => controller.NotFound(),
+                BaseResponse.ResponseStatus.NotFound => controller.NotFound(result.Message),
                 BaseResponse.ResponseStatus.BadQuery => controller.BadRequest(result.Message),
                 _ => controller.BadRequest(),
             };
@@ -43,7 +43,7 @@ namespace esWMS.Controllers.Utils
                 BaseResponse.ResponseStatus.Success => controller.Created(location, result.ReturnedObj),
                 BaseResponse.ResponseStatus.ValidationError => controller.BadRequest(result.ValidationErrors),
                 BaseResponse.ResponseStatus.ServerError => controller.StatusCode(500, result.Message),
-                BaseResponse.ResponseStatus.NotFound => controller.NotFound(),
+                BaseResponse.ResponseStatus.NotFound => controller.NotFound(result.Message),
                 BaseResponse.ResponseStatus.BadQuery => controller.BadRequest(result.Message),
                 _ => controller.BadRequest(),
             };
