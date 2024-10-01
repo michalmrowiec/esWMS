@@ -11,22 +11,21 @@
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<MudPaper Class="d-flex justify-center align-center min-height-100">
-    <MudCard Class="pa-4">
+<div style="display: flex; justify-content: center; align-items: center; height: 75vh;">
+    <MudCard Class="pa-4" Style="width: 400px;">
         <MudCardContent>
-            <MudText Typo="Typo.h5" Align="Align.Center">Logowanie</MudText>
-            <MudForm @ref="form" @onkeypress="HandleKeyPress">
+            <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-8">Logowanie</MudText>
+            <MudForm @ref="_form" @onkeypress="HandleKeyPress" Spacing="4">
                 <MudTextField @bind-Value="_loginModel.EmployeeId"
-                              Class="mb-2"
                               Label="Identyfikator pracownika"
                               Variant="Variant.Filled"
                               Margin="Margin.Dense"
                               Required
                               Immediate
-                              For="@(() => _loginModel.EmployeeId)" />
+                              For="@(() => _loginModel.EmployeeId)"
+                              AutoFocus />
 
                 <MudTextField @bind-Value="_loginModel.Password"
-                              Class="mb-2"
                               Label="Hasło"
                               Variant="Variant.Filled"
                               Margin="Margin.Dense"
@@ -42,10 +41,11 @@
             </MudForm>
         </MudCardContent>
     </MudCard>
-</MudPaper>
+</div>
+
 
 @code {
-    private MudForm form;
+    private MudForm _form;
     private EmployeeLoginVM _loginModel = new EmployeeLoginVM();
 
     private async Task LogIn()
