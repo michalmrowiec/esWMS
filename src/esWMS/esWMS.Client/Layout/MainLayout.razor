@@ -3,6 +3,7 @@
 @using esWMS.Client.Services
 @inherits LayoutComponentBase
 @inject IAuthService AuthService
+@inject NavigationManager Navigation
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
@@ -16,7 +17,7 @@
         <MudSpacer />
         <AuthorizeView>
             <Authorized>
-                <a href="/" onclick="@(async () => await AuthService.Logout())">Logout</a>
+                <MudText>@context.User.Identity?.Name <a href="#" onclick="@(async () => { await AuthService.Logout(); Navigation.NavigateTo("/", true); })">Logout</a></MudText>
             </Authorized>
             <NotAuthorized>
                 <a href="/login">Login</a>
@@ -60,7 +61,7 @@
                 LayoutProperties = new LayoutProperties()
             };
 
-        AuthService.CheckLogin();
+        //AuthService.CheckLogin();
     }
 
     private void DrawerToggle()

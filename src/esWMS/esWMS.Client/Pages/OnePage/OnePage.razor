@@ -1,22 +1,32 @@
 ﻿@page "/"
+@using esWMS.Client.Services
 @using esWMS.Client.States
 @inject OnePageState OnePageState
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
 
 <PageTitle>esWMS</PageTitle>
-
-<MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@OnePageState.UserIndex"
-                CloseTab="@CloseTabCallback"
-                CloseIconToolTip="Close tab. All data will be lost"
-                PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
-    @foreach (var tab in OnePageState.UserTabs)
-    {
-        <MudTabPanel ID="@tab.Id" Text="@tab.Label" Icon="@tab.Icon" ShowCloseIcon="true">
-            <CascadingValue Value="@(tab.Id == OnePageState.UserTabs[OnePageState.UserIndex].Id)">
-                @GetRenderFragment(tab.Content.GetType(), tab.ComponentParameters)
-            </CascadingValue>
-        </MudTabPanel>
-    }
-</MudDynamicTabs>
+<AuthorizeView>
+    <Authorized>
+        <MudDynamicTabs KeepPanelsAlive="true" @ref="@DynamicTabs" @bind-ActivePanelIndex="@OnePageState.UserIndex"
+                        CloseTab="@CloseTabCallback"
+                        CloseIconToolTip="Close tab. All data will be lost"
+                        PanelClass="px-4 py-6" Elevation="4" Rounded ApplyEffectsToContainer>
+            @foreach (var tab in OnePageState.UserTabs)
+            {
+                <MudTabPanel ID="@tab.Id" Text="@tab.Label" Icon="@tab.Icon" ShowCloseIcon="true">
+                    <CascadingValue Value="@(tab.Id == OnePageState.UserTabs[OnePageState.UserIndex].Id)">
+                        @GetRenderFragment(tab.Content.GetType(), tab.ComponentParameters)
+                    </CascadingValue>
+                </MudTabPanel>
+            }
+        </MudDynamicTabs>
+    </Authorized>
+    <NotAuthorized>
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        <MudText>Ładowanie...</MudText>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     public MudDynamicTabs DynamicTabs;
@@ -47,6 +57,16 @@
         base.OnInitialized();
 
         OnePageState.OnAddTab += async () => await InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var loged = await AuthService.CheckLogin();
+
+        if (!loged && firstRender)
+        {
+            Navigation.NavigateTo("/login", true);
+        }
     }
 
     protected override void OnAfterRender(bool firstRender)

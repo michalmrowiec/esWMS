@@ -15,18 +15,9 @@
     <MudCard Class="pa-4">
         <MudCardContent>
             <MudText Typo="Typo.h5" Align="Align.Center">Logowanie</MudText>
-
-            <AuthorizeView>
-                <Authorized>
-                    <p>Hello, @context.User.Identity?.Name! [@context.User.IsInRole("MNG")]</p>
-                </Authorized>
-                <NotAuthorized>
-                    <p>You're not authorized.</p>
-                </NotAuthorized>
-            </AuthorizeView>
-
-            <MudForm @ref="form">
+            <MudForm @ref="form" @onkeypress="HandleKeyPress">
                 <MudTextField @bind-Value="_loginModel.EmployeeId"
+                              Class="mb-2"
                               Label="Identyfikator pracownika"
                               Variant="Variant.Filled"
                               Margin="Margin.Dense"
@@ -35,12 +26,13 @@
                               For="@(() => _loginModel.EmployeeId)" />
 
                 <MudTextField @bind-Value="_loginModel.Password"
+                              Class="mb-2"
                               Label="Hasło"
                               Variant="Variant.Filled"
                               Margin="Margin.Dense"
                               InputType="InputType.Password"
-                              Required="true"
-                              Immediate="true"
+                              Required
+                              Immediate
                               For="@(() => _loginModel.Password)" />
 
                 <MudSpacer />
@@ -75,6 +67,15 @@
         else
         {
             await response.HandleFailure(AlertService);
+        }
+    }
+
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await LogIn();
         }
     }
 }
