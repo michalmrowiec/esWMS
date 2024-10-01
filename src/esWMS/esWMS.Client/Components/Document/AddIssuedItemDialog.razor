@@ -130,23 +130,15 @@
     {
         if (_selectedStockProduct != null)
         {
-            // _documentItemWithAssignments.Add(
-            //     new("",
-            //         item.warehouseUnitItem.WarehouseUnitId,
-            //         item.quantity,
-            //         item.warehouseUnitItem.WarehouseUnitItemId));
-
             DocumentItemVMs.Add(new DocumentItemVM()
                 {
                     ProductId = _selectedStockProduct.ProductId,
                     ProductCode = "",
                     EanCode = "",
                     ProductName = _selectedStockProduct.ProductName,
-                    //Quantity = _quantity,
                     Quantity = _warehouseUnitItems.Sum(x => x.Quantity),
                     Price = _price,
                     Currency = _currency,
-                    //DocumentWarehouseUnitItems = _documentItemWithAssignments.ToList()
                     DocumentWarehouseUnitItems = _warehouseUnitItems.Select(x =>
                         new DocumentWarehouseUnitItemVM(
                             "",
@@ -191,6 +183,7 @@
     private void OnGet((WarehouseUnitItemVM warehouseUnitItem, int quantity) item)
     {
         _warehouseUnitItems.Add(item.warehouseUnitItem);
+        _warehouseUnitItems.First(x => x.WarehouseUnitItemId.Equals(item.warehouseUnitItem.WarehouseUnitItemId)).Quantity = item.quantity;
 
         if (_price == 0)
             _price = item.warehouseUnitItem.Price ?? 0;
