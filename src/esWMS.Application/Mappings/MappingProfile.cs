@@ -41,6 +41,7 @@ using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Products.Commands.UpdateProduct;
 using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
 using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
+using esWMS.Application.Functions.WarehouseUnits.Commands;
 
 namespace esWMS.Application.Mappings
 {
@@ -67,9 +68,11 @@ namespace esWMS.Application.Mappings
             CreateMap<Warehouse, FlatWarehouseDto>();
             CreateMap<Warehouse, WarehouseDto>();
 
+            CreateMap<CommonWarehouseUnitCommand, WarehouseUnit>();
             CreateMap<CreateWarehouseUnitCommand, WarehouseUnit>();
-            CreateMap<CreateFlatWarehouseUnitCommand, WarehouseUnit>();
-            CreateMap<UpdateWarehouseUnitCommand, WarehouseUnit>();
+            CreateMap<UpdateWarehouseUnitCommand, WarehouseUnit>()
+                .ForMember(dest => dest.WarehouseUnitId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<WarehouseUnit, WarehouseUnitDto>()
                 .ForMember(dto => dto.WarehouseUnitItems,
                            opt => opt.MapFrom(src => src.WarehouseUnitItems));

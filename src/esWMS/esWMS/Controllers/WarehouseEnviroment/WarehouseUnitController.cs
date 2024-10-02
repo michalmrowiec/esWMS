@@ -12,6 +12,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using Microsoft.AspNetCore.Authorization;
+using esWMS.Application.Functions.Products.Commands.UpdateProduct;
+using esWMS.Application.Functions.Products;
+using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
@@ -94,6 +97,18 @@ namespace esWMS.Controllers.WarehouseEnviroment
             var result = await _mediator.Send(new DeleteWarehouseUnitCommand(warehouseUnitId));
 
             return result.HandleNoContentResult(this);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<WarehouseUnitDto>> UpdateWarehouseUnit
+            ([FromBody] UpdateWarehouseUnitCommand updateWarehouseUnitCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                updateWarehouseUnitCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(updateWarehouseUnitCommand);
+
+            return result.HandleOkResult(this);
         }
     }
 }

@@ -6,7 +6,7 @@ using MediatR;
 
 namespace esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit
 {
-    internal class CreateWarehouseUnitValidator : AbstractValidator<CreateWarehouseUnitCommand>
+    internal class CreateWarehouseUnitValidator : CommonWarehouseUnitValidator<CreateWarehouseUnitCommand>
     {
         public CreateWarehouseUnitValidator(IMediator mediator)
         {

@@ -8,7 +8,6 @@ using esWMS.Middleware;
 using esWMS.Services;
 using esWMS.Services.DataSeed;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.OpenApi.Models;
 using MudBlazor.Services;

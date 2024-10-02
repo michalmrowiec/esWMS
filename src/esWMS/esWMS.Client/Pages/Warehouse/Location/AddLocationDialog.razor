@@ -155,8 +155,7 @@
                 var content = await response.Content.ReadAsStringAsync();
                 var newLocation = JsonConvert.DeserializeObject<LocationVM>(content) ?? new();
 
-                Snackbar.Configuration.PositionClass = "Bottom-End";
-                Snackbar.Add(new MarkupString($"Utworzono <strong>{newLocation.LocationId}</strong>"), Severity.Success);
+                Snackbar.Add(new MarkupString($"Utworzono <b>{newLocation.LocationId}</b>"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }
