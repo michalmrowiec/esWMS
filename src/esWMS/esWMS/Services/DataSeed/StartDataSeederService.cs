@@ -1,21 +1,13 @@
-﻿using esWMS.Application.Functions.Employees.Command.CreateEmployee;
-using esWMS.Domain.Entities.SystemActors;
+﻿using esWMS.Domain.Entities.SystemActors;
 using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Domain.Models;
 using esWMS.Infrastructure;
-using MediatR;
 
-namespace esWMS.Services
+namespace esWMS.Services.DataSeed
 {
     internal static class StartDataSeederService
     {
-        public static async Task SeedStartData(this EsWmsDbContext dbContext, IMediator mediator)
+        public static async Task SeedStartData(this EsWmsDbContext dbContext)
         {
-            if (!dbContext.Employees.Any())
-            {
-                await mediator.Send(StartAdmin);
-            }
-
             if (!dbContext.Categories.Any())
             {
                 await dbContext.Categories.AddRangeAsync(Categories);
@@ -38,17 +30,6 @@ namespace esWMS.Services
 
             await dbContext.SaveChangesAsync();
         }
-
-        public static CreateEmployeeCommand StartAdmin = new()
-        {
-            EmployeeId = "admin",
-            RoleId = Roles.Admin,
-            FirstName = "admin",
-            LastName = "admin",
-            Password = "admin",
-            RepeatPassword = "admin",
-            IsActive = true
-        };
 
         public static List<Category> Categories =
         [

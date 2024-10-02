@@ -6,6 +6,7 @@ using esWMS.Components.Alert;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
+using esWMS.Services.DataSeed;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -98,9 +99,11 @@ try
 
     dbContext.UpdateDatabase(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
 
+    await dbContext.SeedStartAdmin(mediator);
+
     if (app.Environment.IsDevelopment())
     {
-        await dbContext.SeedStartData(mediator);
+        await dbContext.SeedStartData();
 
         app.UseWebAssemblyDebugging();
 
