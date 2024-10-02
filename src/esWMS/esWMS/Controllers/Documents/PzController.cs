@@ -9,6 +9,9 @@ using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using esWMS.Application.Functions.Products.Commands.DeleteProduct;
+using Microsoft.AspNetCore.Authorization;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem;
 
 namespace esWMS.Controllers.Documents
 {
@@ -69,6 +72,14 @@ namespace esWMS.Controllers.Documents
             var result = await _mediator.Send(new GetSortedFilteredPzQuery(sieveModel));
 
             return result.HandleOkResult(this);
+        }
+
+        [HttpDelete("{documentItemId}")]
+        public async Task<ActionResult> DeletePzDocumentItem([FromRoute] string documentItemId)
+        {
+            var result = await _mediator.Send(new DeletePzItemCommand(documentItemId));
+
+            return result.HandleNoContentResult(this);
         }
     }
 }

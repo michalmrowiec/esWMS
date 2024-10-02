@@ -8,6 +8,7 @@
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+@inject IConfirmDialogService ConfirmDialogService
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @PzVM.DocumentId
@@ -51,7 +52,8 @@
 
 <DocumentItemsTable DocumentItems="@PzVM.DocumentItems"
                     TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
-                    OnApprove="OpenDialogAsync" />
+                    OnApprove="OpenDialogAsync"
+                    DeleteFunc="OpenDeleteDialog" />
 
 @if (PzVM.DocumentItems.All(x => x.IsApproved) &&
 !PzVM.IsApproved)
@@ -136,6 +138,35 @@ else
 
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{PzVM.DocumentId}</b>"), Severity.Success);
 
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OpenDeleteDialog(DocumentItemVM documentItem)
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć pozycję?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteAsync(documentItem);
+        }
+    }
+
+    private async Task DeleteAsync(DocumentItemVM documentItem)
+    {
+        var response = await pzDataService.Delete(@"api/v1/Pz/" + documentItem.DocumentItemId);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto kategorię"), Severity.Success);
+            await RefreshPz();
         }
         else
         {

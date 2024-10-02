@@ -75,6 +75,7 @@ namespace esWMS.Infrastructure
             services.AddScoped<IWarehouseUnitRepository, WarehouseUnitRepository>();
             services.AddScoped<IWarehouseUnitItemRepository, WarehouseUnitItemRepository>();
             services.AddScoped<IContractorRepository, ContractorRepository>();
+            services.AddScoped<IDocumentItemRepository, DocumentItemRepository>();
             services.AddScoped<IPzRepository, PzRepository>();
             services.AddScoped<IWzRepository, WzRepository>();
             services.AddScoped<IMmmRepository, MmmRepository>();
