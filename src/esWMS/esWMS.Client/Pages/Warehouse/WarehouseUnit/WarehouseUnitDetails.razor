@@ -4,6 +4,8 @@
 @using esWMS.Client.ViewModels
 @inject IDataService<WarehouseUnitVM> WarehouseUnitService
 @inject IDialogService DialogService
+@inject IAlertService AlertService
+@inject ISnackbar Snackbar
 
 @if (_warehouseUnit == null)
 {
@@ -97,6 +99,11 @@ else
                                           Variant="Variant.Outlined"
                                           ReadOnly
                                           Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadWarehouseUnit">Resetuj</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="Update">Zaktualizuj</MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudCardContent>
@@ -220,5 +227,28 @@ else
             { x => x.FuncsOnSubmit, new List<EventCallback>() { EventCallback.Factory.Create(this, ReloadWarehouseUnit) } }
         };
         return DialogService.ShowAsync<SetLocationModalDialog>(null, parameters, options);
+    }
+
+    private async Task Update()
+    {
+        var model = new
+        {
+            WarehouseUnitId = _warehouseUnit.WarehouseUnitId,
+            TotalWeight = _warehouseUnit.TotalWeight,
+            TotalLength = _warehouseUnit.TotalLength,
+            TotalWidth = _warehouseUnit.TotalWidth,
+            TotalHeight = _warehouseUnit.TotalHeight,
+            CanBeStacked = _warehouseUnit.CanBeStacked
+        };
+        var response = await WarehouseUnitService.Put(@"api/v1/WarehouseUnit", model);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Jednostka została zaktualizowana."), Severity.Success);
+            await ReloadWarehouseUnit();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
     }
 }
