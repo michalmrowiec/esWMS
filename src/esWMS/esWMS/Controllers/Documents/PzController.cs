@@ -12,6 +12,7 @@ using Sieve.Models;
 using esWMS.Application.Functions.Products.Commands.DeleteProduct;
 using Microsoft.AspNetCore.Authorization;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePz;
 
 namespace esWMS.Controllers.Documents
 {
@@ -74,10 +75,18 @@ namespace esWMS.Controllers.Documents
             return result.HandleOkResult(this);
         }
 
-        [HttpDelete("{documentItemId}")]
+        [HttpDelete("item/{documentItemId}")]
         public async Task<ActionResult> DeletePzDocumentItem([FromRoute] string documentItemId)
         {
             var result = await _mediator.Send(new DeletePzItemCommand(documentItemId));
+
+            return result.HandleNoContentResult(this);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeletePzDocument([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new DeletePzCommand(documentId));
 
             return result.HandleNoContentResult(this);
         }

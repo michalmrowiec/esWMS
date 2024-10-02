@@ -1,33 +1,32 @@
 ﻿using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
-using esWMS.Application.Functions.Products;
 using esWMS.Application.Responses;
 using esWMS.Domain.Entities.Documents;
 using FluentValidation.Results;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem
+namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePz
 {
-    internal class DeletePzItemCommandHandler(
-        IDocumentItemRepository documentItemRepository,
+    internal class DeletePzCommandHandler(
+        IPzRepository repository,
         ITransactionManager transactionManager)
-        : IRequestHandler<DeletePzItemCommand, BaseResponse>
+        : IRequestHandler<DeletePzCommand, BaseResponse>
     {
-        private readonly IDocumentItemRepository _documentItemRepository = documentItemRepository;
+        private readonly IPzRepository _repository = repository;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
-        public async Task<BaseResponse> Handle(DeletePzItemCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeletePzCommand request, CancellationToken cancellationToken)
         {
-            DocumentItem documentItem;
+            PZ document;
 
             try
             {
-                documentItem = await _documentItemRepository.GetByIdAsync(request.DocumentItemId);
+                document = await _repository.GetDocumentByIdWithItemsAsync(request.DocumentId);
             }
             catch (KeyNotFoundException)
             {
                 return new BaseResponse
-                    (BaseResponse.ResponseStatus.NotFound, "Document item not found.");
+                    (BaseResponse.ResponseStatus.NotFound, "Document not found.");
             }
             catch (Exception)
             {
@@ -35,11 +34,12 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzIte
                     (BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
-            if (documentItem.IsApproved)
+            if (document.IsApproved
+                || document.DocumentItems.Any(x => x.IsApproved))
             {
                 var vr = new ValidationResult(
                     new List<ValidationFailure>() {
-                        new("DocumentItemId", $"Cannot delete approved document item.") });
+                new("DocumentId", $"An approved document cannot be deleted or the document contains approved items.") });
 
                 return new BaseResponse(vr);
             }
@@ -48,11 +48,11 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzIte
             {
                 await _transactionManager.BeginTransactionAsync();
 
-                await _documentItemRepository.DeleteAsync(request.DocumentItemId);
+                await _repository.DeleteAsync(request.DocumentId);
 
                 await _transactionManager.CommitTransactionAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return new BaseResponse

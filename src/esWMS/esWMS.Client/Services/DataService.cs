@@ -17,6 +17,8 @@ namespace esWMS.Client.Services
         Task<HttpResponseMessage> Patch(string uri, object item);
         Task<HttpResponseMessage> Put(string uri, object item);
         Task<HttpResponseMessage> Delete(string uri);
+        Task<HttpResponseMessage> Delete(string uri, Dictionary<string, string>? queryParams = null);
+
     }
 
     public interface IDocumentDataService
@@ -55,6 +57,22 @@ namespace esWMS.Client.Services
 
         public async Task<HttpResponseMessage> Delete(string uri)
         {
+            using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> Delete(string uri, Dictionary<string, string>? queryParams = null)
+        {
+            if (queryParams != null && queryParams.Count > 0)
+            {
+                var query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
+                uri = $"{uri}?{query}";
+            }
+
             using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 

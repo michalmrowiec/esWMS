@@ -135,14 +135,16 @@
         return new TableData<PzVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
 
-    private void RowClickEvent(TableRowClickEventArgs<PzVM> tableRowClickEventArgs)
+    private async Task RowClickEvent(TableRowClickEventArgs<PzVM> tableRowClickEventArgs)
     {
-        OnePageState.AddTab(
+        var tabid = Guid.NewGuid();
+
+        await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new PzDetails(),
-            Guid.NewGuid(),
+            tabid,
             Icons.Material.Filled.Info,
-            new() { { "PzVM", tableRowClickEventArgs?.Item ?? new() } }));
+            new() { { "PzVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabid } }));
     }
 
     private void OnSearch()

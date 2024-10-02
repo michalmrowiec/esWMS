@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
@@ -9,6 +10,7 @@
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
 @inject IConfirmDialogService ConfirmDialogService
+@inject OnePageState OnePageState
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @PzVM.DocumentId
@@ -78,11 +80,23 @@ else if (PzVM.IsApproved)
 }
 else
 {
+    if (!PzVM.DocumentItems.Any(x => x.IsApproved))
+    {
+        <MudButton OnClick="@(() => OpenDeleteDocumentDialog())"
+                   EndIcon="@Icons.Material.Outlined.Delete"
+                   Size="@Size.Small"
+                   Variant="@Variant.Filled"
+                   Color="@Color.Error"
+                   Class="my-3 me-2">
+            Usuń
+        </MudButton>
+    }
+
     <MudButton Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
                Disabled
-               Class="mb-3">
+               Class="my-3">
         Zatwierdź
     </MudButton>
 }
@@ -92,6 +106,8 @@ else
     public PzVM PzVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
 
     private Task OpenDialogAsync(DocumentItemVM documentItem)
     {
@@ -160,13 +176,43 @@ else
         }
     }
 
+    private async Task OpenDeleteDocumentDialog()
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć dokument?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteDocumentAsync();
+        }
+    }
+
     private async Task DeleteAsync(DocumentItemVM documentItem)
     {
-        var response = await pzDataService.Delete(@"api/v1/Pz/" + documentItem.DocumentItemId);
+        var response = await pzDataService.Delete(@"api/v1/Pz/item/" + documentItem.DocumentItemId);
         if (response.IsSuccessStatusCode)
         {
-            Snackbar.Add(new MarkupString("Usunięto kategorię"), Severity.Success);
+            Snackbar.Add(new MarkupString("Usunięto pozycję"), Severity.Success);
             await RefreshPz();
+
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task DeleteDocumentAsync()
+    {
+        var response = await pzDataService.Delete(@"api/v1/Pz", new() { { "DocumentId", PzVM.DocumentId } });
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto dokument"), Severity.Success);
+            await OnePageState.RemoveTab(TabId);
         }
         else
         {
