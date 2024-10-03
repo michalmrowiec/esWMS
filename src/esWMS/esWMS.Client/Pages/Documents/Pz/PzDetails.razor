@@ -58,8 +58,8 @@
                     DeleteFunc="OpenDeleteDialog" />
 
 @if (PzVM.DocumentItems.All(x => x.IsApproved)
-  && !PzVM.IsApproved
-  && PzVM.DocumentItems.Any())
+ && !PzVM.IsApproved
+ && PzVM.DocumentItems.Any())
 {
     <MudButton OnClick="@(() => ApprovePz())"
                Size="@Size.Small"
@@ -101,7 +101,7 @@ else
     [Parameter]
     public Guid TabId { get; set; }
 
-        protected override async Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if (IsActive)
         {

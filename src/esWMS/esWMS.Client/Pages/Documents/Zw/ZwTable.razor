@@ -82,6 +82,8 @@
     </PagerContent>
 </MudTable>
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     private IEnumerable<ZwVM> Products = [];
 
     private IEnumerable<ZwVM> pagedData;
@@ -100,6 +102,15 @@
     };
 
     private List<EventCallback> callbacksOnAddPz = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                await table.ReloadServerData();
+        }
+    }
 
     private void OpenCreatePwTab()
     {
@@ -136,12 +147,14 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<ZwVM> tableRowClickEventArgs)
     {
+        var tabId = Guid.NewGuid();
+
         await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new ZwDetails(),
-            Guid.NewGuid(),
+            tabId,
             Icons.Material.Filled.Info,
-            new() { { "ZwVM", tableRowClickEventArgs?.Item ?? new() } }));
+            new() { { "ZwVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabId } }));
     }
 
     private void OnSearch()
