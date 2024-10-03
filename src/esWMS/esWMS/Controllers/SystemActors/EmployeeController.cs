@@ -7,6 +7,7 @@ using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
@@ -29,6 +30,13 @@ namespace esWMS.Controllers
             _mediator = mediator;
             _logger = logger;
             _userContextService = userContextService;
+        }
+
+        [Authorize]
+        [HttpHead]
+        public ActionResult LoginCheck()
+        {
+            return Ok();
         }
 
         [HttpPost("get-filtered")]

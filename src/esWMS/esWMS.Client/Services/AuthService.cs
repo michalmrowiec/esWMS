@@ -36,6 +36,12 @@ namespace esWMS.Client.Services
             var logedEmployee = await _localStorageService.GetItemAsync<LogedEmployee>("jwt");
             if (logedEmployee != null)
             {
+                if (JwtHelper.IsTokenExpired(logedEmployee.JwtToken))
+                {
+                    await _localStorageService.RemoveItemAsync("jwt");
+                    return false;
+                }
+
                 ((CustomAuthStateProvider)_authenticationStateProvider)
                     .AuthenticateUser(logedEmployee.EmployeeId, logedEmployee.RoleId);
 
