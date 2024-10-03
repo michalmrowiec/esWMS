@@ -264,6 +264,8 @@
 }
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public SelectionType TypeOfSelection { get; set; } = SelectionType.None;
     [Parameter]
@@ -298,6 +300,15 @@
         { "StackOnId", new("StackOnId") },
         { "ProductName", new("ProductName") }
     };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (_table != null)
+                await _table.ReloadServerData();
+        }
+    }
 
     private string GetRowClass(WarehouseUnitVM item, int rowIndex)
     {
