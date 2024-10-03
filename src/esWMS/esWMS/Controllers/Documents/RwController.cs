@@ -1,10 +1,12 @@
-﻿using esWMS.Domain.Models;
-using esWMS.Application.Functions.Documents.RwFunctions;
+﻿using esWMS.Application.Functions.Documents.RwFunctions;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.ApproveRw;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.ApproveRwItems;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw;
+using esWMS.Application.Functions.Documents.RwFunctions.Commands.DeleteRw;
+using esWMS.Application.Functions.Documents.RwFunctions.Commands.DeleteRwItem;
 using esWMS.Application.Functions.Documents.RwFunctions.Queries.GetSortedFilteredRw;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +71,22 @@ namespace esWMS.Controllers.Documents
             var result = await _mediator.Send(approveRwCommand);
 
             return result.HandleOkResult(this);
+        }
+
+        [HttpDelete("item/{documentItemId}")]
+        public async Task<ActionResult> DeleteRwDocumentItem([FromRoute] string documentItemId)
+        {
+            var result = await _mediator.Send(new DeleteRwItemCommand(documentItemId));
+
+            return result.HandleNoContentResult(this);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteRwDocument([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new DeleteRwCommand(documentId));
+
+            return result.HandleNoContentResult(this);
         }
     }
 }

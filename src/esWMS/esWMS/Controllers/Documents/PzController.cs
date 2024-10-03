@@ -1,18 +1,16 @@
-﻿using esWMS.Domain.Models;
-using esWMS.Application.Functions.Documents.PzFunctions;
+﻿using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePz;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.Products.Commands.DeleteProduct;
-using Microsoft.AspNetCore.Authorization;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePz;
 
 namespace esWMS.Controllers.Documents
 {

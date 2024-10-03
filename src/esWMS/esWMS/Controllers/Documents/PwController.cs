@@ -1,18 +1,16 @@
-using esWMS.Domain.Models;
 using esWMS.Application.Functions.Documents.PwFunctions;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePw;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwItems;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw;
+using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePw;
+using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwItem;
 using esWMS.Application.Functions.Documents.PwFunctions.Queries.GetSortedFilteredPw;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePz;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem;
-using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePw;
-using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwItem;
 
 namespace esWMS.Controllers.Documents
 {

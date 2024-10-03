@@ -1,18 +1,16 @@
-﻿using esWMS.Domain.Models;
-using esWMS.Application.Functions.Documents.WzFunctions;
+﻿using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWz;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWzItems;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz;
+using esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWz;
+using esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWzItem;
 using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetSortedFilteredWz;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem;
-using esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWzItem;
-using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePz;
-using esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWz;
 
 namespace esWMS.Controllers.Documents
 {
