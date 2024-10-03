@@ -5,17 +5,17 @@ using esWMS.Domain.Entities.Documents;
 using FluentValidation.Results;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem
+namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwItem
 {
-    internal class DeletePzItemCommandHandler(
+    internal class DeletePwItemCommandHandler(
         IDocumentItemRepository documentItemRepository,
         ITransactionManager transactionManager)
-        : IRequestHandler<DeletePzItemCommand, BaseResponse>
+        : IRequestHandler<DeletePwItemCommand, BaseResponse>
     {
         private readonly IDocumentItemRepository _documentItemRepository = documentItemRepository;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
-        public async Task<BaseResponse> Handle(DeletePzItemCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeletePwItemCommand request, CancellationToken cancellationToken)
         {
             DocumentItem documentItem;
 
