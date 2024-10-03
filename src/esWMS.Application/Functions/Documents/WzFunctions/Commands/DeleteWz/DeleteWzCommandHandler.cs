@@ -6,39 +6,30 @@ using esWMS.Domain.Entities.Documents;
 using FluentValidation.Results;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWzItem
+namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWz
 {
-    internal class DeleteWzItemCommandHandler(
-        IWzRepository wzRepository,
-        IDocumentItemRepository documentItemRepository,
+    internal class DeleteWzCommandHandler(
+        IWzRepository repository,
         IWarehouseUnitItemRepository warehouseUnitItemRepository,
         ITransactionManager transactionManager)
-        : IRequestHandler<DeleteWzItemCommand, BaseResponse>
+        : IRequestHandler<DeleteWzCommand, BaseResponse>
     {
-        private readonly IWzRepository _wzRepository = wzRepository;
-        private readonly IDocumentItemRepository _documentItemRepository = documentItemRepository;
+        private readonly IWzRepository _repository = repository;
         private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
-        public async Task<BaseResponse> Handle(DeleteWzItemCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeleteWzCommand request, CancellationToken cancellationToken)
         {
-            DocumentItem documentItem;
             WZ document;
-            List<DocumentWarehouseUnitItem> documentWarehouseUnitItems;
 
             try
             {
-                documentItem = await _documentItemRepository
-                    .GetDocumentItemByIdWithAssignments(request.DocumentItemId);
-
-                document = await _wzRepository.GetByIdAsync(documentItem.DocumentId);
-
-                documentWarehouseUnitItems = documentItem.DocumentWarehouseUnitItems.ToList();
+                document = await _repository.GetDocumentByIdWithItemsAsync(request.DocumentId);
             }
             catch (KeyNotFoundException)
             {
                 return new BaseResponse
-                    (BaseResponse.ResponseStatus.NotFound, "Document item not found.");
+                    (BaseResponse.ResponseStatus.NotFound, "Document not found.");
             }
             catch (Exception)
             {
@@ -46,25 +37,18 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWzIte
                     (BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
-            if (!document.DocumentItems.Contains(documentItem))
+            if (document.IsApproved
+                || document.DocumentItems.Any(x => x.IsApproved))
             {
                 var vr = new ValidationResult(
                     new List<ValidationFailure>() {
-                        new("DocumentItemId", $"Incorrect document item.") });
+                new("DocumentId", $"An approved document cannot be deleted or the document contains approved items.") });
 
                 return new BaseResponse(vr);
             }
 
-            if (documentItem.IsApproved)
-            {
-                var vr = new ValidationResult(
-                    new List<ValidationFailure>() {
-                        new("DocumentItemId", $"Cannot delete approved document item.") });
 
-                return new BaseResponse(vr);
-            }
-
-            foreach (var dwui in documentWarehouseUnitItems)
+            foreach (var dwui in document.DocumentItems.SelectMany(x => x.DocumentWarehouseUnitItems))
             {
                 dwui.WarehouseUnitItem!.BlockedQuantity -= dwui.Quantity;
             }
@@ -74,9 +58,12 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWzIte
                 await _transactionManager.BeginTransactionAsync();
 
                 await _warehouseUnitItemRepository.UpdateWarehouseUnitItemsAsync(
-                    documentWarehouseUnitItems.Select(x => x.WarehouseUnitItem!).ToArray());
+                    document.DocumentItems
+                        .SelectMany(x => x.DocumentWarehouseUnitItems)
+                        .Select(x => x.WarehouseUnitItem!)
+                        .ToArray());
 
-                await _documentItemRepository.DeleteAsync(request.DocumentItemId);
+                await _repository.DeleteAsync(request.DocumentId);
 
                 await _transactionManager.CommitTransactionAsync();
             }
