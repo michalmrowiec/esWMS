@@ -136,12 +136,14 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<PwVM> tableRowClickEventArgs)
     {
+        var tabid = Guid.NewGuid();
+
         await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new PwDetails(),
-            Guid.NewGuid(),
+            tabid,
             Icons.Material.Filled.Info,
-            new() { { "PwVM", tableRowClickEventArgs?.Item ?? new() } }));
+            new() { { "PwVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabid } }));
     }
 
     private void OnSearch()
