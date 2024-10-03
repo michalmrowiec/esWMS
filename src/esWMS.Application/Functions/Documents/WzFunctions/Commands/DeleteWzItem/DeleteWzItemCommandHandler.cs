@@ -6,28 +6,34 @@ using esWMS.Domain.Entities.Documents;
 using FluentValidation.Results;
 using MediatR;
 
-namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem
+namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.DeleteWzItem
 {
-    internal class DeletePzItemCommandHandler(
-        IPzRepository repository,
+    internal class DeleteWzItemCommandHandler(
+        IWzRepository wzRepository,
         IDocumentItemRepository documentItemRepository,
+        IWarehouseUnitItemRepository warehouseUnitItemRepository,
         ITransactionManager transactionManager)
-        : IRequestHandler<DeletePzItemCommand, BaseResponse>
+        : IRequestHandler<DeleteWzItemCommand, BaseResponse>
     {
-        private readonly IPzRepository _repository = repository;
-
+        private readonly IWzRepository _wzRepository = wzRepository;
         private readonly IDocumentItemRepository _documentItemRepository = documentItemRepository;
         private readonly ITransactionManager _transactionManager = transactionManager;
+        private readonly IWarehouseUnitItemRepository _warehouseUnitItemRepository = warehouseUnitItemRepository;
 
-        public async Task<BaseResponse> Handle(DeletePzItemCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeleteWzItemCommand request, CancellationToken cancellationToken)
         {
             DocumentItem documentItem;
-            PZ document;
+            WZ document;
+            List<DocumentWarehouseUnitItem> documentWarehouseUnitItems;
+
             try
             {
-                documentItem = await _documentItemRepository.GetByIdAsync(request.DocumentItemId);
+                documentItem = await _documentItemRepository
+                    .GetDocumentItemByIdWithAssignments(request.DocumentItemId);
 
-                document = await _repository.GetByIdAsync(documentItem.DocumentId);
+                document = await _wzRepository.GetByIdAsync(documentItem.DocumentId);
+
+                documentWarehouseUnitItems = documentItem.DocumentWarehouseUnitItems.ToList();
             }
             catch (KeyNotFoundException)
             {
@@ -58,15 +64,23 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzIte
                 return new BaseResponse(vr);
             }
 
+            foreach (var dwui in documentWarehouseUnitItems)
+            {
+                dwui.WarehouseUnitItem!.BlockedQuantity -= dwui.Quantity;
+            }
+
             try
             {
                 await _transactionManager.BeginTransactionAsync();
+
+                await _warehouseUnitItemRepository.UpdateWarehouseUnitItemsAsync(
+                    documentWarehouseUnitItems.Select(x => x.WarehouseUnitItem!).ToArray());
 
                 await _documentItemRepository.DeleteAsync(request.DocumentItemId);
 
                 await _transactionManager.CommitTransactionAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 await _transactionManager.RollbackTransactionAsync();
                 return new BaseResponse

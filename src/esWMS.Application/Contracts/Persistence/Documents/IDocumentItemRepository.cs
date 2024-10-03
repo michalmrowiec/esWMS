@@ -4,5 +4,7 @@ namespace esWMS.Application.Contracts.Persistence.Documents
 {
     public interface IDocumentItemRepository
         : IBaseRepository<DocumentItem>
-    { }
+    {
+        Task<DocumentItem> GetDocumentItemByIdWithAssignments(string documnetItemId);
+    }
 }

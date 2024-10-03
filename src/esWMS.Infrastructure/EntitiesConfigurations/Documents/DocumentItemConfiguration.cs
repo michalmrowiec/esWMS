@@ -80,7 +80,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .HasMany(di => di.DocumentWarehouseUnitItems)
                 .WithOne(dwui => dwui.DocumentItem)
                 .HasForeignKey(dwui => dwui.DocumentItemId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -24,7 +24,8 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
         private readonly IMapper _mapper = mapper;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
-        public async Task<BaseResponse<WzDto>> Handle(CreateWzCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<WzDto>> Handle(
+            CreateWzCommand request, CancellationToken cancellationToken)
         {
             var productResponse = await _mediator.Send(
                 new GetSortedFilteredProductsQuery(
@@ -39,10 +40,13 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 
             if (!productResponse.IsSuccess() || products.Count == 0)
             {
-                return new BaseResponse<WzDto>(productResponse.Status, "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
+                return new BaseResponse<WzDto>(
+                    productResponse.Status,
+                    "Something went wrong. An error occurred while retrieving the list of products associated with the document.");
             }
 
-            var validationResult = await new CreateWzValidator(products, _mediator).ValidateAsync(request, cancellationToken);
+            var validationResult = await new CreateWzValidator(products, _mediator)
+                .ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {

@@ -8,20 +8,23 @@ using MediatR;
 namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwItem
 {
     internal class DeletePwItemCommandHandler(
+        IPwRepository repository,
         IDocumentItemRepository documentItemRepository,
         ITransactionManager transactionManager)
         : IRequestHandler<DeletePwItemCommand, BaseResponse>
     {
+        private readonly IPwRepository _repository = repository;
         private readonly IDocumentItemRepository _documentItemRepository = documentItemRepository;
         private readonly ITransactionManager _transactionManager = transactionManager;
 
         public async Task<BaseResponse> Handle(DeletePwItemCommand request, CancellationToken cancellationToken)
         {
             DocumentItem documentItem;
-
+            PW document;
             try
             {
                 documentItem = await _documentItemRepository.GetByIdAsync(request.DocumentItemId);
+                document = await _repository.GetByIdAsync(documentItem.DocumentId);
             }
             catch (KeyNotFoundException)
             {
@@ -32,6 +35,15 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwIte
             {
                 return new BaseResponse
                     (BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
+            }
+
+            if (!document.DocumentItems.Contains(documentItem))
+            {
+                var vr = new ValidationResult(
+                    new List<ValidationFailure>() {
+                        new("DocumentItemId", $"Incorrect document item.") });
+
+                return new BaseResponse(vr);
             }
 
             if (documentItem.IsApproved)
