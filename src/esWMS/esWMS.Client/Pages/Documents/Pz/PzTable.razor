@@ -83,8 +83,10 @@
 </MudTable>
 
 @code {
-    private IEnumerable<PzVM> Products = [];
+    [CascadingParameter]
+    public bool IsActive { get; set; }
 
+    private IEnumerable<PzVM> Products = [];
     private IEnumerable<PzVM> pagedData;
     private MudTable<PzVM> table;
 
@@ -101,6 +103,16 @@
     };
 
     private List<EventCallback> callbacksOnAddPz = new();
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                await table.ReloadServerData();
+        }
+    }
 
     private async Task OpenCreatePzTab()
     {

@@ -57,8 +57,9 @@
                     OnApprove="OpenDialogAsync"
                     DeleteFunc="OpenDeleteDialog" />
 
-@if (WzVM.DocumentItems.All(x => x.IsApproved) &&
-!WzVM.IsApproved)
+@if (WzVM.DocumentItems.All(x => x.IsApproved)
+    && !WzVM.IsApproved
+    && WzVM.DocumentItems.Any())
 {
     <MudButton OnClick="@(() => ApproveWz())"
                Size="@Size.Small"
@@ -68,46 +69,45 @@
         Zatwierdź
     </MudButton>
 }
-else if (WzVM.IsApproved)
+else if (!WzVM.IsApproved && !WzVM.DocumentItems.Any(x => x.IsApproved))
 {
-    <MudButton Size="@Size.Small"
+    <MudButton OnClick="@(() => OpenDeleteDocumentDialog())"
+               EndIcon="@Icons.Material.Outlined.Delete"
+               Size="@Size.Small"
                Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               Disabled
-               Class="mb-3">
-        Zatwierdzono
+               Color="@Color.Error"
+               Class="my-3 me-2">
+        Usuń
     </MudButton>
 }
 else
 {
-    if (!WzVM.DocumentItems.Any(x => x.IsApproved))
-    {
-        <MudButton OnClick="@(() => OpenDeleteDocumentDialog())"
-                   EndIcon="@Icons.Material.Outlined.Delete"
-                   Size="@Size.Small"
-                   Variant="@Variant.Filled"
-                   Color="@Color.Error"
-                   Class="my-3 me-2">
-            Usuń
-        </MudButton>
-    }
-
     <MudButton Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
                Disabled
-               Class="mb-3">
+               Class="my-3">
         Zatwierdź
     </MudButton>
 }
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public WzVM WzVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
     [Parameter]
     public Guid TabId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            await RefreshWz();
+        }
+    }
 
     private Task OpenDialogAsync(DocumentItemVM documentItem)
     {

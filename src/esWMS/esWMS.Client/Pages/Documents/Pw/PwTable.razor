@@ -82,12 +82,23 @@
     </PagerContent>
 </MudTable>
 @code {
-    private IEnumerable<PwVM> Products = [];
+    [CascadingParameter]
+    public bool IsActive { get; set; }
 
+    private IEnumerable<PwVM> Products = [];
     private IEnumerable<PwVM> pagedData;
     private MudTable<PwVM> table;
 
     private int totalItems;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                await table.ReloadServerData();
+        }
+    }
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
