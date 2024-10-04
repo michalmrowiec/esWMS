@@ -1,9 +1,11 @@
 ﻿using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm;
+using esWMS.Application.Functions.Documents.MmmFunctions.Commands.DeleteMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.DeleteMmmItems;
 using esWMS.Application.Functions.Documents.MmmFunctions.Queries.GetSortedFilteredMmm;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetListOfWarehouseUnitsInMMM;
+using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePw;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.DeleteRwItem;
 using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById;
 using esWMS.Controllers.Utils;
@@ -83,9 +85,17 @@ namespace esWMS.Controllers.Documents
         }
 
         [HttpDelete("item/{warehouseUnitId}")]
-        public async Task<ActionResult> DeleteMmmWArehouseUnit([FromRoute] string warehouseUnitId, [FromQuery] string documentId)
+        public async Task<ActionResult> DeleteMmmWarehouseUnit([FromRoute] string warehouseUnitId, [FromQuery] string documentId)
         {
             var result = await _mediator.Send(new DeleteMmmItemsCommand(documentId, warehouseUnitId));
+
+            return result.HandleNoContentResult(this);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteMmmDocument([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new DeleteMmmCommand(documentId));
 
             return result.HandleNoContentResult(this);
         }

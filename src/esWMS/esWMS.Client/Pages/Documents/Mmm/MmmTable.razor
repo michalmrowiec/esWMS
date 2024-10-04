@@ -77,6 +77,9 @@
 </MudTable>
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
+
     private IEnumerable<MmmVM> Products = [];
 
     private IEnumerable<MmmVM> pagedData;
@@ -95,6 +98,15 @@
     };
 
     private List<EventCallback> callbacksOnAddMmm = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                await table.ReloadServerData();
+        }
+    }
 
     private async Task<TableData<MmmVM>> ServerReload(TableState state, CancellationToken token)
     {
@@ -118,12 +130,14 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<MmmVM> tableRowClickEventArgs)
     {
+        var tabId = Guid.NewGuid();
+
         await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new MmmDetails(),
-            Guid.NewGuid(),
+            tabId,
             Icons.Material.Filled.Info,
-            new() { { "MmmVM", tableRowClickEventArgs?.Item ?? new() } }));
+            new() { { "MmmVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabId } }));
     }
 
     private void OnSearch()
