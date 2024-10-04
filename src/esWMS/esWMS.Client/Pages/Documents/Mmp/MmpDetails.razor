@@ -97,11 +97,21 @@ else
 }
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public MmpVM MmpVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
     public HashSet<string> _warehouseUnitIds = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            await RefreshMmp();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {

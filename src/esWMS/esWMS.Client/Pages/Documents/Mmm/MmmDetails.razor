@@ -1,5 +1,6 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -56,6 +57,12 @@
 <DocumentItemsTable DocumentItems="@MmmVM.DocumentItems"
                     TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails" />
 
+@if (!MmmVM.IsApproved && _warehouseUnitIds.Count > 0)
+{
+    <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
+                        TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.None" />
+}
+
 @if (MmmVM.DocumentItems.All(x => x.IsApproved) &&
 !MmmVM.IsApproved)
 {
@@ -64,7 +71,7 @@
                Variant="@Variant.Filled"
                Color="@Color.Primary"
                Class="mb-3">
-        Zatwierdź
+        Zatwierdź dokument
     </MudButton>
 }
 else if (MmmVM.IsApproved)
@@ -84,15 +91,45 @@ else
                Color="@Color.Primary"
                Disabled
                Class="mb-3">
-        Zatwierdź
+        Zatwierdź dokument
     </MudButton>
 }
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public MmmVM MmmVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+    public HashSet<string> _warehouseUnitIds = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            await RefreshMmm();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!MmmVM.IsApproved)
+        {
+            var idsResponse = await mmmDataService.Get(@"api/v1/Mmm/warehouse-unit-ids", new() { { "DocumentId", MmmVM.DocumentId } });
+            if (idsResponse == null)
+            {
+                return;
+            }
+
+            var json = await idsResponse.Content.ReadAsStringAsync();
+            var resObj = JsonConvert.DeserializeObject<string[]>(json);
+
+            _warehouseUnitIds = resObj?.ToHashSet<string>() ?? new();
+
+            StateHasChanged();
+        }
+    }
 
     private async Task RefreshMmm()
     {

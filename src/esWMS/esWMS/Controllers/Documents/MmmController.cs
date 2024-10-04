@@ -1,10 +1,11 @@
-﻿using esWMS.Domain.Models;
-using esWMS.Application.Functions.Documents.MmmFunctions;
+﻿using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Queries.GetSortedFilteredMmm;
+using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetListOfWarehouseUnitsInMMM;
 using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,14 @@ namespace esWMS.Controllers.Documents
         public async Task<ActionResult<MmmDto>> GetMmm([FromQuery] string documentId)
         {
             var result = await _mediator.Send(new GetMmmByIdQuery(documentId));
+
+            return result.HandleOkResult(this);
+        }
+
+        [HttpGet("warehouse-unit-ids")]
+        public async Task<ActionResult<string[]>> GetMmmWarehouseUnitIds([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new GetListOfWarehouseUnitIdsRelatedMMMQuery(documentId));
 
             return result.HandleOkResult(this);
         }
