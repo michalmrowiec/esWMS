@@ -128,6 +128,8 @@ namespace esWMS.Application.Mappings
             CreateMap<CreateMmmCommand, MMM>();
             CreateMap<MMM, MmmDto>();
             CreateMap<MMM, FlatMmmDto>();
+            CreateMap<MMM, MmmDetailsDto>()
+                .ForMember(dest => dest.RelatedWarehouseUnitIds, opt => opt.Ignore());
 
             CreateMap<MMP, MmpDto>();
             CreateMap<MMP, FlatMmpDto>();

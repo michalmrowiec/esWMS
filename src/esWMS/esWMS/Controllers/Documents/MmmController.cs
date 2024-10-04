@@ -3,6 +3,7 @@ using esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.DeleteMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.DeleteMmmItems;
+using esWMS.Application.Functions.Documents.MmmFunctions.Queries.GetMmmDetailsById;
 using esWMS.Application.Functions.Documents.MmmFunctions.Queries.GetSortedFilteredMmm;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetListOfWarehouseUnitsInMMM;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePw;
@@ -72,6 +73,14 @@ namespace esWMS.Controllers.Documents
         public async Task<ActionResult<MmmDto>> GetMmm([FromQuery] string documentId)
         {
             var result = await _mediator.Send(new GetMmmByIdQuery(documentId));
+
+            return result.HandleOkResult(this);
+        }
+
+        [HttpGet("details")]
+        public async Task<ActionResult<MmmDetailsDto>> GetMmmDetails([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new GetMmmDetailsByIdQuery(documentId));
 
             return result.HandleOkResult(this);
         }

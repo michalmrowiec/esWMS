@@ -4,6 +4,11 @@ using esWMS.Application.Functions.Warehouses;
 
 namespace esWMS.Application.Functions.Documents.MmmFunctions
 {
+    public class MmmDetailsDto : MmmDto
+    {
+        public List<string> RelatedWarehouseUnitIds { get; set; } = [];
+    }
+
     public class MmmDto : FlatMmmDto
     {
         public FlatMmpDto? RelatedMmp { get; set; }

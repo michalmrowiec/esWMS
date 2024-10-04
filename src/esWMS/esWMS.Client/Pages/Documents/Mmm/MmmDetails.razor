@@ -13,6 +13,11 @@
 @inject IConfirmDialogService ConfirmDialogService
 @inject OnePageState OnePageState
 
+<MudButton EndIcon="@Icons.Material.Filled.Refresh"
+           OnClick="RefreshMmm">
+    Odśwież
+</MudButton>
+
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @MmmVM.DocumentId
 </MudText>
@@ -107,6 +112,7 @@ else
     [CascadingParameter]
     public bool IsActive { get; set; }
     [Parameter]
+    public string DocumentId { get; set; }
     public MmmVM MmmVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
@@ -114,46 +120,26 @@ else
     public Guid TabId { get; set; }
     public HashSet<string> _warehouseUnitIds = new();
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
-        if (IsActive)
-        {
-            await RefreshMmm();
-        }
+        await RefreshMmm();
     }
 
     private async Task RefreshMmm()
     {
-        var sm = new SieveModelVM();
+        var response = await mmmDataService.Get(@"api/v1/Mmm/details", new() { { "DocumentId", DocumentId } });
 
-        sm.Page = 1;
-        sm.PageSize = 1;
-        sm.Filters = $"DocumentId=={MmmVM.DocumentId}";
-
-        var response = await mmmDataService.GetPagedResult(@"api/v1/Mmm/get-filtered", sm);
-
-        if (response.Items.FirstOrDefault() != null)
+        if (response.IsSuccessStatusCode)
         {
-            MmmVM = response.Items.First();
+            var json = await response.Content.ReadAsStringAsync();
+            var mmmDetails = JsonConvert.DeserializeObject<MmmDetailsVM>(json) ?? new();
+            _warehouseUnitIds = mmmDetails.RelatedWarehouseUnitIds.ToHashSet();
+            MmmVM = mmmDetails;
         }
-
-        if (!MmmVM.IsApproved)
+        else
         {
-            var idsResponse = await mmmDataService.Get(@"api/v1/Mmm/warehouse-unit-ids", new() { { "DocumentId", MmmVM.DocumentId } });
-            if (idsResponse == null)
-            {
-                return;
-            }
-
-            var json = await idsResponse.Content.ReadAsStringAsync();
-            var resObj = JsonConvert.DeserializeObject<string[]>(json);
-
-            _warehouseUnitIds = resObj?.ToHashSet<string>() ?? new();
-
-            StateHasChanged();
+            await response.HandleFailure(AlertService);
         }
-
-        StateHasChanged();
     }
 
     public async Task ApproveMmm()

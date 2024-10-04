@@ -137,7 +137,8 @@
             new MmmDetails(),
             tabId,
             Icons.Material.Filled.Info,
-            new() { { "MmmVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabId } }));
+            new() { { "DocumentId", tableRowClickEventArgs?.Item.DocumentId }, { "TabId", tabId } }));
+        //new() { { "MmmVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabId } }));
     }
 
     private void OnSearch()

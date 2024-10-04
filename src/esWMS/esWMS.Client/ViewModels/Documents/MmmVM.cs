@@ -2,6 +2,11 @@
 
 namespace esWMS.Client.ViewModels.Documents
 {
+    public class MmmDetailsVM : MmmVM
+    {
+        public List<string> RelatedWarehouseUnitIds { get; set; } = [];
+    }
+
     public class MmmVM : BaseDocumentVM
     {
         public DateTime? GoodsReleaseDate { get; set; }

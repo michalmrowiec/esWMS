@@ -43,7 +43,7 @@ namespace esWMS.Infrastructure.Repositories.Documents
                 }
             };
 
-        public async Task<TDocument> GetDocumentByIdWithItemsAsync(string id)
+        public virtual async Task<TDocument> GetDocumentByIdWithItemsAsync(string id)
         {
             try
             {
