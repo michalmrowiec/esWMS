@@ -9,6 +9,7 @@
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+@inject IConfirmDialogService ConfirmDialogService
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @MmmVM.DocumentId
@@ -60,11 +61,13 @@
 @if (!MmmVM.IsApproved && _warehouseUnitIds.Count > 0)
 {
     <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
-                        TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.None" />
+                        TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.Multi"
+                        SelectedWarehouseUnits="OnSelected"
+                        ButtonConfirmSelectionText="Usuń jednostki" />
 }
 
-@if (MmmVM.DocumentItems.All(x => x.IsApproved) &&
-!MmmVM.IsApproved)
+@if (MmmVM.DocumentItems.All(x => x.IsApproved)
+   && !MmmVM.IsApproved)
 {
     <MudButton OnClick="@(() => ApproveMmm())"
                Size="@Size.Small"
@@ -112,8 +115,21 @@ else
         }
     }
 
-    protected override async Task OnInitializedAsync()
+    private async Task RefreshMmm()
     {
+        var sm = new SieveModelVM();
+
+        sm.Page = 1;
+        sm.PageSize = 1;
+        sm.Filters = $"DocumentId=={MmmVM.DocumentId}";
+
+        var response = await mmmDataService.GetPagedResult(@"api/v1/Mmm/get-filtered", sm);
+
+        if (response.Items.FirstOrDefault() != null)
+        {
+            MmmVM = response.Items.First();
+        }
+
         if (!MmmVM.IsApproved)
         {
             var idsResponse = await mmmDataService.Get(@"api/v1/Mmm/warehouse-unit-ids", new() { { "DocumentId", MmmVM.DocumentId } });
@@ -128,22 +144,6 @@ else
             _warehouseUnitIds = resObj?.ToHashSet<string>() ?? new();
 
             StateHasChanged();
-        }
-    }
-
-    private async Task RefreshMmm()
-    {
-        var sm = new SieveModelVM();
-
-        sm.Page = 1;
-        sm.PageSize = 1;
-        sm.Filters = $"DocumentId=={MmmVM.DocumentId}";
-
-        var response = await mmmDataService.GetPagedResult(@"api/v1/Mmm/get-filtered", sm);
-
-        if (response.Items.FirstOrDefault() != null)
-        {
-            MmmVM = response.Items.First();
         }
 
         StateHasChanged();
@@ -161,6 +161,38 @@ else
             await RefreshMmm();
 
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{MmmVM.DocumentId}</b>"), Severity.Success);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OnSelected(HashSet<WarehouseUnitVM> warehouseUnits)
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć jednostki?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            foreach (var warehouseUnit in warehouseUnits)
+            {
+                await DeleteAsync(warehouseUnit.WarehouseUnitId);
+            }
+            await RefreshMmm();
+        }
+    }
+
+    private async Task DeleteAsync(string warehouseUnitId)
+    {
+        var response = await mmmDataService.Delete(@"api/v1/Mmm/item/" + warehouseUnitId, new() { { "DocumentId", MmmVM.DocumentId } });
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto jednostkę"), Severity.Success);
         }
         else
         {

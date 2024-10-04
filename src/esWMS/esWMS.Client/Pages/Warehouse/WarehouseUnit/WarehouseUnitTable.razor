@@ -258,8 +258,9 @@
     <MudButton @onclick="SubmitSelection"
                Variant="Variant.Filled"
                Color="Color.Primary"
-               hidden="@(TypeOfSelection != SelectionType.Multi)">
-        Potwierdź
+               hidden="@(TypeOfSelection != SelectionType.Multi)"
+               Disabled="@(_selectedWarehouseUnits.Count == 0)">
+        @ButtonConfirmSelectionText
     </MudButton>
 }
 
@@ -280,6 +281,8 @@
     public bool ShowOnlyUnblocked { get; set; } = false;
     [Parameter]
     public EventCallback<HashSet<WarehouseUnitVM>> SelectedWarehouseUnits { get; set; }
+    [Parameter]
+    public string ButtonConfirmSelectionText { get; set; } = "Potwierdź";
 
     private HashSet<WarehouseUnitVM> _selectedWarehouseUnits { get; set; } = new();
     private IEnumerable<WarehouseUnitVM> _pagedData;
