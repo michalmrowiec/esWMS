@@ -1,11 +1,13 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @inject IDataService<WarehouseUnitVM> WarehouseUnitService
 @inject IDialogService DialogService
 @inject IAlertService AlertService
 @inject ISnackbar Snackbar
+@inject OnePageState OnePageState
 
 @if (_warehouseUnit == null)
 {
@@ -34,25 +36,14 @@ else
                         </MudItem>
 
                         <MudItem xs="12">
-                            <MudGrid>
-                                <MudItem xs="9">
-                                    <MudTextField ShrinkLabel @bind-Value="_warehouseUnit.LocationId"
-                                                  Label="Identyfikator lokalizacji"
-                                                  Variant="Variant.Outlined"
-                                                  ReadOnly
-                                                  Margin="Margin.Dense" />
-                                </MudItem>
-                                <MudItem xs="3">
-                                    <MudButton OnClick="OpenEditLocationDialogAsync"
-                                               Variant="Variant.Filled"
-                                               EndIcon="@Icons.Material.Outlined.EditLocation"
-                                               Color="Color.Default"
-                                               Size="Size.Medium"
-                                               Class="w-100">
-                                        Edytuj
-                                    </MudButton>
-                                </MudItem>
-                            </MudGrid>
+                            <MudTextField ShrinkLabel @bind-Value="_warehouseUnit.LocationId"
+                                          Label="Identyfikator lokalizacji"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@Icons.Material.Outlined.EditLocation"
+                                          OnAdornmentClick="OpenEditLocationDialogAsync" />
                         </MudItem>
 
                         <MudItem xs="12">
@@ -102,7 +93,7 @@ else
                         </MudItem>
 
                         <MudItem xs="12">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadWarehouseUnit">Resetuj</MudButton>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadWarehouseUnit">Odśwież</MudButton>
                             <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="Update">Zaktualizuj</MudButton>
                         </MudItem>
                     </MudGrid>
@@ -111,61 +102,109 @@ else
         </MudItem>
 
         <MudItem xs="12" lg="8">
-            <MudCard>
-                <MudCardHeader>
-                    <MudText Typo="Typo.subtitle1">Przedmioty w jednostce magazynowej</MudText>
-                    <MudSpacer />
-                    <MudButton @onclick="OpenDialogAsync"
-                               Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               Disabled="@(!_selectedItems.Any())">
-                        Przenieś/Podziel
-                    </MudButton>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudTable Items="@_warehouseUnit.WarehouseUnitItems"
-                              Context="WuiContext"
-                              Hover="true"
-                              Breakpoint="Breakpoint.Sm"
-                              Elevation="0"
-                              Dense
-                              Bordered
-                              MultiSelection
-                              @bind-SelectedItems="_selectedItems">
-                        <ColGroup>
-                            <col />
-                            <col />
-                            <col />
-                            <col />
-                            <col />
-                            <col />
-                            <col />
-                            <col />
-                        </ColGroup>
-                        <HeaderContent>
-                            <MudTh>Id produktu</MudTh>
-                            <MudTh>Nazwa produktu</MudTh>
-                            <MudTh>Ilość</MudTh>
-                            <MudTh>Zablokowane</MudTh>
-                            <MudTh>Dostępne</MudTh>
-                            <MudTh>Nośnik</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
-                            <MudTd DataLabel="Nazwa produktu">@WuiContext.Product?.ProductName</MudTd>
-                            <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
-                            <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
-                            <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
-                            <MudTd DataLabel="Nośnik">
-                                <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
-                                             Size="Size.Small"
-                                             Disabled />
-                            </MudTd>
-                        </RowTemplate>
-                    </MudTable>
-                </MudCardContent>
-            </MudCard>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardHeader>
+                            <MudText Typo="Typo.subtitle1">Przedmioty w jednostce magazynowej</MudText>
+                            <MudSpacer />
+                            <MudButton @onclick="OpenDialogAsync"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Disabled="@(!_selectedItems.Any())">
+                                Przenieś/Podziel
+                            </MudButton>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTable Items="@_warehouseUnit.WarehouseUnitItems"
+                                      Context="WuiContext"
+                                      Hover="true"
+                                      Breakpoint="Breakpoint.Sm"
+                                      Elevation="0"
+                                      Dense
+                                      Bordered
+                                      MultiSelection
+                                      @bind-SelectedItems="_selectedItems">
+                                <ColGroup>
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                </ColGroup>
+                                <HeaderContent>
+                                    <MudTh>Id produktu</MudTh>
+                                    <MudTh>Nazwa produktu</MudTh>
+                                    <MudTh>Ilość</MudTh>
+                                    <MudTh>Zablokowane</MudTh>
+                                    <MudTh>Dostępne</MudTh>
+                                    <MudTh>Nośnik</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                                    <MudTd DataLabel="Nazwa produktu">@WuiContext.Product?.ProductName</MudTd>
+                                    <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
+                                    <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
+                                    <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                                    <MudTd DataLabel="Nośnik">
+                                        <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
+                                                     Size="Size.Small"
+                                                     Disabled />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" lg="6">
+                    <MudCard>
+                        <MudCardContent>
+                            <MudList T="string" Padding="false">
+                                <MudListSubheader>
+                                    Stos składowania
+                                </MudListSubheader>
+                                @foreach (var wu in _warehouseUnitStack.OrderByDescending(kvp => kvp.Key))
+                                {
+                                    @if (wu.Value.WarehouseUnitId.Equals(WarehouseUnitId))
+                                    {
+                                        <MudListItem Style="padding:0">
+                                            <MudChip Color="@Color.Primary"
+                                                     Style="border-radius:4px; cursor:default;">
+                                                <strong>
+                                                    @string.Concat($"[ {wu.Key + 1} ] {wu.Value.WarehouseUnitId}  ")
+                                                </strong>
+                                                <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowLeft" />
+                                            </MudChip>
+                                        </MudListItem>
+
+                                    }
+                                    else
+                                    {
+                                        <MudListItem Style="padding:0">
+                                            <MudChip Color="@Color.Dark"
+                                                     Style="border-radius:4px;"
+                                                     OnClick="@(async () => await OpenWarehouseUnitDetails(wu.Value.WarehouseUnitId))">
+                                                [ @(wu.Key + 1) ] @wu.Value.WarehouseUnitId
+                                            </MudChip>
+                                        </MudListItem>
+                                    }
+                                }
+                                <MudListItem Style="padding:0">
+                                    <MudChip Color="@Color.Dark"
+                                             Style="border-radius:4px; cursor:default;">
+                                        [ 0 ] Podłoga
+                                    </MudChip>
+                                </MudListItem>
+                            </MudList>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
         </MudItem>
+
     </MudGrid>
 }
 
@@ -175,6 +214,7 @@ else
 
     private WarehouseUnitVM? _warehouseUnit;
     private HashSet<WarehouseUnitItemVM> _selectedItems = new();
+    private Dictionary<int, WarehouseUnitVM> _warehouseUnitStack = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -204,9 +244,18 @@ else
 
     private async Task ReloadWarehouseUnit()
     {
+        await GetWarehouseUnitDetails();
+        await GetStack();
+
+        StateHasChanged();
+    }
+
+    private async Task GetWarehouseUnitDetails()
+    {
         var response = await WarehouseUnitService.Get(@"api/v1/WarehouseUnit", new() { { "WarehouseUnitId", WarehouseUnitId } });
-        if (response == null)
+        if (!response.IsSuccessStatusCode)
         {
+            await response.HandleFailure(AlertService);
             return;
         }
 
@@ -214,8 +263,32 @@ else
         var resObj = JsonConvert.DeserializeObject<List<WarehouseUnitVM>>(json);
 
         _warehouseUnit = resObj?.First() ?? new();
+    }
 
-        StateHasChanged();
+    private async Task GetStack()
+    {
+        var response = await WarehouseUnitService.Get(@"api/v1/WarehouseUnit/get-stack/" + WarehouseUnitId);
+        if (!response.IsSuccessStatusCode)
+        {
+            await response.HandleFailure(AlertService);
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var resObj = JsonConvert.DeserializeObject<Dictionary<int, WarehouseUnitVM>>(json);
+
+        try
+        {
+            // foreach (var item in resObj.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value))
+            // {
+            //     _warehouseUnitStack.Push(item);
+            // }
+            _warehouseUnitStack = resObj;
+        }
+        catch (Exception)
+        {
+            AlertService.ShowAlert(new("Error on stack convert."));
+        }
     }
 
     private Task OpenEditLocationDialogAsync()
@@ -250,5 +323,15 @@ else
         {
             await response.HandleFailure(AlertService);
         }
+    }
+
+    private async Task OpenWarehouseUnitDetails(string warehouseUnitId)
+    {
+        await OnePageState.AddTab(
+            new TabView("Szczegóły jednostki" ?? " ",
+            new WarehouseUnitDetails(),
+            Guid.NewGuid(),
+            Icons.Material.Filled.Info,
+            new() { { "WarehouseUnitId", warehouseUnitId } }));
     }
 }

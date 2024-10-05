@@ -69,7 +69,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
         }
 
         [HttpGet("get-stack/{warehouseUnitId}")]
-        public async Task<ActionResult<List<WarehouseUnitDto>>> GetFullWarehouseUnitStack
+        public async Task<ActionResult<Dictionary<int, WarehouseUnitDto>>> GetFullWarehouseUnitStack
             ([FromRoute] string warehouseUnitId)
         {
             var result = await _mediator.Send(new GetFullWarehouseUnitStackQuery(warehouseUnitId));
