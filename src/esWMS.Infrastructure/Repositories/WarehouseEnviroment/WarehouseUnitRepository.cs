@@ -174,7 +174,7 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnviroment
 
                 if (!stack.Contains(nextUnit))
                 {
-                    stack.Add(nextUnit);
+                    stack.Insert(0, nextUnit);
                 }
 
                 currentUnit = nextUnit;
@@ -196,9 +196,8 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnviroment
                     throw new KeyNotFoundException("The object with the given id was not found.");
                 }
 
-                fullStack.Add(result);
-
                 await LoadStackBelowOnIteratively(result, fullStack);
+                fullStack.Add(result);
                 await LoadStackAboveOnIteratively(result, fullStack);
             }
             catch (Exception ex)

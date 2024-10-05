@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using esWMS.Application.Functions.Products.Commands.UpdateProduct;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
+using esWMS.Application.Functions.WarehouseUnits.Queries.GetFullWarehouseUnitStack;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
@@ -63,6 +64,15 @@ namespace esWMS.Controllers.WarehouseEnviroment
             ([FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredWarehouseUnitsQuery(sieveModel));
+
+            return result.HandleOkResult(this);
+        }
+
+        [HttpGet("get-stack/{warehouseUnitId}")]
+        public async Task<ActionResult<List<WarehouseUnitDto>>> GetFullWarehouseUnitStack
+            ([FromRoute] string warehouseUnitId)
+        {
+            var result = await _mediator.Send(new GetFullWarehouseUnitStackQuery(warehouseUnitId));
 
             return result.HandleOkResult(this);
         }
