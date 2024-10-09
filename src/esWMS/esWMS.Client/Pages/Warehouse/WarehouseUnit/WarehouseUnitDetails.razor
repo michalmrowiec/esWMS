@@ -50,21 +50,24 @@ else
                             <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalWeight"
                                              Label="Całkowita waga (kg)"
                                              Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
+                                             Margin="Margin.Dense"
+                                             Format="F2" />
                         </MudItem>
 
                         <MudItem xs="12">
                             <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalLength"
                                              Label="Całkowita długość (m)"
                                              Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
+                                             Margin="Margin.Dense"
+                                             Format="F2" />
                         </MudItem>
 
                         <MudItem xs="12">
                             <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalWidth"
                                              Label="Całkowita szerokość (m)"
                                              Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
+                                             Margin="Margin.Dense"
+                                             Format="F2" />
 
                         </MudItem>
 
@@ -72,7 +75,8 @@ else
                             <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalHeight"
                                              Label="Całkowita wysokość (m)"
                                              Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
+                                             Margin="Margin.Dense"
+                                             Format="F2" />
                         </MudItem>
 
                         <MudItem xs="12">
@@ -192,12 +196,12 @@ else
                                         </MudListItem>
                                     }
                                 }
-                                <MudListItem Style="padding:0">
-                                    <MudChip Color="@Color.Dark"
-                                             Style="border-radius:4px; cursor:default;">
-                                        [ 0 ] Podłoga
-                                    </MudChip>
-                                </MudListItem>
+                                @*                                 <MudListItem Style="padding:0">
+                            <MudChip Color="@Color.Dark"
+                            Style="border-radius:4px; cursor:default;">
+                            [ 0 ] Podłoga
+                            </MudChip>
+                            </MudListItem> *@
                             </MudList>
                         </MudCardContent>
                     </MudCard>
