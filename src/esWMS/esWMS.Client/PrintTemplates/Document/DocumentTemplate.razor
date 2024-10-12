@@ -1,0 +1,116 @@
+﻿@using esWMS.Client.ViewModels.Documents
+<BaseTemplateTab>
+    <HeaderContent>
+
+    </HeaderContent>
+    <BodyContent>
+        <div class="qr-code-container">
+            <h1>@_documentNames[Model.DocumentType] nr @Model.Model.DocumentId</h1>
+            <p><strong>Data wystawienia:</strong> @Model.Model.DocumentIssueDate.ToString("dd-MM-yyyy")</p>
+            <p><strong>Data wykonania:</strong> @Model.Model.AprovedDate?.ToString("dd-MM-yyyy")</p>
+
+            <div class="document-header">
+                <div class="document-header-left">
+                    <h3>Odbiorca</h3>
+                    <p><strong>Nazwa odbierającego:</strong> @Model.ReceiverName</p>
+                    <p><strong>Adres:</strong> @Model.ReceiverAddress</p>
+                </div>
+                <div class="document-header-right">
+                    <h3>Wydawca</h3>
+                    <p><strong>Nazwa wydającego:</strong> @Model.IssuerName</p>
+                    <p><strong>Adres:</strong> @Model.IssuerAddress</p>
+                </div>
+            </div>
+
+            <table class="document-items">
+                <thead>
+                    <tr>
+                        <th>Kod produktu</th>
+                        <th>Nazwa produktu</th>
+                        <th>Ilość</th>
+                        <th>Cena</th>
+                        <th>Stawka VAT</th>
+                        <th>Jednostka</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Model.DocumentItems)
+                    {
+                        <tr>
+                            <td>@item.ProductCode</td>
+                            <td>@item.ProductName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Price?.ToString("F2")</td>
+                            <td>@item.VatRate%</td>
+                            <td>@item.Unit</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <p><strong>Komentarz:</strong> @Model.Model.Comment</p>
+
+            @if (Model.Model.IsApproved)
+            {
+                <div class="document-approval">
+                    <p><strong>Dokument zatwierdzony:</strong> @Model.Model.AprovedDate?.ToString("dd-MM-yyyy")</p>
+                </div>
+            }
+            <style>
+
+            </style>
+        </div>
+    </BodyContent>
+</BaseTemplateTab>
+@code {
+    [Parameter]
+    public DocumentPrintModel Model { get; set; }
+
+    private Dictionary<DocumentTypesName, string> _documentNames = new()
+    {
+        { DocumentTypesName.PZ, "Przyjęcie Zewnętrzne" },
+        { DocumentTypesName.WZ, "Wydanie Zewnętrzne" },
+        { DocumentTypesName.PW, "Przyjęcie Wewnętrzne" },
+        { DocumentTypesName.RW, "Rozchód Wewnętrzny" },
+        { DocumentTypesName.ZW, "Zwrot Wewnętrzny" },
+        { DocumentTypesName.MMP, "MM+" },
+        { DocumentTypesName.MMM, "MM-" }
+    };
+
+    public enum DocumentTypesName
+    {
+        PZ,
+        WZ,
+        PW,
+        RW,
+        ZW,
+        MMP,
+        MMM
+    }
+
+    public class DocumentPrintModel
+    {
+        public DocumentPrintModel(
+            BaseDocumentVM model,
+            DocumentTypesName documentType,
+            string issuerName,
+            string issuerAddress,
+            string receiverName,
+            string receiverAddress)
+        {
+            Model = model;
+            DocumentType = documentType;
+            IssuerName = issuerName;
+            IssuerAddress = issuerAddress;
+            ReceiverName = receiverName;
+            ReceiverAddress = receiverAddress;
+        }
+
+        public BaseDocumentVM Model { get; set; }
+        public DocumentTypesName DocumentType { get; set; }
+        public string IssuerName { get; set; }
+        public string IssuerAddress { get; set; }
+        public string ReceiverName { get; set; }
+        public string ReceiverAddress { get; set; }
+    }
+}

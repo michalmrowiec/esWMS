@@ -40,11 +40,11 @@
         <MudSpacer />
         <MudButton @onclick="PrintQrs"
                    Variant="Variant.Filled"
-                   Color="Color.Secondary"
+                   Color="Color.Dark"
                    EndIcon="@Icons.Material.Filled.QrCode"
                    Disabled="@(_selectedItems.Count == 0)"
                    Class="me-2">
-            Wydrukuj QR
+            Drukuj QR
         </MudButton>
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"

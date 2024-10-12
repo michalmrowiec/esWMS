@@ -96,6 +96,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 0.5m,
                 Price = 50.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -111,6 +112,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 0.2m,
                 Price = 20.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -126,6 +128,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 2m,
                 Price = 350.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -141,6 +144,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 2.5m,
                 Price = 500.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -156,6 +160,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 10m,
                 Price = 500.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -171,6 +176,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 5m,
                 Price = 300.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -186,6 +192,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 0.01m,
                 Price = 1.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -201,6 +208,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 20m,
                 Price = 10.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -216,6 +224,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 0.3m,
                 Price = 50.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -231,6 +240,7 @@ namespace esWMS.Services.DataSeed
                 TotalWeight = 1m,
                 Price = 20.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -250,6 +260,7 @@ namespace esWMS.Services.DataSeed
                 IsMedia = true,
                 Price = 70.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             }
         ];
