@@ -7,7 +7,7 @@
         <div class="qr-code-container">
             <h1>@_documentNames[Model.DocumentType] nr @Model.Model.DocumentId</h1>
             <p><strong>Data wystawienia:</strong> @Model.Model.DocumentIssueDate.ToString("dd-MM-yyyy")</p>
-            <p><strong>Data wykonania:</strong> @Model.Model.AprovedDate?.ToString("dd-MM-yyyy")</p>
+            <p><strong>Data wykonania:</strong> @Model.Model.ApprovalDate?.ToString("dd-MM-yyyy")</p>
 
             <div class="document-header">
                 <div class="document-header-left">
@@ -53,7 +53,7 @@
             @if (Model.Model.IsApproved)
             {
                 <div class="document-approval">
-                    <p><strong>Dokument zatwierdzony:</strong> @Model.Model.AprovedDate?.ToString("dd-MM-yyyy")</p>
+                    <p><strong>Dokument zatwierdzony:</strong> @Model.Model.ApprovalDate?.ToString("dd-MM-yyyy")</p>
                 </div>
             }
             <style>

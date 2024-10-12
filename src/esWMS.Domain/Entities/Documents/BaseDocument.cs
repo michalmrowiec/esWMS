@@ -12,7 +12,7 @@ namespace esWMS.Domain.Entities.Documents
         public string? IssuingEmployeeId { get; set; }
         public string? AssignedEmployeeId { get; set; }
         public bool IsApproved { get; set; }
-        public DateTime? AprovedDate { get; set; }
+        public DateTime? ApprovalDate { get; set; }
         public string? ApprovingEmployeeId { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
@@ -50,7 +50,7 @@ namespace esWMS.Domain.Entities.Documents
             IssuingEmployeeId = issuingEmployeeId;
             AssignedEmployeeId = assignedEmployeeId;
             IsApproved = isApproved;
-            AprovedDate = aprovedDate;
+            ApprovalDate = aprovedDate;
             ApprovingEmployeeId = approvingEmployeeId;
             CreatedAt = createdAt;
             CreatedBy = createdBy;

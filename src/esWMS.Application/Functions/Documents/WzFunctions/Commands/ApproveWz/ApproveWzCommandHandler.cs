@@ -39,7 +39,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.ApproveWz
 
             document.ApprovingEmployeeId = request.ModifiedBy;
             document.IsApproved = true;
-            document.AprovedDate = DateTime.Now;
+            document.ApprovalDate = DateTime.Now;
             document.ModifiedAt = DateTime.Now;
             document.ModifiedBy = request.ModifiedBy;
 
