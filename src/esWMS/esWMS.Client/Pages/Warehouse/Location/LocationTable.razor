@@ -1,10 +1,13 @@
 ﻿@page "/locations"
 @using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.PrintTemplates.LocationQr
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @rendermode InteractiveAuto
 @inject IDataService<LocationVM> dataService
 @inject IDialogService DialogService
+@inject OnePageState OnePageState
 
 <style>
     .mud-table-cell-custom-group {
@@ -21,18 +24,28 @@
           ServerData="ServerReload"
           Dense
           Hover
-          @ref="table"
+          @ref="_table"
           RowClass="cursor-pointer"
           OnRowClick="RowClickEvent"
           GroupBy="@_groupDefinition"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
           FixedHeader
-          Height="80%">
+          Height="80%"
+          MultiSelection
+          @bind-SelectedItems="_selectedItems">
     <ToolBarContent>
         <MudText Typo="Typo.h6" Class="me-3">Lokalizacje</MudText>
-        <ExpandCollapseGroupsButtons ExpandAction="table.ExpandAllGroups"
-                                     CollapseAction="table.CollapseAllGroups" />
+        <ExpandCollapseGroupsButtons ExpandAction="_table.ExpandAllGroups"
+                                     CollapseAction="_table.CollapseAllGroups" />
         <MudSpacer />
+        <MudButton @onclick="PrintQrs"
+                   Variant="Variant.Filled"
+                   Color="Color.Secondary"
+                   EndIcon="@Icons.Material.Filled.QrCode"
+                   Disabled="@(_selectedItems.Count == 0)"
+                   Class="me-2">
+            Wydrukuj QR
+        </MudButton>
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
                    Color="Color.Primary">
@@ -112,14 +125,14 @@
 
 @code {
     [Parameter]
-    public EventCallback<LocationVM> SelectedProduct { get; set; }
+    public EventCallback<LocationVM> SelectedLocation { get; set; }
     [Parameter]
     public int[]? PageSize { get; set; }
 
-    private IEnumerable<LocationVM> pagedData;
-    private MudTable<LocationVM> table;
-
-    private int totalItems;
+    private IEnumerable<LocationVM> _pagedData;
+    private MudTable<LocationVM> _table;
+    private int _totalItems;
+    private HashSet<LocationVM> _selectedItems = new();
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
@@ -163,12 +176,12 @@
 
     private void OnSearch()
     {
-        table.ReloadServerData();
+        _table.ReloadServerData();
     }
 
     private async Task RowClickEvent(TableRowClickEventArgs<LocationVM> tableRowClickEventArgs)
     {
-        await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
+        await SelectedLocation.InvokeAsync(tableRowClickEventArgs.Item);
     }
 
     private Task OpenDialogAsync()
@@ -182,8 +195,20 @@
             };
         var parameters = new DialogParameters<AddLocationDialog>
         {
-            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddLocationDialog>(null, parameters, options);
+    }
+
+    private async Task PrintQrs()
+    {
+        var tabId = Guid.NewGuid();
+
+        await OnePageState.AddTab(
+            new TabView("Podgląd wydruku" ?? " ",
+            new LocationQrTemplate(),
+            tabId,
+            Icons.Material.Filled.Info,
+            new() { { "LocationIds", _selectedItems.Select(x => x.LocationId).ToArray() } }));
     }
 }
