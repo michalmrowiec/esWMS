@@ -5,7 +5,7 @@
 namespace esWMS.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class DopColumnIsBusy : Migration
+    public partial class DropColumnIsBusy : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

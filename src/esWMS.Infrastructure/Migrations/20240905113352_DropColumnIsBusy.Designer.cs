@@ -12,8 +12,8 @@ using esWMS.Infrastructure;
 namespace esWMS.Infrastructure.Migrations
 {
     [DbContext(typeof(EsWmsDbContext))]
-    [Migration("20240905113352_DopColumnIsBusy")]
-    partial class DopColumnIsBusy
+    [Migration("20240905113352_DropColumnIsBusy")]
+    partial class DropColumnIsBusy
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
