@@ -42,6 +42,7 @@ using esWMS.Application.Functions.Products.Commands.UpdateProduct;
 using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
 using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
 using esWMS.Application.Functions.WarehouseUnits.Commands;
+using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
 
 namespace esWMS.Application.Mappings
 {
@@ -105,6 +106,9 @@ namespace esWMS.Application.Mappings
             CreateMap<Location, FlatLocationDto>();
             CreateMap<Location, LocationDto>()
                 .ReverseMap();
+            CreateMap<UpdateLocationCommand, Location>()
+                .ForMember(dest => dest.LocationId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<Contractor, ContractorDto>();
             CreateMap<CreateContractorCommand, Contractor>()
