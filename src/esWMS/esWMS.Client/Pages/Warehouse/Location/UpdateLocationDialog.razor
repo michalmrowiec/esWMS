@@ -3,8 +3,7 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels;
 @using esWMS.Client.ViewModels.WarehouseEnviroment.Location
-@inject IDataService<CreateLocationVM> locationDataService
-@inject IDataService<ZoneVM> zoneDataService
+@inject IDataService<UpdateLocationVM> locationDataService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IAlertService AlertService
@@ -16,85 +15,47 @@
     <DialogContent>
         <MudForm Model="@_model"
                  @ref="@_form"
-                 Validation="@(_validator.ValidateValue)"
                  ValidationDelay="0">
             <MudCardContent>
-                <MudSelect T="string"
-                           @bind-Value="_model.ZoneId"
-                           Label="Strefa składowania"
-                           AnchorOrigin="Origin.BottomCenter"
-                           For="@(() => _model.ZoneId)"
-                           Immediate="true">
-                    @foreach (var zone in _zones)
-                    {
-                        <MudSelectItem Value="@zone.ZoneId">
-                            [@zone.ZoneId] @zone.ZoneName
-                        </MudSelectItem>
-                    }
-                </MudSelect>
-
-                <MudNumericField @bind-Value="_model.Row"
-                                 For="@(() => _model.Row)"
-                                 Immediate="true"
-                                 Label="Regał"
-                                 Min="0"
-                                 Max="99" />
-
-                <MudTextField @bind-Value="_model.Column"
-                              For="@(() => _model.Column)"
-                              Immediate="true"
-                              Label="Kolumna"
-                              MaxLength="1"
-                              TextChanged="@(() => _model.Column = _model.Column?.ToString()?.ToUpper().ToCharArray()?.First() ?? null)" />
-
-                <MudNumericField @bind-Value="_model.Level"
-                                 For="@(() => _model.Level)"
-                                 Immediate="true"
-                                 Label="Poziom"
-                                 Min="0"
-                                 Max="9" />
-
-                <MudNumericField @bind-Value="_model.Cell"
-                                 For="@(() => _model.Cell)"
-                                 Immediate="true"
-                                 Label="Komórka"
-                                 Min="0"
-                                 Max="9" />
-
-                <MudNumericField @bind-Value="_model.Capacity"
+                               <MudNumericField @bind-Value="_model.Capacity"
                                  For="@(() => _model.Capacity)"
                                  Immediate="true"
                                  Label="Pojemność"
                                  Min="1"
-                                 Max="99999" />
+                                 Max="99999"
+                                 Format="F2" />
 
                 <MudNumericField @bind-Value="_model.MaxLength"
                                  For="@(() => _model.MaxLength)"
                                  Label="Maksymalna długość (m)"
                                  Immediate="true"
                                  Min="0"
-                                 Max="99999" />
+                                 Max="99999"
+                                 Format="F2"/>
 
                 <MudNumericField @bind-Value="_model.MaxWidth"
                                  For="@(() => _model.MaxWidth)"
                                  Label="Maksymalna szerokość (m)"
                                  Immediate="true"
                                  Min="0"
-                                 Max="99999" />
+                                 Max="99999"
+                                 Format="F2" />
 
                 <MudNumericField @bind-Value="_model.MaxHeight"
                                  For="@(() => _model.MaxHeight)"
                                  Label="Maksymalna wysokość (m)"
                                  Immediate="true"
                                  Min="0"
-                                 Max="99999" />
+                                 Max="99999"
+                                 Format="F2" />
 
                 <MudNumericField @bind-Value="_model.MaxWeight"
                                  For="@(() => _model.MaxWeight)"
                                  Label="Maksymalne obciążenie (kg)"
                                  Immediate="true"
                                  Min="0"
-                                 Max="99999" />
+                                 Max="99999"
+                                 Format="F2" />
 
                 <MudTextField Value="@_mediaInfo"
                               Label="Domyślny nośnik"
@@ -110,20 +71,36 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Zaktualizuj</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    [Parameter]
-    public List<EventCallback>? FuncsOnCreated { get; set; } = new();
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public List<EventCallback>? FuncsOnUpdated { get; set; } = new();
+    [Parameter]
+    public LocationVM LocationToUpdate { get; set; }
+    public UpdateLocationVM _model;
     private MudForm _form;
-    private CreateLocationVM _model = new();
-    private CreateLocationVMValidator _validator = new();
+    //private CreateLocationVMValidator _validator = new();
     private List<ZoneVM> _zones = new();
     private string _mediaInfo = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _model = new()
+            {
+                LocationId = LocationToUpdate.LocationId,
+                Capacity = LocationToUpdate.Capacity,
+                DefaultMediaTypeId = LocationToUpdate.DefaultMediaTypeId,
+                MaxWidth = LocationToUpdate.MaxWidth,
+                MaxHeight = LocationToUpdate.MaxHeight,
+                MaxLength = LocationToUpdate.MaxLength,
+                MaxWeight = LocationToUpdate.MaxWeight
+            };
+    }
 
     private void Cancel() => MudDialog.Cancel();
 
@@ -146,30 +123,19 @@
 
     private async Task Submit()
     {
-        await _form.Validate();
-
-        if (_form.IsValid)
+        var response = await locationDataService.Put(@"api/v1/Location", _model);
+        if (response.IsSuccessStatusCode)
         {
-            var response = await locationDataService.Create(@"api/v1/Location", _model);
-            if (response.StatusCode == System.Net.HttpStatusCode.Created)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var newLocation = JsonConvert.DeserializeObject<LocationVM>(content) ?? new();
+            var content = await response.Content.ReadAsStringAsync();
+            var newLocation = JsonConvert.DeserializeObject<LocationVM>(content) ?? new();
 
-                Snackbar.Add(new MarkupString($"Utworzono <b>{newLocation.LocationId}</b>"), Severity.Success);
-                MudDialog.Close(DialogResult.Ok(true));
-                FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
-            }
-            else
-            {
-                await response.HandleFailure(AlertService);
-            }
+            Snackbar.Add(new MarkupString($"Zaktualizowano <b>{newLocation.LocationId}</b>"), Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+            FuncsOnUpdated?.ForEach(async x => await x.InvokeAsync());
         }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        var res = await zoneDataService.GetPagedResult(@"api/v1/Zone/get-filtered", new SieveModelVM(1, 500));
-        _zones = res.Items.ToList();
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
     }
 }
