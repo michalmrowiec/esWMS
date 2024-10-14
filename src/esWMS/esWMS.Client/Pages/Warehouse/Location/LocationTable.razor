@@ -5,6 +5,7 @@
 @using esWMS.Client.ViewModels;
 @using esWMS.Client.ViewModels.WarehouseEnviroment.Location
 @using esWMS.Client.States
+@using static esWMS.Client.PrintTemplates.Document.DocumentTemplate
 @rendermode InteractiveAuto
 @inject IDataService<LocationVM> dataService
 @inject IDialogService DialogService
@@ -96,6 +97,7 @@
             <DefaultColumntFilter SearchOptions="searchOptions" Column="DefaultMediaTypeId" OnChangedAction="OnSearch" />
         </MudTh>
         <MudTh></MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.LocationId</MudTd>
@@ -144,7 +146,6 @@
     public EventCallback<LocationVM> SelectedLocation { get; set; }
     [Parameter]
     public int[]? PageSize { get; set; }
-
     private IEnumerable<LocationVM> _pagedData;
     private MudTable<LocationVM> _table;
     private int _totalItems;
@@ -214,5 +215,62 @@
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddLocationDialog>(null, parameters, options);
+    }
+
+    private Task OpenEditDialogAsync(LocationVM location)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<UpdateLocationDialog>
+        {
+            { x => x.FuncsOnUpdated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } },
+            { x => x.LocationToUpdate, location }
+        };
+        return DialogService.ShowAsync<UpdateLocationDialog>(null, parameters, options);
+    }
+
+    private async Task OpenDeleteDialogAsync(LocationVM location)
+    {
+        // var parameters = new DialogParameters<DeleteConfirmDialog>
+        // {
+        //     { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć kategorię: {category.CategoryName}"}
+        // };
+        // var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        // var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        // var result = await dialog.Result;
+        // if (!result?.Canceled ?? false)
+        // {
+        //     await DeleteAsync(category);
+        // }
+    }
+    private async Task DeleteAsync(LocationVM location)
+    {
+        // var response = await dataService.Delete(@"api/v1/Category/" + category.CategoryId);
+        // if (response.IsSuccessStatusCode)
+        // {
+        //     Snackbar.Add(new MarkupString("Usunięto kategorię"), Severity.Success);
+        //     await table.ReloadServerData();
+        // }
+        // else
+        // {
+        //     await response.HandleFailure(AlertService);
+        // }
+    }
+
+    private async Task PrintQrs()
+    {
+        var tabId = Guid.NewGuid();
+
+        await OnePageState.AddTab(
+            new TabView("Podgląd wydruku" ?? " ",
+            new LocationQrTemplate(),
+            tabId,
+            Icons.Material.Filled.Info,
+            new() { { "LocationIds", _selectedItems.Select(x => x.LocationId).ToArray() } }));
     }
 }
