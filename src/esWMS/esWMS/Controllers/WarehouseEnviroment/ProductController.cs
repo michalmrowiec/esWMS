@@ -8,11 +8,13 @@ using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class ProductController : ControllerBase
@@ -49,6 +51,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleOkResult(this);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpPost]
         public async Task<ActionResult<ProductDto>> CreateProduct
             ([FromBody] CreateProductCommand createProductCommand)
@@ -61,6 +64,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleCreatedResult(this, "");
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpPut]
         public async Task<ActionResult<ProductDto>> UpdateProduct
             ([FromBody] UpdateProductCommand updateProductCommand)
@@ -73,6 +77,7 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleOkResult(this);
         }
 
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpDelete("{productId}")]
         public async Task<ActionResult> DeleteProduct([FromRoute] string productId)
         {

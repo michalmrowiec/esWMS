@@ -6,7 +6,12 @@ namespace esWMS.Client.Services
 {
     public interface IConfirmDialogService
     {
-        Task OpenDeleteDialogAsync(string dialogTitle, string dialogContent, ConfirmDialogService.ButtonDialogType actionButtonType, EventCallback? onConfirm = null, EventCallback? onCancel = null);
+        Task OpenDeleteDialogAsync(
+            string dialogTitle,
+            string dialogContent,
+            ConfirmDialogService.ButtonDialogType actionButtonType,
+            EventCallback? onConfirm = null,
+            EventCallback? onCancel = null);
     }
 
     public class ConfirmDialogService : IConfirmDialogService

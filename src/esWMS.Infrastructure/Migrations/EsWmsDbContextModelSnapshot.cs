@@ -28,11 +28,11 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("varchar(25)");
 
+                    b.Property<DateTime?>("ApprovalDate")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("ApprovingEmployeeId")
                         .HasColumnType("varchar(60)");
-
-                    b.Property<DateTime?>("AprovedDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("AssignedEmployeeId")
                         .HasColumnType("varchar(60)");
@@ -975,7 +975,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasOne("esWMS.Domain.Entities.Documents.BaseDocument", "Document")
                         .WithMany("DocumentItems")
                         .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Product", "Product")
@@ -994,7 +994,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasOne("esWMS.Domain.Entities.Documents.DocumentItem", "DocumentItem")
                         .WithMany("DocumentWarehouseUnitItems")
                         .HasForeignKey("DocumentItemId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", "WarehouseUnitItem")

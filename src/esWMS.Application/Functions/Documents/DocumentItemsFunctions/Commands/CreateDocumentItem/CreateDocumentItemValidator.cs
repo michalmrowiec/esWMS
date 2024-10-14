@@ -6,7 +6,9 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.
     {
         public CreateDocumentItemValidator()
         {
-
+            RuleFor(x => x.Quantity)
+                .NotEmpty()
+                .GreaterThan(0);
         }
     }
 }

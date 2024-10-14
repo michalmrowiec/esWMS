@@ -2,6 +2,7 @@
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @rendermode InteractiveAuto
@@ -82,8 +83,10 @@
 </MudTable>
 
 @code {
-    private IEnumerable<WzVM> Products = [];
+    [CascadingParameter]
+    public bool IsActive { get; set; }
 
+    private IEnumerable<WzVM> Products = [];
     private IEnumerable<WzVM> pagedData;
     private MudTable<WzVM> table;
 
@@ -100,6 +103,15 @@
     };
 
     private List<EventCallback> callbacksOnAddPz = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                await table.ReloadServerData();
+        }
+    }
 
     private void OpenCreateWzTab()
     {
@@ -136,12 +148,14 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<WzVM> tableRowClickEventArgs)
     {
+        var tabId = Guid.NewGuid();
+
         await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new WzDetails(),
-            Guid.NewGuid(),
+            tabId,
             Icons.Material.Filled.Info,
-            new() { { "WzVM", tableRowClickEventArgs?.Item ?? new() } }));
+            new() { { "WzVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabId } }));
     }
 
     private void OnSearch()

@@ -2,6 +2,7 @@
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @rendermode InteractiveAuto
@@ -81,6 +82,8 @@
 </MudTable>
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     private IEnumerable<RwVM> Products = [];
 
     private IEnumerable<RwVM> pagedData;
@@ -99,6 +102,15 @@
     };
 
     private List<EventCallback> callbacksOnAddRw = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                await table.ReloadServerData();
+        }
+    }
 
     private void OpenCreateRwTab()
     {
@@ -135,12 +147,14 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<RwVM> tableRowClickEventArgs)
     {
+        var tabId = Guid.NewGuid();
+
         await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new RwDetails(),
-            Guid.NewGuid(),
+            tabId,
             Icons.Material.Filled.Info,
-            new() { { "RwVM", tableRowClickEventArgs?.Item ?? new() } }));
+            new() { { "RwVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabId } }));
     }
 
     private void OnSearch()

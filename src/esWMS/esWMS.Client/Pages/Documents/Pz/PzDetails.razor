@@ -1,13 +1,26 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
+@using esWMS.Client.PrintTemplates.Document
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.PrintTemplates.Document.DocumentTemplate
 @inject IDialogService DialogService
 @inject IDataService<PzVM> pzDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+@inject IConfirmDialogService ConfirmDialogService
+@inject OnePageState OnePageState
+
+<MudButton @onclick="PrintQrs"
+           Variant="Variant.Filled"
+           Color="Color.Dark"
+           EndIcon="@Icons.Material.Filled.Print"
+           Disabled="@(!PzVM.IsApproved)">
+    Drukuj
+</MudButton>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @PzVM.DocumentId
@@ -51,10 +64,12 @@
 
 <DocumentItemsTable DocumentItems="@PzVM.DocumentItems"
                     TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
-                    OnApprove="OpenDialogAsync" />
+                    OnApprove="OpenDialogAsync"
+                    DeleteFunc="OpenDeleteDialog" />
 
-@if (PzVM.DocumentItems.All(x => x.IsApproved) &&
-!PzVM.IsApproved)
+@if (PzVM.DocumentItems.All(x => x.IsApproved)
+&& !PzVM.IsApproved
+&& PzVM.DocumentItems.Any())
 {
     <MudButton OnClick="@(() => ApprovePz())"
                Size="@Size.Small"
@@ -64,14 +79,15 @@
         Zatwierdź
     </MudButton>
 }
-else if (PzVM.IsApproved)
+else if (!PzVM.IsApproved && !PzVM.DocumentItems.Any(x => x.IsApproved))
 {
-    <MudButton Size="@Size.Small"
+    <MudButton OnClick="@(() => OpenDeleteDocumentDialog())"
+               EndIcon="@Icons.Material.Outlined.Delete"
+               Size="@Size.Small"
                Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               Disabled
-               Class="mb-3">
-        Zatwierdzono
+               Color="@Color.Error"
+               Class="my-3 me-2">
+        Usuń
     </MudButton>
 }
 else
@@ -80,16 +96,28 @@ else
                Variant="@Variant.Filled"
                Color="@Color.Primary"
                Disabled
-               Class="mb-3">
+               Class="my-3">
         Zatwierdź
     </MudButton>
 }
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public PzVM PzVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            await RefreshPz();
+        }
+    }
 
     private Task OpenDialogAsync(DocumentItemVM documentItem)
     {
@@ -141,5 +169,85 @@ else
         {
             await response.HandleFailure(AlertService);
         }
+    }
+
+    private async Task OpenDeleteDialog(DocumentItemVM documentItem)
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć pozycję?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteAsync(documentItem);
+        }
+    }
+
+    private async Task OpenDeleteDocumentDialog()
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć dokument?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteDocumentAsync();
+        }
+    }
+
+    private async Task DeleteAsync(DocumentItemVM documentItem)
+    {
+        var response = await pzDataService.Delete(@"api/v1/Pz/item/" + documentItem.DocumentItemId);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto pozycję"), Severity.Success);
+            await RefreshPz();
+
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task DeleteDocumentAsync()
+    {
+        var response = await pzDataService.Delete(@"api/v1/Pz", new() { { "DocumentId", PzVM.DocumentId } });
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto dokument"), Severity.Success);
+            await OnePageState.RemoveTab(TabId);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task PrintQrs()
+    {
+        var model = new DocumentPrintModel(
+                model: PzVM,
+                documentType: DocumentTypesName.PZ,
+                receiverName: PzVM.IssueWarehouse?.WarehouseName ?? "",
+                receiverAddress: $"{PzVM.IssueWarehouse?.PostalCode} {PzVM.IssueWarehouse?.City} {PzVM.IssueWarehouse?.Region} {PzVM.IssueWarehouse?.Address}",
+                issuerName: PzVM.SupplierContractor?.ContractorName ?? "",
+                issuerAddress: $"{PzVM.SupplierContractor?.PostalCode} {PzVM.SupplierContractor?.City} {PzVM.SupplierContractor?.Region} {PzVM.SupplierContractor?.Address}"
+        );
+
+        var tabId = Guid.NewGuid();
+
+        await OnePageState.AddTab(
+            new TabView("Podgląd wydruku" ?? " ",
+            new DocumentTemplate(),
+            tabId,
+            Icons.Material.Filled.Info,
+            new() { { "Model", model } }));
     }
 }

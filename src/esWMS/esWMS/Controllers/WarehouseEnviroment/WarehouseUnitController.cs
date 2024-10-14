@@ -11,9 +11,15 @@ using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using Microsoft.AspNetCore.Authorization;
+using esWMS.Application.Functions.Products.Commands.UpdateProduct;
+using esWMS.Application.Functions.Products;
+using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
+using esWMS.Application.Functions.WarehouseUnits.Queries.GetFullWarehouseUnitStack;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/[controller]")]
     public class WarehouseUnitController : ControllerBase
@@ -62,6 +68,15 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleOkResult(this);
         }
 
+        [HttpGet("get-stack/{warehouseUnitId}")]
+        public async Task<ActionResult<Dictionary<int, WarehouseUnitDto>>> GetFullWarehouseUnitStack
+            ([FromRoute] string warehouseUnitId)
+        {
+            var result = await _mediator.Send(new GetFullWarehouseUnitStackQuery(warehouseUnitId));
+
+            return result.HandleOkResult(this);
+        }
+
         [HttpPatch("set-location")]
         public async Task<ActionResult<WarehouseUnitDto>> SetWarehouseUnitLocation
             ([FromBody] SetLocationForWarehouseUnitCommand setLocationForWarehouseUnitCommand)
@@ -92,6 +107,18 @@ namespace esWMS.Controllers.WarehouseEnviroment
             var result = await _mediator.Send(new DeleteWarehouseUnitCommand(warehouseUnitId));
 
             return result.HandleNoContentResult(this);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<WarehouseUnitDto>> UpdateWarehouseUnit
+            ([FromBody] UpdateWarehouseUnitCommand updateWarehouseUnitCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                updateWarehouseUnitCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(updateWarehouseUnitCommand);
+
+            return result.HandleOkResult(this);
         }
     }
 }

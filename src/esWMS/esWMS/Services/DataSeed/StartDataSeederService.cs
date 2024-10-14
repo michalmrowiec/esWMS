@@ -2,42 +2,37 @@
 using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Infrastructure;
 
-namespace esWMS.Services
+namespace esWMS.Services.DataSeed
 {
     internal static class StartDataSeederService
     {
-        public static void SeedStartData(this EsWmsDbContext dbContext)
+        public static async Task SeedStartData(this EsWmsDbContext dbContext)
         {
-            //if (!dbContext.Employees.Any())
-            //{
-
-            //}
-
             if (!dbContext.Categories.Any())
             {
-                dbContext.Categories.AddRange(Categories);
+                await dbContext.Categories.AddRangeAsync(Categories);
             }
 
             if (!dbContext.Products.Any())
             {
-                dbContext.Products.AddRange(Products);
+                await dbContext.Products.AddRangeAsync(Products);
             }
 
             if (!dbContext.Warehouses.Any())
             {
-                dbContext.Warehouses.AddRange(Warehouses);
+                await dbContext.Warehouses.AddRangeAsync(Warehouses);
             }
 
             if (!dbContext.Contractors.Any())
             {
-                dbContext.Contractors.AddRange(Contractors);
+                await dbContext.Contractors.AddRangeAsync(Contractors);
             }
 
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
         }
 
-        public static List<Category> Categories = new List<Category>
-        {
+        public static List<Category> Categories =
+        [
             new Category
             {
                 CategoryId = "CAT-001",
@@ -84,10 +79,10 @@ namespace esWMS.Services
                 CategoryName = "Nośniki",
                 CreatedAt = DateTime.Now
             }
-        };
+        ];
 
-        public static List<Product> Products = new List<Product>
-        {
+        public static List<Product> Products =
+        [
             new Product
             {
                 ProductId = "PROD-001",
@@ -101,6 +96,7 @@ namespace esWMS.Services
                 TotalWeight = 0.5m,
                 Price = 50.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -116,6 +112,7 @@ namespace esWMS.Services
                 TotalWeight = 0.2m,
                 Price = 20.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -131,6 +128,7 @@ namespace esWMS.Services
                 TotalWeight = 2m,
                 Price = 350.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -146,6 +144,7 @@ namespace esWMS.Services
                 TotalWeight = 2.5m,
                 Price = 500.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -161,6 +160,7 @@ namespace esWMS.Services
                 TotalWeight = 10m,
                 Price = 500.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -176,6 +176,7 @@ namespace esWMS.Services
                 TotalWeight = 5m,
                 Price = 300.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -191,6 +192,7 @@ namespace esWMS.Services
                 TotalWeight = 0.01m,
                 Price = 1.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -206,6 +208,7 @@ namespace esWMS.Services
                 TotalWeight = 20m,
                 Price = 10.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -221,6 +224,7 @@ namespace esWMS.Services
                 TotalWeight = 0.3m,
                 Price = 50.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -236,6 +240,7 @@ namespace esWMS.Services
                 TotalWeight = 1m,
                 Price = 20.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             },
             new Product
@@ -255,13 +260,14 @@ namespace esWMS.Services
                 IsMedia = true,
                 Price = 70.00m,
                 IsActive = true,
+                VatRate = 23,
                 CreatedAt = DateTime.Now
             }
-        };
+        ];
 
 
-        public static List<Warehouse> Warehouses = new List<Warehouse>
-        {
+        public static List<Warehouse> Warehouses =
+        [
             new Warehouse
             {
                 WarehouseId = "MWS",
@@ -286,10 +292,10 @@ namespace esWMS.Services
                 WarehouseName = "Magazyn Produkcji",
                 CreatedAt = DateTime.Now
             }
-        };
+        ];
 
-        public static List<Contractor> Contractors = new List<Contractor>
-        {
+        public static List<Contractor> Contractors =
+        [
             new Contractor
             {
                 ContractorId = "PTK",
@@ -308,6 +314,6 @@ namespace esWMS.Services
                 IsActive = true,
                 CreatedAt= DateTime.Now
             }
-        };
+        ];
     }
 }

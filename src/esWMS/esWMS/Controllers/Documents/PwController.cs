@@ -1,10 +1,12 @@
-using esWMS.Domain.Models;
 using esWMS.Application.Functions.Documents.PwFunctions;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePw;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwItems;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw;
+using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePw;
+using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwItem;
 using esWMS.Application.Functions.Documents.PwFunctions.Queries.GetSortedFilteredPw;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +71,22 @@ namespace esWMS.Controllers.Documents
             var result = await _mediator.Send(new GetSortedFilteredPwQuery(sieveModel));
 
             return result.HandleOkResult(this);
+        }
+
+        [HttpDelete("item/{documentItemId}")]
+        public async Task<ActionResult> DeletePwDocumentItem([FromRoute] string documentItemId)
+        {
+            var result = await _mediator.Send(new DeletePwItemCommand(documentItemId));
+
+            return result.HandleNoContentResult(this);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeletePwDocument([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new DeletePwCommand(documentId));
+
+            return result.HandleNoContentResult(this);
         }
     }
 }

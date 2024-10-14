@@ -15,11 +15,15 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Lokalizacje</MudText>
         <MudSpacer />
-        <MudButton @onclick="OpenZoneDialogAsync"
-                   Variant="Variant.Filled"
-                   Color="Color.Primary">
-            Utwórz strefę
-        </MudButton>
+        <AuthorizeView Roles="ADM, MNG">
+            <Authorized>
+                <MudButton @onclick="OpenZoneDialogAsync"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary">
+                    Utwórz strefę
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>

@@ -48,6 +48,7 @@
                 @(TableType == DocumentItemTableType.DocumentDetails ? "Zatwierdzony" : "")
             </MudTableSortLabel>
         </MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
@@ -80,6 +81,15 @@
                                OnClick="@(() => DocumentItems.Remove(context))" />
             }
         </MudTd>
+        <MudTh>
+            @if (DeleteFunc != null
+            && !context.IsApproved)
+            {
+                <MudIconButton Size="@Size.Small"
+                               Icon="@Icons.Material.Outlined.Delete"
+                               OnClick="@(async() => { await DeleteFunc.Invoke(context); StateHasChanged(); })" />
+            }
+        </MudTh>
     </RowTemplate>
     <FooterContent>
         <MudTFootRow>
@@ -96,6 +106,8 @@
     public DocumentItemTableType TableType { get; set; }
     [Parameter]
     public Func<DocumentItemVM, Task>? OnApprove { get; set; }
+    [Parameter]
+    public Func<DocumentItemVM, Task>? DeleteFunc { get; set; }
 
     public enum DocumentItemTableType
     {

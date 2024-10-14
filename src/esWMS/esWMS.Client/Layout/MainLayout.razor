@@ -1,5 +1,9 @@
-﻿@using esWMS.Client.Components
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using esWMS.Client.Components
+@using esWMS.Client.Services
 @inherits LayoutComponentBase
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
@@ -11,12 +15,24 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudText Typo="Typo.h5" Class="ml-3">esWMS</MudText>
         <MudSpacer />
+        <AuthorizeView>
+            <Authorized>
+                <MudText>@context.User.Identity?.Name <a href="#" onclick="@(async () => { await AuthService.Logout(); Navigation.NavigateTo("/", true); })">Logout</a></MudText>
+            </Authorized>
+            <NotAuthorized>
+                <a href="/login">Login</a>
+            </NotAuthorized>
+        </AuthorizeView>
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
-        <NavMenu />
-    </MudDrawer>
+    <AuthorizeView>
+        <Authorized>
+            <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+                <NavMenu />
+            </MudDrawer>
+        </Authorized>
+    </AuthorizeView>
     <MudMainContent Class="mt-16 pa-4">
         @Body
     </MudMainContent>
@@ -44,8 +60,9 @@
                 PaletteDark = _darkPalette,
                 LayoutProperties = new LayoutProperties()
             };
-    }
 
+        //AuthService.CheckLogin();
+    }
 
     private void DrawerToggle()
     {

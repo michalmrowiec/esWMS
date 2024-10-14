@@ -3,6 +3,7 @@
 @using esWMS.Client.Components
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.Components.TableColumnsFilters
 @rendermode InteractiveAuto
@@ -257,12 +258,15 @@
     <MudButton @onclick="SubmitSelection"
                Variant="Variant.Filled"
                Color="Color.Primary"
-               hidden="@(TypeOfSelection != SelectionType.Multi)">
-        Potwierdź
+               hidden="@(TypeOfSelection != SelectionType.Multi)"
+               Disabled="@(_selectedWarehouseUnits.Count == 0)">
+        @ButtonConfirmSelectionText
     </MudButton>
 }
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public SelectionType TypeOfSelection { get; set; } = SelectionType.None;
     [Parameter]
@@ -277,6 +281,8 @@
     public bool ShowOnlyUnblocked { get; set; } = false;
     [Parameter]
     public EventCallback<HashSet<WarehouseUnitVM>> SelectedWarehouseUnits { get; set; }
+    [Parameter]
+    public string ButtonConfirmSelectionText { get; set; } = "Potwierdź";
 
     private HashSet<WarehouseUnitVM> _selectedWarehouseUnits { get; set; } = new();
     private IEnumerable<WarehouseUnitVM> _pagedData;
@@ -297,6 +303,15 @@
         { "StackOnId", new("StackOnId") },
         { "ProductName", new("ProductName") }
     };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (_table != null)
+                await _table.ReloadServerData();
+        }
+    }
 
     private string GetRowClass(WarehouseUnitVM item, int rowIndex)
     {

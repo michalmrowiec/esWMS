@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
@@ -8,6 +9,8 @@
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+@inject IConfirmDialogService ConfirmDialogService
+@inject OnePageState OnePageState
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @WzVM.DocumentId
@@ -51,10 +54,12 @@
 
 <DocumentItemsTable DocumentItems="@WzVM.DocumentItems"
                     TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
-                    OnApprove="OpenDialogAsync" />
+                    OnApprove="OpenDialogAsync"
+                    DeleteFunc="OpenDeleteDialog" />
 
-@if (WzVM.DocumentItems.All(x => x.IsApproved) &&
-!WzVM.IsApproved)
+@if (WzVM.DocumentItems.All(x => x.IsApproved)
+    && !WzVM.IsApproved
+    && WzVM.DocumentItems.Any())
 {
     <MudButton OnClick="@(() => ApproveWz())"
                Size="@Size.Small"
@@ -64,14 +69,15 @@
         Zatwierdź
     </MudButton>
 }
-else if (WzVM.IsApproved)
+else if (!WzVM.IsApproved && !WzVM.DocumentItems.Any(x => x.IsApproved))
 {
-    <MudButton Size="@Size.Small"
+    <MudButton OnClick="@(() => OpenDeleteDocumentDialog())"
+               EndIcon="@Icons.Material.Outlined.Delete"
+               Size="@Size.Small"
                Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               Disabled
-               Class="mb-3">
-        Zatwierdzono
+               Color="@Color.Error"
+               Class="my-3 me-2">
+        Usuń
     </MudButton>
 }
 else
@@ -80,16 +86,28 @@ else
                Variant="@Variant.Filled"
                Color="@Color.Primary"
                Disabled
-               Class="mb-3">
+               Class="my-3">
         Zatwierdź
     </MudButton>
 }
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
     public WzVM WzVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            await RefreshWz();
+        }
+    }
 
     private Task OpenDialogAsync(DocumentItemVM documentItem)
     {
@@ -135,6 +153,65 @@ else
 
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{WzVM.DocumentId}</b>"), Severity.Success);
 
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OpenDeleteDialog(DocumentItemVM documentItem)
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć pozycję?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteAsync(documentItem);
+        }
+    }
+
+    private async Task OpenDeleteDocumentDialog()
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć dokument?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteDocumentAsync();
+        }
+    }
+
+    private async Task DeleteAsync(DocumentItemVM documentItem)
+    {
+        var response = await wzDataService.Delete(@"api/v1/Wz/item/" + documentItem.DocumentItemId);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto pozycję"), Severity.Success);
+            await RefreshWz();
+
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task DeleteDocumentAsync()
+    {
+        var response = await wzDataService.Delete(@"api/v1/Wz", new() { { "DocumentId", WzVM.DocumentId } });
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto dokument"), Severity.Success);
+            await OnePageState.RemoveTab(TabId);
         }
         else
         {

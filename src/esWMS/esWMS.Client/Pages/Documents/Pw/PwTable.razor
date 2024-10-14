@@ -2,6 +2,7 @@
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @rendermode InteractiveAuto
@@ -81,12 +82,23 @@
     </PagerContent>
 </MudTable>
 @code {
-    private IEnumerable<PwVM> Products = [];
+    [CascadingParameter]
+    public bool IsActive { get; set; }
 
+    private IEnumerable<PwVM> Products = [];
     private IEnumerable<PwVM> pagedData;
     private MudTable<PwVM> table;
 
     private int totalItems;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            if (table != null)
+                await table.ReloadServerData();
+        }
+    }
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
@@ -135,12 +147,14 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<PwVM> tableRowClickEventArgs)
     {
+        var tabid = Guid.NewGuid();
+
         await OnePageState.AddTab(
             new TabView(tableRowClickEventArgs?.Item?.DocumentId ?? " ",
             new PwDetails(),
-            Guid.NewGuid(),
+            tabid,
             Icons.Material.Filled.Info,
-            new() { { "PwVM", tableRowClickEventArgs?.Item ?? new() } }));
+            new() { { "PwVM", tableRowClickEventArgs?.Item ?? new() }, { "TabId", tabid } }));
     }
 
     private void OnSearch()

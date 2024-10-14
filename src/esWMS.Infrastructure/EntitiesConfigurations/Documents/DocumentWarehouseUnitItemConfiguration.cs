@@ -19,12 +19,14 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
             builder
                 .HasOne(dwui => dwui.DocumentItem)
                 .WithMany(di => di.DocumentWarehouseUnitItems)
-                .HasForeignKey(dwui => dwui.DocumentItemId);
+                .HasForeignKey(dwui => dwui.DocumentItemId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasOne(dwui => dwui.WarehouseUnitItem)
                 .WithMany(wui => wui.DocumentWarehouseUnitItems)
-                .HasForeignKey(dwui => dwui.WarehouseUnitItemId);
+                .HasForeignKey(dwui => dwui.WarehouseUnitItemId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

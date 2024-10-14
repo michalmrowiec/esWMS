@@ -1,6 +1,8 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
+@using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
 @inject IDialogService DialogService
@@ -8,6 +10,13 @@
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+@inject IConfirmDialogService ConfirmDialogService
+@inject OnePageState OnePageState
+
+<MudButton EndIcon="@Icons.Material.Filled.Refresh"
+           OnClick="RefreshMmm">
+    Odśwież
+</MudButton>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @MmmVM.DocumentId
@@ -56,8 +65,17 @@
 <DocumentItemsTable DocumentItems="@MmmVM.DocumentItems"
                     TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails" />
 
-@if (MmmVM.DocumentItems.All(x => x.IsApproved) &&
-!MmmVM.IsApproved)
+@if (!MmmVM.IsApproved && _warehouseUnitIds.Count > 0)
+{
+    <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
+                        TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.Multi"
+                        SelectedWarehouseUnits="OnSelected"
+                        ButtonConfirmSelectionText="Usuń jednostki" />
+}
+
+@if (MmmVM.DocumentItems.All(x => x.IsApproved)
+&& !MmmVM.IsApproved
+&& MmmVM.DocumentItems.Any())
 {
     <MudButton OnClick="@(() => ApproveMmm())"
                Size="@Size.Small"
@@ -67,49 +85,61 @@
         Zatwierdź
     </MudButton>
 }
-else if (MmmVM.IsApproved)
-{
-    <MudButton Size="@Size.Small"
-               Variant="@Variant.Filled"
-               Color="@Color.Primary"
-               Disabled
-               Class="mb-3">
-        Zatwierdzono
-    </MudButton>
-}
 else
 {
     <MudButton Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
                Disabled
-               Class="mb-3">
-        Zatwierdź
+               Class="my-3">
+        Zatwierdź dokument
+    </MudButton>
+}
+
+@if (!MmmVM.IsApproved)
+{
+    <MudButton OnClick="@(() => OpenDeleteDocumentDialog())"
+               EndIcon="@Icons.Material.Outlined.Delete"
+               Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Error"
+               Class="my-3 me-2">
+        Usuń
     </MudButton>
 }
 
 @code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
     [Parameter]
+    public string DocumentId { get; set; }
     public MmmVM MmmVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
+    public HashSet<string> _warehouseUnitIds = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshMmm();
+    }
 
     private async Task RefreshMmm()
     {
-        var sm = new SieveModelVM();
+        var response = await mmmDataService.Get(@"api/v1/Mmm/details", new() { { "DocumentId", DocumentId } });
 
-        sm.Page = 1;
-        sm.PageSize = 1;
-        sm.Filters = $"DocumentId=={MmmVM.DocumentId}";
-
-        var response = await mmmDataService.GetPagedResult(@"api/v1/Mmm/get-filtered", sm);
-
-        if (response.Items.FirstOrDefault() != null)
+        if (response.IsSuccessStatusCode)
         {
-            MmmVM = response.Items.First();
+            var json = await response.Content.ReadAsStringAsync();
+            var mmmDetails = JsonConvert.DeserializeObject<MmmDetailsVM>(json) ?? new();
+            _warehouseUnitIds = mmmDetails.RelatedWarehouseUnitIds.ToHashSet();
+            MmmVM = mmmDetails;
         }
-
-        StateHasChanged();
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
     }
 
     public async Task ApproveMmm()
@@ -124,6 +154,67 @@ else
             await RefreshMmm();
 
             Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{MmmVM.DocumentId}</b>"), Severity.Success);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OnSelected(HashSet<WarehouseUnitVM> warehouseUnits)
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć jednostki?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            foreach (var warehouseUnit in warehouseUnits)
+            {
+                await DeleteAsync(warehouseUnit.WarehouseUnitId);
+            }
+            await RefreshMmm();
+        }
+    }
+
+    private async Task OpenDeleteDocumentDialog()
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć dokument?",
+            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteDocumentAsync();
+        }
+    }
+
+    private async Task DeleteAsync(string warehouseUnitId)
+    {
+        var response = await mmmDataService.Delete(@"api/v1/Mmm/item/" + warehouseUnitId, new() { { "DocumentId", MmmVM.DocumentId } });
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto jednostkę"), Severity.Success);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task DeleteDocumentAsync()
+    {
+        var response = await mmmDataService.Delete(@"api/v1/Mmm", new() { { "DocumentId", MmmVM.DocumentId } });
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto dokument"), Severity.Success);
+            await OnePageState.RemoveTab(TabId);
         }
         else
         {

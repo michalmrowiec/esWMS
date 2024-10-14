@@ -1,5 +1,8 @@
 ﻿using esWMS.Client.ViewModels;
+using esWMS.Components.Alert;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace esWMS.Client.Services
@@ -14,6 +17,8 @@ namespace esWMS.Client.Services
         Task<HttpResponseMessage> Patch(string uri, object item);
         Task<HttpResponseMessage> Put(string uri, object item);
         Task<HttpResponseMessage> Delete(string uri);
+        Task<HttpResponseMessage> Delete(string uri, Dictionary<string, string>? queryParams = null);
+
     }
 
     public interface IDocumentDataService
@@ -21,11 +26,16 @@ namespace esWMS.Client.Services
         Task<HttpResponseMessage> ApproveDocument(string uri, object obj);
     }
 
-    public class DataService<T>(HttpClient httpClient)
+    public class DataService<T>(
+        HttpClient httpClient,
+        IAuthService authService,
+        IAlertService alertService)
         : IDataService<T>
         where T : class
     {
         private readonly HttpClient _httpClient = httpClient;
+        private readonly IAuthService _authService = authService;
+        private readonly IAlertService _alertService = alertService;
 
         public async Task<HttpResponseMessage> Create(string uri, T item)
         {
@@ -38,6 +48,7 @@ namespace esWMS.Client.Services
 
             using var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = postJson;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 
             var response = await _httpClient.SendAsync(request);
 
@@ -47,6 +58,23 @@ namespace esWMS.Client.Services
         public async Task<HttpResponseMessage> Delete(string uri)
         {
             using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
+        }
+
+        public async Task<HttpResponseMessage> Delete(string uri, Dictionary<string, string>? queryParams = null)
+        {
+            if (queryParams != null && queryParams.Count > 0)
+            {
+                var query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
+                uri = $"{uri}?{query}";
+            }
+
+            using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 
             var response = await _httpClient.SendAsync(request);
 
@@ -62,6 +90,7 @@ namespace esWMS.Client.Services
             }
 
             using var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 
             var response = await _httpClient.SendAsync(request);
 
@@ -80,11 +109,21 @@ namespace esWMS.Client.Services
 
             using var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = postJson;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 
             var response = await _httpClient.SendAsync(request);
 
-            var json = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<PagedResultVM<T>>(json);
+            PagedResultVM<T> responseObj = new();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                await response.HandleFailure(alertService);
+            }
+            else
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                responseObj = JsonConvert.DeserializeObject<PagedResultVM<T>>(json) ?? new();
+            }
 
             return responseObj;
         }
@@ -95,6 +134,7 @@ namespace esWMS.Client.Services
 
             using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
             request.Content = postJson;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 
             var response = await _httpClient.SendAsync(request);
 
@@ -107,6 +147,7 @@ namespace esWMS.Client.Services
 
             using var request = new HttpRequestMessage(HttpMethod.Put, uri);
             request.Content = postJson;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 
             var response = await _httpClient.SendAsync(request);
 
@@ -114,10 +155,13 @@ namespace esWMS.Client.Services
         }
     }
 
-    public class DocumentDataService(HttpClient httpClient)
+    public class DocumentDataService(
+        HttpClient httpClient,
+        IAuthService authService)
         : IDocumentDataService
     {
         private readonly HttpClient _httpClient = httpClient;
+        private readonly IAuthService _authService = authService;
 
         public async Task<HttpResponseMessage> ApproveDocument(string uri, object obj)
         {
@@ -125,6 +169,7 @@ namespace esWMS.Client.Services
 
             using var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = postJson;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 
             var response = await _httpClient.SendAsync(request);
 

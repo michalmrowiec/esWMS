@@ -49,7 +49,7 @@ namespace esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp
             }
 
             mmpDocument.IsApproved = true;
-            mmpDocument.AprovedDate = DateTime.Now;
+            mmpDocument.ApprovalDate = DateTime.Now;
             mmpDocument.ApprovingEmployeeId = request.ModifiedBy;
             mmpDocument.ModifiedAt = DateTime.Now;
             mmpDocument.ModifiedBy = request.ModifiedBy;

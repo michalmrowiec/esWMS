@@ -37,6 +37,19 @@
         }
     </MudSelect>
 
+    <MudSelect T="string"
+               @bind-Value="_model.ToWarehouseId"
+               Label="Odbiorca"
+               AnchorOrigin="Origin.BottomCenter"
+               For="@(() => _model.ToWarehouseId)">
+        @foreach (var warehouse in _warehouses)
+        {
+            <MudSelectItem Value="@warehouse.WarehouseId">
+                [@warehouse.WarehouseId] @warehouse.WarehouseName
+            </MudSelectItem>
+        }
+    </MudSelect>
+
     <MudDatePicker Label="Data wystawienia dokumentu"
                    @bind-Date="_model.DocumentIssueDate"
                    For="@(() => _model.DocumentIssueDate)" />
@@ -56,19 +69,6 @@
     <MudDatePicker Label="Data wydania"
                    @bind-Date="_model.GoodsReleaseDate"
                    For="@(() => _model.GoodsReleaseDate)" />
-
-    <MudSelect T="string"
-               @bind-Value="_model.ToWarehouseId"
-               Label="Odbiorca"
-               AnchorOrigin="Origin.BottomCenter"
-               For="@(() => _model.ToWarehouseId)">
-        @foreach (var warehouse in _warehouses)
-        {
-            <MudSelectItem Value="@warehouse.WarehouseId">
-                [@warehouse.WarehouseId] @warehouse.WarehouseName
-            </MudSelectItem>
-        }
-    </MudSelect>
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"

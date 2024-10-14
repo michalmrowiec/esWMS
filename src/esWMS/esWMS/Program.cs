@@ -1,11 +1,14 @@
 using esWMS.Application;
-using esWMS.Client.Pages.OnePage;
 using esWMS.Client.Services;
+using esWMS.Client.States;
 using esWMS.Components;
 using esWMS.Components.Alert;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
+using esWMS.Services.DataSeed;
+using MediatR;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.OpenApi.Models;
 using MudBlazor.Services;
 using NLog;
@@ -22,8 +25,13 @@ try
     builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
     builder.Host.UseNLog();
 
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+    builder.Services.AddAuthorization();
+    builder.Services.AddCascadingAuthenticationState();
     builder.Services.AddSingleton<IAlertService, AlertService>();
     builder.Services.AddSingleton<OnePageState>();
+    builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
     builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
     builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();
     builder.Services.AddTransient<IConfirmDialogService, ConfirmDialogService>();
@@ -85,12 +93,16 @@ try
     var dbContext = scope.ServiceProvider
         .GetRequiredService<EsWmsDbContext>();
 
+    var mediator = scope.ServiceProvider
+        .GetRequiredService<IMediator>();
+
     dbContext.UpdateDatabase(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
 
-    // Configure the HTTP request pipeline.
+    await dbContext.SeedStartAdmin(mediator);
+
     if (app.Environment.IsDevelopment())
     {
-        dbContext.SeedStartData();
+        await dbContext.SeedStartData();
 
         app.UseWebAssemblyDebugging();
 

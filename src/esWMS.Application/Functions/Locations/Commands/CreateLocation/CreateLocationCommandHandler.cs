@@ -3,6 +3,7 @@ using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Responses;
 using MediatR;
+using esWMS.Domain.Services;
 
 namespace esWMS.Application.Functions.Locations.Commands.CreateLocation
 {
@@ -35,8 +36,7 @@ namespace esWMS.Application.Functions.Locations.Commands.CreateLocation
             {
                 var entity = _mapper.Map<Location>(request);
 
-                entity.LocationId =
-                    $"{entity.ZoneId}/{entity.Row:D2}/{entity.Column}/{entity.Level}/{entity.Cell}".ToUpper();
+                entity.LocationId = entity.GenerateLocationId();
 
                 var createdEntity = await _repository.CreateAsync(entity);
 

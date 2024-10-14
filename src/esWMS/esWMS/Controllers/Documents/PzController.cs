@@ -1,10 +1,12 @@
-﻿using esWMS.Domain.Models;
-using esWMS.Application.Functions.Documents.PzFunctions;
+﻿using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePz;
+using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -69,6 +71,22 @@ namespace esWMS.Controllers.Documents
             var result = await _mediator.Send(new GetSortedFilteredPzQuery(sieveModel));
 
             return result.HandleOkResult(this);
+        }
+
+        [HttpDelete("item/{documentItemId}")]
+        public async Task<ActionResult> DeletePzDocumentItem([FromRoute] string documentItemId)
+        {
+            var result = await _mediator.Send(new DeletePzItemCommand(documentItemId));
+
+            return result.HandleNoContentResult(this);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeletePzDocument([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new DeletePzCommand(documentId));
+
+            return result.HandleNoContentResult(this);
         }
     }
 }

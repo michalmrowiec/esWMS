@@ -2,6 +2,7 @@
 @using esWMS.Client.Components
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @inject IDataService<ProductVM> ProductService
 @inject ISnackbar Snackbar
@@ -127,11 +128,16 @@ else
                             <MudCheckBox @bind-Value="_product.IsActive"
                                          Label="Aktywny" />
                         </MudItem>
-                        <MudItem xs="12">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadProduct">Resetuj</MudButton>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="UpdateProduct">Zaktualizuj</MudButton>
-                            <MudButton Variant="Variant.Filled" Color="Color.Error" EndIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialogAsync">Usuń</MudButton>
-                        </MudItem>
+
+                        <AuthorizeView Roles="ADM, MNG">
+                            <Authorized>
+                                <MudItem xs="12">
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadProduct">Resetuj</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="UpdateProduct">Zaktualizuj</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Error" EndIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialogAsync">Usuń</MudButton>
+                                </MudItem>
+                            </Authorized>
+                        </AuthorizeView>
                     </MudGrid>
                 </MudCardContent>
             </MudCard>

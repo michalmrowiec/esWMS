@@ -2,6 +2,7 @@
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
+@using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.SystemActors
 @inject OnePageState OnePageState
@@ -18,12 +19,16 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Pracownicy</MudText>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Class="ml-auto"
-                   OnClick="@(async () => await OnePageState.AddTab(new TabView("Tworzenie pracownika", new CreateEmployee(), Guid.NewGuid(), Icons.Material.Filled.PersonAddAlt1)))">
-            Utwórz pracownika
-        </MudButton>
+        <AuthorizeView Roles="ADM">
+            <Authorized>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="ml-auto"
+                           OnClick="@(async () => await OnePageState.AddTab(new TabView("Tworzenie pracownika", new CreateEmployee(), Guid.NewGuid(), Icons.Material.Filled.PersonAddAlt1)))">
+                    Utwórz pracownika
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>

@@ -41,6 +41,8 @@ using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Products.Commands.UpdateProduct;
 using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
 using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
+using esWMS.Application.Functions.WarehouseUnits.Commands;
+using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
 
 namespace esWMS.Application.Mappings
 {
@@ -67,9 +69,11 @@ namespace esWMS.Application.Mappings
             CreateMap<Warehouse, FlatWarehouseDto>();
             CreateMap<Warehouse, WarehouseDto>();
 
+            CreateMap<CommonWarehouseUnitCommand, WarehouseUnit>();
             CreateMap<CreateWarehouseUnitCommand, WarehouseUnit>();
-            CreateMap<CreateFlatWarehouseUnitCommand, WarehouseUnit>();
-            CreateMap<UpdateWarehouseUnitCommand, WarehouseUnit>();
+            CreateMap<UpdateWarehouseUnitCommand, WarehouseUnit>()
+                .ForMember(dest => dest.WarehouseUnitId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
             CreateMap<WarehouseUnit, WarehouseUnitDto>()
                 .ForMember(dto => dto.WarehouseUnitItems,
                            opt => opt.MapFrom(src => src.WarehouseUnitItems));
@@ -102,6 +106,9 @@ namespace esWMS.Application.Mappings
             CreateMap<Location, FlatLocationDto>();
             CreateMap<Location, LocationDto>()
                 .ReverseMap();
+            CreateMap<UpdateLocationCommand, Location>()
+                .ForMember(dest => dest.LocationId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<Contractor, ContractorDto>();
             CreateMap<CreateContractorCommand, Contractor>()
@@ -125,6 +132,8 @@ namespace esWMS.Application.Mappings
             CreateMap<CreateMmmCommand, MMM>();
             CreateMap<MMM, MmmDto>();
             CreateMap<MMM, FlatMmmDto>();
+            CreateMap<MMM, MmmDetailsDto>()
+                .ForMember(dest => dest.RelatedWarehouseUnitIds, opt => opt.Ignore());
 
             CreateMap<MMP, MmpDto>();
             CreateMap<MMP, FlatMmpDto>();

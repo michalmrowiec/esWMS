@@ -68,7 +68,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .HasOne(di => di.Document)
                 .WithMany(d => d.DocumentItems)
                 .HasForeignKey(di => di.DocumentId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder
                 .HasOne(di => di.Product)
@@ -80,7 +80,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
                 .HasMany(di => di.DocumentWarehouseUnitItems)
                 .WithOne(dwui => dwui.DocumentItem)
                 .HasForeignKey(dwui => dwui.DocumentItemId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

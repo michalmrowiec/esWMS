@@ -30,7 +30,7 @@ namespace esWMS.Application.Functions.Employees.Command.LoginEmployee
             catch (KeyNotFoundException ex)
             {
                 return new BaseResponse<LogedEmployeeDto>
-                    (BaseResponse.ResponseStatus.NotFound, "Employee does not exist.");
+                    (BaseResponse.ResponseStatus.BadQuery, "Login or password are wrong.");
             }
             catch (Exception ex)
             {

@@ -1,11 +1,13 @@
-using esWMS.Domain.Models;
 using esWMS.Application.Functions.Documents.ZwFunctions;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZw;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwItems;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw;
+using esWMS.Application.Functions.Documents.ZwFunctions.Commands.DeleteZw;
+using esWMS.Application.Functions.Documents.ZwFunctions.Commands.DeleteZwItem;
 using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetEligibleItemsForZwReturn;
 using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetSortedFilteredZw;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -82,6 +84,22 @@ namespace esWMS.Controllers.Documents
             var result = await _mediator.Send(new GetEligibleItemsForZwReturnQuery(sieveModel));
 
             return result.HandleOkResult(this);
+        }
+
+        [HttpDelete("item/{documentItemId}")]
+        public async Task<ActionResult> DeleteZwDocumentItem([FromRoute] string documentItemId)
+        {
+            var result = await _mediator.Send(new DeleteZwItemCommand(documentItemId));
+
+            return result.HandleNoContentResult(this);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteZwDocument([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new DeleteZwCommand(documentId));
+
+            return result.HandleNoContentResult(this);
         }
     }
 }
