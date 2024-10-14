@@ -7,7 +7,7 @@ namespace esWMS.Application.Functions.Documents.PzFunctions
     {
         public DateTime? GoodsReceiptDate { get; set; }
         public string SupplierContractorId { get; set; } = null!;
-
+        
         public ContractorDto? SupplierContractor { get; set; }
     }
 }

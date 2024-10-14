@@ -1,11 +1,14 @@
 ﻿@page "/locations"
 @using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.PrintTemplates.LocationQr
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels;
 @using esWMS.Client.ViewModels.WarehouseEnviroment.Location
+@using esWMS.Client.States
 @rendermode InteractiveAuto
 @inject IDataService<LocationVM> dataService
 @inject IDialogService DialogService
+@inject OnePageState OnePageState
 
 <style>
     .mud-table-cell-custom-group {
@@ -22,18 +25,28 @@
           ServerData="ServerReload"
           Dense
           Hover
-          @ref="table"
+          @ref="_table"
           RowClass="cursor-pointer"
           OnRowClick="RowClickEvent"
           GroupBy="@_groupDefinition"
           GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
           FixedHeader
-          Height="80%">
+          Height="80%"
+          MultiSelection
+          @bind-SelectedItems="_selectedItems">
     <ToolBarContent>
         <MudText Typo="Typo.h6" Class="me-3">Lokalizacje</MudText>
-        <ExpandCollapseGroupsButtons ExpandAction="table.ExpandAllGroups"
-                                     CollapseAction="table.CollapseAllGroups" />
+        <ExpandCollapseGroupsButtons ExpandAction="_table.ExpandAllGroups"
+                                     CollapseAction="_table.CollapseAllGroups" />
         <MudSpacer />
+        <MudButton @onclick="PrintQrs"
+                   Variant="Variant.Filled"
+                   Color="Color.Dark"
+                   EndIcon="@Icons.Material.Filled.QrCode"
+                   Disabled="@(_selectedItems.Count == 0)"
+                   Class="me-2">
+            Drukuj QR
+        </MudButton>
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
                    Color="Color.Primary">
@@ -128,14 +141,14 @@
 
 @code {
     [Parameter]
-    public EventCallback<LocationVM> SelectedProduct { get; set; }
+    public EventCallback<LocationVM> SelectedLocation { get; set; }
     [Parameter]
     public int[]? PageSize { get; set; }
 
-    private IEnumerable<LocationVM> pagedData;
-    private MudTable<LocationVM> table;
-
-    private int totalItems;
+    private IEnumerable<LocationVM> _pagedData;
+    private MudTable<LocationVM> _table;
+    private int _totalItems;
+    private HashSet<LocationVM> _selectedItems = new();
 
     private Dictionary<string, FilterOption> searchOptions = new()
     {
@@ -179,12 +192,12 @@
 
     private void OnSearch()
     {
-        table.ReloadServerData();
+        _table.ReloadServerData();
     }
 
     private async Task RowClickEvent(TableRowClickEventArgs<LocationVM> tableRowClickEventArgs)
     {
-        await SelectedProduct.InvokeAsync(tableRowClickEventArgs.Item);
+        await SelectedLocation.InvokeAsync(tableRowClickEventArgs.Item);
     }
 
     private Task OpenDialogAsync()
@@ -198,57 +211,8 @@
             };
         var parameters = new DialogParameters<AddLocationDialog>
         {
-            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddLocationDialog>(null, parameters, options);
-    }
-
-    private Task OpenEditDialogAsync(LocationVM location)
-    {
-        var options = new DialogOptions
-            {
-                CloseOnEscapeKey = true,
-                CloseButton = true,
-                MaxWidth = MaxWidth.Medium,
-                FullWidth = true
-            };
-        var parameters = new DialogParameters<UpdateLocationDialog>
-        {
-            { x => x.FuncsOnUpdated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } },
-            { x => x.LocationToUpdate, location }
-        };
-        return DialogService.ShowAsync<UpdateLocationDialog>(null, parameters, options);
-    }
-
-    private async Task OpenDeleteDialogAsync(LocationVM location)
-    {
-        // var parameters = new DialogParameters<DeleteConfirmDialog>
-        // {
-        //     { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć kategorię: {category.CategoryName}"}
-        // };
-
-        // var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-
-        // var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
-        // var result = await dialog.Result;
-
-        // if (!result?.Canceled ?? false)
-        // {
-        //     await DeleteAsync(category);
-        // }
-    }
-
-    private async Task DeleteAsync(LocationVM location)
-    {
-        // var response = await dataService.Delete(@"api/v1/Category/" + category.CategoryId);
-        // if (response.IsSuccessStatusCode)
-        // {
-        //     Snackbar.Add(new MarkupString("Usunięto kategorię"), Severity.Success);
-        //     await table.ReloadServerData();
-        // }
-        // else
-        // {
-        //     await response.HandleFailure(AlertService);
-        // }
     }
 }

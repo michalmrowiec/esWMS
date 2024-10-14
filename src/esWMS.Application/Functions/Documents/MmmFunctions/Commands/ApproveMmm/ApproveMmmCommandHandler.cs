@@ -54,7 +54,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
             }
 
             mmmDocument.IsApproved = true;
-            mmmDocument.AprovedDate = DateTime.Now;
+            mmmDocument.ApprovalDate = DateTime.Now;
             mmmDocument.ApprovingEmployeeId = request.ModifiedBy;
             mmmDocument.ModifiedAt = DateTime.Now;
             mmmDocument.ModifiedBy = request.ModifiedBy;

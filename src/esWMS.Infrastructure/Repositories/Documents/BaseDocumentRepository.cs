@@ -47,7 +47,7 @@ namespace esWMS.Infrastructure.Repositories.Documents
         {
             try
             {
-                var result = await _context
+                var documents = _context
                     .Set<TDocument>()
                     .Include(x => x.DocumentItems)
                         .ThenInclude(x => x.DocumentWarehouseUnitItems)
@@ -55,7 +55,14 @@ namespace esWMS.Infrastructure.Repositories.Documents
                                 .ThenInclude(x => x.WarehouseUnit)
                     .Include(x => x.DocumentItems)
                         .ThenInclude(x => x.Product)
-                    .FirstOrDefaultAsync(x => x.DocumentId.Equals(id));
+                    .AsQueryable();
+
+                if (_queryStrategies.TryGetValue(typeof(TDocument), out var strategy))
+                {
+                    documents = strategy(documents);
+                }
+
+                var result = await documents.FirstOrDefaultAsync(x => x.DocumentId.Equals(id));
 
                 return result ?? throw new KeyNotFoundException("The object with the given id was not found.");
             }

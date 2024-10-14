@@ -1,0 +1,41 @@
+﻿@inject IJSRuntime JSRuntime
+
+@HeaderContent
+<MudButton @onclick="Print"
+           Variant="Variant.Filled"
+           Color="Color.Primary"
+           EndIcon="@Icons.Material.Filled.Print">
+    Drukuj
+</MudButton>
+<div style="width: 194mm; background-color:white;">
+    <div id="printableArea">
+        @BodyContent
+    </div>
+</div>
+
+
+<script>
+    function printDiv() {
+        var printContents = document.getElementById('printableArea').innerHTML;
+        var newWindow = window.open('', '_blank');
+
+        newWindow.document.write('<html><head><title>Print</title>');
+        newWindow.document.write('</head><body>');
+        newWindow.document.write(printContents);
+        newWindow.document.write('</body></html>');
+        newWindow.document.close();
+        newWindow.print();
+    }
+</script>
+
+@code {
+    [Parameter]
+    public RenderFragment? HeaderContent { get; set; }
+    [Parameter]
+    public RenderFragment? BodyContent { get; set; }
+
+    private async Task Print()
+    {
+        await JSRuntime.InvokeVoidAsync("printDiv");
+    }
+}
