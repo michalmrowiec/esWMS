@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
 @using esWMS.Client.Services
+@using esWMS.Client.Services.Dialog
 @using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -166,7 +167,7 @@ else
 
         await ConfirmDialogService.OpenDeleteDialogAsync(
             "Usuwanie pozycji", "Czy na pewno chcesz usunąć pozycję?",
-            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
             EventCallback.Factory.Create(this, () => confirm = true));
 
         if (confirm)
@@ -181,7 +182,7 @@ else
 
         await ConfirmDialogService.OpenDeleteDialogAsync(
             "Usuwanie pozycji", "Czy na pewno chcesz usunąć dokument?",
-            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
             EventCallback.Factory.Create(this, () => confirm = true));
 
         if (confirm)

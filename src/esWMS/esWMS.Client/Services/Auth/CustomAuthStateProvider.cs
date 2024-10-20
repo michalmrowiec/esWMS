@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 
-namespace esWMS.Client.Services
+namespace esWMS.Client.Services.Auth
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {

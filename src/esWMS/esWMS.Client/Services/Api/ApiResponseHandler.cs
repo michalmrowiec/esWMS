@@ -2,7 +2,7 @@
 using MudBlazor;
 using Newtonsoft.Json;
 
-namespace esWMS.Client.Services
+namespace esWMS.Client.Services.Api
 {
     public static class ApiResponseHandler
     {

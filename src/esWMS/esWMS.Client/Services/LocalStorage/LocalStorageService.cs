@@ -1,7 +1,7 @@
 ﻿using Microsoft.JSInterop;
 using Newtonsoft.Json;
 
-namespace esWMS.Client.Services
+namespace esWMS.Client.Services.LocalStorage
 {
     public interface ILocalStorageService
     {

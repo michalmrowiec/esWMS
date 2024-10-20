@@ -120,7 +120,7 @@ else
                                             await ConfirmDialogService.OpenDeleteDialogAsync(
                                                 "Zaktualizuj kontrahenta",
                                                 $"Kontrahent {_contractor.ContractorId} został zaktualizowany.",
-                                                Services.ConfirmDialogService.ButtonDialogType.Edit,
+                                                Services.Dialog.ConfirmDialogService.ButtonDialogType.Edit,
                                                 EventCallback.Factory.Create(this, UpdateContractor));})">
                                         Zaktualizuj
                                     </MudButton>

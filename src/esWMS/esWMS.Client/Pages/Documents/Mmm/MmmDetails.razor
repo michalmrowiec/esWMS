@@ -167,7 +167,7 @@ else
 
         await ConfirmDialogService.OpenDeleteDialogAsync(
             "Usuwanie pozycji", "Czy na pewno chcesz usunąć jednostki?",
-            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
             EventCallback.Factory.Create(this, () => confirm = true));
 
         if (confirm)
@@ -186,7 +186,7 @@ else
 
         await ConfirmDialogService.OpenDeleteDialogAsync(
             "Usuwanie pozycji", "Czy na pewno chcesz usunąć dokument?",
-            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
             EventCallback.Factory.Create(this, () => confirm = true));
 
         if (confirm)

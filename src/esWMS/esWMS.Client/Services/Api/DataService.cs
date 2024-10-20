@@ -1,11 +1,11 @@
-﻿using esWMS.Client.Services.Notification;
+﻿using esWMS.Client.Services.Auth;
+using esWMS.Client.Services.Notification;
 using esWMS.Client.ViewModels;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace esWMS.Client.Services
+namespace esWMS.Client.Services.Api
 {
     public interface IDataService<T>
         where T : class

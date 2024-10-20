@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 
-namespace esWMS.Client.Services
+namespace esWMS.Client.Services.Auth
 {
     public static class JwtHelper
     {

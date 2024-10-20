@@ -1,7 +1,9 @@
-using esWMS.Client.Services;
+using esWMS.Client.Services.Api;
+using esWMS.Client.Services.Auth;
+using esWMS.Client.Services.Dialog;
+using esWMS.Client.Services.LocalStorage;
 using esWMS.Client.Services.Notification;
 using esWMS.Client.States;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;

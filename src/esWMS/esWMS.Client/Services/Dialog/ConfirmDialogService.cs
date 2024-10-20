@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace esWMS.Client.Services
+namespace esWMS.Client.Services.Dialog
 {
     public interface IConfirmDialogService
     {
