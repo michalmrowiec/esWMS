@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
-namespace esWMS.Components.Alert
+namespace esWMS.Client.Services.Notification
 {
     public interface IAlertService
     {

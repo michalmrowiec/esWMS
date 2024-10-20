@@ -1,5 +1,5 @@
-﻿using esWMS.Client.ViewModels;
-using esWMS.Components.Alert;
+﻿using esWMS.Client.Services.Notification;
+using esWMS.Client.ViewModels;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;

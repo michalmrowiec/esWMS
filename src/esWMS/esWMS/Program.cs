@@ -1,8 +1,8 @@
 using esWMS.Application;
 using esWMS.Client.Services;
+using esWMS.Client.Services.Notification;
 using esWMS.Client.States;
 using esWMS.Components;
-using esWMS.Components.Alert;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;

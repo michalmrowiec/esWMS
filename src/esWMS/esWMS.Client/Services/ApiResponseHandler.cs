@@ -1,4 +1,4 @@
-﻿using esWMS.Components.Alert;
+﻿using esWMS.Client.Services.Notification;
 using MudBlazor;
 using Newtonsoft.Json;
 
