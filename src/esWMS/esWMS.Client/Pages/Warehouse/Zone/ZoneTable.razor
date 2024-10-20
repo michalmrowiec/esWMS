@@ -10,7 +10,7 @@
           ServerData="ServerReload"
           Dense="true"
           Hover="true"
-          @ref="table"
+          @ref="_table"
           RowClass="cursor-pointer">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Lokalizacje</MudText>
@@ -61,6 +61,8 @@
                                   Column="AvgTemperature"
                                   OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh></MudTh>
+        <MudTh></MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.ZoneId</MudTd>
@@ -68,6 +70,20 @@
         <MudTd DataLabel="Alias strefy">@context.ZoneAlias</MudTd>
         <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
         <MudTd DataLabel="Średnia temperatura (°C)">@context.AvgTemperature</MudTd>
+        <AuthorizeView Roles="ADM, MNG" Context="context2">
+            <Authorized>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Edit"
+                                   OnClick="@(async () => await OpenEditDialogAsync(context))" />
+                </MudTh>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Delete"
+                                   OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
+                </MudTh>
+            </Authorized>
+        </AuthorizeView>
     </RowTemplate>
     <NoRecordsContent>
         <TableNoRecordsContent />
@@ -83,9 +99,8 @@
 @code {
     [Parameter]
     public int[]? PageSize { get; set; }
-    private IEnumerable<ZoneVM> Products = [];
-    private IEnumerable<ZoneVM> pagedData;
-    private MudTable<ZoneVM> table;
+    private IEnumerable<ZoneVM> _pagedData;
+    private MudTable<ZoneVM> _table;
 
     private int totalItems;
 
@@ -120,7 +135,7 @@
 
     private void OnSearch()
     {
-        table.ReloadServerData();
+        _table.ReloadServerData();
     }
 
     private Task OpenZoneDialogAsync()
@@ -134,8 +149,53 @@
             };
         var parameters = new DialogParameters<AddZoneDialog>
         {
-            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddZoneDialog>(null, parameters, options);
+    }
+
+    private Task OpenEditDialogAsync(ZoneVM zone)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<UpdateZoneDialog>
+        {
+            { x => x.FuncsOnUpdated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } },
+            { x => x.ZoneToUpdate, zone }
+        };
+        return DialogService.ShowAsync<UpdateZoneDialog>(null, parameters, options);
+    }
+
+    private async Task OpenDeleteDialogAsync(ZoneVM zone)
+    {
+        // var parameters = new DialogParameters<DeleteConfirmDialog>
+        // {
+        //     { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć kategorię: {category.CategoryName}"}
+        // };
+        // var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        // var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        // var result = await dialog.Result;
+        // if (!result?.Canceled ?? false)
+        // {
+        //     await DeleteAsync(category);
+        // }
+    }
+    private async Task DeleteAsync(ZoneVM zone)
+    {
+        // var response = await dataService.Delete(@"api/v1/Category/" + category.CategoryId);
+        // if (response.IsSuccessStatusCode)
+        // {
+        //     Snackbar.Add(new MarkupString("Usunięto kategorię"), Severity.Success);
+        //     await table.ReloadServerData();
+        // }
+        // else
+        // {
+        //     await response.HandleFailure(AlertService);
+        // }
     }
 }

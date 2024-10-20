@@ -10,7 +10,7 @@
 
 <MudDialog>
     <TitleContent>
-        Nowa lokalizacja
+        Modyfikacja lokalizacji
     </TitleContent>
     <DialogContent>
         <MudForm Model="@_model"
@@ -84,7 +84,6 @@
     public LocationVM LocationToUpdate { get; set; }
     public UpdateLocationVM _model;
     private MudForm _form;
-    //private CreateLocationVMValidator _validator = new();
     private List<ZoneVM> _zones = new();
     private string _mediaInfo = string.Empty;
 
