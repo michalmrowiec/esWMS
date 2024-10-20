@@ -25,7 +25,7 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.DeleteZwIte
             ZW document;
             try
             {
-                documentItem = await _documentItemRepository.GetByIdAsync(request.DocumentItemId);
+                documentItem = await _documentItemRepository.GetDocumentItemByIdWithAssignments(request.DocumentItemId);
 
                 document = await _repository.GetByIdAsync(documentItem.DocumentId);
             }
@@ -45,7 +45,6 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.DeleteZwIte
                 var vr = new ValidationResult(
                     new List<ValidationFailure>() {
                         new("DocumentItemId", $"Incorrect document item.") });
-
                 return new BaseResponse(vr);
             }
 
@@ -54,7 +53,14 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.DeleteZwIte
                 var vr = new ValidationResult(
                     new List<ValidationFailure>() {
                         new("DocumentItemId", $"Cannot delete approved document item.") });
+                return new BaseResponse(vr);
+            }
 
+            if (documentItem.DocumentWarehouseUnitItems.Any())
+            {
+                var vr = new ValidationResult(
+                    new List<ValidationFailure>() {
+                        new("DocumentItemId", $"Cannot delete an assigned or partially assigned item.") });
                 return new BaseResponse(vr);
             }
 

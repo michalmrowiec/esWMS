@@ -23,7 +23,7 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwIte
             PW document;
             try
             {
-                documentItem = await _documentItemRepository.GetByIdAsync(request.DocumentItemId);
+                documentItem = await _documentItemRepository.GetDocumentItemByIdWithAssignments(request.DocumentItemId);
                 document = await _repository.GetByIdAsync(documentItem.DocumentId);
             }
             catch (KeyNotFoundException)
@@ -42,7 +42,6 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwIte
                 var vr = new ValidationResult(
                     new List<ValidationFailure>() {
                         new("DocumentItemId", $"Incorrect document item.") });
-
                 return new BaseResponse(vr);
             }
 
@@ -51,7 +50,14 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwIte
                 var vr = new ValidationResult(
                     new List<ValidationFailure>() {
                         new("DocumentItemId", $"Cannot delete approved document item.") });
+                return new BaseResponse(vr);
+            }
 
+            if (documentItem.DocumentWarehouseUnitItems.Any())
+            {
+                var vr = new ValidationResult(
+                    new List<ValidationFailure>() {
+                        new("DocumentItemId", $"Cannot delete an assigned or partially assigned item.") });
                 return new BaseResponse(vr);
             }
 

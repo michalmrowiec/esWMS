@@ -40,7 +40,14 @@ namespace esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePw
                 var vr = new ValidationResult(
                     new List<ValidationFailure>() {
                 new("DocumentId", $"An approved document cannot be deleted or the document contains approved items.") });
+                return new BaseResponse(vr);
+            }
 
+            if (document.DocumentItems.Any(x => x.DocumentWarehouseUnitItems.Any()))
+            {
+                var vr = new ValidationResult(
+                    new List<ValidationFailure>() {
+                        new("DocumentItemId", $"Cannot delete a document with an assigned or partially assigned item.") });
                 return new BaseResponse(vr);
             }
 
