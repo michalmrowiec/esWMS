@@ -43,6 +43,7 @@ using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
 using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
 using esWMS.Application.Functions.WarehouseUnits.Commands;
 using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
+using esWMS.Application.Functions.Zones.Commands.UpdateZone;
 
 namespace esWMS.Application.Mappings
 {
@@ -101,6 +102,9 @@ namespace esWMS.Application.Mappings
             CreateMap<CreateZoneCommand, Zone>();
             CreateMap<Zone, FlatZoneDto>();
             CreateMap<Zone, ZoneDto>();
+            CreateMap<UpdateZoneCommand, Zone>()
+                .ForMember(dest => dest.ZoneId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CreateLocationCommand, Location>();
             CreateMap<Location, FlatLocationDto>();

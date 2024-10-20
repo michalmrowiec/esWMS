@@ -1,8 +1,6 @@
-﻿using FluentValidation;
-
-namespace esWMS.Application.Functions.Zones.Commands.CreateZone
+﻿namespace esWMS.Application.Functions.Zones.Commands.CreateZone
 {
-    internal class CreateZoneValidator : AbstractValidator<CreateZoneCommand>
+    internal class CreateZoneValidator : CommonZoneValidation<CreateZoneCommand>
     {
         public CreateZoneValidator()
         {

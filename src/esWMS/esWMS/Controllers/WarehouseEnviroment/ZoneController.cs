@@ -8,6 +8,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using Microsoft.AspNetCore.Authorization;
+using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
+using esWMS.Application.Functions.Locations;
+using esWMS.Application.Functions.Zones.Commands.UpdateZone;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
@@ -50,6 +53,19 @@ namespace esWMS.Controllers.WarehouseEnviroment
             var result = await _mediator.Send(createZoneCommand);
 
             return result.HandleCreatedResult(this, "");
+        }
+
+
+        [HttpPut]
+        public async Task<ActionResult<ZoneDto>> UpdateLocation
+            ([FromBody] UpdateZoneCommand updateZoneCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                updateZoneCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(updateZoneCommand);
+
+            return result.HandleOkResult(this);
         }
     }
 }
