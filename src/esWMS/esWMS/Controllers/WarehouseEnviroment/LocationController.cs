@@ -1,16 +1,15 @@
-using esWMS.Domain.Models;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Commands.CreateLocation;
+using esWMS.Application.Functions.Locations.Commands.DeleteLocation;
+using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
 using esWMS.Application.Functions.Locations.Queries.GetSortedFilteredLocations;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using Microsoft.AspNetCore.Authorization;
-using esWMS.Application.Functions.Products.Commands.UpdateProduct;
-using esWMS.Application.Functions.Products;
-using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
@@ -64,6 +63,14 @@ namespace esWMS.Controllers.WarehouseEnviroment
             var result = await _mediator.Send(updateLocationCommand);
 
             return result.HandleOkResult(this);
+        }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteLocation([FromQuery] string locationId)
+        {
+            var result = await _mediator.Send(new DeleteLocationCommand(locationId));
+
+            return result.HandleNoContentResult(this);
         }
     }
 }

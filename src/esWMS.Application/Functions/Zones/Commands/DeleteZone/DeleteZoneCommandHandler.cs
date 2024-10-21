@@ -31,7 +31,7 @@ namespace esWMS.Application.Functions.Zones.Commands.DeleteZone
                 return new BaseResponse(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
-            var productResponse = await _mediator.Send(
+            var ocationResponse = await _mediator.Send(
                 new GetSortedFilteredLocationsQuery(
                     new SieveModel()
                     {
@@ -40,15 +40,15 @@ namespace esWMS.Application.Functions.Zones.Commands.DeleteZone
                         Filters = "ZoneId==" + request.ZoneId
                     }));
 
-            var productWithCategory = productResponse.ReturnedObj?.Items ?? [];
+            var locationsInZone = ocationResponse.ReturnedObj?.Items ?? [];
 
-            if (!productResponse.IsSuccess())
+            if (!ocationResponse.IsSuccess())
             {
                 return new BaseResponse(BaseResponse.ResponseStatus.ServerError, "Something went wrong.");
             }
 
             var validationResult = await new DeleteZoneValidator
-                (productWithCategory).ValidateAsync(request, cancellationToken);
+                (locationsInZone).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
