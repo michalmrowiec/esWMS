@@ -12,6 +12,7 @@ namespace esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse
         public string? Region { get; set; }
         public string? PostalCode { get; set; }
         public string? Address { get; set; }
+        public bool IsActive { get; set; } = true;
         public string? CreatedBy { get; set; }
     }
 }

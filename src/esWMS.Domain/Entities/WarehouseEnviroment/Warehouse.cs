@@ -11,6 +11,7 @@ namespace esWMS.Domain.Entities.WarehouseEnviroment
         public string? Region { get; set; }
         public string? PostalCode { get; set; }
         public string? Address { get; set; }
+        public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }

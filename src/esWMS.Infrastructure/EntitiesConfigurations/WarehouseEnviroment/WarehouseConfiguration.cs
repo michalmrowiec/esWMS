@@ -33,6 +33,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
             builder.Property(w => w.Address)
                 .HasMaxLength(250);
 
+            builder.Property(w => w.IsActive)
+                .IsRequired();
+
             builder.Property(w => w.CreatedAt)
                 .IsRequired();
 
