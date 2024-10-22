@@ -65,6 +65,12 @@
             </MudTableSortLabel>
             <DefaultColumntFilter SearchOptions="searchOptions" Column="PostalCode" OnChangedAction="OnSearch" />
         </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsActive" T="WarehouseVM">
+                Aktywny
+            </MudTableSortLabel>
+            <BoolColumnTableFilter SearchOptions="searchOptions" Column="IsActive" OnChangedAction="OnSearch" />
+        </MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.WarehouseId</MudTd>
@@ -74,15 +80,20 @@
         <MudTd DataLabel="Adres">@context.Address</MudTd>
         <MudTd DataLabel="Region">@context.Region</MudTd>
         <MudTd DataLabel="Kod Pocztowy">@context.PostalCode</MudTd>
+        <MudTd DataLabel="Aktywny">
+            <MudCheckBox @bind-Value="@context.IsActive"
+                         Size="Size.Small"
+                         ReadOnly />
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <TableNoRecordsContent />
     </NoRecordsContent>
     <LoadingContent>
-        <MudText>Loading...</MudText>
+        <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <TablePager />
     </PagerContent>
 </MudTable>
 
@@ -101,7 +112,8 @@
         { "City", new("City") },
         { "Address", new("Address") },
         { "Region", new("Region") },
-        { "PostalCode", new("PostalCode") }
+        { "PostalCode", new("PostalCode") },
+        { "IsActive", new("IsActive", "==", "true") }
     };
 
     private async Task<TableData<WarehouseVM>> ServerReload(TableState state, CancellationToken token)

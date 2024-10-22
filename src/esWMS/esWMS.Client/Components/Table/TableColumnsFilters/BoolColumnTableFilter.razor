@@ -1,5 +1,6 @@
 ﻿@using esWMS.Client.Components.TableColumnsFilters
 <MudSelect T="string"
+           Value="SearchOptions[Column].Value"
            ValueChanged="@((s) => {SearchOptions[Column].Value = s; OnChangedAction.Invoke();})"
            Variant="Variant.Text"
            AnchorOrigin="Origin.BottomCenter"
