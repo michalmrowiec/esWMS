@@ -1,16 +1,15 @@
-using esWMS.Domain.Models;
 using esWMS.Application.Functions.Zones;
 using esWMS.Application.Functions.Zones.Commands.CreateZone;
+using esWMS.Application.Functions.Zones.Commands.DeleteZone;
+using esWMS.Application.Functions.Zones.Commands.UpdateZone;
 using esWMS.Application.Functions.Zones.Queries.GetSortedFilteredZones;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using Microsoft.AspNetCore.Authorization;
-using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
-using esWMS.Application.Functions.Locations;
-using esWMS.Application.Functions.Zones.Commands.UpdateZone;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
@@ -66,6 +65,15 @@ namespace esWMS.Controllers.WarehouseEnviroment
             var result = await _mediator.Send(updateZoneCommand);
 
             return result.HandleOkResult(this);
+        }
+
+        [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
+        [HttpDelete]
+        public async Task<ActionResult> DeleteZone([FromQuery] string zoneId)
+        {
+            var result = await _mediator.Send(new DeleteZoneCommand(zoneId));
+
+            return result.HandleNoContentResult(this);
         }
     }
 }
