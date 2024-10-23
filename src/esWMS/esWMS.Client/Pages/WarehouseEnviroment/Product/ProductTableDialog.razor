@@ -1,5 +1,6 @@
 ﻿@using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit.WarehouseUnitTable
 
 <MudDialog>
     <TitleContent>
@@ -10,7 +11,7 @@
         <ProductTable PageSize="new int[] {5,10,25}"
                       SelectedProduct="OnSelected"
                       ShowMediasOnly="@ShowMediasOnly"
-                      TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.Single"/>
+                      TypeOfSelection="SelectionType.Single"/>
 
     </DialogContent>
     <DialogActions>

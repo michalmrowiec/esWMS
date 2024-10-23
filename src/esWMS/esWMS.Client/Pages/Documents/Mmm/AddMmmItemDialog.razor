@@ -1,8 +1,7 @@
-﻿@using esWMS.Client.Pages.Warehouse
-@using esWMS.Client.Pages.Warehouse.WarehouseUnit
-@using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
+﻿@using esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit.WarehouseUnitTable
 @inject IDialogService DialogService
 
 <MudDialog>
@@ -10,7 +9,7 @@
         Dodawanie jednostek magazynowych
     </TitleContent>
     <DialogContent>
-        <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Multi"
+        <WarehouseUnitTable TypeOfSelection="SelectionType.Multi"
                             SelectedWarehouseUnits="OnSelected"
                             WarehouseIdFilter="@WarehouseId"
                             ShowOnlyUnblocked />

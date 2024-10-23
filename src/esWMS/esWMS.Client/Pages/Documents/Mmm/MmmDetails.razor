@@ -1,10 +1,11 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
-@using esWMS.Client.Pages.Warehouse.WarehouseUnit
+@using esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit.WarehouseUnitTable
 @inject IDialogService DialogService
 @inject IDataService<MmmVM> mmmDataService
 @inject IDocumentDataService documentDataService
@@ -68,7 +69,7 @@
 @if (!MmmVM.IsApproved && _warehouseUnitIds.Count > 0)
 {
     <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
-                        TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.Multi"
+                        TypeOfSelection="SelectionType.Multi"
                         SelectedWarehouseUnits="OnSelected"
                         ButtonConfirmSelectionText="Usuń jednostki" />
 }

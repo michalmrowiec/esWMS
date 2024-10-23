@@ -1,9 +1,8 @@
 ﻿@using Newtonsoft.Json
-@using esWMS.Client.Pages.Product
-@using esWMS.Client.Pages.Warehouse.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels;
 @using esWMS.Client.ViewModels.WarehouseEnviroment.Location
+@using static esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit.WarehouseUnitTable
 @inject IDataService<WarehouseUnitItemVM> WarehouseUnitItemService
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
@@ -53,7 +52,7 @@
             </RowEditingTemplate>
         </MudTable>
 
-        <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Single"
+        <WarehouseUnitTable TypeOfSelection="SelectionType.Single"
                             SelectedWarehouseUnits="OnGet"
                             WarehouseIdFilter="@WarehouseId" />
     </DialogContent>

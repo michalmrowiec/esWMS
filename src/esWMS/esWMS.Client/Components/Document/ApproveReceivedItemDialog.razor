@@ -1,8 +1,9 @@
 ﻿@using Newtonsoft.Json
-@using esWMS.Client.Pages.Warehouse.WarehouseUnit
+@using esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit.WarehouseUnitTable
 @inject IDocumentDataService documentService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
@@ -19,7 +20,7 @@
 
         <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + _documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
 
-        <WarehouseUnitTable TypeOfSelection="WarehouseUnitTable.SelectionType.Single"
+        <WarehouseUnitTable TypeOfSelection="SelectionType.Single"
                             SelectedWarehouseUnits="OnGet"
                             WarehouseIdFilter="@WarehouseId" />
 

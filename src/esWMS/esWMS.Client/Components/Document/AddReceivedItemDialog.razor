@@ -1,7 +1,8 @@
 ﻿@using esWMS.Client.Pages
-@using esWMS.Client.Pages.Product
+@using esWMS.Client.Pages.WarehouseEnviroment.Product
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit.WarehouseUnitTable
 
 <MudDialog>
     <TitleContent>
@@ -15,7 +16,7 @@
 
         <ProductTable SelectedProduct="OnProductSelected"
                       PageSize="new int[] {5,10,25,50}"
-                      TypeOfSelection="Pages.Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.Single"/>
+                      TypeOfSelection="SelectionType.Single" />
 
         <MudNumericField Label="Ilość"
                          @bind-Value="quantity" />

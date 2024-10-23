@@ -1,5 +1,6 @@
 ﻿@page "/zones"
 @using esWMS.Client.Components
+@using esWMS.Client.Components.DeleteDialog
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
@@ -14,7 +15,7 @@
           @ref="_table"
           RowClass="cursor-pointer">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Lokalizacje</MudText>
+        <MudText Typo="Typo.h6">Strefy magazynowe</MudText>
         <MudSpacer />
         <AuthorizeView Roles="ADM, MNG">
             <Authorized>
@@ -174,15 +175,12 @@
 
     private async Task OpenDeleteDialogAsync(ZoneVM zone)
     {
-        var parameters = new DialogParameters<DeleteConfirmDialog>
-         {
-             { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć strefę: [{zone.ZoneId}] {zone.ZoneName}?" },
-             { x => x.FuncsOnSubmitDelete,new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } },
-             { x => x.Uri, @"api/v1/Zone" },
-             { x => x.QueryParams, new() { {"zoneId", zone.ZoneId } } },
-             { x => x.SnackbarOnDeleteText, new("Usunięto strefę")}
-         };
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-        var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        await DeleteDialogHelper.OpenDeleteConfirmDialog(
+            dialogService: DialogService,
+            contentText: $"Czy na pewno chcesz trwale usunąć strefę: [{zone.ZoneId}] {zone.ZoneName}?",
+            funcsOnSubmitDelete: new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) },
+            uri: @"api/v1/Zone",
+            queryParams: new() { { "zoneId", zone.ZoneId } },
+            snackbarOnDeleteText: new("Usunięto strefę"));
     }
 }
