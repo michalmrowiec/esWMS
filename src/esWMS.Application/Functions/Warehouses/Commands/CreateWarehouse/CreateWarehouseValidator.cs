@@ -1,15 +1,11 @@
-﻿using FluentValidation;
-
-namespace esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse
+﻿namespace esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse
 {
-    internal class CreateWarehouseValidator : AbstractValidator<CreateWarehouseCommand>
+    internal class CreateWarehouseValidator :
+        CommonWarehouseValidator<CreateWarehouseCommand>
     {
         public CreateWarehouseValidator()
         {
-            RuleFor(x => x.WarehouseId)
-                .NotNull()
-                .NotEmpty()
-                .MaximumLength(3);
+
         }
     }
 }

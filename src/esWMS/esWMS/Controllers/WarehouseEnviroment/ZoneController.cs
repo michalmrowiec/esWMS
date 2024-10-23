@@ -33,8 +33,8 @@ namespace esWMS.Controllers.WarehouseEnviroment
         }
 
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<PagedResult<ZoneDto>>> GetSortedAndFilteredZones
-            ([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<ZoneDto>>> GetSortedAndFilteredZones(
+            [FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredZonesQuery(sieveModel));
 
@@ -43,8 +43,8 @@ namespace esWMS.Controllers.WarehouseEnviroment
 
         [Authorize(Roles = $"{Roles.Admin},{Roles.Manager}")]
         [HttpPost]
-        public async Task<ActionResult<ZoneDto>> CreateLocation
-            ([FromBody] CreateZoneCommand createZoneCommand)
+        public async Task<ActionResult<ZoneDto>> CreateZone(
+            [FromBody] CreateZoneCommand createZoneCommand)
         {
             if (_userContextService.GetUserId is not null)
                 createZoneCommand.CreatedBy = _userContextService.GetUserId.ToString();
@@ -54,10 +54,9 @@ namespace esWMS.Controllers.WarehouseEnviroment
             return result.HandleCreatedResult(this, "");
         }
 
-
         [HttpPut]
-        public async Task<ActionResult<ZoneDto>> UpdateLocation
-            ([FromBody] UpdateZoneCommand updateZoneCommand)
+        public async Task<ActionResult<ZoneDto>> UpdateZone(
+            [FromBody] UpdateZoneCommand updateZoneCommand)
         {
             if (_userContextService.GetUserId is not null)
                 updateZoneCommand.ModifiedBy = _userContextService.GetUserId.ToString();
