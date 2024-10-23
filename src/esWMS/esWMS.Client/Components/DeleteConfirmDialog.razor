@@ -1,21 +1,55 @@
-﻿<MudDialog>
+﻿@inject IDataService dataService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
+
+<MudDialog>
     <DialogContent>
         <MudText>@ContentText</MudText>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
-        <MudButton Color="@Color.Error" Variant="Variant.Filled" OnClick="Submit">Usuń</MudButton>
+        <MudButton Color="@Color.Error" Variant="Variant.Filled" OnClick="SubmitDelete">Usuń</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; }
-
     [Parameter]
     public string ContentText { get; set; }
+    [Parameter]
+    public List<EventCallback>? FuncsOnSubmitDelete { get; set; } = new();
+    [Parameter]
+    public List<EventCallback>? FuncsOnCancel { get; set; } = new();
+    [Parameter]
+    public string? Uri { get; set; }
+    [Parameter]
+    public Dictionary<string, string>? QueryParams { get; set; }
+    [Parameter]
+    public MarkupString SnackbarOnDeleteText { get; set; } = new("Usunięto");
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private async Task SubmitDelete()
+    {
+        if (Uri != null)
+        {
+            var response = await dataService.Delete(Uri, QueryParams);
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add(SnackbarOnDeleteText, Severity.Success);
+            }
+            else
+            {
+                await response.HandleFailure(AlertService);
+            }
+        }
 
-    private void Cancel() => MudDialog.Cancel();
+        FuncsOnSubmitDelete?.ForEach(async x => await x.InvokeAsync());
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        FuncsOnCancel?.ForEach(async x => await x.InvokeAsync());
+        MudDialog.Cancel();
+    }
 }

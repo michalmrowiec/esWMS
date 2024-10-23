@@ -25,6 +25,7 @@ builder.Services.AddSingleton<OnePageState>();
 builder.Services.AddSingleton<IAlertService, AlertService>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 builder.Services.AddTransient(typeof(IDataService<>), typeof(DataService<>));
+builder.Services.AddTransient<IDataService, DataService>();
 builder.Services.AddTransient<IDocumentDataService, DocumentDataService>();
 builder.Services.AddTransient<IConfirmDialogService, ConfirmDialogService>();
 builder.Services.AddMudServices();

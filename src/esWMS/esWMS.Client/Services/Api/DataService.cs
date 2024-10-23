@@ -7,18 +7,22 @@ using System.Text;
 
 namespace esWMS.Client.Services.Api
 {
-    public interface IDataService<T>
-        where T : class
+    public interface IDataService
     {
-        Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel, Dictionary<string, string>? queryParams = null);
         Task<HttpResponseMessage> Get(string uri, Dictionary<string, string>? queryParams = null);
-        Task<HttpResponseMessage> Create(string uri, T item);
         Task<HttpResponseMessage> CreateObject(string uri, object item);
         Task<HttpResponseMessage> Patch(string uri, object item);
         Task<HttpResponseMessage> Put(string uri, object item);
-        Task<HttpResponseMessage> Delete(string uri);
+        //Task<HttpResponseMessage> Delete(string uri);
         Task<HttpResponseMessage> Delete(string uri, Dictionary<string, string>? queryParams = null);
+    }
 
+    public interface IDataService<T> :
+        IDataService
+        where T : class
+    {
+        Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel, Dictionary<string, string>? queryParams = null);
+        Task<HttpResponseMessage> Create(string uri, T item);
     }
 
     public interface IDocumentDataService
@@ -26,21 +30,13 @@ namespace esWMS.Client.Services.Api
         Task<HttpResponseMessage> ApproveDocument(string uri, object obj);
     }
 
-    public class DataService<T>(
+    public class DataService(
         HttpClient httpClient,
-        IAuthService authService,
-        IAlertService alertService)
-        : IDataService<T>
-        where T : class
+        IAuthService authService)
+        : IDataService
     {
         private readonly HttpClient _httpClient = httpClient;
         private readonly IAuthService _authService = authService;
-        private readonly IAlertService _alertService = alertService;
-
-        public async Task<HttpResponseMessage> Create(string uri, T item)
-        {
-            return await CreateObject(uri, item);
-        }
 
         public async Task<HttpResponseMessage> CreateObject(string uri, object item)
         {
@@ -48,16 +44,6 @@ namespace esWMS.Client.Services.Api
 
             using var request = new HttpRequestMessage(HttpMethod.Post, uri);
             request.Content = postJson;
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> Delete(string uri)
-        {
-            using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
 
             var response = await _httpClient.SendAsync(request);
@@ -80,6 +66,30 @@ namespace esWMS.Client.Services.Api
 
             return response;
         }
+        public async Task<HttpResponseMessage> Patch(string uri, object item)
+        {
+            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
+
+            using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
+            request.Content = postJson;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
+        }
+        public async Task<HttpResponseMessage> Put(string uri, object item)
+        {
+            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
+
+            using var request = new HttpRequestMessage(HttpMethod.Put, uri);
+            request.Content = postJson;
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
+
+            var response = await _httpClient.SendAsync(request);
+
+            return response;
+        }
 
         public async Task<HttpResponseMessage> Get(string uri, Dictionary<string, string>? queryParams = null)
         {
@@ -96,6 +106,35 @@ namespace esWMS.Client.Services.Api
 
             return response;
         }
+    }
+    public class DataService<T>(
+        HttpClient httpClient,
+        IAuthService authService,
+        IAlertService alertService) :
+        DataService(httpClient, authService),
+        IDataService<T>
+        where T : class
+    {
+        private readonly HttpClient _httpClient = httpClient;
+        private readonly IAuthService _authService = authService;
+        private readonly IAlertService _alertService = alertService;
+
+        public async Task<HttpResponseMessage> Create(string uri, T item)
+        {
+            return await CreateObject(uri, item);
+        }
+
+
+
+        //public async Task<HttpResponseMessage> Delete(string uri)
+        //{
+        //    using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
+        //    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
+
+        //    var response = await _httpClient.SendAsync(request);
+
+        //    return response;
+        //}
 
         public async Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel, Dictionary<string, string>? queryParams = null)
         {
@@ -126,32 +165,6 @@ namespace esWMS.Client.Services.Api
             }
 
             return responseObj;
-        }
-
-        public async Task<HttpResponseMessage> Patch(string uri, object item)
-        {
-            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
-
-            using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
-            request.Content = postJson;
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response;
-        }
-
-        public async Task<HttpResponseMessage> Put(string uri, object item)
-        {
-            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
-
-            using var request = new HttpRequestMessage(HttpMethod.Put, uri);
-            request.Content = postJson;
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response;
         }
     }
 
