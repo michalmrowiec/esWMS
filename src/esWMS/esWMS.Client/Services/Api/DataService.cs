@@ -13,7 +13,6 @@ namespace esWMS.Client.Services.Api
         Task<HttpResponseMessage> CreateObject(string uri, object item);
         Task<HttpResponseMessage> Patch(string uri, object item);
         Task<HttpResponseMessage> Put(string uri, object item);
-        //Task<HttpResponseMessage> Delete(string uri);
         Task<HttpResponseMessage> Delete(string uri, Dictionary<string, string>? queryParams = null);
     }
 
@@ -25,11 +24,6 @@ namespace esWMS.Client.Services.Api
         Task<HttpResponseMessage> Create(string uri, T item);
     }
 
-    public interface IDocumentDataService
-    {
-        Task<HttpResponseMessage> ApproveDocument(string uri, object obj);
-    }
-
     public class DataService(
         HttpClient httpClient,
         IAuthService authService)
@@ -38,73 +32,71 @@ namespace esWMS.Client.Services.Api
         private readonly HttpClient _httpClient = httpClient;
         private readonly IAuthService _authService = authService;
 
-        public async Task<HttpResponseMessage> CreateObject(string uri, object item)
+        protected async Task<HttpResponseMessage> BaseRequestWithAuth(
+            HttpMethod httpMethod,
+            string uri,
+            object? item = null,
+            Dictionary<string, string>? queryParams = null)
         {
-            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
+            if (queryParams != null && queryParams.Count > 0)
+            {
+                var query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
+                uri = $"{uri}?{query}";
+            }
 
-            using var request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = postJson;
+            using var request = new HttpRequestMessage(httpMethod, uri);
+
+            if (item != null)
+            {
+                var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
+                request.Content = postJson;
+            }
+
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
             var response = await _httpClient.SendAsync(request);
 
             return response;
+        }
+
+        public async Task<HttpResponseMessage> CreateObject(string uri, object item)
+        {
+            return await BaseRequestWithAuth(
+                HttpMethod.Post,
+                uri: uri,
+                item: item);
         }
 
         public async Task<HttpResponseMessage> Delete(string uri, Dictionary<string, string>? queryParams = null)
         {
-            if (queryParams != null && queryParams.Count > 0)
-            {
-                var query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
-                uri = $"{uri}?{query}";
-            }
+            return await BaseRequestWithAuth(
+                HttpMethod.Delete,
+                uri: uri,
+                queryParams: queryParams);
 
-            using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response;
         }
+
         public async Task<HttpResponseMessage> Patch(string uri, object item)
         {
-            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
-
-            using var request = new HttpRequestMessage(HttpMethod.Patch, uri);
-            request.Content = postJson;
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response;
+            return await BaseRequestWithAuth(
+                HttpMethod.Patch,
+                uri: uri,
+                item: item);
         }
+
         public async Task<HttpResponseMessage> Put(string uri, object item)
         {
-            var postJson = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
-
-            using var request = new HttpRequestMessage(HttpMethod.Put, uri);
-            request.Content = postJson;
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response;
+            return await BaseRequestWithAuth(
+                HttpMethod.Put,
+                uri: uri,
+                item: item);
         }
 
         public async Task<HttpResponseMessage> Get(string uri, Dictionary<string, string>? queryParams = null)
         {
-            if (queryParams != null && queryParams.Count > 0)
-            {
-                var query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
-                uri = $"{uri}?{query}";
-            }
-
-            using var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response;
+            return await BaseRequestWithAuth(
+                HttpMethod.Get,
+                uri: uri,
+                queryParams: queryParams);
         }
     }
     public class DataService<T>(
@@ -124,33 +116,13 @@ namespace esWMS.Client.Services.Api
             return await CreateObject(uri, item);
         }
 
-
-
-        //public async Task<HttpResponseMessage> Delete(string uri)
-        //{
-        //    using var request = new HttpRequestMessage(HttpMethod.Delete, uri);
-        //    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-        //    var response = await _httpClient.SendAsync(request);
-
-        //    return response;
-        //}
-
         public async Task<PagedResultVM<T>> GetPagedResult(string uri, SieveModelVM sieveModel, Dictionary<string, string>? queryParams = null)
         {
-            if (queryParams != null && queryParams.Count > 0)
-            {
-                var query = string.Join("&", queryParams.Select(kvp => $"{Uri.EscapeDataString(kvp.Key)}={Uri.EscapeDataString(kvp.Value)}"));
-                uri = $"{uri}?{query}";
-            }
-
-            var postJson = new StringContent(JsonConvert.SerializeObject(sieveModel), Encoding.UTF8, "application/json");
-
-            using var request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = postJson;
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
+            var response = await BaseRequestWithAuth(
+                HttpMethod.Post,
+                uri: uri,
+                item: sieveModel,
+                queryParams: queryParams);
 
             PagedResultVM<T> responseObj = new();
 
@@ -165,28 +137,6 @@ namespace esWMS.Client.Services.Api
             }
 
             return responseObj;
-        }
-    }
-
-    public class DocumentDataService(
-        HttpClient httpClient,
-        IAuthService authService)
-        : IDocumentDataService
-    {
-        private readonly HttpClient _httpClient = httpClient;
-        private readonly IAuthService _authService = authService;
-
-        public async Task<HttpResponseMessage> ApproveDocument(string uri, object obj)
-        {
-            var postJson = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
-
-            using var request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = postJson;
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await _authService.GetJwtToken());
-
-            var response = await _httpClient.SendAsync(request);
-
-            return response;
         }
     }
 }
