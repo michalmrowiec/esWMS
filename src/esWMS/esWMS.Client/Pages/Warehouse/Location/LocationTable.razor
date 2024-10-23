@@ -1,5 +1,6 @@
 ﻿@page "/locations"
 @using esWMS.Client.Components
+@using esWMS.Client.Components.DeleteDialog
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.PrintTemplates.LocationQr
 @using esWMS.Client.Services
@@ -237,16 +238,13 @@
 
     private async Task OpenDeleteDialogAsync(LocationVM location)
     {
-        var parameters = new DialogParameters<DeleteConfirmDialog>
-         {
-             { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć lokalizację: {location.LocationId}" },
-             { x => x.FuncsOnSubmitDelete,new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } },
-             { x => x.Uri, @"api/v1/Location" },
-             { x => x.QueryParams, new() { {"locationId", location.LocationId } } },
-             { x => x.SnackbarOnDeleteText, new("Usunięto lokalizację")}
-         };
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-        var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        await DeleteDialogHelper.OpenDeleteConfirmDialog(
+            dialogService: DialogService,
+            contentText: $"Czy na pewno chcesz trwale usunąć lokalizację: {location.LocationId}",
+            funcsOnSubmitDelete: new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) },
+            uri: @"api/v1/Location",
+            queryParams: new() { { "locationId", location.LocationId } },
+            snackbarOnDeleteText: new("Usunięto lokalizację"));
     }
 
     private async Task PrintQrs()

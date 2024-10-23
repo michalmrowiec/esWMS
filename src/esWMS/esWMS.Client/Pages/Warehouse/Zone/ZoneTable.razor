@@ -1,4 +1,5 @@
 ﻿@page "/zones"
+@using esWMS.Client.Components
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
@@ -173,29 +174,15 @@
 
     private async Task OpenDeleteDialogAsync(ZoneVM zone)
     {
-        // var parameters = new DialogParameters<DeleteConfirmDialog>
-        // {
-        //     { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć kategorię: {category.CategoryName}"}
-        // };
-        // var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-        // var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
-        // var result = await dialog.Result;
-        // if (!result?.Canceled ?? false)
-        // {
-        //     await DeleteAsync(category);
-        // }
-    }
-    private async Task DeleteAsync(ZoneVM zone)
-    {
-        // var response = await dataService.Delete(@"api/v1/Category/" + category.CategoryId);
-        // if (response.IsSuccessStatusCode)
-        // {
-        //     Snackbar.Add(new MarkupString("Usunięto kategorię"), Severity.Success);
-        //     await table.ReloadServerData();
-        // }
-        // else
-        // {
-        //     await response.HandleFailure(AlertService);
-        // }
+        var parameters = new DialogParameters<DeleteConfirmDialog>
+         {
+             { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć strefę: [{zone.ZoneId}] {zone.ZoneName}?" },
+             { x => x.FuncsOnSubmitDelete,new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } },
+             { x => x.Uri, @"api/v1/Zone" },
+             { x => x.QueryParams, new() { {"zoneId", zone.ZoneId } } },
+             { x => x.SnackbarOnDeleteText, new("Usunięto strefę")}
+         };
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
     }
 }
