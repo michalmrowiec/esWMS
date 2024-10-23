@@ -272,24 +272,28 @@ namespace esWMS.Services.DataSeed
             {
                 WarehouseId = "MWS",
                 WarehouseName = "Magazyn Wysokiego Składowania",
+                IsActive = true,
                 CreatedAt = DateTime.Now
             },
             new Warehouse
             {
                 WarehouseId = "MPT",
                 WarehouseName = "Magazyn Przyjęcia Towaru",
+                IsActive = true,
                 CreatedAt = DateTime.Now
             },
             new Warehouse
             {
                 WarehouseId = "MWT",
                 WarehouseName = "Magazyn Wydania Towaru",
+                IsActive = true,
                 CreatedAt = DateTime.Now
             },
             new Warehouse
             {
                 WarehouseId = "MPR",
                 WarehouseName = "Magazyn Produkcji",
+                IsActive = true,
                 CreatedAt = DateTime.Now
             }
         ];
