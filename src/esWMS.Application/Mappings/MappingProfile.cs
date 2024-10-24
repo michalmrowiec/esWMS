@@ -22,6 +22,7 @@ using esWMS.Application.Functions.Documents.ZwFunctions;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw;
 using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Employees.Command.CreateEmployee;
+using esWMS.Application.Functions.Employees.Command.UpdateEmployee;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
@@ -164,6 +165,9 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreateEmployeeCommand, Employee>();
             CreateMap<Employee, EmployeeDto>();
+            CreateMap<UpdateEmployeeCommand, Employee>()
+                .ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

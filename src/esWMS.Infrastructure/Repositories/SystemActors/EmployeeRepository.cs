@@ -65,5 +65,20 @@ namespace esWMS.Infrastructure.Repositories.SystemActors
             return new PagedResult<Employee>
                 (filteredEmployees, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
         }
+
+        public async Task<Employee> UpdateAsync(Employee employee)
+        {
+            try
+            {
+                _context.Entry(employee).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return employee;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating employee");
+                throw;
+            }
+        }
     }
 }

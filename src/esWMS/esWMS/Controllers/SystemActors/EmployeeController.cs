@@ -1,13 +1,14 @@
-﻿using esWMS.Application.Functions.Employees;
+﻿using esWMS.Application.Functions.Contractors;
+using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Employees.Command.CreateEmployee;
 using esWMS.Application.Functions.Employees.Command.LoginEmployee;
+using esWMS.Application.Functions.Employees.Command.UpdateEmployee;
 using esWMS.Application.Functions.Employees.Queries.GetSortedFilteredEmployees;
 using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
@@ -66,6 +67,19 @@ namespace esWMS.Controllers
         public async Task<ActionResult<LogedEmployeeDto>> Login([FromBody] LoginEmployeeCommand loginEmployeeCommand)
         {
             var result = await _mediator.Send(loginEmployeeCommand);
+
+            return result.HandleOkResult(this);
+        }
+
+        [Authorize(Roles = $"{Roles.Admin}")]
+        [HttpPut]
+        public async Task<ActionResult<ContractorDto>> UpdateEmployee(
+            [FromBody] UpdateEmployeeCommand updateEmployeeCommand)
+        {
+            if (_userContextService.GetUserId is not null)
+                updateEmployeeCommand.ModifiedBy = _userContextService.GetUserId.ToString();
+
+            var result = await _mediator.Send(updateEmployeeCommand);
 
             return result.HandleOkResult(this);
         }
