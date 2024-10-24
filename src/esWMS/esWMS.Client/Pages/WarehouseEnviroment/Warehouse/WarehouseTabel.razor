@@ -136,10 +136,15 @@
         return new TableData<WarehouseVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
 
-    private void RowClickEvent(TableRowClickEventArgs<WarehouseVM> tableRowClickEventArgs)
+    private async Task RowClickEvent(TableRowClickEventArgs<WarehouseVM> tableRowClickEventArgs)
     {
-        //OnePageState.AddTab(new TabView("Artykuły", new ProductTable(), Guid.NewGuid()));
-        //open warehouse details
+        var tabid = Guid.NewGuid();
+        await OnePageState.AddTab(
+            new TabView("Szczegóły magazynu" ?? " ",
+            new WarehouseDetails(),
+            tabid,
+            Icons.Material.Filled.Info,
+            new() { { "WarehouseId", tableRowClickEventArgs.Item.WarehouseId }, { "TabId", tabid } }));
     }
 
     private void OnSearch()

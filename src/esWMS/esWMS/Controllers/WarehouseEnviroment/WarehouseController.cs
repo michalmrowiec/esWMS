@@ -1,4 +1,6 @@
-﻿using esWMS.Application.Functions.Warehouses;
+﻿using esWMS.Application.Functions.Products.Queries.GetProductById;
+using esWMS.Application.Functions.Products;
+using esWMS.Application.Functions.Warehouses;
 using esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse;
 using esWMS.Application.Functions.Warehouses.Commands.UpdateWarehouse;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
@@ -10,6 +12,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
+using esWMS.Application.Functions.Warehouses.Queries.GetWarehouseById;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {
@@ -30,6 +33,15 @@ namespace esWMS.Controllers.WarehouseEnviroment
             _mediator = mediator;
             _logger = logger;
             _userContextService = userContextService;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<WarehouseDto>> GetWarehouseDetails(
+            [FromQuery] string warehouseId)
+        {
+            var result = await _mediator.Send(new GetWarehouseByIdQuery(warehouseId));
+
+            return result.HandleOkResult(this);
         }
 
         [HttpPost("get-filtered")]
