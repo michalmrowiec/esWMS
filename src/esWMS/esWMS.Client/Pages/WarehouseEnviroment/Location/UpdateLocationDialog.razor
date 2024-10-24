@@ -17,55 +17,70 @@
                  @ref="@_form"
                  ValidationDelay="0">
             <MudCardContent>
-                               <MudNumericField @bind-Value="_model.Capacity"
-                                 For="@(() => _model.Capacity)"
-                                 Immediate="true"
-                                 Label="Pojemność"
-                                 Min="1"
-                                 Max="99999"
-                                 Format="F2" />
+                <MudGrid Spacing="2">
+                    <MudItem xs="12">
+                        <MudNumericField @bind-Value="_model.Capacity"
+                                         For="@(() => _model.Capacity)"
+                                         Immediate="true"
+                                         Label="Pojemność"
+                                         Min="1"
+                                         Required
+                                         Max="99999"
+                                         Format="F2" />
+                    </MudItem>
 
-                <MudNumericField @bind-Value="_model.MaxLength"
-                                 For="@(() => _model.MaxLength)"
-                                 Label="Maksymalna długość (m)"
-                                 Immediate="true"
-                                 Min="0"
-                                 Max="99999"
-                                 Format="F2"/>
+                    <MudItem xs="6">
+                        <MudNumericField @bind-Value="_model.MaxLength"
+                                         For="@(() => _model.MaxLength)"
+                                         Label="Maksymalna długość (m)"
+                                         Immediate="true"
+                                         Min="0"
+                                         Max="99999"
+                                         Format="F2" />
+                    </MudItem>
 
-                <MudNumericField @bind-Value="_model.MaxWidth"
-                                 For="@(() => _model.MaxWidth)"
-                                 Label="Maksymalna szerokość (m)"
-                                 Immediate="true"
-                                 Min="0"
-                                 Max="99999"
-                                 Format="F2" />
+                    <MudItem xs="6">
+                        <MudNumericField @bind-Value="_model.MaxWidth"
+                                         For="@(() => _model.MaxWidth)"
+                                         Label="Maksymalna szerokość (m)"
+                                         Immediate="true"
+                                         Min="0"
+                                         Max="99999"
+                                         Format="F2" />
+                    </MudItem>
 
-                <MudNumericField @bind-Value="_model.MaxHeight"
-                                 For="@(() => _model.MaxHeight)"
-                                 Label="Maksymalna wysokość (m)"
-                                 Immediate="true"
-                                 Min="0"
-                                 Max="99999"
-                                 Format="F2" />
+                    <MudItem xs="6">
+                        <MudNumericField @bind-Value="_model.MaxHeight"
+                                         For="@(() => _model.MaxHeight)"
+                                         Label="Maksymalna wysokość (m)"
+                                         Immediate="true"
+                                         Min="0"
+                                         Max="99999"
+                                         Format="F2" />
+                    </MudItem>
 
-                <MudNumericField @bind-Value="_model.MaxWeight"
-                                 For="@(() => _model.MaxWeight)"
-                                 Label="Maksymalne obciążenie (kg)"
-                                 Immediate="true"
-                                 Min="0"
-                                 Max="99999"
-                                 Format="F2" />
+                    <MudItem xs="6">
+                        <MudNumericField @bind-Value="_model.MaxWeight"
+                                         For="@(() => _model.MaxWeight)"
+                                         Label="Maksymalne obciążenie (kg)"
+                                         Immediate="true"
+                                         Min="0"
+                                         Max="99999"
+                                         Format="F2" />
+                    </MudItem>
 
-                <MudTextField Value="@_mediaInfo"
-                              Label="Domyślny nośnik"
-                              Disabled />
-                <MudStack Row="true">
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => {_model.DefaultMediaTypeId = null; _mediaInfo = string.Empty; StateHasChanged();})">
-                        Wyczyść
-                    </MudIconButton>
-                    <MudButton OnClick="OpenDialogAsync">Wybierz nośnik</MudButton>
-                </MudStack>
+                    <MudItem xs="12">
+                        <MudTextField Value="@_mediaInfo"
+                                      Label="Domyślny nośnik"
+                                      Disabled />
+                        <MudStack Row="true">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="@(() => {_model.DefaultMediaTypeId = null; _mediaInfo = string.Empty; StateHasChanged();})">
+                                Wyczyść
+                            </MudIconButton>
+                            <MudButton OnClick="OpenDialogAsync">Wybierz nośnik</MudButton>
+                        </MudStack>
+                    </MudItem>
+                </MudGrid>
             </MudCardContent>
         </MudForm>
     </DialogContent>

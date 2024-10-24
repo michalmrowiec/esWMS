@@ -21,7 +21,8 @@
                            Label="Magazyn"
                            AnchorOrigin="Origin.BottomCenter"
                            For="@(() => _model.WarehouseId)"
-                           Immediate="true">
+                           Immediate="true"
+                           Required>
                     @foreach (var warehouse in _warehouses)
                     {
                         <MudSelectItem Value="@warehouse.WarehouseId">
@@ -34,13 +35,15 @@
                               For="@(() => _model.ZoneName)"
                               Immediate="true"
                               Label="Nazwa"
-                              MaxLength="30" />
+                              MaxLength="30"
+                              Required />
 
                 <MudTextField @bind-Value="_model.ZoneAlias"
                               For="@(() => _model.ZoneAlias)"
                               Immediate="true"
                               Label="Alias"
                               MaxLength="1"
+                              Required
                               TextChanged="@(() => _model.ZoneAlias = _model.ZoneAlias?.ToString()?.ToUpper().ToCharArray()?.First() ?? null)" />
 
                 <MudNumericField @bind-Value="_model.AvgTemperature"
@@ -82,8 +85,7 @@
                 var content = await response.Content.ReadAsStringAsync();
                 var newLocation = JsonConvert.DeserializeObject<ZoneVM>(content) ?? new();
 
-                Snackbar.Configuration.PositionClass = "Bottom-End";
-                Snackbar.Add(new MarkupString($"Utworzono <strong>{newLocation.ZoneId}</strong>"), Severity.Success);
+                Snackbar.Add(new MarkupString($"Utworzono <b>{newLocation.ZoneId}</b>"), Severity.Success);
                 MudDialog.Close(DialogResult.Ok(true));
                 FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
             }

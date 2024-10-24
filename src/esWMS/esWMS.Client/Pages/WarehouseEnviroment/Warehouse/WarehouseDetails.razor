@@ -123,15 +123,18 @@ else
 
     private async Task UpdateWarehouse()
     {
-        // var response = await ProductService.Put(@"api/v1/Product", _warehouse);
-        // if (response.IsSuccessStatusCode)
-        // {
-        //     Snackbar.Add(new MarkupString("Produkt został zaktualizowany."), Severity.Success);
-        //     await ReloadProduct();
-        // }
-        // else
-        // {
-        //     await response.HandleFailure(AlertService);
-        // }
+        if (_warehouse == null)
+            return;
+
+        var response = await DataService.Put(@"api/v1/Warehouse", _warehouse);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Magazyn został zaktualizowany."), Severity.Success);
+            await ReloadWarehouse();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
     }
 }

@@ -1,10 +1,9 @@
-﻿using esWMS.Application.Functions.Products.Queries.GetProductById;
-using esWMS.Application.Functions.Products;
-using esWMS.Application.Functions.Warehouses;
+﻿using esWMS.Application.Functions.Warehouses;
 using esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse;
 using esWMS.Application.Functions.Warehouses.Commands.UpdateWarehouse;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouseStocks;
+using esWMS.Application.Functions.Warehouses.Queries.GetWarehouseById;
 using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
 using esWMS.Services;
@@ -12,7 +11,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.Warehouses.Queries.GetWarehouseById;
 
 namespace esWMS.Controllers.WarehouseEnviroment
 {

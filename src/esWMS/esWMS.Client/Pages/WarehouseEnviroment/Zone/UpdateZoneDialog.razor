@@ -20,7 +20,8 @@
                               For="@(() => _model.ZoneName)"
                               Immediate="true"
                               Label="Nazwa"
-                              MaxLength="30" />
+                              MaxLength="30"
+                              Required />
 
                 <MudNumericField @bind-Value="_model.AvgTemperature"
                                  For="@(() => _model.AvgTemperature)"
