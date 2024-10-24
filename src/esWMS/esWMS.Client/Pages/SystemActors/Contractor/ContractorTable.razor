@@ -230,7 +230,6 @@
 
     private async Task RowClickEvent(TableRowClickEventArgs<ContractorVM> tableRowClickEventArgs)
     {
-        Console.WriteLine("ENTRY");
         if (tableRowClickEventArgs.Item is not ContractorVM
             && string.IsNullOrWhiteSpace(tableRowClickEventArgs?.Item?.ContractorId))
         {

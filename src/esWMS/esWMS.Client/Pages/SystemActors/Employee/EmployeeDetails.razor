@@ -1,0 +1,217 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Components
+@using esWMS.Client.Components.DeleteDialog
+@using esWMS.Client.Pages.OnePage
+@using esWMS.Client.Services
+@using esWMS.Client.States
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.SystemActors
+@inject IDataService DataService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
+@inject IDialogService DialogService
+@inject OnePageState OnePageState
+@inject IConfirmDialogService ConfirmDialogService
+
+@if (_employee == null)
+{
+    <MudText>Ladowanie...</MudText>
+}
+else
+{
+    <MudGrid>
+        <MudItem md="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid Spacing="2">
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.EmployeeId"
+                                          Label="Identyfikator Pracownika"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          ReadOnly />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.FirstName"
+                                          Label="Imię"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Required />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.LastName"
+                                          Label="Nazwisko"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Required />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudSelect Label="Role"
+                                       @bind-Value="_employee.RoleId"
+                                       Variant="Variant.Outlined"
+                                       Margin="Margin.Dense"
+                                       Required>
+                                <MudSelectItem Value="@("ADM")">Admin</MudSelectItem>
+                                <MudSelectItem Value="@("MNG")">Manager</MudSelectItem>
+                                <MudSelectItem Value="@("OPE")">Operator</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.EmailAddress"
+                                          Label="Adres e-mail"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.PhoneNumber"
+                                          Label="Numer telefonu"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.Country"
+                                          Label="Kraj"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.City"
+                                          Label="Miasto"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.Region"
+                                          Label="Region"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.PostalCode"
+                                          Label="Kod pocztowy"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_employee.Address"
+                                          Label="Adres"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Lines="2" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_employee.IsActive"
+                                         Label="Aktywny" />
+                        </MudItem>
+
+                        <AuthorizeView Roles="ADM, MNG">
+                            <Authorized>
+                                <MudItem xs="12">
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadEmployee">Resetuj</MudButton>
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Class="me-2"
+                                               EndIcon="@Icons.Material.Filled.Build"
+                                               OnClick="@(async () => {
+                                            await ConfirmDialogService.OpenDeleteDialogAsync(
+                                                "Zaktualizuj kontrahenta",
+                                                $"Kontrahent {_employee.EmployeeId} został zaktualizowany.",
+                                                Services.Dialog.ConfirmDialogService.ButtonDialogType.Edit,
+                                                EventCallback.Factory.Create(this, UpdateContractor));})">
+                                        Zaktualizuj
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Error" EndIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialogAsync">Usuń</MudButton>
+                                </MudItem>
+                            </Authorized>
+                        </AuthorizeView>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public string EmployeeId { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
+    private EmployeeVM? _employee;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadEmployee();
+    }
+
+    private async Task ReloadEmployee()
+    {
+        var response = await DataService.Get(@"api/v1/Employee", new() { { "EmployeeId", EmployeeId } });
+        if (response == null)
+        {
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        _employee = JsonConvert.DeserializeObject<EmployeeVM>(json);
+
+        StateHasChanged();
+    }
+
+    private async Task UpdateContractor()
+    {
+        var response = await DataService.Put(@"api/v1/Employee", _employee);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString($"Pracownik <b>{_employee.EmployeeId}</b> został zaktualizowany."), Severity.Success);
+            await ReloadEmployee();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OpenDeleteDialogAsync()
+    {
+        // var parameters = new DialogParameters<DeleteConfirmDialog>
+        // {
+        //     { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć kontrahenta: {_contractor?.ContractorName}?"}
+        // };
+
+        // var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        // var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        // var result = await dialog.Result;
+
+        // if (!result?.Canceled ?? false
+        //     && _contractor != null)
+        // {
+        //     await DeleteAsync(_contractor!);
+        // }
+    }
+
+    private async Task DeleteAsync(ContractorVM contractor)
+    {
+        // var response = await DataService.Delete(@"api/v1/Contractor/" + contractor.ContractorId);
+        // if (response.IsSuccessStatusCode)
+        // {
+        //     Snackbar.Add(new MarkupString("Usunięto kontrahenta"), Severity.Success);
+        //     await OnePageState.RemoveTab(TabId);
+        // }
+        // else
+        // {
+        //     await response.HandleFailure(AlertService);
+        // }
+    }
+}

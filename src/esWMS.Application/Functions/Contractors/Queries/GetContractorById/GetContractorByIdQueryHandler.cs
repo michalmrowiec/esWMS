@@ -18,7 +18,7 @@ namespace esWMS.Application.Functions.Contractors.Queries.GetContractorById
         {
             if (string.IsNullOrWhiteSpace(request.ContractorId))
                 return new BaseResponse<ContractorDto>
-                    (BaseResponse.ResponseStatus.BadQuery, "No contractor unit IDs provided.");
+                    (BaseResponse.ResponseStatus.BadQuery, "No contractor ID provided.");
 
             var result = await _repository.GetByIdAsync(request.ContractorId);
 

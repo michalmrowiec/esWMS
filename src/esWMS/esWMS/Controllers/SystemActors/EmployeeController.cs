@@ -1,8 +1,10 @@
 ﻿using esWMS.Application.Functions.Contractors;
+using esWMS.Application.Functions.Contractors.Queries.GetContractorById;
 using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Employees.Command.CreateEmployee;
 using esWMS.Application.Functions.Employees.Command.LoginEmployee;
 using esWMS.Application.Functions.Employees.Command.UpdateEmployee;
+using esWMS.Application.Functions.Employees.Queries.GetEmployeeById;
 using esWMS.Application.Functions.Employees.Queries.GetSortedFilteredEmployees;
 using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
@@ -40,9 +42,18 @@ namespace esWMS.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        public async Task<ActionResult<EmployeeDto>> GetEmployeeDetails(
+            [FromQuery] string employeeId)
+        {
+            var result = await _mediator.Send(new GetEmployeeByIdQuery(employeeId));
+
+            return result.HandleOkResult(this);
+        }
+
         [HttpPost("get-filtered")]
-        public async Task<ActionResult<PagedResult<EmployeeDto>>> GetSortedAndFilteredEmployees
-            ([FromBody] SieveModel sieveModel)
+        public async Task<ActionResult<PagedResult<EmployeeDto>>> GetSortedAndFilteredEmployees(
+            [FromBody] SieveModel sieveModel)
         {
             var result = await _mediator.Send(new GetSortedFilteredEmployeessQuery(sieveModel));
 
