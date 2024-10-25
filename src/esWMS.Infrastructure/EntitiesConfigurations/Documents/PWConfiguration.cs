@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
-    internal class PwConfiguration : IEntityTypeConfiguration<PW>
+    public class PwConfiguration : IEntityTypeConfiguration<PW>
     {
         public void Configure(EntityTypeBuilder<PW> builder)
         {

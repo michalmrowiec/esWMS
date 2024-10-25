@@ -1,6 +1,6 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Application.Contracts.Persistence;
+using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Domain.Models;
-using esWMS.Application.Contracts.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Models;
@@ -8,7 +8,7 @@ using Sieve.Services;
 
 namespace esWMS.Infrastructure.Repositories.WarehouseEnviroment
 {
-    internal class CategoryRepository(EsWmsDbContext context, ILogger<CategoryRepository> logger, ISieveProcessor sieveProcessor)
+    public class CategoryRepository(EsWmsDbContext context, ILogger<CategoryRepository> logger, ISieveProcessor sieveProcessor)
         : BaseRepository<Category>(context, logger), ICategoryRepository
     {
         private readonly EsWmsDbContext _context = context;

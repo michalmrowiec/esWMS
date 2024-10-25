@@ -4,7 +4,6 @@ using esWMS.Domain.Models;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.SystemActors;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseEnviroment;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Sieve.Models;
 using Sieve.Services;

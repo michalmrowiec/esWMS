@@ -1,6 +1,9 @@
 ﻿using esWMS.Domain.Entities.Documents;
 using esWMS.Domain.Entities.SystemActors;
 using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Infrastructure.EntitiesConfigurations.Documents;
+using esWMS.Infrastructure.EntitiesConfigurations.SystemActors;
+using esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment;
 using Microsoft.EntityFrameworkCore;
 
 namespace esWMS.Infrastructure
@@ -35,7 +38,28 @@ namespace esWMS.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+            //modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly); in test project it doesn't work
+
+            new BaseDocumentConfiguration().Configure(modelBuilder.Entity<BaseDocument>());
+            new DocumentItemConfiguration().Configure(modelBuilder.Entity<DocumentItem>());
+            new DocumentWarehouseUnitItemConfiguration().Configure(modelBuilder.Entity<DocumentWarehouseUnitItem>());
+            new MmmConfiguration().Configure(modelBuilder.Entity<MMM>());
+            new MmpConfiguration().Configure(modelBuilder.Entity<MMP>());
+            new PwConfiguration().Configure(modelBuilder.Entity<PW>());
+            new PzConfiguration().Configure(modelBuilder.Entity<PZ>());
+            new RwConfiguration().Configure(modelBuilder.Entity<RW>());
+            new WzConfiguration().Configure(modelBuilder.Entity<WZ>());
+            new ZwConfiguration().Configure(modelBuilder.Entity<ZW>());
+            new ContractorConfiguration().Configure(modelBuilder.Entity<Contractor>());
+            new EmployeeConfiguration().Configure(modelBuilder.Entity<Employee>());
+            new CategoryConfiguration().Configure(modelBuilder.Entity<Category>());
+            new LocationConfiguration().Configure(modelBuilder.Entity<Location>());
+            new ProductConfiguration().Configure(modelBuilder.Entity<Product>());
+            new WarehouseConfiguration().Configure(modelBuilder.Entity<Warehouse>());
+            new WarehouseUnitConfiguration().Configure(modelBuilder.Entity<WarehouseUnit>());
+            new WarehouseUnitItemConfiguration().Configure(modelBuilder.Entity<WarehouseUnitItem>());
+            new ZoneConfiguration().Configure(modelBuilder.Entity<Zone>());
+
         }
     }
 }

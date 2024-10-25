@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
-    internal class WzConfiguration : IEntityTypeConfiguration<WZ>
+    public class WzConfiguration : IEntityTypeConfiguration<WZ>
     {
         public void Configure(EntityTypeBuilder<WZ> builder)
         {
