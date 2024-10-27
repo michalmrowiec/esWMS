@@ -8,9 +8,9 @@ namespace esWMS.Client.Components.DeleteDialog
         internal static async Task<IDialogReference?> OpenDeleteConfirmDialog(
             IDialogService dialogService,
             string contentText,
-            string? uri,
-            Dictionary<string, string>? queryParams,
+            Func<Task<HttpResponseMessage>>? deleteFunc,
             MarkupString? snackbarOnDeleteText,
+            string? dialogTittle = "Usuwanie",
             List<EventCallback>? funcsOnSubmitDelete = null,
             List<EventCallback>? funcsOnCancel = null,
             MaxWidth maxWidth = MaxWidth.ExtraSmall)
@@ -20,8 +20,7 @@ namespace esWMS.Client.Components.DeleteDialog
                 { x => x.ContentText, contentText },
                 { x => x.FuncsOnSubmitDelete, funcsOnSubmitDelete },
                 { x => x.FuncsOnCancel, funcsOnCancel },
-                { x => x.Uri, uri },
-                { x => x.QueryParams, queryParams },
+                { x => x.DeleteFunc, deleteFunc},
                 { x => x.SnackbarOnDeleteText, snackbarOnDeleteText ?? new("Usunięto") }
             };
 
@@ -31,7 +30,7 @@ namespace esWMS.Client.Components.DeleteDialog
                 MaxWidth = maxWidth
             };
 
-            return await dialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+            return await dialogService.ShowAsync<DeleteConfirmDialog>(dialogTittle, parameters, options);
         }
     }
 }

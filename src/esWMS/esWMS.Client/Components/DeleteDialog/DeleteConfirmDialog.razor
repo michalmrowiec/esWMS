@@ -1,5 +1,4 @@
-﻿@inject IDataService dataService
-@inject ISnackbar Snackbar
+﻿@inject ISnackbar Snackbar
 @inject IAlertService AlertService
 
 <MudDialog>
@@ -22,17 +21,15 @@
     [Parameter]
     public List<EventCallback>? FuncsOnCancel { get; set; } = new();
     [Parameter]
-    public string? Uri { get; set; }
-    [Parameter]
-    public Dictionary<string, string>? QueryParams { get; set; }
+    public Func<Task<HttpResponseMessage>>? DeleteFunc { get; set; }
     [Parameter]
     public MarkupString SnackbarOnDeleteText { get; set; } = new("Usunięto");
 
     private async Task SubmitDelete()
     {
-        if (Uri != null)
+        if (DeleteFunc != null)
         {
-            var response = await dataService.Delete(Uri, QueryParams);
+            var response = await DeleteFunc.Invoke();
             if (response.IsSuccessStatusCode)
             {
                 Snackbar.Add(SnackbarOnDeleteText, Severity.Success);

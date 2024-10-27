@@ -5,7 +5,7 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
-@inject IDataService<ZoneVM> dataService
+@inject IDataService<ZoneVM> DataService
 @inject IDialogService DialogService
 
 <MudTable T="ZoneVM"
@@ -130,7 +130,7 @@
                 sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
         }
 
-        var response = await dataService.GetPagedResult(@"api/v1/Zone/get-filtered", sm);
+        var response = await DataService.GetPagedResult(@"api/v1/Zone/get-filtered", sm);
 
         return new TableData<ZoneVM>() { TotalItems = response.TotalItems, Items = response.Items };
     }
@@ -179,8 +179,9 @@
             dialogService: DialogService,
             contentText: $"Czy na pewno chcesz trwale usunąć strefę: [{zone.ZoneId}] {zone.ZoneName}?",
             funcsOnSubmitDelete: new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) },
-            uri: @"api/v1/Zone",
-            queryParams: new() { { "zoneId", zone.ZoneId } },
+            deleteFunc: async () => await DataService.Delete(
+                @"api/v1/Zone",
+                new() { { "zoneId", zone.ZoneId } }),
             snackbarOnDeleteText: new("Usunięto strefę"));
     }
 }
