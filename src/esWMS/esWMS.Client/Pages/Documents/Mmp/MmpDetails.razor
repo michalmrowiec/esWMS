@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
 @using esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit
+@using esWMS.Client.PrintTemplates.Document
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -11,6 +12,13 @@
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+
+<PrintDocumentButton Disabled="@(!MmpVM.IsApproved)"
+                     DocumentPrintModel="new DocumentPrintModel(
+                        model: MmpVM,
+                        targetWarehouse: MmpVM.FromWarehouse ?? new(),
+                        documentType: DocumentTypesName.MMP,
+                        contractorType: DocumentContractorType.Supplier)" />
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @MmpVM.DocumentId

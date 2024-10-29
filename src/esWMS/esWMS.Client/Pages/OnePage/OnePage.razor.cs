@@ -56,6 +56,6 @@ namespace esWMS.Client.Pages.OnePage
             }
         }
 
-        void CloseTabCallback(MudTabPanel panel) => OnePageState.RemoveTab((Guid)panel.ID);
+        async Task CloseTabCallback(MudTabPanel panel) => await OnePageState.RemoveTab(panel.ID.ToString());
     }
 }

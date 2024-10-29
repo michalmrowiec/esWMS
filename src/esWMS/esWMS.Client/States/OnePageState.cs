@@ -24,7 +24,7 @@ namespace esWMS.Client.States
             await NotifyStateChanged();
         }
 
-        public async Task RemoveTab(Guid tabId)
+        public async Task RemoveTab(string tabId)
         {
             var tabView = UserTabs.SingleOrDefault((t) => Equals(t.Id, tabId));
             if (tabView is not null)
@@ -33,38 +33,46 @@ namespace esWMS.Client.States
                 await NotifyStateChanged();
             }
         }
+
+        public async Task RemoveTab(Guid tabId)
+        {
+            await RemoveTab(tabId.ToString());
+        }
     }
 
     public class TabView
     {
-        public TabView
-            (string label,
+        public TabView(
+            string label,
             ComponentBase content,
-            Guid id,
-            string icon = Icons.Material.Filled.CropSquare)
+            Guid? id,
+            string icon = Icons.Material.Filled.CropSquare,
+            Dictionary<string, object>? componentParameters = null)
         {
             Label = label;
             Content = content;
-            Id = id;
+            Id = id.ToString() ?? Guid.NewGuid().ToString();
             Icon = icon;
+            ComponentParameters = componentParameters;
         }
 
-        public TabView
-            (string label,
+        public TabView(
+            string label,
             ComponentBase content,
-            Guid id, string icon,
-            Dictionary<string, object>? componentParameters)
+            string? id,
+            string icon = Icons.Material.Filled.CropSquare,
+            Dictionary<string, object>? componentParameters = null)
         {
             Label = label;
             Content = content;
-            Id = id;
+            Id = id ?? Guid.NewGuid().ToString();
             Icon = icon;
             ComponentParameters = componentParameters;
         }
 
         public string Label { get; set; }
         public ComponentBase Content { get; set; }
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         public string Icon { get; set; }
         public Dictionary<string, object>? ComponentParameters { get; set; } = new();
     }

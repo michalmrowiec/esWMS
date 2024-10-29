@@ -1,8 +1,8 @@
-﻿using esWMS.Domain.Entities.Documents;
-using esWMS.Application.Contracts.Persistence.Documents;
+﻿using esWMS.Application.Contracts.Persistence.Documents;
+using esWMS.Domain.Entities.Documents;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace esWMS.Infrastructure.Repositories.Documents
 {
@@ -26,6 +26,7 @@ namespace esWMS.Infrastructure.Repositories.Documents
                     .Include(x => x.DocumentItems)
                         .ThenInclude(x => x.Product)
                     .Include(x => x.RelatedMmp)
+                    .Include(x => x.IssueWarehouse)
                     .Include(x => x.ToWarehouse)
                     .FirstOrDefaultAsync(x => x.DocumentId.Equals(id));
 

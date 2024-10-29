@@ -1,6 +1,7 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
 @using esWMS.Client.Pages.WarehouseEnviroment.WarehouseUnit
+@using esWMS.Client.PrintTemplates.Document
 @using esWMS.Client.Services
 @using esWMS.Client.States
 @using esWMS.Client.ViewModels
@@ -13,6 +14,13 @@
 @inject IAlertService AlertService
 @inject IConfirmDialogService ConfirmDialogService
 @inject OnePageState OnePageState
+
+<PrintDocumentButton Disabled="@(!MmmVM.IsApproved)"
+                     DocumentPrintModel="new DocumentPrintModel(
+                        model: MmmVM,
+                        targetWarehouse: MmmVM.ToWarehouse ?? new(),
+                        documentType: DocumentTypesName.MMM,
+                        contractorType: DocumentContractorType.Receiver)" />
 
 <MudButton EndIcon="@Icons.Material.Filled.Refresh"
            OnClick="RefreshMmm">

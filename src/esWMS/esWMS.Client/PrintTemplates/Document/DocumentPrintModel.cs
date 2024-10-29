@@ -8,9 +8,9 @@ namespace esWMS.Client.PrintTemplates.Document
     {
         public DocumentPrintModel(
             BaseDocumentVM model,
+            ContractorVM contractor,
             DocumentTypesName documentType,
-            DocumentContractorType contractorType,
-            ContractorVM contractor)
+            DocumentContractorType contractorType)
         {
             Model = model;
             DocumentType = documentType;
@@ -28,11 +28,12 @@ namespace esWMS.Client.PrintTemplates.Document
         public DocumentPrintModel(
             BaseDocumentVM model,
             WarehouseVM targetWarehouse,
-            DocumentTypesName documentType)
+            DocumentTypesName documentType,
+            DocumentContractorType contractorType = DocumentContractorType.Receiver)
         {
             Model = model;
             DocumentType = documentType;
-            ContractorType = DocumentContractorType.Receiver;
+            ContractorType = contractorType;
             IssueWarehouseName = model.IssueWarehouse?.WarehouseName ?? "";
             IssueWarehouseAddress = model.IssueWarehouse?.Address ?? "";
             IssueWarehousePostalCodeCity = $"{model.IssueWarehouse?.PostalCode} {model.IssueWarehouse?.City}";
@@ -45,9 +46,9 @@ namespace esWMS.Client.PrintTemplates.Document
 
         public DocumentPrintModel(
             BaseDocumentVM model,
+            string targetOrSourceName,
             DocumentTypesName documentType,
-            DocumentContractorType contractorType,
-            string targetOrSourceName)
+            DocumentContractorType contractorType)
         {
             Model = model;
             DocumentType = documentType;

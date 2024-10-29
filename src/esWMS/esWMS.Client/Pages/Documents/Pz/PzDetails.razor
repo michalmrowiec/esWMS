@@ -14,13 +14,12 @@
 @inject IConfirmDialogService ConfirmDialogService
 @inject OnePageState OnePageState
 
-<MudButton @onclick="PrintQrs"
-           Variant="Variant.Filled"
-           Color="Color.Dark"
-           EndIcon="@Icons.Material.Filled.Print"
-           Disabled="@(!PzVM.IsApproved)">
-    Drukuj
-</MudButton>
+<PrintDocumentButton Disabled="@(!PzVM.IsApproved)"
+                     DocumentPrintModel="new DocumentPrintModel(
+                        model: PzVM,
+                        contractor: PzVM.SupplierContractor ?? new(),
+                        documentType: DocumentTypesName.PZ,
+                        contractorType: DocumentContractorType.Supplier)" />
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @PzVM.DocumentId
@@ -228,23 +227,5 @@ else
         {
             await response.HandleFailure(AlertService);
         }
-    }
-
-    private async Task PrintQrs()
-    {
-        var model = new DocumentPrintModel(
-            model: PzVM,
-            documentType: DocumentTypesName.PZ,
-            contractorType: DocumentContractorType.Supplier,
-            contractor: PzVM.SupplierContractor ?? new());
-
-        var tabId = Guid.NewGuid();
-
-        await OnePageState.AddTab(
-            new TabView("Podgląd wydruku" ?? " ",
-            new DocumentTemplate(),
-            tabId,
-            Icons.Material.Filled.Info,
-            new() { { "Model", model } }));
     }
 }

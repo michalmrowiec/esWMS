@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "esWMS.Domain", "src\esWMS.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "esWMS.Infrastructure.UnitTests", "test\esWMS.Infrastructure.UnitTests\esWMS.Infrastructure.UnitTests.csproj", "{719612DE-F545-45B6-BA65-45558B59E048}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "esWMS.API.IntegrationTests", "test\esWMS.API.IntegrationTests\esWMS.API.IntegrationTests.csproj", "{0F84EACC-EE50-49CB-90A0-1147D7336C87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "esWMS.API.IntegrationTests", "test\esWMS.API.IntegrationTests\esWMS.API.IntegrationTests.csproj", "{0F84EACC-EE50-49CB-90A0-1147D7336C87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -120,7 +120,7 @@ else
                                                OnClick="@(async () => {
                                             await ConfirmDialogService.OpenDeleteDialogAsync(
                                                 "Zaktualizuj kontrahenta",
-                                                $"Kontrahent {_contractor.ContractorId} został zaktualizowany.",
+                                                $"Na pewno chcesz zmodyfikować {_contractor.ContractorId}?",
                                                 Services.Dialog.ConfirmDialogService.ButtonDialogType.Edit,
                                                 EventCallback.Factory.Create(this, UpdateContractor));})">
                                         Zaktualizuj
