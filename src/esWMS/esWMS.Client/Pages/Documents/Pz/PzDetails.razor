@@ -233,12 +233,16 @@ else
     private async Task PrintQrs()
     {
         var model = new DocumentPrintModel(
-                model: PzVM,
-                documentType: DocumentTypesName.PZ,
-                receiverName: PzVM.IssueWarehouse?.WarehouseName ?? "",
-                receiverAddress: $"{PzVM.IssueWarehouse?.PostalCode} {PzVM.IssueWarehouse?.City} {PzVM.IssueWarehouse?.Region} {PzVM.IssueWarehouse?.Address}",
-                issuerName: PzVM.SupplierContractor?.ContractorName ?? "",
-                issuerAddress: $"{PzVM.SupplierContractor?.PostalCode} {PzVM.SupplierContractor?.City} {PzVM.SupplierContractor?.Region} {PzVM.SupplierContractor?.Address}"
+            model: PzVM,
+            documentType: DocumentTypesName.PZ,
+            receiverName: PzVM.IssueWarehouse?.WarehouseName ?? "",
+            receiverAddress: PzVM.IssueWarehouse?.Address ?? "",
+            receiverPostalCodeCity: $"{PzVM.IssueWarehouse?.PostalCode} {PzVM.IssueWarehouse?.City}",
+            receiverVatId: "",
+            issuerName: PzVM.SupplierContractor?.ContractorName ?? "",
+            issuerAddress: PzVM.SupplierContractor?.Address ?? "",
+            issuerPostalCodeCity: $"{PzVM.SupplierContractor?.PostalCode} {PzVM.SupplierContractor?.City}",
+            issuerVatId: PzVM.SupplierContractor?.VatId ?? ""
         );
 
         var tabId = Guid.NewGuid();

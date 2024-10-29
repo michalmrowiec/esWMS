@@ -5,22 +5,36 @@
     </HeaderContent>
     <BodyContent>
         <div class="qr-code-container">
-            <h1>@_documentNames[Model.DocumentType] nr @Model.Model.DocumentId</h1>
+            <h5>@_documentNames[Model.DocumentType] nr @Model.Model.DocumentId</h5>
             <p><strong>Data wystawienia:</strong> @Model.Model.DocumentIssueDate.ToString("dd-MM-yyyy")</p>
             <p><strong>Data wykonania:</strong> @Model.Model.ApprovalDate?.ToString("dd-MM-yyyy")</p>
 
-            <div class="document-header">
-                <div class="document-header-left">
-                    <h3>Odbiorca</h3>
-                    <p><strong>Nazwa odbierającego:</strong> @Model.ReceiverName</p>
-                    <p><strong>Adres:</strong> @Model.ReceiverAddress</p>
-                </div>
-                <div class="document-header-right">
-                    <h3>Wydawca</h3>
-                    <p><strong>Nazwa wydającego:</strong> @Model.IssuerName</p>
-                    <p><strong>Adres:</strong> @Model.IssuerAddress</p>
-                </div>
-            </div>
+            <table class="table-actors">
+                <thead>
+                    <tr class="tr-grey">
+                        <th>Wystawca</th>
+                        <th>Odbiorca</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>@Model.IssuerName</th>
+                        <th>@Model.ReceiverName</th>
+                    </tr>
+                    <tr>
+                        <th>@Model.IssuerAddress</th>
+                        <th>@Model.ReceiverAddress</th>
+                    </tr>
+                    <tr>
+                        <th>@Model.IssuerPostalCodeCity</th>
+                        <th>@Model.ReceiverPostalCodeCity</th>
+                    </tr>
+                    <tr>
+                        <th>@Model.IssuerVatId</th>
+                        <th>@Model.ReceiverVatId</th>
+                    </tr>
+                </tbody>
+            </table>
 
             <table class="document-items">
                 <thead>
@@ -56,8 +70,29 @@
                     <p><strong>Dokument zatwierdzony:</strong> @Model.Model.ApprovalDate?.ToString("dd-MM-yyyy")</p>
                 </div>
             }
-            <style>
 
+            <style>
+                .table-actors {
+                    border-collapse: separate;
+                    border-spacing: 20px 0;
+                    text-align: left;
+                    width: 100%;
+                    print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact;
+                }
+
+                .tr-grey {
+                    background-color: rgb(164, 164, 164) !important;
+                    color: black !important;
+                    print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact;
+                }
+
+/*                 th, td {
+                    border: 1px solid black; 
+                    padding: 8px;
+                    text-align: left;
+                } */
             </style>
         </div>
     </BodyContent>
@@ -95,22 +130,34 @@
             DocumentTypesName documentType,
             string issuerName,
             string issuerAddress,
+            string issuerPostalCodeCity,
+            string issuerVatId,
             string receiverName,
-            string receiverAddress)
+            string receiverAddress,
+            string receiverPostalCodeCity,
+            string receiverVatId)
         {
             Model = model;
             DocumentType = documentType;
             IssuerName = issuerName;
             IssuerAddress = issuerAddress;
+            IssuerPostalCodeCity = issuerPostalCodeCity;
+            IssuerVatId = issuerVatId;
             ReceiverName = receiverName;
             ReceiverAddress = receiverAddress;
+            ReceiverPostalCodeCity = receiverPostalCodeCity;
+            ReceiverVatId = receiverVatId;
         }
 
         public BaseDocumentVM Model { get; set; }
         public DocumentTypesName DocumentType { get; set; }
         public string IssuerName { get; set; }
         public string IssuerAddress { get; set; }
+        public string IssuerPostalCodeCity { get; set; }
+        public string IssuerVatId { get; set; }
         public string ReceiverName { get; set; }
         public string ReceiverAddress { get; set; }
+        public string ReceiverPostalCodeCity { get; set; }
+        public string ReceiverVatId { get; set; }
     }
 }
