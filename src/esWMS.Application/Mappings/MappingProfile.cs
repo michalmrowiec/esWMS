@@ -146,6 +146,7 @@ namespace esWMS.Application.Mappings
 
             CreateMap<MMP, MmpDto>();
             CreateMap<MMP, FlatMmpDto>();
+            CreateMap<MMP, MmpDetailsDto>();
 
             CreateMap<CreatePwCommand, PW>();
             CreateMap<PW, PwDto>();

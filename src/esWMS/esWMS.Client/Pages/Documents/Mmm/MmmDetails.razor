@@ -90,8 +90,18 @@
                Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
-               Class="mb-3">
+               Class="my-3">
         Zatwierdź
+    </MudButton>
+}
+else if (MmmVM.IsApproved)
+{
+    <MudButton Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled
+               Class="my-3">
+        Zatwierdzono
     </MudButton>
 }
 else
@@ -101,7 +111,7 @@ else
                Color="@Color.Primary"
                Disabled
                Class="my-3">
-        Zatwierdź dokument
+        Zatwierdź
     </MudButton>
 }
 

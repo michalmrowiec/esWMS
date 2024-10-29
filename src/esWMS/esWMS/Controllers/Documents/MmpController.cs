@@ -1,10 +1,11 @@
-﻿using esWMS.Domain.Models;
-using esWMS.Application.Functions.Documents.MmpFunctions;
+﻿using esWMS.Application.Functions.Documents.MmpFunctions;
 using esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetListOfWarehouseUnitsInMMP;
+using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetMmpDetailsById;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetSortedFilteredMmp;
 using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById;
 using esWMS.Controllers.Utils;
+using esWMS.Domain.Models;
 using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,14 @@ namespace esWMS.Controllers.Documents
         public async Task<ActionResult<MmpDto>> GetMmp([FromQuery] string documentId)
         {
             var result = await _mediator.Send(new GetMmpByIdQuery(documentId));
+
+            return result.HandleOkResult(this);
+        }
+
+        [HttpGet("details")]
+        public async Task<ActionResult<MmpDetailsDto>> GetMmpDetails([FromQuery] string documentId)
+        {
+            var result = await _mediator.Send(new GetMmpDetailsByIdQuery(documentId));
 
             return result.HandleOkResult(this);
         }
