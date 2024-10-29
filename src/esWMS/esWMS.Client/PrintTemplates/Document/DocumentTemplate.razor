@@ -44,15 +44,19 @@
                         <tr>
                             <th>@Model.ContractorName</th>
                         </tr>
-                        <tr>
-                            <th>@Model.ContractorAddress</th>
-                        </tr>
-                        <tr>
-                            <th>@Model.ContractorPostalCodeCity</th>
-                        </tr>
-                        <tr>
-                            <th>NIP: @Model.ContractorVatId</th>
-                        </tr>
+                        @if (Model.ContractorType == DocumentContractorType.Receiver
+                        || Model.ContractorType == DocumentContractorType.Supplier)
+                        {
+                            <tr>
+                                <th>@Model.ContractorAddress</th>
+                            </tr>
+                            <tr>
+                                <th>@Model.ContractorPostalCodeCity</th>
+                            </tr>
+                            <tr>
+                                <th>NIP: @Model.ContractorVatId</th>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -151,6 +155,8 @@
     private Dictionary<DocumentContractorType, string> _contractorNames = new()
     {
         { DocumentContractorType.Receiver, "Odbiorca" },
-        { DocumentContractorType.Supplier, "Dostawca" }
+        { DocumentContractorType.Supplier, "Dostawca" },
+        { DocumentContractorType.Source, "Źródło" },
+        { DocumentContractorType.Target, "Cel" }
     };
 }

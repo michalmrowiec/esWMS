@@ -236,15 +236,7 @@ else
             model: PzVM,
             documentType: DocumentTypesName.PZ,
             contractorType: DocumentContractorType.Supplier,
-            issueWarehouseName: PzVM.IssueWarehouse?.WarehouseName ?? "",
-            issueWarehouseAddress: PzVM.IssueWarehouse?.Address ?? "",
-            issueWarehousePostalCodeCity: $"{PzVM.IssueWarehouse?.PostalCode} {PzVM.IssueWarehouse?.City}",
-            issueWarehouseVatId: "",
-            contractorName: PzVM.SupplierContractor?.ContractorName ?? "",
-            contractorAddress: PzVM.SupplierContractor?.Address ?? "",
-            contractorPostalCodeCity: $"{PzVM.SupplierContractor?.PostalCode} {PzVM.SupplierContractor?.City}",
-            contractorVatId: PzVM.SupplierContractor?.VatId ?? ""
-        );
+            contractor: PzVM.SupplierContractor ?? new());
 
         var tabId = Guid.NewGuid();
 
