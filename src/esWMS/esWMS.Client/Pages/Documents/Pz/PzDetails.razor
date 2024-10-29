@@ -235,14 +235,15 @@ else
         var model = new DocumentPrintModel(
             model: PzVM,
             documentType: DocumentTypesName.PZ,
-            receiverName: PzVM.IssueWarehouse?.WarehouseName ?? "",
-            receiverAddress: PzVM.IssueWarehouse?.Address ?? "",
-            receiverPostalCodeCity: $"{PzVM.IssueWarehouse?.PostalCode} {PzVM.IssueWarehouse?.City}",
-            receiverVatId: "",
-            issuerName: PzVM.SupplierContractor?.ContractorName ?? "",
-            issuerAddress: PzVM.SupplierContractor?.Address ?? "",
-            issuerPostalCodeCity: $"{PzVM.SupplierContractor?.PostalCode} {PzVM.SupplierContractor?.City}",
-            issuerVatId: PzVM.SupplierContractor?.VatId ?? ""
+            contractorType: DocumentContractorType.Supplier,
+            issueWarehouseName: PzVM.IssueWarehouse?.WarehouseName ?? "",
+            issueWarehouseAddress: PzVM.IssueWarehouse?.Address ?? "",
+            issueWarehousePostalCodeCity: $"{PzVM.IssueWarehouse?.PostalCode} {PzVM.IssueWarehouse?.City}",
+            issueWarehouseVatId: "",
+            contractorName: PzVM.SupplierContractor?.ContractorName ?? "",
+            contractorAddress: PzVM.SupplierContractor?.Address ?? "",
+            contractorPostalCodeCity: $"{PzVM.SupplierContractor?.PostalCode} {PzVM.SupplierContractor?.City}",
+            contractorVatId: PzVM.SupplierContractor?.VatId ?? ""
         );
 
         var tabId = Guid.NewGuid();

@@ -5,58 +5,82 @@
     </HeaderContent>
     <BodyContent>
         <div class="qr-code-container">
-            <h5>@_documentNames[Model.DocumentType] nr @Model.Model.DocumentId</h5>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                <img src="/esWMS-logo.jpg" width="200" />
+                <h3 style="padding-top: 20px;">@_documentNames[Model.DocumentType]: @Model.Model.DocumentId</h3>
+            </div>
             <p><strong>Data wystawienia:</strong> @Model.Model.DocumentIssueDate.ToString("dd-MM-yyyy")</p>
             <p><strong>Data wykonania:</strong> @Model.Model.ApprovalDate?.ToString("dd-MM-yyyy")</p>
 
-            <table class="table-actors">
+            <div style="display:flex; justify-content:space-between">
+                <table class="border table-actors">
+                    <thead>
+                        <tr class="border tr-grey">
+                            <th>Wystawca</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>@Model.IssueWarehouseName</th>
+                        </tr>
+                        <tr>
+                            <th>@Model.IssueWarehouseAddress</th>
+                        </tr>
+                        <tr>
+                            <th>@Model.IssueWarehousePostalCodeCity</th>
+                        </tr>
+                        <tr>
+                            <th>NIP: @Model.IssueWarehouseVatId</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="border table-actors">
+                    <thead>
+                        <tr class="border tr-grey">
+                            <th>@_contractorNames[Model.ContractorType]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>@Model.ContractorName</th>
+                        </tr>
+                        <tr>
+                            <th>@Model.ContractorAddress</th>
+                        </tr>
+                        <tr>
+                            <th>@Model.ContractorPostalCodeCity</th>
+                        </tr>
+                        <tr>
+                            <th>NIP: @Model.ContractorVatId</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="table-items border">
                 <thead>
                     <tr class="tr-grey">
-                        <th>Wystawca</th>
-                        <th>Odbiorca</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th>@Model.IssuerName</th>
-                        <th>@Model.ReceiverName</th>
-                    </tr>
-                    <tr>
-                        <th>@Model.IssuerAddress</th>
-                        <th>@Model.ReceiverAddress</th>
-                    </tr>
-                    <tr>
-                        <th>@Model.IssuerPostalCodeCity</th>
-                        <th>@Model.ReceiverPostalCodeCity</th>
-                    </tr>
-                    <tr>
-                        <th>@Model.IssuerVatId</th>
-                        <th>@Model.ReceiverVatId</th>
-                    </tr>
-                </tbody>
-            </table>
-
-            <table class="document-items">
-                <thead>
-                    <tr>
-                        <th>Kod produktu</th>
-                        <th>Nazwa produktu</th>
-                        <th>Ilość</th>
-                        <th>Cena</th>
-                        <th>Stawka VAT</th>
-                        <th>Jednostka</th>
+                        <th style="text-align: center;">Lp.</th>
+                        <th>Nawza arykułu</th>
+                        <th>Kod artykułu</th>
+                        <th style="text-align: center;">Jm.</th>
+                        <th style="text-align: center;">Ilość</th>
+                        @*                         <th>Stawka VAT</th>
+                        <th>Cena jedn.</th>
+                        <th>Wart. netto</th> *@
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.Model.DocumentItems)
                     {
                         <tr>
-                            <td>@item.ProductCode</td>
+                            <td style="text-align: center;">@(Model.Model.DocumentItems.IndexOf(item) + 1).</td>
                             <td>@item.ProductName</td>
-                            <td>@item.Quantity</td>
-                            <td>@item.Price?.ToString("F2")</td>
-                            <td>@item.VatRate%</td>
-                            <td>@item.Unit</td>
+                            <td>@item.ProductCode</td>
+                            <td style="text-align: center;">@item.Unit</td>
+                            <td style="text-align: center;">@item.Quantity</td>
+                            @*                            <td>@item.VatRate%</td>
+                        <td>@item.Price?.ToString("F2")</td> *@
                         </tr>
                     }
                 </tbody>
@@ -73,26 +97,38 @@
 
             <style>
                 .table-actors {
-                    border-collapse: separate;
-                    border-spacing: 20px 0;
+                    border-collapse: collapse;
+                    border-spacing: 40px 0;
+                    text-align: left;
+                    width: 300px;
+                    margin-bottom: 50px;
+                    print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact;
+                }
+
+                .table-items {
+                    border-collapse: collapse;
                     text-align: left;
                     width: 100%;
+                    margin-bottom: 50px;
                     print-color-adjust: exact;
                     -webkit-print-color-adjust: exact;
                 }
+
+                    .table-items th, .table-items td {
+                        border: 1px solid black;
+                        padding: 8px;
+                    }
 
                 .tr-grey {
-                    background-color: rgb(164, 164, 164) !important;
+                    background-color: rgb(205, 205, 205) !important;
                     color: black !important;
-                    print-color-adjust: exact;
-                    -webkit-print-color-adjust: exact;
                 }
 
-/*                 th, td {
-                    border: 1px solid black; 
-                    padding: 8px;
-                    text-align: left;
-                } */
+                .border {
+                    border: 1px solid black;
+                }
+
             </style>
         </div>
     </BodyContent>
@@ -112,52 +148,9 @@
         { DocumentTypesName.MMM, "MM-" }
     };
 
-    public enum DocumentTypesName
+    private Dictionary<DocumentContractorType, string> _contractorNames = new()
     {
-        PZ,
-        WZ,
-        PW,
-        RW,
-        ZW,
-        MMP,
-        MMM
-    }
-
-    public class DocumentPrintModel
-    {
-        public DocumentPrintModel(
-            BaseDocumentVM model,
-            DocumentTypesName documentType,
-            string issuerName,
-            string issuerAddress,
-            string issuerPostalCodeCity,
-            string issuerVatId,
-            string receiverName,
-            string receiverAddress,
-            string receiverPostalCodeCity,
-            string receiverVatId)
-        {
-            Model = model;
-            DocumentType = documentType;
-            IssuerName = issuerName;
-            IssuerAddress = issuerAddress;
-            IssuerPostalCodeCity = issuerPostalCodeCity;
-            IssuerVatId = issuerVatId;
-            ReceiverName = receiverName;
-            ReceiverAddress = receiverAddress;
-            ReceiverPostalCodeCity = receiverPostalCodeCity;
-            ReceiverVatId = receiverVatId;
-        }
-
-        public BaseDocumentVM Model { get; set; }
-        public DocumentTypesName DocumentType { get; set; }
-        public string IssuerName { get; set; }
-        public string IssuerAddress { get; set; }
-        public string IssuerPostalCodeCity { get; set; }
-        public string IssuerVatId { get; set; }
-        public string ReceiverName { get; set; }
-        public string ReceiverAddress { get; set; }
-        public string ReceiverPostalCodeCity { get; set; }
-        public string ReceiverVatId { get; set; }
-    }
+        { DocumentContractorType.Receiver, "Odbiorca" },
+        { DocumentContractorType.Supplier, "Dostawca" }
+    };
 }
