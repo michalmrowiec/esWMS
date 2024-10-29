@@ -1,4 +1,4 @@
-﻿namespace esWMS.Client.ViewModels
+﻿namespace esWMS.Client.ViewModels.WarehouseEnviroment.Warehouse
 {
     public class WarehouseVM
     {
@@ -10,8 +10,6 @@
         public string? PostalCode { get; set; }
         public string? Address { get; set; }
         public bool IsActive { get; set; }
-
-
         public IList<ZoneVM> Zones { get; set; } = [];
     }
 }

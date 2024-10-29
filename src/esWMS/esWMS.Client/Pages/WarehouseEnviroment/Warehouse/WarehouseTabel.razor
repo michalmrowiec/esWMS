@@ -3,10 +3,12 @@
 @using esWMS.Client.Pages.OnePage
 @using esWMS.Client.Services
 @using esWMS.Client.States
-@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels;
+@using esWMS.Client.ViewModels.WarehouseEnviroment.Warehouse
 @rendermode InteractiveAuto
 @inject IDataService<WarehouseVM> dataService
 @inject OnePageState OnePageState
+@inject IDialogService DialogService
 
 <MudTable T="WarehouseVM"
           ServerData="ServerReload"
@@ -18,6 +20,15 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Magazyny</MudText>
         <MudSpacer />
+        <AuthorizeView Roles="ADM, MNG">
+            <Authorized>
+                <MudButton @onclick="OpenWarehouseDialogAsync"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary">
+                    Utwórz magazyn
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>
@@ -150,5 +161,21 @@
     private void OnSearch()
     {
         table.ReloadServerData();
+    }
+
+    private Task OpenWarehouseDialogAsync()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<AddWarehouseDialog>
+        {
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, table.ReloadServerData) } }
+        };
+        return DialogService.ShowAsync<AddWarehouseDialog>(null, parameters, options);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using esWMS.Client.ViewModels.WarehouseEnviroment.Location;
+using esWMS.Client.ViewModels.WarehouseEnviroment.Warehouse;
 
 namespace esWMS.Client.ViewModels
 {
