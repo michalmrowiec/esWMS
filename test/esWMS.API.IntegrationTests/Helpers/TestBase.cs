@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using esWMS.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace esWMS.API.IntegrationTests.Helpers
@@ -7,7 +8,7 @@ namespace esWMS.API.IntegrationTests.Helpers
         IClassFixture<CustomWebApplicationFactory<Program>>
     {
         protected readonly HttpClient _httpClient;
-        protected readonly CustomWebApplicationFactory<Program> _factory;
+        private readonly CustomWebApplicationFactory<Program> _factory;
 
         public TestBase(
             CustomWebApplicationFactory<Program> factory)
@@ -17,6 +18,12 @@ namespace esWMS.API.IntegrationTests.Helpers
             {
                 AllowAutoRedirect = false
             });
+        }
+
+        protected EsWmsDbContext GetDbContext()
+        {
+            var scope = _factory.Services.CreateScope();
+            return scope.ServiceProvider.GetRequiredService<EsWmsDbContext>();
         }
     }
 }

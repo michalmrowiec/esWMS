@@ -2,7 +2,6 @@
 using esWMS.Application.Functions.Categories;
 using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Domain.Models;
-using esWMS.Infrastructure;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Sieve.Models;
@@ -24,14 +23,7 @@ namespace esWMS.API.IntegrationTests.Controllers.CategoryController.GetSortedAnd
             SieveModel sieveModel,
             PagedResult<CategoryDto> expectedResult)
         {
-            using var scope = _factory.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<EsWmsDbContext>();
-
-            context.Database.EnsureDeleted();
-            context.Database.EnsureCreated();
-
-            context.Categories.AddRange(startCategories);
-            await context.SaveChangesAsync();
+            await GetDbContext().CreateDataAsync(startCategories);
 
             var json = JsonConvert.SerializeObject(sieveModel);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
