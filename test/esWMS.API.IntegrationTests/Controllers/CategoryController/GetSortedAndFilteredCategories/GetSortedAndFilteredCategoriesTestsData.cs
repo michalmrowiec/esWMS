@@ -31,11 +31,39 @@ namespace esWMS.API.IntegrationTests.Controllers.CategoryController.GetSortedAnd
                     TotalItems = 5,
                     ItemsFrom = 3,
                     ItemsTo = 4,
-                    Items = new List<CategoryDto>()
-                    {
+                    Items =
+                    [
                         new() { CategoryId = "Cat_5", CategoryName = "Oil" },
                         new() { CategoryId = "Cat_4", CategoryName = "test1" }
-                    }
+                    ]
+                }
+            ],
+            [
+                new Category[]
+                {
+                    new() { CategoryId = "Cat_1", CategoryName = "tools" },
+                    new() { CategoryId = "Cat_2", CategoryName = "electric" },
+                    new() { CategoryId = "Cat_3", CategoryName = "materials" },
+                    new() { CategoryId = "Cat_4", CategoryName = "test1" },
+                    new() { CategoryId = "Cat_5", CategoryName = "Oil" }
+                },
+                new SieveModel()
+                {
+                    Filters = "CategoryName@=rials",
+                    Sorts = "",
+                    Page = 1,
+                    PageSize = 10
+                },
+                new PagedResult<CategoryDto>()
+                {
+                    TotalPages = 1,
+                    TotalItems = 1,
+                    ItemsFrom = 1,
+                    ItemsTo = 10,
+                    Items =
+                    [
+                        new() { CategoryId = "Cat_3", CategoryName = "materials" }
+                    ]
                 }
             ]
 

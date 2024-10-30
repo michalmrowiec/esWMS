@@ -1,5 +1,4 @@
-﻿using esWMS.API.IntegrationTests.Controllers.CategoryController.CreateCategory;
-using esWMS.API.IntegrationTests.Helpers;
+﻿using esWMS.API.IntegrationTests.Helpers;
 using esWMS.Application.Functions.Categories;
 using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Domain.Models;
@@ -27,6 +26,9 @@ namespace esWMS.API.IntegrationTests.Controllers.CategoryController.GetSortedAnd
         {
             using var scope = _factory.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<EsWmsDbContext>();
+
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
 
             context.Categories.AddRange(startCategories);
             await context.SaveChangesAsync();
