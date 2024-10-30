@@ -7,7 +7,7 @@ namespace esWMS.API.IntegrationTests.Helpers
         IClassFixture<CustomWebApplicationFactory<Program>>
     {
         protected readonly HttpClient _httpClient;
-        private readonly CustomWebApplicationFactory<Program> _factory;
+        protected readonly CustomWebApplicationFactory<Program> _factory;
 
         public TestBase(
             CustomWebApplicationFactory<Program> factory)

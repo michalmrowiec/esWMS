@@ -1,9 +1,7 @@
 ﻿using esWMS.Infrastructure;
 using Microsoft.AspNetCore.Authorization.Policy;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace esWMS.API.IntegrationTests.Helpers
 {
@@ -14,6 +12,8 @@ namespace esWMS.API.IntegrationTests.Helpers
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            Environment.SetEnvironmentVariable("SKIP_SEED_DATA", "true");
+
             builder.ConfigureServices(services =>
             {
                 var ef = services.SingleOrDefault(services => services.ServiceType == typeof(InfrastructureInstallation));
@@ -33,7 +33,7 @@ namespace esWMS.API.IntegrationTests.Helpers
                 .Options;
             });
 
-            builder.UseEnvironment("Development");
+            builder.UseEnvironment("Testing");
         }
     }
 }

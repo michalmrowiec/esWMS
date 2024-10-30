@@ -21,21 +21,21 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnviroment
 
         public async Task<PagedResult<Category>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
-            var products = _context.Categories
+            var categories = _context.Categories
                 .Include(p => p.ChildCategories)
                 .Include(p => p.ParentCategory)
                 .AsNoTracking()
                 .AsQueryable();
 
-            var filteredProducts = await _sieveProcessor
-                .Apply(sieveModel, products)
+            var filteredCategories = await _sieveProcessor
+                .Apply(sieveModel, categories)
                 .ToListAsync();
 
             var totalCount = await _sieveProcessor
-                .Apply(sieveModel, products, applyPagination: false, applySorting: false)
+                .Apply(sieveModel, categories, applyPagination: false, applySorting: false)
                 .CountAsync();
 
-            return new PagedResult<Category>(filteredProducts, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
+            return new PagedResult<Category>(filteredCategories, totalCount, sieveModel.PageSize.Value, sieveModel.Page.Value);
         }
     }
 }

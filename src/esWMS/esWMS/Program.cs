@@ -103,10 +103,14 @@ try
 
     await dbContext.SeedStartAdmin(mediator);
 
-    if (app.Environment.IsDevelopment())
+    var skipSeedData = Environment.GetEnvironmentVariable("SKIP_SEED_DATA");
+    if (skipSeedData != "true")
     {
         await dbContext.SeedStartData();
+    }
 
+    if (app.Environment.IsDevelopment())
+    {
         app.UseWebAssemblyDebugging();
 
         app.UseSwagger();

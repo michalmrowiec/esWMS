@@ -2,7 +2,7 @@
 using esWMS.Domain.Services;
 using FluentAssertions;
 
-namespace esWMS.Domain.UnitTests.Services
+namespace esWMS.Domain.UnitTests.Services.DocumentService
 {
     public class DocumentServiceTests
     {
