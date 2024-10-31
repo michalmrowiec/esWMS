@@ -2,90 +2,42 @@
 using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Domain.Models;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents;
+using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseEnviroment;
 using Sieve.Services;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations
 {
     public class SieveCustomFilterMethods : ISieveCustomFilterMethods
     {
-        public IQueryable<PZ> DocumentIssueDate(IQueryable<PZ> source, string op, string[] values) =>
-            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
-        public IQueryable<WZ> DocumentIssueDate(IQueryable<WZ> source, string op, string[] values) =>
-            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
-        public IQueryable<MMM> DocumentIssueDate(IQueryable<MMM> source, string op, string[] values) =>
-            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
-        public IQueryable<MMP> DocumentIssueDate(IQueryable<MMP> source, string op, string[] values) =>
-            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
-        public IQueryable<PW> DocumentIssueDate(IQueryable<PW> source, string op, string[] values) =>
-            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
-        public IQueryable<RW> DocumentIssueDate(IQueryable<RW> source, string op, string[] values) =>
-            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
-        public IQueryable<ZW> DocumentIssueDate(IQueryable<ZW> source, string op, string[] values) =>
-            new BaseDocumentSieveProcessor().DocumentIssueDateFilter(source, op, values);
+        public IQueryable<PZ> DocumentIssueDate(
+            IQueryable<PZ> source, string op, string[] values) =>
+            BaseDocumentSieveProcessor.DocumentIssueDateFilter(source, op, values);
+        public IQueryable<WZ> DocumentIssueDate(
+            IQueryable<WZ> source, string op, string[] values) =>
+            BaseDocumentSieveProcessor.DocumentIssueDateFilter(source, op, values);
+        public IQueryable<MMM> DocumentIssueDate(
+            IQueryable<MMM> source, string op, string[] values) =>
+            BaseDocumentSieveProcessor.DocumentIssueDateFilter(source, op, values);
+        public IQueryable<MMP> DocumentIssueDate(
+            IQueryable<MMP> source, string op, string[] values) =>
+            BaseDocumentSieveProcessor.DocumentIssueDateFilter(source, op, values);
+        public IQueryable<PW> DocumentIssueDate(
+            IQueryable<PW> source, string op, string[] values) =>
+            BaseDocumentSieveProcessor.DocumentIssueDateFilter(source, op, values);
+        public IQueryable<RW> DocumentIssueDate(
+            IQueryable<RW> source, string op, string[] values) =>
+            BaseDocumentSieveProcessor.DocumentIssueDateFilter(source, op, values);
+        public IQueryable<ZW> DocumentIssueDate(
+            IQueryable<ZW> source, string op, string[] values) =>
+            BaseDocumentSieveProcessor.DocumentIssueDateFilter(source, op, values);
 
-        public IQueryable<WarehouseUnit> AnyBlockedItem
-        (IQueryable<WarehouseUnit> source, string op, string[] values)
-        {
-            if (values == null || values.Length == 0 || !bool.TryParse(values[0], out bool anyBlockedItem))
-            {
-                return source;
-            }
-
-            switch (op)
-            {
-                case "==":
-                    if (anyBlockedItem)
-                        source = source.Where(wu => wu.WarehouseUnitItems.Any(wui => wui.BlockedQuantity > 0));
-                    else
-                        source = source.Where(wu => wu.WarehouseUnitItems.All(wui => wui.BlockedQuantity == 0));
-                    break;
-                case "!=":
-                    if (anyBlockedItem)
-                        source = source.Where(wu => wu.WarehouseUnitItems.All(wui => wui.BlockedQuantity == 0));
-                    else
-                        source = source.Where(wu => wu.WarehouseUnitItems.Any(wui => wui.BlockedQuantity > 0));
-                    break;
-                default:
-                    break;
-            }
-
-            return source;
-        }
+        public IQueryable<WarehouseUnit> AnyBlockedItem(
+            IQueryable<WarehouseUnit> source, string op, string[] values) =>
+            WarehouseUnitSieveProcessor.AnyBlockedItem(source, op, values);
 
         public IQueryable<WarehouseUnit> ProductName
-            (IQueryable<WarehouseUnit> source, string op, string[] values)
-        {
-            if (values == null || values.Length == 0)
-            {
-                return source;
-            }
-
-            var value = values.First();
-
-            switch (op)
-            {
-                case "@=":
-                    source = source
-                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName.Contains(value)));
-                    break;
-                case "!@=":
-                    source = source
-                        .Where(wu => wu.WarehouseUnitItems.Any(wui => !wui.Product.ProductName.Contains(value)));
-                    break;
-                case "==":
-                    source = source
-                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName == value));
-                    break;
-                case "!=":
-                    source = source
-                        .Where(wu => wu.WarehouseUnitItems.Any(wui => wui.Product.ProductName != value));
-                    break;
-                default:
-                    break;
-            }
-
-            return source;
-        }
+            (IQueryable<WarehouseUnit> source, string op, string[] values) =>
+            WarehouseUnitSieveProcessor.ProductName(source, op, values);
 
         public IQueryable<WarehouseUnit> ItemCount
             (IQueryable<WarehouseUnit> source, string op, string[] values)

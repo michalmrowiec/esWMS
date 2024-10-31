@@ -4,7 +4,7 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
 {
     public class BaseDocumentSieveProcessor
     {
-        public IQueryable<T> DocumentIssueDateFilter<T>(
+        public static IQueryable<T> DocumentIssueDateFilter<T>(
             IQueryable<T> source, string op, string[] values)
             where T : BaseDocument
         {
@@ -39,7 +39,7 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
             return source;
         }
 
-        public IQueryable<T> DocumentIssueDateSort<T>(
+        public static IQueryable<T> DocumentIssueDateSort<T>(
             IQueryable<T> source, bool useThenBy, bool desc)
             where T : BaseDocument
         {
