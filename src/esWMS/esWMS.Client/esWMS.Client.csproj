@@ -25,7 +25,7 @@
 		<Content Update="Pages\Documents\Wz\WzDetails.razor">
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 		</Content>
-		<Content Update="Pages\WarehouseEnviroment\Warehouse\AddWarehouseDialog.razor">
+		<Content Update="Pages\WarehouseEnvironment\Warehouse\AddWarehouseDialog.razor">
 		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 		</Content>
 	</ItemGroup>

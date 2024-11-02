@@ -5,7 +5,6 @@ using esWMS.Application.Contracts.Utilities;
 using esWMS.Infrastructure.Repositories;
 using esWMS.Infrastructure.Repositories.Documents;
 using esWMS.Infrastructure.Repositories.SystemActors;
-using esWMS.Infrastructure.Repositories.WarehouseEnviroment;
 using esWMS.Infrastructure.Utilities;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +16,7 @@ using Sieve.Services;
 using System.Text;
 using esWMS.Application.Contracts.Services;
 using esWMS.Infrastructure.Services;
+using esWMS.Infrastructure.Repositories.WarehouseEnvironment;
 
 namespace esWMS.Infrastructure
 {

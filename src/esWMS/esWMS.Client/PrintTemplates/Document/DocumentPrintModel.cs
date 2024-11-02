@@ -1,6 +1,6 @@
 ﻿using esWMS.Client.ViewModels.Documents;
 using esWMS.Client.ViewModels.SystemActors;
-using esWMS.Client.ViewModels.WarehouseEnviroment.Warehouse;
+using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse;
 
 namespace esWMS.Client.PrintTemplates.Document
 {

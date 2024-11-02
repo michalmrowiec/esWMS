@@ -1,0 +1,127 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.WarehouseEnvironment.Product
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels;
+@using esWMS.Client.ViewModels.WarehouseEnvironment.Location
+@using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse
+@inject IDataService DataService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IAlertService AlertService
+
+<MudDialog>
+    <TitleContent>
+        Nowy magazyn
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@_model"
+                 @ref="@_form"
+                 Validation="@(_validator.ValidateValue)"
+                 ValidationDelay="0">
+            <MudCardContent>
+                <MudGrid Spacing="2">
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_model.WarehouseId"
+                                      For="@(() => _model.WarehouseId)"
+                                      Immediate="true"
+                                      Label="Identyfikator Magazynu"
+                                      MaxLength="50"
+                                      Required />
+                    </MudItem>
+
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_model.WarehouseName"
+                                      For="@(() => _model.WarehouseName)"
+                                      Immediate="true"
+                                      Label="Nazwa Magazynu"
+                                      MaxLength="100"
+                                      Required />
+                    </MudItem>
+
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_model.Country"
+                                      For="@(() => _model.Country)"
+                                      Immediate="true"
+                                      Label="Kraj"
+                                      MaxLength="50" />
+                    </MudItem>
+
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_model.City"
+                                      For="@(() => _model.City)"
+                                      Immediate="true"
+                                      Label="Miasto"
+                                      MaxLength="50" />
+                    </MudItem>
+
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_model.Region"
+                                      For="@(() => _model.Region)"
+                                      Immediate="true"
+                                      Label="Region"
+                                      MaxLength="50" />
+                    </MudItem>
+
+                    <MudItem xs="6">
+                        <MudTextField @bind-Value="_model.PostalCode"
+                                      For="@(() => _model.PostalCode)"
+                                      Immediate="true"
+                                      Label="Kod Pocztowy"
+                                      MaxLength="20" />
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_model.Address"
+                                      For="@(() => _model.Address)"
+                                      Immediate="true"
+                                      Label="Adres"
+                                      MaxLength="200" />
+                    </MudItem>
+
+                    <MudItem xs="6">
+                        <MudCheckBox @bind-Value="_model.IsActive" Label="Aktywny" />
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Utwórz</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public List<EventCallback>? FuncsOnCreated { get; set; } = new();
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    private MudForm _form;
+    private CreateWarehouseVM _model = new();
+    private CreateWarehouseVMValidator _validator = new();
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            var response = await DataService.CreateObject(@"api/v1/Warehouse", _model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var newLocation = JsonConvert.DeserializeObject<LocationVM>(content) ?? new();
+
+                Snackbar.Add(new MarkupString($"Utworzono <b>{newLocation.LocationId}</b>"), Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                FuncsOnCreated?.ForEach(async x => await x.InvokeAsync());
+            }
+            else
+            {
+                await response.HandleFailure(AlertService);
+            }
+        }
+    }
+}

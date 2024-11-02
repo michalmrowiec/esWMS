@@ -1,4 +1,4 @@
-﻿using esWMS.Client.ViewModels.WarehouseEnviroment.Warehouse;
+﻿using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse;
 using FluentValidation;
 
 namespace esWMS.Client.ViewModels.Documents

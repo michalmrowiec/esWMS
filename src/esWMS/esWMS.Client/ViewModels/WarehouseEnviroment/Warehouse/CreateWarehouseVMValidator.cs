@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace esWMS.Client.ViewModels.WarehouseEnviroment.Warehouse
+namespace esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse
 {
     public class CreateWarehouseVMValidator : AbstractValidator<CreateWarehouseVM>
     {

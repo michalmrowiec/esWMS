@@ -1,5 +1,5 @@
 ﻿using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Infrastructure.Repositories.WarehouseEnviroment;
+using esWMS.Infrastructure.Repositories.WarehouseEnvironment;
 using esWMS.Infrastructure.UnitTests.Helper;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
 using FluentAssertions;

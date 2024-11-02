@@ -1,4 +1,4 @@
-﻿namespace esWMS.Client.ViewModels.WarehouseEnviroment.Location
+﻿namespace esWMS.Client.ViewModels.WarehouseEnvironment.Location
 {
     public class UpdateLocationVM
     {
