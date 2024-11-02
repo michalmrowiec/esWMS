@@ -41,7 +41,8 @@ namespace esWMS.API.IntegrationTests.Controllers.WarehouseEnvironment
             SieveModel sieveModel,
             PagedResult<CategoryDto> expectedResult)
         {
-            await GetDbContext().CreateDataAsync(startCategories);
+            var context = GetDbContext().ClearDb();
+            await context.CreateDataAsync(startCategories);
 
             var json = JsonConvert.SerializeObject(sieveModel);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
