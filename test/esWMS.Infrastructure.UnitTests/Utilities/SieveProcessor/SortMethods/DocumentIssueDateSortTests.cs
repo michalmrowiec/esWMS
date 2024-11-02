@@ -1,8 +1,9 @@
 ﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.SortMethods.TestData;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
 using FluentAssertions;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.SortMethods.DocumentIssueDateSort
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.SortMethods
 {
     public class DocumentIssueDateSortTests
     {

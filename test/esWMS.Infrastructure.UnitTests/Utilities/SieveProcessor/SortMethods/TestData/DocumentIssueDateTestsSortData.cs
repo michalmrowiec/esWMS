@@ -1,6 +1,6 @@
 ﻿using esWMS.Domain.Entities.Documents;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.SortMethods.DocumentIssueDateSort
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.SortMethods.TestData
 {
     internal class DocumentIssueDateTestsSortData
     {

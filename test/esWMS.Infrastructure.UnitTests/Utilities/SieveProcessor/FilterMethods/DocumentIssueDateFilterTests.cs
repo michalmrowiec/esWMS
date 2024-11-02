@@ -1,8 +1,9 @@
 ﻿using esWMS.Domain.Entities.Documents;
+using esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.TestDatas;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
 using FluentAssertions;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.DocumentIssueDateFilter
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods
 {
     public class DocumentIssueDateFilterTests
     {
@@ -10,7 +11,7 @@ namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.
         [MemberData(
             nameof(DocumentIssueDateTestsFilterData.TestData),
             MemberType = typeof(DocumentIssueDateTestsFilterData))]
-        public void DocumentIssueDate_ForValidArgs_RetursFilteredRecords(
+        public void DocumentIssueDate_ForValidArgs_ReturnsFilteredRecords(
             IQueryable<PZ> source,
             string op,
             string[] values,

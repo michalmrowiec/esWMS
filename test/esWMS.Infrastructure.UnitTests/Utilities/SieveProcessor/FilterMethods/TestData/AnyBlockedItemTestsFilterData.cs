@@ -1,6 +1,6 @@
 ﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.AnyBlockedItemFilter
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.TestDatas
 {
     internal class AnyBlockedItemTestsFilterData
     {

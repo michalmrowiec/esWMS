@@ -1,6 +1,6 @@
 ﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.ProductNameFilter
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.TestData
 {
     internal class ProductNameTestsFilterData
     {

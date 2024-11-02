@@ -1,6 +1,6 @@
 ﻿using esWMS.Domain.Entities.Documents;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.DocumentIssueDateFilter
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.TestDatas
 {
     internal class DocumentIssueDateTestsFilterData
     {
