@@ -2,15 +2,15 @@
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
 using FluentAssertions;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.Filters.AnyBlockedItem
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.ProductNameFilter
 {
-    public class AnyBlockedItemTests
+    public class ProductNameFilterTests
     {
         [Theory]
         [MemberData(
-            nameof(AnyBlockedItemTestsData.TestData),
-            MemberType = typeof(AnyBlockedItemTestsData))]
-        public void AnyBlockedItem_ForValidArgs_RetursFilteredRecords(
+            nameof(ProductNameTestsFilterData.TestData),
+            MemberType = typeof(ProductNameTestsFilterData))]
+        public void ProductName_ForValidArgs_RetursFilteredRecords(
             IQueryable<WarehouseUnit> source,
             string op,
             string[] values,
@@ -18,7 +18,7 @@ namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.Filters.AnyBlo
         {
             var sieveCustomFilter = new SieveCustomFilterMethods();
 
-            var result = sieveCustomFilter.AnyBlockedItem(source, op, values);
+            var result = sieveCustomFilter.ProductName(source, op, values);
 
             result.Should().BeEquivalentTo(expectedResult.AsQueryable());
         }

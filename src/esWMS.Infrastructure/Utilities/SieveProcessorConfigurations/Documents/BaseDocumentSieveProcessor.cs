@@ -58,12 +58,10 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
                     source.OrderBy(p => p.DocumentIssueDate);
 
                 result = result
-                    .ThenBy(p => p.DocumentId)
-                    .ThenBy(p => p.IsApproved);
+                    .ThenBy(p => p.DocumentId);
             }
 
             return result;
         }
-
     }
 }

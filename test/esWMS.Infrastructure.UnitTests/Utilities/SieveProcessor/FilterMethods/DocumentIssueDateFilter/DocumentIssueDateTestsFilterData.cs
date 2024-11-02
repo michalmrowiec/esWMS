@@ -1,8 +1,8 @@
 ﻿using esWMS.Domain.Entities.Documents;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.Filters.DocumentIssueDate
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.DocumentIssueDateFilter
 {
-    internal class DocumentIssueDateTestsData
+    internal class DocumentIssueDateTestsFilterData
     {
         public static IEnumerable<object[]> TestData =>
         [

@@ -1,8 +1,8 @@
 ﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.Filters.ProductName
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.ProductNameFilter
 {
-    internal class ProductNameTestsData
+    internal class ProductNameTestsFilterData
     {
         public static IEnumerable<object[]> TestData =>
         [

@@ -1,8 +1,8 @@
 ﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.Filters.AnyBlockedItem
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.AnyBlockedItemFilter
 {
-    internal class AnyBlockedItemTestsData
+    internal class AnyBlockedItemTestsFilterData
     {
         public static IEnumerable<object[]> TestData =>
         [

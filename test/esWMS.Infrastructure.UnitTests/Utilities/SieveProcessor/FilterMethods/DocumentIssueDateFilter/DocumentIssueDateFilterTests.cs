@@ -2,14 +2,14 @@
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
 using FluentAssertions;
 
-namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.Filters.DocumentIssueDate
+namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.DocumentIssueDateFilter
 {
-    public class DocumentIssueDateTests
+    public class DocumentIssueDateFilterTests
     {
         [Theory]
         [MemberData(
-            nameof(DocumentIssueDateTestsData.TestData),
-            MemberType = typeof(DocumentIssueDateTestsData))]
+            nameof(DocumentIssueDateTestsFilterData.TestData),
+            MemberType = typeof(DocumentIssueDateTestsFilterData))]
         public void DocumentIssueDate_ForValidArgs_RetursFilteredRecords(
             IQueryable<PZ> source,
             string op,
