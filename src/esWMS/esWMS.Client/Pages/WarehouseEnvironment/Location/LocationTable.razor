@@ -2,12 +2,11 @@
 @using esWMS.Client.Components
 @using esWMS.Client.Components.DeleteDialog
 @using esWMS.Client.Components.TableColumnsFilters
-@using esWMS.Client.PrintTemplates.LocationQr
+@using esWMS.Client.PrintTemplates.Templates
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels;
 @using esWMS.Client.ViewModels.WarehouseEnvironment.Location
 @using esWMS.Client.States
-@using static esWMS.Client.PrintTemplates.Document.DocumentTemplate
 @rendermode InteractiveAuto
 @inject IDataService<LocationVM> DataService
 @inject IDialogService DialogService
@@ -42,14 +41,8 @@
         <ExpandCollapseGroupsButtons ExpandAction="_table.ExpandAllGroups"
                                      CollapseAction="_table.CollapseAllGroups" />
         <MudSpacer />
-        <MudButton @onclick="PrintQrs"
-                   Variant="Variant.Filled"
-                   Color="Color.Dark"
-                   EndIcon="@Icons.Material.Filled.QrCode"
-                   Disabled="@(_selectedItems.Count == 0)"
-                   Class="me-2">
-            Drukuj QR
-        </MudButton>
+        <esWMS.Client.Components.Buttons.PrintQrButton Codes="@(_selectedItems.Select(x => x.LocationId).ToArray())"
+                                                       Disabled="@(_selectedItems.Count == 0)" />
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
                    Color="Color.Primary">
@@ -246,17 +239,5 @@
                 @"api/v1/Location",
                 new() { { "locationId", location.LocationId } }),
             snackbarOnDeleteText: new("Usunięto lokalizację"));
-    }
-
-    private async Task PrintQrs()
-    {
-        var tabId = Guid.NewGuid();
-
-        await OnePageState.AddTab(
-            new TabView("Podgląd wydruku" ?? " ",
-            new LocationQrTemplate(),
-            tabId,
-            Icons.Material.Filled.Info,
-            new() { { "LocationIds", _selectedItems.Select(x => x.LocationId).ToArray() } }));
     }
 }

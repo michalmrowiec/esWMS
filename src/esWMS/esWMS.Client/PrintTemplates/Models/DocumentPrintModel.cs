@@ -2,7 +2,7 @@
 using esWMS.Client.ViewModels.SystemActors;
 using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse;
 
-namespace esWMS.Client.PrintTemplates.Document
+namespace esWMS.Client.PrintTemplates.Models
 {
     public class DocumentPrintModel
     {

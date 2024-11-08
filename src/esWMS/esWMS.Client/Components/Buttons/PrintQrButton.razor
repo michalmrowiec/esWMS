@@ -4,21 +4,21 @@
 @using esWMS.Client.ViewModels.Documents
 @inject OnePageState OnePageState
 
-<MudButton @onclick="PrintDocument"
+<MudButton @onclick="PrintQrs"
            Variant="Variant.Filled"
            Color="Color.Dark"
-           EndIcon="@Icons.Material.Filled.Print"
+           EndIcon="@Icons.Material.Filled.QrCode"
            Disabled="@Disabled">
-    Drukuj
+    Drukuj QR
 </MudButton>
 
 @code {
     [Parameter]
     public bool Disabled { get; set; }
     [Parameter]
-    public DocumentPrintModel DocumentPrintModel { get; set; }
+    public string[] Codes { get; set; }
 
-    private async Task PrintDocument()
+    private async Task PrintQrs()
     {
         var tabId = "print-prv";
 
@@ -26,9 +26,9 @@
 
         await OnePageState.AddTab(
             new TabView("Podgląd wydruku" ?? " ",
-            new DocumentTemplate(),
+            new QrCodeTemplate(),
             tabId,
             Icons.Material.Filled.Info,
-            new() { { "Model", DocumentPrintModel } }));
+            new() { { "Codes", Codes } }));
     }
 }

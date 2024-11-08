@@ -20,6 +20,8 @@ else
             <MudCard>
                 <MudCardHeader>
                     <MudText Typo="Typo.subtitle2">Parametry jednostki</MudText>
+                    <MudSpacer />
+                    <esWMS.Client.Components.Buttons.PrintQrButton Codes="@(new string[] { _warehouseUnit.WarehouseUnitId })" />
                 </MudCardHeader>
                 <MudCardContent>
                     <MudGrid>
