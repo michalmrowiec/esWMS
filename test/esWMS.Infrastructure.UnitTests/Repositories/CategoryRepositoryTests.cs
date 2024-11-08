@@ -1,6 +1,6 @@
 ﻿using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Infrastructure.Repositories.WarehouseEnvironment;
-using esWMS.Infrastructure.UnitTests.Helper;
+using esWMS.Infrastructure.UnitTests.Helpers;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -16,7 +16,7 @@ namespace esWMS.Infrastructure.UnitTests.Repositories
         [MemberData(
             nameof(CategoryRepositoryTestsData.ValidData),
             MemberType = typeof(CategoryRepositoryTestsData))]
-        public async Task CategoryReppositoryCreate_ForValidData_CreatesCategories(Category category)
+        public async Task CategoryRepositoryCreate_ForValidData_CreatesCategories(Category category)
         {
             await using var context = EsWMSContextInMemoryFactory.Create();
 

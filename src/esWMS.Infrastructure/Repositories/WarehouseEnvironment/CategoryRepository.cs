@@ -8,13 +8,17 @@ using Sieve.Services;
 
 namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
 {
-    public class CategoryRepository(EsWmsDbContext context, ILogger<CategoryRepository> logger, ISieveProcessor sieveProcessor)
-        : BaseRepository<Category>(context, logger), ICategoryRepository
+    public class CategoryRepository(
+        EsWmsDbContext context,
+        ILogger<CategoryRepository> logger,
+        ISieveProcessor sieveProcessor)
+        : BaseRepository<Category>(context, logger),
+        ICategoryRepository
     {
         private readonly EsWmsDbContext _context = context;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
-        public Task<IList<Category>> GetCategoryWithChilds(string idParentCategory)
+        public Task<IList<Category>> GetCategoryWithChildren(string idParentCategory)
         {
             throw new NotImplementedException();
         }

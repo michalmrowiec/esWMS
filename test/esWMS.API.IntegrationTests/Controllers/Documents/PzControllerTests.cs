@@ -35,7 +35,6 @@ namespace esWMS.API.IntegrationTests.Controllers.Documents
 
             var json = JsonConvert.SerializeObject(sieveModel);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
             var response = await _httpClient.PostAsync("/api/v1/pz/get-filtered", httpContent);
             var jsonResponse = await response.Content.ReadAsStringAsync();
             PagedResult<PzDto>? result =

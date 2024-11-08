@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace esWMS.Infrastructure.UnitTests.Helper
+namespace esWMS.Infrastructure.UnitTests.Helpers
 {
-    public class TestEsWmsDbContext(DbContextOptions<EsWmsDbContext> dbContextOptions) : EsWmsDbContext(dbContextOptions)
+    public class TestEsWmsDbContext(
+        DbContextOptions<EsWmsDbContext> dbContextOptions)
+        : EsWmsDbContext(dbContextOptions)
     {
         public override void Dispose()
         {

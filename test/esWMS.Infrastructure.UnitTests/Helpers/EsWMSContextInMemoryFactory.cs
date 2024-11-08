@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace esWMS.Infrastructure.UnitTests.Helper
+namespace esWMS.Infrastructure.UnitTests.Helpers
 {
     public class EsWMSContextInMemoryFactory
     {
