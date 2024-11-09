@@ -1,0 +1,141 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Components
+@using esWMS.Client.Components.DeleteDialog
+@using esWMS.Client.Pages.OnePage
+@using esWMS.Client.Services
+@using esWMS.Client.States
+@using esWMS.Client.ViewModels;
+@using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse
+@inject IDataService DataService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
+@inject IDialogService DialogService
+@inject OnePageState OnePageState
+
+@if (_warehouse == null)
+{
+    <MudText>Ladowanie...</MudText>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12" lg="5">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.subtitle2">Dane magazynu</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid Spacing="2">
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouse.WarehouseId"
+                                          Label="Identyfikator Magazynu"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouse.WarehouseName"
+                                          Label="Nazwa Magazynu"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouse.Country"
+                                          Label="Kraj"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouse.City"
+                                          Label="Miasto"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouse.Region"
+                                          Label="Region"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouse.PostalCode"
+                                          Label="Kod pocztowy"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouse.Address"
+                                          Label="Adres"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Lines="1" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudCheckBox @bind-Value="_warehouse.IsActive"
+                                         Label="Aktywny" />
+                        </MudItem>
+
+                        <AuthorizeView Roles="ADM, MNG">
+                            <Authorized>
+                                <MudItem xs="12">
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadWarehouse">Resetuj</MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="UpdateWarehouse">Zaktualizuj</MudButton>
+                                </MudItem>
+                            </Authorized>
+                        </AuthorizeView>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public string WarehouseId { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
+    private WarehouseVM? _warehouse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadWarehouse();
+    }
+
+    private async Task ReloadWarehouse()
+    {
+        var response = await DataService.Get(@"api/v1/Warehouse", new() { { "WarehouseId", WarehouseId } });
+        if (response == null)
+        {
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        _warehouse = JsonConvert.DeserializeObject<WarehouseVM>(json);
+
+        StateHasChanged();
+    }
+
+    private async Task UpdateWarehouse()
+    {
+        if (_warehouse == null)
+            return;
+
+        var response = await DataService.Put(@"api/v1/Warehouse", _warehouse);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Magazyn został zaktualizowany."), Severity.Success);
+            await ReloadWarehouse();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+}

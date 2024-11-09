@@ -14,30 +14,10 @@ namespace esWMS.Application.UnitTests.Functions.Categories
 {
     public class CreateCategoryCommandHandlerTests
     {
-        public static IEnumerable<object[]> ValidData => new List<object[]>
-        {
-            new object[]
-            {
-                new CreateCategoryCommand()
-                {
-                    CategoryName = "C1"
-                },
-                new Category()
-                {
-                    CategoryId = new Guid("00000001-0000-0000-0000-122000000000").ToString(),
-                    CategoryName = "C1",
-                    CreatedAt = new DateTime(2023, 10, 23)
-                },
-                new CategoryDto()
-                {
-                    CategoryId = new Guid("00000001-0000-0000-0000-122000000000").ToString(),
-                    CategoryName = "C1",
-                }
-            }
-        };
-
         [Theory]
-        [MemberData(nameof(ValidData))]
+        [MemberData(
+            nameof(CreateCategoryCommandHandlerTestsData.ValidData),
+            MemberType = typeof(CreateCategoryCommandHandlerTestsData))]
         public async Task CreateCategoryCommandHandler_ForValidData_ReturnsSucced
             (CreateCategoryCommand categoryCommand, Category category, CategoryDto categoryDto)
         {

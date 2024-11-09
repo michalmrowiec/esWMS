@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.SystemActors;
-using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Domain.Models;
 using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
+using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
 using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
+using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions;
 using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
 using esWMS.Application.Functions.Documents.MmmFunctions;
@@ -22,27 +20,32 @@ using esWMS.Application.Functions.Documents.WzFunctions;
 using esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz;
 using esWMS.Application.Functions.Documents.ZwFunctions;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw;
+using esWMS.Application.Functions.Employees;
+using esWMS.Application.Functions.Employees.Command.CreateEmployee;
+using esWMS.Application.Functions.Employees.Command.UpdateEmployee;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Commands.CreateLocation;
+using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Commands.CreateProduct;
+using esWMS.Application.Functions.Products.Commands.UpdateProduct;
 using esWMS.Application.Functions.Warehouses;
 using esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse;
+using esWMS.Application.Functions.Warehouses.Commands.UpdateWarehouse;
 using esWMS.Application.Functions.WarehouseUnitItems;
 using esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehouseUnitItem;
 using esWMS.Application.Functions.WarehouseUnitItems.Commands.UpdateWarehouseUnitItem;
 using esWMS.Application.Functions.WarehouseUnits;
+using esWMS.Application.Functions.WarehouseUnits.Commands;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
 using esWMS.Application.Functions.Zones;
 using esWMS.Application.Functions.Zones.Commands.CreateZone;
-using esWMS.Application.Functions.Employees.Command.CreateEmployee;
-using esWMS.Application.Functions.Employees;
-using esWMS.Application.Functions.Products.Commands.UpdateProduct;
-using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
-using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
-using esWMS.Application.Functions.WarehouseUnits.Commands;
-using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
+using esWMS.Application.Functions.Zones.Commands.UpdateZone;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.SystemActors;
+using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Models;
 
 namespace esWMS.Application.Mappings
 {
@@ -68,6 +71,9 @@ namespace esWMS.Application.Mappings
             CreateMap<CreateWarehouseCommand, Warehouse>();
             CreateMap<Warehouse, FlatWarehouseDto>();
             CreateMap<Warehouse, WarehouseDto>();
+            CreateMap<UpdateWarehouseCommand, Warehouse>()
+                .ForMember(dest => dest.WarehouseId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CommonWarehouseUnitCommand, WarehouseUnit>();
             CreateMap<CreateWarehouseUnitCommand, WarehouseUnit>();
@@ -101,6 +107,9 @@ namespace esWMS.Application.Mappings
             CreateMap<CreateZoneCommand, Zone>();
             CreateMap<Zone, FlatZoneDto>();
             CreateMap<Zone, ZoneDto>();
+            CreateMap<UpdateZoneCommand, Zone>()
+                .ForMember(dest => dest.ZoneId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
             CreateMap<CreateLocationCommand, Location>();
             CreateMap<Location, FlatLocationDto>();
@@ -137,6 +146,7 @@ namespace esWMS.Application.Mappings
 
             CreateMap<MMP, MmpDto>();
             CreateMap<MMP, FlatMmpDto>();
+            CreateMap<MMP, MmpDetailsDto>();
 
             CreateMap<CreatePwCommand, PW>();
             CreateMap<PW, PwDto>();
@@ -156,6 +166,9 @@ namespace esWMS.Application.Mappings
 
             CreateMap<CreateEmployeeCommand, Employee>();
             CreateMap<Employee, EmployeeDto>();
+            CreateMap<UpdateEmployeeCommand, Employee>()
+                .ForMember(dest => dest.EmployeeId, opt => opt.Ignore())
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }
 }

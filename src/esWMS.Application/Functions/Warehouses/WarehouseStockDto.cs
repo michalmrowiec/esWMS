@@ -1,6 +1,4 @@
 ﻿using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Application.Functions.Categories;
-using esWMS.Application.Functions.Products;
 
 namespace esWMS.Application.Functions.Warehouses
 {

@@ -4,8 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace esWMS.Infrastructure.Repositories
 {
-    internal class BaseRepository<TEntity, TId>
-        (EsWmsDbContext context, ILogger logger)
+    public class BaseRepository<TEntity, TId>(
+        EsWmsDbContext context,
+        ILogger logger)
         : IBaseRepository<TEntity, TId>
         where TEntity : class
     {
@@ -103,12 +104,12 @@ namespace esWMS.Infrastructure.Repositories
             }
         }
     }
-    internal class BaseRepository<TEntity>
-        : BaseRepository<TEntity, string>, IBaseRepository<TEntity>
+
+    public class BaseRepository<TEntity>(
+        EsWmsDbContext context, ILogger logger)
+        : BaseRepository<TEntity, string>(
+            context, logger),
+        IBaseRepository<TEntity>
         where TEntity : class
-    {
-        public BaseRepository(EsWmsDbContext context, ILogger logger)
-            : base(context, logger)
-        { }
-    }
+    { }
 }

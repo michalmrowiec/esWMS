@@ -1,8 +1,11 @@
 using esWMS.Application;
-using esWMS.Client.Services;
+using esWMS.Client.Services.Api;
+using esWMS.Client.Services.Auth;
+using esWMS.Client.Services.Dialog;
+using esWMS.Client.Services.LocalStorage;
+using esWMS.Client.Services.Notification;
 using esWMS.Client.States;
 using esWMS.Components;
-using esWMS.Components.Alert;
 using esWMS.Infrastructure;
 using esWMS.Middleware;
 using esWMS.Services;
@@ -100,10 +103,14 @@ try
 
     await dbContext.SeedStartAdmin(mediator);
 
-    if (app.Environment.IsDevelopment())
+    var skipSeedData = Environment.GetEnvironmentVariable("SKIP_SEED_DATA");
+    if (skipSeedData != "true")
     {
         await dbContext.SeedStartData();
+    }
 
+    if (app.Environment.IsDevelopment())
+    {
         app.UseWebAssemblyDebugging();
 
         app.UseSwagger();
@@ -146,3 +153,5 @@ finally
 {
     NLog.LogManager.Shutdown();
 }
+
+public partial class Program { }

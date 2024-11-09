@@ -1,0 +1,351 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnitItem
+@using esWMS.Client.Services
+@using esWMS.Client.States
+@using esWMS.Client.ViewModels
+@inject IDataService<WarehouseUnitVM> WarehouseUnitService
+@inject IDialogService DialogService
+@inject IAlertService AlertService
+@inject ISnackbar Snackbar
+@inject OnePageState OnePageState
+
+@if (_warehouseUnit == null)
+{
+    <MudText>Ladowanie...</MudText>
+}
+else
+{
+    <MudGrid>
+        <MudItem xs="12" lg="4">
+            <MudCard>
+                <MudCardHeader>
+                    <MudText Typo="Typo.subtitle2">Parametry jednostki</MudText>
+                    <MudSpacer />
+                    <esWMS.Client.Components.Buttons.PrintQrButton Codes="@(new string[] { _warehouseUnit.WarehouseUnitId })" />
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouseUnit.WarehouseUnitId"
+                                          Label="Identyfikator"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_warehouseUnit.WarehouseId"
+                                          Label="Identyfikator magazynu"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouseUnit.LocationId"
+                                          Label="Identyfikator lokalizacji"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@Icons.Material.Outlined.EditLocation"
+                                          OnAdornmentClick="OpenEditLocationDialogAsync" />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalWeight"
+                                             Label="Całkowita waga (kg)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense"
+                                             Format="F2" />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalLength"
+                                             Label="Całkowita długość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense"
+                                             Format="F2" />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalWidth"
+                                             Label="Całkowita szerokość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense"
+                                             Format="F2" />
+
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudNumericField ShrinkLabel @bind-Value="_warehouseUnit.TotalHeight"
+                                             Label="Całkowita wysokość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense"
+                                             Format="F2" />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudCheckBox @bind-Value="_warehouseUnit.IsBlocked"
+                                         Label="Blokada"
+                                         ReadOnly />
+                        </MudItem>
+
+                        <MudItem xs="6">
+                            <MudCheckBox @bind-Value="_warehouseUnit.CanBeStacked"
+                                         Label="Może być piętrzona" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField ShrinkLabel @bind-Value="_warehouseUnit.StackOnId"
+                                          Label="Piętrzona na"
+                                          Variant="Variant.Outlined"
+                                          ReadOnly
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadWarehouseUnit">Odśwież</MudButton>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="me-2" EndIcon="@Icons.Material.Filled.Build" OnClick="Update">Zaktualizuj</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" lg="8">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudCard>
+                        <MudCardHeader>
+                            <MudText Typo="Typo.subtitle2">Pozycje jednostki</MudText>
+                            <MudSpacer />
+                            <MudButton @onclick="OpenDialogAsync"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       Disabled="@(!_selectedItems.Any())">
+                                Przenieś/Podziel
+                            </MudButton>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudTable Items="@_warehouseUnit.WarehouseUnitItems"
+                                      Context="WuiContext"
+                                      Hover="true"
+                                      Breakpoint="Breakpoint.Sm"
+                                      Elevation="0"
+                                      Dense
+                                      Bordered
+                                      MultiSelection
+                                      @bind-SelectedItems="_selectedItems">
+                                <ColGroup>
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                    <col />
+                                </ColGroup>
+                                <HeaderContent>
+                                    <MudTh>Id produktu</MudTh>
+                                    <MudTh>Nazwa produktu</MudTh>
+                                    <MudTh>Ilość</MudTh>
+                                    <MudTh>Zablokowane</MudTh>
+                                    <MudTh>Dostępne</MudTh>
+                                    <MudTh>Nośnik</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
+                                    <MudTd DataLabel="Nazwa produktu">@WuiContext.Product?.ProductName</MudTd>
+                                    <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
+                                    <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
+                                    <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                                    <MudTd DataLabel="Nośnik">
+                                        <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
+                                                     Size="Size.Small"
+                                                     Disabled />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" lg="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <MudText Typo="Typo.subtitle2">Stos składowania</MudText>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudList T="string" Padding="false">
+                                @*                                 <MudListSubheader>
+                            Stos składowania
+                            </MudListSubheader> *@
+                                @foreach (var wu in _warehouseUnitStack.OrderByDescending(kvp => kvp.Key))
+                                {
+                                    @if (wu.Value.WarehouseUnitId.Equals(WarehouseUnitId))
+                                    {
+                                        <MudListItem Style="padding:0">
+                                            <MudChip Color="@Color.Primary"
+                                                     Style="border-radius:4px; cursor:default;">
+                                                <strong>
+                                                    @string.Concat($"[ {wu.Key + 1} ] {wu.Value.WarehouseUnitId}  ")
+                                                </strong>
+                                                <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowLeft" />
+                                            </MudChip>
+                                        </MudListItem>
+
+                                    }
+                                    else
+                                    {
+                                        <MudListItem Style="padding:0">
+                                            <MudChip Color="@Color.Dark"
+                                                     Style="border-radius:4px;"
+                                                     OnClick="@(async () => await OpenWarehouseUnitDetails(wu.Value.WarehouseUnitId))">
+                                                [ @(wu.Key + 1) ] @wu.Value.WarehouseUnitId
+                                            </MudChip>
+                                        </MudListItem>
+                                    }
+                                }
+                                @*                                 <MudListItem Style="padding:0">
+                            <MudChip Color="@Color.Dark"
+                            Style="border-radius:4px; cursor:default;">
+                            [ 0 ] Podłoga
+                            </MudChip>
+                            </MudListItem> *@
+                            </MudList>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public string WarehouseUnitId { get; set; }
+
+    private WarehouseUnitVM? _warehouseUnit;
+    private HashSet<WarehouseUnitItemVM> _selectedItems = new();
+    private Dictionary<int, WarehouseUnitVM> _warehouseUnitStack = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadWarehouseUnit();
+    }
+
+    private Task OpenDialogAsync()
+    {
+        if (!_selectedItems.Any())
+            return Task.CompletedTask;
+
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<MoveWarehouseUnitItemDialog>
+        {
+            { x => x.WarehouseId, _warehouseUnit?.WarehouseId },
+            { x => x.WarehouseUnitItemsToMove, _selectedItems.ToList() },
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, ReloadWarehouseUnit) } }
+        };
+        return DialogService.ShowAsync<MoveWarehouseUnitItemDialog>(null, parameters, options);
+    }
+
+    private async Task ReloadWarehouseUnit()
+    {
+        await GetWarehouseUnitDetails();
+        await GetStack();
+
+        StateHasChanged();
+    }
+
+    private async Task GetWarehouseUnitDetails()
+    {
+        var response = await WarehouseUnitService.Get(@"api/v1/WarehouseUnit", new() { { "WarehouseUnitId", WarehouseUnitId } });
+        if (!response.IsSuccessStatusCode)
+        {
+            await response.HandleFailure(AlertService);
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var resObj = JsonConvert.DeserializeObject<List<WarehouseUnitVM>>(json);
+
+        _warehouseUnit = resObj?.First() ?? new();
+    }
+
+    private async Task GetStack()
+    {
+        var response = await WarehouseUnitService.Get(@"api/v1/WarehouseUnit/get-stack/" + WarehouseUnitId);
+        if (!response.IsSuccessStatusCode)
+        {
+            await response.HandleFailure(AlertService);
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        var resObj = JsonConvert.DeserializeObject<Dictionary<int, WarehouseUnitVM>>(json);
+
+        try
+        {
+            // foreach (var item in resObj.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value))
+            // {
+            //     _warehouseUnitStack.Push(item);
+            // }
+            _warehouseUnitStack = resObj;
+        }
+        catch (Exception)
+        {
+            AlertService.ShowAlert(new("Error on stack convert."));
+        }
+    }
+
+    private Task OpenEditLocationDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, FullWidth = true, MaxWidth = MaxWidth.Medium };
+        var parameters = new DialogParameters<SetLocationModalDialog>
+        {
+            { x => x.WarehouseUnit, _warehouseUnit },
+            { x => x.FuncsOnSubmit, new List<EventCallback>() { EventCallback.Factory.Create(this, ReloadWarehouseUnit) } }
+        };
+        return DialogService.ShowAsync<SetLocationModalDialog>(null, parameters, options);
+    }
+
+    private async Task Update()
+    {
+        var model = new
+        {
+            WarehouseUnitId = _warehouseUnit.WarehouseUnitId,
+            TotalWeight = _warehouseUnit.TotalWeight,
+            TotalLength = _warehouseUnit.TotalLength,
+            TotalWidth = _warehouseUnit.TotalWidth,
+            TotalHeight = _warehouseUnit.TotalHeight,
+            CanBeStacked = _warehouseUnit.CanBeStacked
+        };
+        var response = await WarehouseUnitService.Put(@"api/v1/WarehouseUnit", model);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Jednostka została zaktualizowana."), Severity.Success);
+            await ReloadWarehouseUnit();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OpenWarehouseUnitDetails(string warehouseUnitId)
+    {
+        await OnePageState.AddTab(
+            new TabView("Szczegóły jednostki" ?? " ",
+            new WarehouseUnitDetails(),
+            Guid.NewGuid(),
+            Icons.Material.Filled.Info,
+            new() { { "WarehouseUnitId", warehouseUnitId } }));
+    }
+}

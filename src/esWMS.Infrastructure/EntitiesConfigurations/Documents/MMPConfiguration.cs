@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
-    internal class MmpConfiguration : IEntityTypeConfiguration<MMP>
+    public class MmpConfiguration : IEntityTypeConfiguration<MMP>
     {
         public void Configure(EntityTypeBuilder<MMP> builder)
         {

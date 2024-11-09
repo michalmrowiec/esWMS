@@ -5,6 +5,6 @@ using Sieve.Models;
 
 namespace esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouseStocks
 {
-    public record GetSortedFilteredWarehouseStocksQuery(SieveModel SieveModel, string? warehouseId = null)
+    public record GetSortedFilteredWarehouseStocksQuery(SieveModel SieveModel, string? WarehouseId = null)
         : IRequest<BaseResponse<PagedResult<WarehouseStockDto>>>;
 }

@@ -1,6 +1,8 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
+@using esWMS.Client.PrintTemplates.Models
 @using esWMS.Client.Services
+@using esWMS.Client.Services.Dialog
 @using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
@@ -11,6 +13,13 @@
 @inject IAlertService AlertService
 @inject IConfirmDialogService ConfirmDialogService
 @inject OnePageState OnePageState
+
+<PrintDocumentButton Disabled="@(!WzVM.IsApproved)"
+                     DocumentPrintModel="new DocumentPrintModel(
+                        model: WzVM,
+                        contractor: WzVM.RecipientContractor ?? new(),
+                        documentType: DocumentTypesName.WZ,
+                        contractorType: DocumentContractorType.Receiver)" />
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @WzVM.DocumentId
@@ -166,7 +175,7 @@ else
 
         await ConfirmDialogService.OpenDeleteDialogAsync(
             "Usuwanie pozycji", "Czy na pewno chcesz usunąć pozycję?",
-            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
             EventCallback.Factory.Create(this, () => confirm = true));
 
         if (confirm)
@@ -181,7 +190,7 @@ else
 
         await ConfirmDialogService.OpenDeleteDialogAsync(
             "Usuwanie pozycji", "Czy na pewno chcesz usunąć dokument?",
-            Services.ConfirmDialogService.ButtonDialogType.Delete,
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
             EventCallback.Factory.Create(this, () => confirm = true));
 
         if (confirm)

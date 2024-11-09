@@ -1,5 +1,11 @@
-﻿namespace esWMS.Client.ViewModels.Documents
+﻿using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse;
+
+namespace esWMS.Client.ViewModels.Documents
 {
+    public class MmpDetailsVM : MmpVM
+    {
+    }
+
     public class MmpVM : BaseDocumentVM
     {
         public DateTime? GoodsReceiptDate { get; set; }

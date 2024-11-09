@@ -1,6 +1,7 @@
 ﻿using esWMS.Domain.Entities.Documents;
 using esWMS.Domain.Entities.SystemActors;
 using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Infrastructure.EntitiesConfigurations.Documents;
 using Microsoft.EntityFrameworkCore;
 
 namespace esWMS.Infrastructure
@@ -35,7 +36,7 @@ namespace esWMS.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(this.GetType().Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(BaseDocumentConfiguration).Assembly);
         }
     }
 }

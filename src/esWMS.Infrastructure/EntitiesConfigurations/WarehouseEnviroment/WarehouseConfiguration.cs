@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 {
-    internal class WarehouseConfiguration : IEntityTypeConfiguration<Warehouse>
+    public class WarehouseConfiguration : IEntityTypeConfiguration<Warehouse>
     {
         public void Configure(EntityTypeBuilder<Warehouse> builder)
         {
@@ -32,6 +32,9 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 
             builder.Property(w => w.Address)
                 .HasMaxLength(250);
+
+            builder.Property(w => w.IsActive)
+                .IsRequired();
 
             builder.Property(w => w.CreatedAt)
                 .IsRequired();

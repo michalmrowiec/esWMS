@@ -1,11 +1,11 @@
 ﻿using esWMS.Domain.Entities.Documents;
-using Microsoft.Extensions.Hosting;
 
 namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
 {
     public class BaseDocumentSieveProcessor
     {
-        public IQueryable<T> DocumentIssueDateFilter<T>(IQueryable<T> source, string op, string[] values)
+        public static IQueryable<T> DocumentIssueDateFilter<T>(
+            IQueryable<T> source, string op, string[] values)
             where T : BaseDocument
         {
             if (values.Length != 1 || !DateTime.TryParse(values[0], out DateTime dateValue))
@@ -39,8 +39,8 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
             return source;
         }
 
-        public IQueryable<T> DocumentIssueDateSort<T>
-            (IQueryable<T> source, bool useThenBy, bool desc)
+        public static IQueryable<T> DocumentIssueDateSort<T>(
+            IQueryable<T> source, bool useThenBy, bool desc)
             where T : BaseDocument
         {
             IOrderedQueryable<T> result;
@@ -58,12 +58,10 @@ namespace esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents
                     source.OrderBy(p => p.DocumentIssueDate);
 
                 result = result
-                    .ThenBy(p => p.DocumentId)
-                    .ThenBy(p => p.IsApproved);
+                    .ThenBy(p => p.DocumentId);
             }
 
             return result;
         }
-
     }
 }

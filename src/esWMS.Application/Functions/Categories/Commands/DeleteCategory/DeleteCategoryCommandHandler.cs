@@ -20,10 +20,10 @@ namespace esWMS.Application.Functions.Categories.Commands.DeleteCategory
 
         public async Task<BaseResponse> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            Category? product;
+            Category? category;
             try
             {
-                product = await _repository.GetByIdAsync(request.CategoryId);
+                category = await _repository.GetByIdAsync(request.CategoryId);
             }
             catch (KeyNotFoundException ex)
             {
@@ -60,7 +60,7 @@ namespace esWMS.Application.Functions.Categories.Commands.DeleteCategory
 
             try
             {
-                await _repository.DeleteAsync(product.CategoryId);
+                await _repository.DeleteAsync(category.CategoryId);
             }
             catch (Exception ex)
             {

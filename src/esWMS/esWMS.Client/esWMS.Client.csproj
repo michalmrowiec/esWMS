@@ -19,11 +19,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Update="Pages\Contractor\ContractorDetails.razor">
+		<Content Update="Pages\SystemActors\Contractor\ContractorDetails.razor">
 		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 		</Content>
 		<Content Update="Pages\Documents\Wz\WzDetails.razor">
 			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+		<Content Update="Pages\WarehouseEnvironment\Warehouse\AddWarehouseDialog.razor">
+		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
 		</Content>
 	</ItemGroup>
 

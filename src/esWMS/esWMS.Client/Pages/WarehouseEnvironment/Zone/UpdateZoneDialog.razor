@@ -1,0 +1,87 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse
+@using esWMS.Client.Services.Api
+@using esWMS.Client.Services.Notification
+@using esWMS.Client.Services
+@inject IDataService<UpdateZoneVM> zoneDataService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
+
+<MudDialog>
+    <TitleContent>
+        Modyfikacja strefy
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="@_model"
+                 @ref="@_form"
+                 ValidationDelay="0">
+            <MudCardContent>
+                <MudTextField @bind-Value="_model.ZoneName"
+                              For="@(() => _model.ZoneName)"
+                              Immediate="true"
+                              Label="Nazwa"
+                              MaxLength="30"
+                              Required />
+
+                <MudNumericField @bind-Value="_model.AvgTemperature"
+                                 For="@(() => _model.AvgTemperature)"
+                                 Label="Średnia temperatura (°C)"
+                                 Immediate="true"
+                                 Min="-999"
+                                 Max="999" />
+            </MudCardContent>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Anuluj</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@(async () => await Submit())">Zaktualizuj</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+    [Parameter]
+    public List<EventCallback>? FuncsOnUpdated { get; set; } = new();
+    [Parameter]
+    public ZoneVM ZoneToUpdate { get; set; }
+    private MudForm _form;
+    private UpdateZoneVM _model = new();
+    private List<WarehouseVM> _warehouses = new();
+
+    protected override void OnInitialized()
+    {
+        _model = new()
+            {
+                ZoneId = ZoneToUpdate.ZoneId,
+                ZoneName = ZoneToUpdate.ZoneName,
+                AvgTemperature = ZoneToUpdate.AvgTemperature
+            };
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            var response = await zoneDataService.Put(@"api/v1/Zone", _model);
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var updatedZone = JsonConvert.DeserializeObject<ZoneVM>(content) ?? new();
+
+                Snackbar.Add(new MarkupString($"Zaktualizowano <b>{updatedZone.ZoneId}</b>"), Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+                FuncsOnUpdated?.ForEach(async x => await x.InvokeAsync());
+            }
+            else
+            {
+                await response.HandleFailure(AlertService);
+            }
+        }
+    }
+}

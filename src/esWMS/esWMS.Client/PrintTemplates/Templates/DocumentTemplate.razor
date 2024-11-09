@@ -1,0 +1,163 @@
+﻿@using esWMS.Client.PrintTemplates.Models
+@using esWMS.Client.ViewModels.Documents
+<BaseTemplateTab>
+    <HeaderContent>
+
+    </HeaderContent>
+    <BodyContent>
+        <div class="qr-code-container">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                <img src="/esWMS-logo.jpg" width="200" />
+                <h3 style="padding-top: 20px;">@_documentNames[Model.DocumentType]: @Model.Model.DocumentId</h3>
+            </div>
+            <p><strong>Data wystawienia:</strong> @Model.Model.DocumentIssueDate.ToString("dd-MM-yyyy")</p>
+            <p><strong>Data wykonania:</strong> @Model.Model.ApprovalDate?.ToString("dd-MM-yyyy")</p>
+
+            <div style="display:flex; justify-content:space-between">
+                <table class="border table-actors">
+                    <thead>
+                        <tr class="border tr-grey">
+                            <th>Wystawca</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>@Model.IssueWarehouseName</th>
+                        </tr>
+                        <tr>
+                            <th>@Model.IssueWarehouseAddress</th>
+                        </tr>
+                        <tr>
+                            <th>@Model.IssueWarehousePostalCodeCity</th>
+                        </tr>
+                        <tr>
+                            <th>NIP: @Model.IssueWarehouseVatId</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="border table-actors">
+                    <thead>
+                        <tr class="border tr-grey">
+                            <th>@_contractorNames[Model.ContractorType]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>@Model.ContractorName</th>
+                        </tr>
+                        @if (Model.ContractorType == DocumentContractorType.Receiver
+                        || Model.ContractorType == DocumentContractorType.Supplier)
+                        {
+                            <tr>
+                                <th>@Model.ContractorAddress</th>
+                            </tr>
+                            <tr>
+                                <th>@Model.ContractorPostalCodeCity</th>
+                            </tr>
+                            <tr>
+                                <th>NIP: @Model.ContractorVatId</th>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="table-items border">
+                <thead>
+                    <tr class="tr-grey">
+                        <th style="text-align: center;">Lp.</th>
+                        <th>Nawza arykułu</th>
+                        <th>Kod artykułu</th>
+                        <th style="text-align: center;">Jm.</th>
+                        <th style="text-align: center;">Ilość</th>
+                        @*                         <th>Stawka VAT</th>
+                        <th>Cena jedn.</th>
+                        <th>Wart. netto</th> *@
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Model.DocumentItems)
+                    {
+                        <tr>
+                            <td style="text-align: center;">@(Model.Model.DocumentItems.IndexOf(item) + 1).</td>
+                            <td>@item.ProductName</td>
+                            <td>@item.ProductCode</td>
+                            <td style="text-align: center;">@item.Unit</td>
+                            <td style="text-align: center;">@item.Quantity</td>
+                            @*                            <td>@item.VatRate%</td>
+                        <td>@item.Price?.ToString("F2")</td> *@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <p><strong>Komentarz:</strong> @Model.Model.Comment</p>
+
+            @if (Model.Model.IsApproved)
+            {
+                <div class="document-approval">
+                    <p><strong>Dokument zatwierdzony:</strong> @Model.Model.ApprovalDate?.ToString("dd-MM-yyyy")</p>
+                </div>
+            }
+
+            <style>
+                .table-actors {
+                    border-collapse: collapse;
+                    border-spacing: 40px 0;
+                    text-align: left;
+                    width: 300px;
+                    margin-bottom: 50px;
+                    print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact;
+                }
+
+                .table-items {
+                    border-collapse: collapse;
+                    text-align: left;
+                    width: 100%;
+                    margin-bottom: 50px;
+                    print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact;
+                }
+
+                    .table-items th, .table-items td {
+                        border: 1px solid black;
+                        padding: 8px;
+                    }
+
+                .tr-grey {
+                    background-color: rgb(205, 205, 205) !important;
+                    color: black !important;
+                }
+
+                .border {
+                    border: 1px solid black;
+                }
+
+            </style>
+        </div>
+    </BodyContent>
+</BaseTemplateTab>
+@code {
+    [Parameter]
+    public DocumentPrintModel Model { get; set; }
+
+    private Dictionary<DocumentTypesName, string> _documentNames = new()
+    {
+        { DocumentTypesName.PZ, "Przyjęcie Zewnętrzne" },
+        { DocumentTypesName.WZ, "Wydanie Zewnętrzne" },
+        { DocumentTypesName.PW, "Przyjęcie Wewnętrzne" },
+        { DocumentTypesName.RW, "Rozchód Wewnętrzny" },
+        { DocumentTypesName.ZW, "Zwrot Wewnętrzny" },
+        { DocumentTypesName.MMP, "MM+" },
+        { DocumentTypesName.MMM, "MM-" }
+    };
+
+    private Dictionary<DocumentContractorType, string> _contractorNames = new()
+    {
+        { DocumentContractorType.Receiver, "Odbiorca" },
+        { DocumentContractorType.Supplier, "Dostawca" },
+        { DocumentContractorType.Source, "Źródło" },
+        { DocumentContractorType.Target, "Cel" }
+    };
+}

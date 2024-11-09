@@ -1,15 +1,29 @@
 ﻿@using Newtonsoft.Json
 @using esWMS.Client.Components.Document
-@using esWMS.Client.Pages.Warehouse.WarehouseUnit
+@using esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnit
+@using esWMS.Client.PrintTemplates.Models
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnit.WarehouseUnitTable
 @inject IDialogService DialogService
 @inject IDataService<MmpVM> mmpDataService
 @inject IDataService<WarehouseUnitVM> warehouseUnitDataService
 @inject IDocumentDataService documentDataService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+
+<PrintDocumentButton Disabled="@(!MmpVM.IsApproved)"
+                     DocumentPrintModel="new DocumentPrintModel(
+                        model: MmpVM,
+                        targetWarehouse: MmpVM.FromWarehouse ?? new(),
+                        documentType: DocumentTypesName.MMP,
+                        contractorType: DocumentContractorType.Supplier)" />
+
+<MudButton EndIcon="@Icons.Material.Filled.Refresh"
+           OnClick="RefreshMmp">
+    Odśwież
+</MudButton>
 
 <MudText Typo="Typo.body1" Class="mb-3">
     <strong>Numer dokumentu:</strong> @MmpVM.DocumentId
@@ -61,7 +75,7 @@
 @if (!MmpVM.IsApproved && _warehouseUnitIds.Count > 0)
 {
     <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
-                        TypeOfSelection="Warehouse.WarehouseUnit.WarehouseUnitTable.SelectionType.None" />
+                        TypeOfSelection="SelectionType.None" />
 }
 
 @if (MmpVM.DocumentItems.All(x => x.IsApproved) &&
@@ -71,7 +85,7 @@
                Size="@Size.Small"
                Variant="@Variant.Filled"
                Color="@Color.Primary"
-               Class="mb-3">
+               Class="my-3">
         Zatwierdź
     </MudButton>
 }
@@ -81,7 +95,7 @@ else if (MmpVM.IsApproved)
                Variant="@Variant.Filled"
                Color="@Color.Primary"
                Disabled
-               Class="mb-3">
+               Class="my-3">
         Zatwierdzono
     </MudButton>
 }
@@ -91,7 +105,7 @@ else
                Variant="@Variant.Filled"
                Color="@Color.Primary"
                Disabled
-               Class="mb-3">
+               Class="my-3">
         Zatwierdź
     </MudButton>
 }
@@ -100,6 +114,7 @@ else
     [CascadingParameter]
     public bool IsActive { get; set; }
     [Parameter]
+    public string DocumentId { get; set; }
     public MmpVM MmpVM { get; set; } = new();
     [Parameter]
     public List<EventCallback>? EventCallbacks { get; set; }
@@ -115,6 +130,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        await RefreshMmp();
+
         if (!MmpVM.IsApproved)
         {
             var idsResponse = await mmpDataService.Get(@"api/v1/Mmp/warehouse-unit-ids", new() { { "DocumentId", MmpVM.DocumentId } });
@@ -134,20 +151,18 @@ else
 
     private async Task RefreshMmp()
     {
-        var sm = new SieveModelVM();
+        var response = await mmpDataService.Get(@"api/v1/Mmp/details", new() { { "DocumentId", DocumentId } });
 
-        sm.Page = 1;
-        sm.PageSize = 1;
-        sm.Filters = $"DocumentId=={MmpVM.DocumentId}";
-
-        var response = await mmpDataService.GetPagedResult(@"api/v1/Mmp/get-filtered", sm);
-
-        if (response.Items.FirstOrDefault() != null)
+        if (response.IsSuccessStatusCode)
         {
-            MmpVM = response.Items.First();
+            var json = await response.Content.ReadAsStringAsync();
+            var mmpDetails = JsonConvert.DeserializeObject<MmpDetailsVM>(json) ?? new();
+            MmpVM = mmpDetails;
         }
-
-        StateHasChanged();
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
     }
 
     public async Task ApproveMmp()

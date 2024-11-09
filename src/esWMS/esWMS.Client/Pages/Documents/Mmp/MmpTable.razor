@@ -123,7 +123,7 @@
             new MmpDetails(),
             Guid.NewGuid(),
             Icons.Material.Filled.Info,
-            new() { { "MmpVM", tableRowClickEventArgs?.Item ?? new() } }));
+            new() { { "DocumentId", tableRowClickEventArgs?.Item?.DocumentId ?? "" } }));
     }
 
     private void OnSearch()

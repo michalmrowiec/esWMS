@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using esWMS.Client.Pages
-@using esWMS.Client.Pages.Category
-@using esWMS.Client.Pages.Contractor
+@using esWMS.Client.Pages.WarehouseEnvironment.Category
+@using esWMS.Client.Pages.SystemActors.Contractor
 @using esWMS.Client.Pages.Documents.Mmm
 @using esWMS.Client.Pages.Documents.Mmp
 @using esWMS.Client.Pages.Documents.Pw
@@ -9,20 +9,22 @@
 @using esWMS.Client.Pages.Documents.Rw
 @using esWMS.Client.Pages.Documents.Wz
 @using esWMS.Client.Pages.Documents.Zw
-@using esWMS.Client.Pages.Employee
+@using esWMS.Client.Pages.SystemActors.Employee
 @using esWMS.Client.Pages.OnePage
-@using esWMS.Client.Pages.Product
-@using esWMS.Client.Pages.Warehouse
-@using esWMS.Client.Pages.Warehouse.Location
-@using esWMS.Client.Pages.Warehouse.WarehouseUnit
-@using esWMS.Client.Pages.Warehouse.WarehouseUnitItem
-@using esWMS.Client.Pages.Warehouse.Zone
+@using esWMS.Client.Pages.WarehouseEnvironment.Product
+@using esWMS.Client.Pages.WarehouseEnvironment.Warehouse
+@using esWMS.Client.Pages.WarehouseEnvironment.Location
+@using esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnit
+@using esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnitItem
+@using esWMS.Client.Pages.WarehouseEnvironment.Zone
 @using esWMS.Client.States
 @inject OnePageState OnePageState
 
 <MudNavMenu>
-    <MudButton OnClick="@(() => _allGroupsExpanded = !_allGroupsExpanded)">
-        @(_allGroupsExpanded ? "Zwiń" : "Rozwiń")
+    <MudButton OnClick="@(() => _allGroupsExpanded = !_allGroupsExpanded)"
+               FullWidth
+               EndIcon="@(_allGroupsExpanded ? Icons.Material.Filled.KeyboardArrowUp : Icons.Material.Filled.KeyboardArrowDown)">
+        @(_allGroupsExpanded ? "Zwiń wszystkie" : "Rozwiń wszystkie")
     </MudButton>
     <MudNavGroup Title="Główne" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Category">
         <MudNavLink Match="NavLinkMatch.Prefix"
@@ -40,17 +42,8 @@
                     OnClick="@(async () => await OnePageState.AddTab(new TabView("Kontrahenci", new ContractorTable(), Guid.NewGuid(), Icons.Material.Filled.Group)))">
             Kontrahenci
         </MudNavLink>
-        <AuthorizeView Roles="ADM, MNG">
-            <Authorized>
-                <MudNavLink Match="NavLinkMatch.Prefix"
-                            Icon="@Icons.Material.Filled.SupervisedUserCircle"
-                            OnClick="@(async () => await OnePageState.AddTab(new TabView("Pracownicy", new EmployeeTable(), Guid.NewGuid(), Icons.Material.Filled.SupervisedUserCircle)))">
-                    Pracownicy
-                </MudNavLink>
-            </Authorized>
-        </AuthorizeView>
     </MudNavGroup>
-    <MudNavGroup Title="Magazyny" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
+    <MudNavGroup Title="Magazyn" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.Warehouse">
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@pallet"
                     OnClick="@(async () => await OnePageState.AddTab(new TabView("Jednostki Magazynowe", new WarehouseUnitTable(), Guid.NewGuid(), pallet)))">
@@ -69,7 +62,7 @@
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.Warehouse"
                     OnClick="@(async () => await OnePageState.AddTab(new TabView("Magazyny", new WarehouseTabel(), Guid.NewGuid(), Icons.Material.Filled.Warehouse)))">
-            Lista Magazynów
+            Magazyny
         </MudNavLink>
         <MudNavLink Match="NavLinkMatch.Prefix"
                     Icon="@Icons.Material.Filled.Map"
@@ -128,6 +121,18 @@
             Utwórz MM
         </MudNavLink>
     </MudNavGroup>
+
+    <AuthorizeView Roles="ADM, MNG">
+        <Authorized>
+            <MudNavGroup Title="Zarządzanie" Expanded="_allGroupsExpanded" Icon="@Icons.Material.Outlined.ManageAccounts">
+                <MudNavLink Match="NavLinkMatch.Prefix"
+                            Icon="@Icons.Material.Filled.SupervisedUserCircle"
+                            OnClick="@(async () => await OnePageState.AddTab(new TabView("Pracownicy", new EmployeeTable(), Guid.NewGuid(), Icons.Material.Filled.SupervisedUserCircle)))">
+                    Pracownicy
+                </MudNavLink>
+            </MudNavGroup>
+        </Authorized>
+    </AuthorizeView>
 </MudNavMenu>
 
 @code {

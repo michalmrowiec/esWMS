@@ -6,6 +6,12 @@ namespace esWMS.Services
     {
         internal static void UpdateDatabase(this DbContext dbContext, ILogger logger)
         {
+            if (!dbContext.Database.IsRelational())
+            {
+                logger.LogInformation("Skipping migration; non-relational database in use.");
+                return;
+            }
+
             const int maxRetryAttempts = 5;
             int retryCount = 0;
             int delay = 1000;

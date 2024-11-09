@@ -1,0 +1,211 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Components
+@using esWMS.Client.Components.DeleteDialog
+@using esWMS.Client.Pages.OnePage
+@using esWMS.Client.Services
+@using esWMS.Client.States
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.SystemActors
+@inject IDataService<ContractorVM> ContractorService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
+@inject IDialogService DialogService
+@inject OnePageState OnePageState
+@inject IConfirmDialogService ConfirmDialogService
+
+@if (_contractor == null)
+{
+    <MudText>Ladowanie...</MudText>
+}
+else
+{
+    <MudGrid>
+        <MudItem md="12">
+            <MudCard>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.ContractorId"
+                                          Label="Identyfikator Kontrahenta"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.ContractorName"
+                                          Label="Nazwa Kontrahenta"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.VatId"
+                                          Label="NIP"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_contractor.IsSupplier"
+                                         Label="Czy dostawca?" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_contractor.IsRecipient"
+                                         Label="Czy odbiorca?" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.Country"
+                                          Label="Kraj"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.City"
+                                          Label="Miasto"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.Region"
+                                          Label="Region"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.PostalCode"
+                                          Label="Kod pocztowy"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.Address"
+                                          Label="Adres"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Lines="2" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.EmailAddress"
+                                          Label="Adres e-mail"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_contractor.PhoneNumber"
+                                          Label="Numer telefonu"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_contractor.IsActive"
+                                         Label="Aktywny" />
+                        </MudItem>
+
+                        <AuthorizeView Roles="ADM, MNG">
+                            <Authorized>
+                                <MudItem xs="12">
+                                    <MudButton Variant="Variant.Outlined" Color="Color.Default" Class="me-2" EndIcon="@Icons.Material.Filled.Refresh" OnClick="ReloadContractor">Resetuj</MudButton>
+                                    <MudButton Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Class="me-2"
+                                               EndIcon="@Icons.Material.Filled.Build"
+                                               OnClick="@(async () => {
+                                            await ConfirmDialogService.OpenDeleteDialogAsync(
+                                                "Zaktualizuj kontrahenta",
+                                                $"Na pewno chcesz zmodyfikować {_contractor.ContractorId}?",
+                                                Services.Dialog.ConfirmDialogService.ButtonDialogType.Edit,
+                                                EventCallback.Factory.Create(this, UpdateContractor));})">
+                                        Zaktualizuj
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Error" EndIcon="@Icons.Material.Filled.Delete" OnClick="OpenDeleteDialogAsync">Usuń</MudButton>
+                                </MudItem>
+                            </Authorized>
+                        </AuthorizeView>
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public string ContractorId { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
+    private ContractorVM? _contractor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadContractor();
+    }
+
+    private async Task ReloadContractor()
+    {
+        var response = await ContractorService.Get(@"api/v1/Contractor", new() { { "ContractorId", ContractorId } });
+        if (response == null)
+        {
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+        _contractor = JsonConvert.DeserializeObject<ContractorVM>(json);
+
+        StateHasChanged();
+    }
+
+    private async Task UpdateContractor()
+    {
+        var response = await ContractorService.Put(@"api/v1/Contractor", _contractor);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString($"Kontrahent {_contractor.ContractorId} został zaktualizowany."), Severity.Success);
+            await ReloadContractor();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OpenDeleteDialogAsync()
+    {
+        var parameters = new DialogParameters<DeleteConfirmDialog>
+        {
+            { x => x.ContentText, $"Czy na pewno chcesz trwale usunąć kontrahenta: {_contractor?.ContractorName}?"}
+        };
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var dialog = await DialogService.ShowAsync<DeleteConfirmDialog>("Delete", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result?.Canceled ?? false
+            && _contractor != null)
+        {
+            await DeleteAsync(_contractor!);
+        }
+    }
+
+    private async Task DeleteAsync(ContractorVM contractor)
+    {
+        var response = await ContractorService.Delete(@"api/v1/Contractor/" + contractor.ContractorId);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto kontrahenta"), Severity.Success);
+            await OnePageState.RemoveTab(TabId);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+}

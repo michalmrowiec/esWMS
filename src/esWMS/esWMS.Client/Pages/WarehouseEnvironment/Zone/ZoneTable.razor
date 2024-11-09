@@ -1,0 +1,187 @@
+﻿@page "/zones"
+@using esWMS.Client.Components
+@using esWMS.Client.Components.DeleteDialog
+@using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IDataService<ZoneVM> DataService
+@inject IDialogService DialogService
+
+<MudTable T="ZoneVM"
+          ServerData="ServerReload"
+          Dense="true"
+          Hover="true"
+          @ref="_table"
+          RowClass="cursor-pointer">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Strefy magazynowe</MudText>
+        <MudSpacer />
+        <AuthorizeView Roles="ADM, MNG">
+            <Authorized>
+                <MudButton @onclick="OpenZoneDialogAsync"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary">
+                    Utwórz strefę
+                </MudButton>
+            </Authorized>
+        </AuthorizeView>
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ZoneId" T="ZoneVM">
+                Id strefy
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ZoneName" T="ZoneVM">
+                Nazwa strefy
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneName" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ZoneAlias" T="ZoneVM">
+                Alias strefy
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneAlias" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="WarehouseId" T="ZoneVM">
+                Id magazynu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="AvgTemperature" T="ZoneVM">
+                Średnia temperatura (°C)
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric"
+                                  SearchOptions="searchOptions"
+                                  Column="AvgTemperature"
+                                  OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh></MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.ZoneId</MudTd>
+        <MudTd DataLabel="Id strefy">@context.ZoneName</MudTd>
+        <MudTd DataLabel="Alias strefy">@context.ZoneAlias</MudTd>
+        <MudTd DataLabel="Id magazynu">@context.WarehouseId</MudTd>
+        <MudTd DataLabel="Średnia temperatura (°C)">@context.AvgTemperature</MudTd>
+        <AuthorizeView Roles="ADM, MNG" Context="context2">
+            <Authorized>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Edit"
+                                   OnClick="@(async () => await OpenEditDialogAsync(context))" />
+                </MudTh>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Delete"
+                                   OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
+                </MudTh>
+            </Authorized>
+        </AuthorizeView>
+    </RowTemplate>
+    <NoRecordsContent>
+        <TableNoRecordsContent />
+    </NoRecordsContent>
+    <LoadingContent>
+        <TableLoadingContent />
+    </LoadingContent>
+    <PagerContent>
+        <TablePager PageSize="@PageSize" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public int[]? PageSize { get; set; }
+    private IEnumerable<ZoneVM> _pagedData;
+    private MudTable<ZoneVM> _table;
+
+    private int totalItems;
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "ZoneId", new("ZoneId") },
+        { "ZoneName", new("ZoneName") },
+        { "ZoneAlias", new("ZoneAlias") },
+        { "WarehouseId", new("WarehouseId") },
+        { "AvgTemperature", new("AvgTemperature", ">") }
+    };
+
+    private async Task<TableData<ZoneVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await DataService.GetPagedResult(@"api/v1/Zone/get-filtered", sm);
+
+        return new TableData<ZoneVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch()
+    {
+        _table.ReloadServerData();
+    }
+
+    private Task OpenZoneDialogAsync()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<AddZoneDialog>
+        {
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
+        };
+        return DialogService.ShowAsync<AddZoneDialog>(null, parameters, options);
+    }
+
+    private Task OpenEditDialogAsync(ZoneVM zone)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<UpdateZoneDialog>
+        {
+            { x => x.FuncsOnUpdated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } },
+            { x => x.ZoneToUpdate, zone }
+        };
+        return DialogService.ShowAsync<UpdateZoneDialog>(null, parameters, options);
+    }
+
+    private async Task OpenDeleteDialogAsync(ZoneVM zone)
+    {
+        await DeleteDialogHelper.OpenDeleteConfirmDialog(
+            dialogService: DialogService,
+            contentText: $"Czy na pewno chcesz trwale usunąć strefę: [{zone.ZoneId}] {zone.ZoneName}?",
+            funcsOnSubmitDelete: new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) },
+            deleteFunc: async () => await DataService.Delete(
+                @"api/v1/Zone",
+                new() { { "zoneId", zone.ZoneId } }),
+            snackbarOnDeleteText: new("Usunięto strefę"));
+    }
+}

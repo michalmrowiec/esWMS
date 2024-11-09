@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnviroment;
 using FluentValidation.Results;
 using MediatR;
 
@@ -49,6 +49,7 @@ namespace esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp
             }
 
             mmpDocument.IsApproved = true;
+            mmpDocument.GoodsReceiptDate = DateTime.Now;
             mmpDocument.ApprovalDate = DateTime.Now;
             mmpDocument.ApprovingEmployeeId = request.ModifiedBy;
             mmpDocument.ModifiedAt = DateTime.Now;

@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Responses;
+using esWMS.Domain.Entities.WarehouseEnviroment;
 using MediatR;
 
 namespace esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse
 {
-    internal class CreateWarehouseCommandHandler
-        : IRequestHandler<CreateWarehouseCommand, BaseResponse<WarehouseDto>>
+    internal class CreateWarehouseCommandHandler :
+        IRequestHandler<CreateWarehouseCommand, BaseResponse<WarehouseDto>>
     {
         private readonly IWarehouseRepository _repository;
         private readonly IMapper _mapper;

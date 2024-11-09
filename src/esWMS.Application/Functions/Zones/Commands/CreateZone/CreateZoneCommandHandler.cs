@@ -6,18 +6,13 @@ using MediatR;
 
 namespace esWMS.Application.Functions.Zones.Commands.CreateZone
 {
-    internal class CreateZoneCommandHandler
+    internal class CreateZoneCommandHandler(
+        IZoneRepository repository,
+        IMapper mapper)
         : IRequestHandler<CreateZoneCommand, BaseResponse<ZoneDto>>
     {
-        private readonly IZoneRepository _repository;
-        private readonly IMapper _mapper;
-
-        public CreateZoneCommandHandler
-            (IZoneRepository repository, IMapper mapper)
-        {
-            _repository = repository;
-            _mapper = mapper;
-        }
+        private readonly IZoneRepository _repository = repository;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<BaseResponse<ZoneDto>> Handle
             (CreateZoneCommand request, CancellationToken cancellationToken)

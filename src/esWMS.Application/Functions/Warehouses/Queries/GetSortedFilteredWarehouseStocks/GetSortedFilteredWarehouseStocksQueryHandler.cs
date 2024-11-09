@@ -16,7 +16,7 @@ namespace esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWareho
         public async Task<BaseResponse<PagedResult<WarehouseStockDto>>> Handle
             (GetSortedFilteredWarehouseStocksQuery request, CancellationToken cancellationToken)
         {
-            var pagedResult = await _warehouseRepository.GetWarehouseStocks(request.SieveModel, request.warehouseId);
+            var pagedResult = await _warehouseRepository.GetWarehouseStocks(request.SieveModel, request.WarehouseId);
 
            var mapped = _mapper.Map<PagedResult<WarehouseStockDto>>(pagedResult);
 

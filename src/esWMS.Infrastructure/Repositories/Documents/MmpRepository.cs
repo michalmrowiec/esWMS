@@ -1,8 +1,8 @@
-﻿using esWMS.Domain.Entities.Documents;
-using esWMS.Application.Contracts.Persistence.Documents;
+﻿using esWMS.Application.Contracts.Persistence.Documents;
+using esWMS.Domain.Entities.Documents;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Sieve.Services;
-using Microsoft.EntityFrameworkCore;
 
 namespace esWMS.Infrastructure.Repositories.Documents
 {
@@ -27,6 +27,7 @@ namespace esWMS.Infrastructure.Repositories.Documents
                         .ThenInclude(x => x.Product)
                     .Include(x => x.RelatedMmm)
                     .Include(x => x.IssueWarehouse)
+                    .Include(x => x.FromWarehouse)
                     .FirstOrDefaultAsync(x => x.DocumentId.Equals(id));
 
                 return result ?? throw new KeyNotFoundException("The object with the given id was not found.");

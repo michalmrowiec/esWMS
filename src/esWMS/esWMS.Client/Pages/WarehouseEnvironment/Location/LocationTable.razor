@@ -1,0 +1,243 @@
+﻿@page "/locations"
+@using esWMS.Client.Components
+@using esWMS.Client.Components.DeleteDialog
+@using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.PrintTemplates.Templates
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels;
+@using esWMS.Client.ViewModels.WarehouseEnvironment.Location
+@using esWMS.Client.States
+@rendermode InteractiveAuto
+@inject IDataService<LocationVM> DataService
+@inject IDialogService DialogService
+@inject OnePageState OnePageState
+
+<style>
+    .mud-table-cell-custom-group {
+        font-weight: 500;
+    }
+
+    .mud-table-cell-custom-group-footer {
+        padding-bottom: 50px;
+        text-align: right;
+    }
+</style>
+
+<MudTable T="LocationVM"
+          ServerData="ServerReload"
+          Dense
+          Hover
+          @ref="_table"
+          RowClass="cursor-pointer"
+          OnRowClick="RowClickEvent"
+          GroupBy="@_groupDefinition"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-gray)"
+          FixedHeader
+          Height="80%"
+          MultiSelection
+          @bind-SelectedItems="_selectedItems">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6" Class="me-3">Lokalizacje</MudText>
+        <ExpandCollapseGroupsButtons ExpandAction="_table.ExpandAllGroups"
+                                     CollapseAction="_table.CollapseAllGroups" />
+        <MudSpacer />
+        <esWMS.Client.Components.Buttons.PrintQrButton Codes="@(_selectedItems.Select(x => x.LocationId).ToArray())"
+                                                       Disabled="@(_selectedItems.Count == 0)" />
+        <MudButton @onclick="OpenDialogAsync"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Utwórz lokalizację
+        </MudButton>
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh"
+                       OnClick="OnSearch" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortLabel="LocationId" T="LocationVM">
+                Id
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="LocationId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="ZoneId" T="LocationVM">
+                Id strefy
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="ZoneId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="WarehouseId" T="LocationVM">
+                Id magazynu
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="WarehouseId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="Capacity" T="LocationVM">
+                Pojemność
+            </MudTableSortLabel>
+            <DefaultColumntFilter TypeOfField="DefaultColumntFilter.TypeOfFIlterField.Numeric"
+                                  SearchOptions="searchOptions"
+                                  Column="Capacity"
+                                  OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="IsFull" T="LocationVM">
+                Zajęte
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="IsFull" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortLabel="DefaultMediaTypeId" T="LocationVM">
+                Domyślny nośnik
+            </MudTableSortLabel>
+            <DefaultColumntFilter SearchOptions="searchOptions" Column="DefaultMediaTypeId" OnChangedAction="OnSearch" />
+        </MudTh>
+        <MudTh></MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.LocationId</MudTd>
+        <MudTd DataLabel="Id strefy">@context.ZoneId</MudTd>
+        <MudTd DataLabel="Id magazynu">@context.Zone.WarehouseId</MudTd>
+        <MudTd DataLabel="Pojemność">
+            @(context.Capacity % 1 == 0
+                ? context.Capacity.ToString("0")
+                : context.Capacity.ToString("0.00"))
+        </MudTd>
+        <MudTd DataLabel="Zajęte">
+            <MudCheckBox @bind-Value="@context.IsFull" Size="Size.Small" Disabled="true"></MudCheckBox>
+        </MudTd>
+        <MudTd DataLabel="Domyślny nośnik">@context.DefaultMediaTypeId</MudTd>
+        <AuthorizeView Roles="ADM, MNG" Context="context2">
+            <Authorized>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Edit"
+                                   OnClick="@(async () => await OpenEditDialogAsync(context))" />
+                </MudTh>
+                <MudTh>
+                    <MudIconButton Size="@Size.Small"
+                                   Icon="@Icons.Material.Outlined.Delete"
+                                   OnClick="@(async () => await OpenDeleteDialogAsync(context))" />
+                </MudTh>
+            </Authorized>
+        </AuthorizeView>
+    </RowTemplate>
+    <GroupHeaderTemplate>
+        <MudTh Class="mud-table-cell-custom-group" colspan="3">@($"{context.GroupName}: [{context.Key}] {context.Items.First(x => x.ZoneId == context.Key).Zone.ZoneName}")</MudTh>
+    </GroupHeaderTemplate>
+    <NoRecordsContent>
+        <TableNoRecordsContent />
+    </NoRecordsContent>
+    <LoadingContent>
+        <TableLoadingContent />
+    </LoadingContent>
+    <PagerContent>
+        <TablePager PageSize="@PageSize" />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public EventCallback<LocationVM> SelectedLocation { get; set; }
+    [Parameter]
+    public int[]? PageSize { get; set; }
+    private IEnumerable<LocationVM> _pagedData;
+    private MudTable<LocationVM> _table;
+    private int _totalItems;
+    private HashSet<LocationVM> _selectedItems = new();
+
+    private Dictionary<string, FilterOption> searchOptions = new()
+    {
+        { "ZoneName", new("ZoneName") },
+        { "ZoneId", new("ZoneId") },
+        { "WarehouseId", new("WarehouseId") },
+        { "LocationId", new("LocationId") },
+        { "Capacity", new("Capacity", ">") },
+        { "IsFull", new("IsFull", "==", string.Empty) },
+        { "DefaultMediaTypeId", new("DefaultMediaTypeId") }
+    };
+
+    private TableGroupDefinition<LocationVM> _groupDefinition = new()
+        {
+            GroupName = "Strefa",
+            Indentation = false,
+            Expandable = true,
+            IsInitiallyExpanded = false,
+            Selector = (location) => location.ZoneId ?? "Brak"
+        };
+
+    private async Task<TableData<LocationVM>> ServerReload(TableState state, CancellationToken token)
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = state.Page + 1;
+        sm.PageSize = state.PageSize;
+
+        sm.Sorts = string.Concat(state.SortDirection == SortDirection.Descending ? '-' : string.Empty, state.SortLabel ?? string.Empty);
+
+        foreach (var searchOption in searchOptions)
+        {
+            if (searchOption.Value.Value != string.Empty)
+                sm.Filters += searchOption.Value.Column + searchOption.Value.Operator + searchOption.Value.Value + ',';
+        }
+
+        var response = await DataService.GetPagedResult(@"api/v1/Location/get-filtered", sm);
+
+        return new TableData<LocationVM>() { TotalItems = response.TotalItems, Items = response.Items };
+    }
+
+    private void OnSearch()
+    {
+        _table.ReloadServerData();
+    }
+
+    private async Task RowClickEvent(TableRowClickEventArgs<LocationVM> tableRowClickEventArgs)
+    {
+        await SelectedLocation.InvokeAsync(tableRowClickEventArgs.Item);
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<AddLocationDialog>
+        {
+            { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
+        };
+        return DialogService.ShowAsync<AddLocationDialog>(null, parameters, options);
+    }
+
+    private Task OpenEditDialogAsync(LocationVM location)
+    {
+        var options = new DialogOptions
+            {
+                CloseOnEscapeKey = true,
+                CloseButton = true,
+                MaxWidth = MaxWidth.Small,
+                FullWidth = true
+            };
+        var parameters = new DialogParameters<UpdateLocationDialog>
+        {
+            { x => x.FuncsOnUpdated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } },
+            { x => x.LocationToUpdate, location }
+        };
+        return DialogService.ShowAsync<UpdateLocationDialog>(null, parameters, options);
+    }
+
+    private async Task OpenDeleteDialogAsync(LocationVM location)
+    {
+        await DeleteDialogHelper.OpenDeleteConfirmDialog(
+            dialogService: DialogService,
+            contentText: $"Czy na pewno chcesz trwale usunąć lokalizację: {location.LocationId}",
+            funcsOnSubmitDelete: new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) },
+            deleteFunc: async () => await DataService.Delete(
+                @"api/v1/Location",
+                new() { { "locationId", location.LocationId } }),
+            snackbarOnDeleteText: new("Usunięto lokalizację"));
+    }
+}

@@ -1,4 +1,6 @@
-﻿namespace esWMS.Client.ViewModels.Documents
+﻿using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse;
+
+namespace esWMS.Client.ViewModels.Documents
 {
     public class BaseDocumentVM
     {

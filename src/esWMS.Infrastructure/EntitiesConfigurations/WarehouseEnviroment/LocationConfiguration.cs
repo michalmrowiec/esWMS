@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
 {
-    internal class LocationConfiguration : IEntityTypeConfiguration<Location>
+    public class LocationConfiguration : IEntityTypeConfiguration<Location>
     {
         public void Configure(EntityTypeBuilder<Location> builder)
         {

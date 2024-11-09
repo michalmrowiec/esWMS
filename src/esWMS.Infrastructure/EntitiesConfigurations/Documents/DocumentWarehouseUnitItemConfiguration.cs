@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace esWMS.Infrastructure.EntitiesConfigurations.Documents
 {
-    internal class DocumentWarehouseUnitItemConfiguration : IEntityTypeConfiguration<DocumentWarehouseUnitItem>
+    public class DocumentWarehouseUnitItemConfiguration : IEntityTypeConfiguration<DocumentWarehouseUnitItem>
     {
         public void Configure(EntityTypeBuilder<DocumentWarehouseUnitItem> builder)
         {
