@@ -20,51 +20,95 @@
                         documentType: DocumentTypesName.PZ,
                         contractorType: DocumentContractorType.Supplier)" />
 
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Numer dokumentu:</strong> @PzVM.DocumentId
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Magazyn wydający:</strong>
-    [@PzVM.IssueWarehouseId] @PzVM.IssueWarehouse?.WarehouseName
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Komentarz:</strong> @PzVM.Comment
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Data wystawienia dokumentu:</strong>
-    @PzVM.DocumentIssueDate.ToString("dd-MM-yyyy")
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Zatwierdzono: </strong>
-    @if (PzVM.IsApproved)
-    {
-        <span>TAK</span>
-    }
-    else
-    {
-        <span>NIE</span>
-    }
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Data przyjęcia towaru:</strong>
-    @PzVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Kontrahent:</strong>
-    [@PzVM.SupplierContractorId] @PzVM.SupplierContractor?.ContractorName
-</MudText>
-
-<DocumentItemsTable DocumentItems="@PzVM.DocumentItems"
-                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
-                    OnApprove="OpenDialogAsync"
-                    DeleteFunc="OpenDeleteDialog"
-                    ShowAssignments />
+<MudGrid Class="mt-2">
+    <MudItem xs="12" lg="12">
+        <MudCard>
+            <MudGrid>
+                <MudItem xs="4">
+                    <MudTextField ShrinkLabel
+                                  @bind-Value="PzVM.DocumentId"
+                                  Label="Numer dokumentu"
+                                  Variant="Variant.Outlined"
+                                  ReadOnly
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField ShrinkLabel
+                                  Value="@string.Concat($"[{PzVM.IssueWarehouseId}] {PzVM.IssueWarehouse?.WarehouseName}")"
+                                  Label="Magazyn wydający"
+                                  Variant="Variant.Outlined"
+                                  ReadOnly
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField ShrinkLabel
+                                  Value="@string.Concat($"[{PzVM.SupplierContractorId}] {PzVM.SupplierContractor?.ContractorName}")"
+                                  Label="Kontrahent"
+                                  Variant="Variant.Outlined"
+                                  ReadOnly
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="8">
+                    <MudTextField ShrinkLabel
+                                  @bind-Value="PzVM.Comment"
+                                  Label="Komentarz"
+                                  Variant="Variant.Outlined"
+                                  ReadOnly
+                                  Margin="Margin.Dense"
+                                  Lines="3" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudTextField ShrinkLabel
+                                  @bind-Value="PzVM.AssignedEmployeeId"
+                                  Label="Przypisany pracownik"
+                                  Variant="Variant.Outlined"
+                                  ReadOnly
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField ShrinkLabel
+                                  Value="@string.Concat(PzVM.DocumentIssueDate.ToString("dd-MM-yyyy"))"
+                                  Label="Data wystawienia dokumentu"
+                                  Variant="Variant.Outlined"
+                                  ReadOnly
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField ShrinkLabel
+                                  Value="@string.Concat(PzVM.GoodsReceiptDate?.ToString("dd-MM-yyyy"))"
+                                  Label="Data przyjęcia towaru"
+                                  Variant="Variant.Outlined"
+                                  ReadOnly
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.body1" Class="mb-3">
+                        <MudCheckBox @bind-Value="PzVM.IsApproved"
+                                     Label="Zatwierdzono"
+                                     ReadOnly />
+                    </MudText>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField ShrinkLabel
+                                  Value="@string.Concat(PzVM.ApprovalDate?.ToString("dd-MM-yyyy"))"
+                                  Label="Data zatwierdzenia dokumentu"
+                                  Variant="Variant.Outlined"
+                                  ReadOnly
+                                  Margin="Margin.Dense" />
+                </MudItem>
+            </MudGrid>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" lg="12">
+        <MudCard>
+            <DocumentItemsTable DocumentItems="@PzVM.DocumentItems"
+                                TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
+                                OnApprove="OpenDialogAsync"
+                                DeleteFunc="OpenDeleteDialog"
+                                ShowAssignments />
+        </MudCard>
+    </MudItem>
+</MudGrid>
 
 @if (PzVM.DocumentItems.All(x => x.IsApproved)
 && !PzVM.IsApproved
