@@ -18,7 +18,10 @@ internal class ApprovePzItemsValidator : AbstractValidator<ApprovePzItemsCommand
             .CustomAsync(ValidateDocumentAndItems);
     }
 
-    private async Task ValidateDocumentAndItems(ApprovePzItemsCommand value, ValidationContext<ApprovePzItemsCommand> context, CancellationToken cancellationToken)
+    private async Task ValidateDocumentAndItems(
+        ApprovePzItemsCommand value,
+        ValidationContext<ApprovePzItemsCommand> context,
+        CancellationToken cancellationToken)
     {
         var documentResponse = await _mediator.Send(new GetPzByIdQuery(value.DocumentId));
         var document = documentResponse.ReturnedObj;
@@ -33,7 +36,10 @@ internal class ApprovePzItemsValidator : AbstractValidator<ApprovePzItemsCommand
         await ValidateWarehouseUnits(value, document, context, cancellationToken);
     }
 
-    private void ValidateDocumentItems(ApprovePzItemsCommand value, PzDto document, ValidationContext<ApprovePzItemsCommand> context)
+    private void ValidateDocumentItems(
+        ApprovePzItemsCommand value,
+        PzDto document,
+        ValidationContext<ApprovePzItemsCommand> context)
     {
         var documentItemIds = document.DocumentItems.Select(x => x.DocumentItemId).ToArray();
         var contained = value.DocumentItemsWithAssignment.Select(x => x.DocumentItemId).Except(documentItemIds);
@@ -52,9 +58,32 @@ internal class ApprovePzItemsValidator : AbstractValidator<ApprovePzItemsCommand
                 context.AddFailure("DocumentWarehouseUnitItems", $"The document item by ID: {docItem.DocumentItemId} is already approved.");
             }
         }
+
+        foreach (var docItemId in value.DocumentItemsWithAssignment.Select(x => x.DocumentItemId))
+        {
+            var docItem = document.DocumentItems.First(x => x.DocumentItemId.Equals(docItemId));
+
+            var totalQuantitySoFar = docItem.DocumentWarehouseUnitItems.Sum(x => x.Quantity);
+
+            var warehouseUnitItemIdsContained = docItem.DocumentWarehouseUnitItems.Select(x => x.WarehouseUnitItemId);
+
+            var newAssignmentQuantity = value.DocumentItemsWithAssignment
+                .Where(x => x.DocumentItemId.Equals(docItemId))
+                .Sum(x => x.Quantity);
+
+            if (totalQuantitySoFar + newAssignmentQuantity > docItem.Quantity)
+            {
+                context.AddFailure(
+                    "DocumentWarehouseUnitItems",
+                    $"The quantity being assigned ({totalQuantitySoFar + newAssignmentQuantity}) exceeds the available quantity ({docItem.Quantity}) for the Document Item ID: {docItemId}. Warehouse Unit IDs involved: {string.Join("; ", warehouseUnitItemIdsContained)}");
+            }
+        }
     }
 
-    private async Task ValidateWarehouseUnits(ApprovePzItemsCommand value, PzDto document, ValidationContext<ApprovePzItemsCommand> context, CancellationToken cancellationToken)
+    private async Task ValidateWarehouseUnits(
+        ApprovePzItemsCommand value,
+        PzDto document,
+        ValidationContext<ApprovePzItemsCommand> context, CancellationToken cancellationToken)
     {
         var warehouseUnitIds = value.DocumentItemsWithAssignment.Select(x => x.WarehouseUnitId!).ToArray();
         if (warehouseUnitIds.Length == 0)
@@ -75,7 +104,11 @@ internal class ApprovePzItemsValidator : AbstractValidator<ApprovePzItemsCommand
         ValidateWarehouseUnitAssignments(value, warehouseUnits, document, context);
     }
 
-    private void ValidateWarehouseUnitAssignments(ApprovePzItemsCommand value, IEnumerable<WarehouseUnitDto> warehouseUnits, PzDto document, ValidationContext<ApprovePzItemsCommand> context)
+    private void ValidateWarehouseUnitAssignments(
+        ApprovePzItemsCommand value,
+        IEnumerable<WarehouseUnitDto> warehouseUnits,
+        PzDto document,
+        ValidationContext<ApprovePzItemsCommand> context)
     {
         var warehouseUnitIdsResponse = warehouseUnits.Select(x => x.WarehouseUnitId).ToArray();
         var warehouseUnitIdsContained = value.DocumentItemsWithAssignment.Select(x => x.WarehouseUnitId!).Except(warehouseUnitIdsResponse);
@@ -100,7 +133,10 @@ internal class ApprovePzItemsValidator : AbstractValidator<ApprovePzItemsCommand
         ValidateMediaAssignments(value, warehouseUnits, context);
     }
 
-    private void ValidateMediaAssignments(ApprovePzItemsCommand value, IEnumerable<WarehouseUnitDto> warehouseUnits, ValidationContext<ApprovePzItemsCommand> context)
+    private void ValidateMediaAssignments(
+        ApprovePzItemsCommand value,
+        IEnumerable<WarehouseUnitDto> warehouseUnits,
+        ValidationContext<ApprovePzItemsCommand> context)
     {
         foreach (var assignmentWu in value.DocumentItemsWithAssignment.Select(x => x.WarehouseUnitId).Distinct())
         {

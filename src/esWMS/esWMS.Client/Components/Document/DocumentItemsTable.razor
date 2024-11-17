@@ -32,6 +32,12 @@
         </MudTh>
         <MudTh>
             <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.DocumentWarehouseUnitItems.Sum(x => x.Quantity))">
+                Zatwierdzono
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
                                SortBy="new Func<DocumentItemVM, object>(x => x.Price ?? 0)">
                 Cena
             </MudTableSortLabel>
@@ -55,6 +61,7 @@
         <MudTd DataLabel="Kod produktu">@context.ProductCode</MudTd>
         <MudTd DataLabel="Nazwa produktu">@context.ProductName</MudTd>
         <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
+        <MudTd DataLabel="Zatwierdzono">@context.DocumentWarehouseUnitItems.Sum(x => x.Quantity)</MudTd>
         <MudTd DataLabel="Cena">@context.Price</MudTd>
         <MudTd DataLabel="Cena">@(context.Quantity * context.Price)</MudTd>
         <MudTd>
