@@ -63,7 +63,8 @@
 <DocumentItemsTable DocumentItems="@PzVM.DocumentItems"
                     TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
                     OnApprove="OpenDialogAsync"
-                    DeleteFunc="OpenDeleteDialog" />
+                    DeleteFunc="OpenDeleteDialog"
+                    ShowAssignments />
 
 @if (PzVM.DocumentItems.All(x => x.IsApproved)
 && !PzVM.IsApproved
