@@ -7,10 +7,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/esWMS.API/esWMS.API.csproj", "src/esWMS.API/"]
-RUN dotnet restore "./src/esWMS.API/esWMS.API.csproj"
+COPY ["src/Server/esWMS.API/esWMS.API.csproj", "src/Server/esWMS.API/"]
+RUN dotnet restore "./src/Server/esWMS.API/esWMS.API.csproj"
 COPY . .
-WORKDIR "/src/src/esWMS.API"
+WORKDIR "/src/src/Server/esWMS.API"
 RUN dotnet build "./esWMS.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
