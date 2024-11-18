@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace esWMS.Services
+namespace esWMS.API.Services
 {
     public interface IUserContextService
     {

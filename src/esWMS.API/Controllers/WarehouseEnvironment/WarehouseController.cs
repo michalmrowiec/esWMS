@@ -1,18 +1,18 @@
-﻿using esWMS.Application.Functions.Warehouses;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.Warehouses;
 using esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse;
 using esWMS.Application.Functions.Warehouses.Commands.UpdateWarehouse;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouseStocks;
 using esWMS.Application.Functions.Warehouses.Queries.GetWarehouseById;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.WarehouseEnvironment
+namespace esWMS.API.Controllers.WarehouseEnvironment
 {
     [Authorize]
     [ApiController]

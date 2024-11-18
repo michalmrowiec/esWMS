@@ -1,17 +1,17 @@
+using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Commands.CreateLocation;
 using esWMS.Application.Functions.Locations.Commands.DeleteLocation;
 using esWMS.Application.Functions.Locations.Commands.UpdateLocation;
 using esWMS.Application.Functions.Locations.Queries.GetSortedFilteredLocations;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.WarehouseEnvironment
+namespace esWMS.API.Controllers.WarehouseEnvironment
 {
     [Authorize]
     [ApiController]

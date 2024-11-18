@@ -1,17 +1,17 @@
-﻿using esWMS.Application.Functions.Documents.MmpFunctions;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.Documents.MmpFunctions;
 using esWMS.Application.Functions.Documents.MmpFunctions.Commands.ApproveMmp;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetListOfWarehouseUnitsInMMP;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetMmpDetailsById;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetSortedFilteredMmp;
 using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.Documents
+namespace esWMS.API.Controllers.Documents
 {
     [ApiController]
     [Route("api/v1/[controller]")]

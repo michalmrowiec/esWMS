@@ -1,20 +1,18 @@
-﻿using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
-using esWMS.Application.Functions.Categories;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
 using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Contractors.Commands.CreateContractor;
 using esWMS.Application.Functions.Contractors.Commands.DeleteContractor;
+using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
 using esWMS.Application.Functions.Contractors.Queries.GetContractorById;
 using esWMS.Application.Functions.Contractors.Queries.GetSortedFilteredContractors;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
-using esWMS.Application.Functions.Contractors.Commands.UpdateContractor;
-using Microsoft.AspNetCore.Authorization;
 
-namespace esWMS.Controllers.SystemActors
+namespace esWMS.API.Controllers.SystemActors
 {
     [Authorize]
     [ApiController]

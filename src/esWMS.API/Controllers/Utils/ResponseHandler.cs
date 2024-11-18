@@ -1,7 +1,7 @@
 ﻿using esWMS.Application.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace esWMS.Controllers.Utils
+namespace esWMS.API.Controllers.Utils
 {
     public static class ResponseHandler
     {

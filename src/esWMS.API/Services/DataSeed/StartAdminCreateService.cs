@@ -3,7 +3,7 @@ using esWMS.Domain.Models;
 using esWMS.Infrastructure;
 using MediatR;
 
-namespace esWMS.Services.DataSeed
+namespace esWMS.API.Services.DataSeed
 {
     internal static class StartAdminCreateService
     {

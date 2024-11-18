@@ -1,20 +1,19 @@
-﻿using esWMS.Application.Functions.Contractors;
-using esWMS.Application.Functions.Contractors.Queries.GetContractorById;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Employees.Command.CreateEmployee;
 using esWMS.Application.Functions.Employees.Command.LoginEmployee;
 using esWMS.Application.Functions.Employees.Command.UpdateEmployee;
 using esWMS.Application.Functions.Employees.Queries.GetEmployeeById;
 using esWMS.Application.Functions.Employees.Queries.GetSortedFilteredEmployees;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers
+namespace esWMS.API.Controllers.SystemActors
 {
     [Authorize]
     [ApiController]

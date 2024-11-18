@@ -1,18 +1,18 @@
-﻿using esWMS.Application.Functions.Documents.PzFunctions;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePz;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePz;
 using esWMS.Application.Functions.Documents.PzFunctions.Commands.DeletePzItem;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.Documents
+namespace esWMS.API.Controllers.Documents
 {
     [ApiController]
     [Route("api/v1/[controller]")]

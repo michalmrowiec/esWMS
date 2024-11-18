@@ -1,18 +1,18 @@
-﻿using esWMS.Application.Functions.Documents.RwFunctions;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.Documents.RwFunctions;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.ApproveRw;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.ApproveRwItems;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.DeleteRw;
 using esWMS.Application.Functions.Documents.RwFunctions.Commands.DeleteRwItem;
 using esWMS.Application.Functions.Documents.RwFunctions.Queries.GetSortedFilteredRw;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.Documents
+namespace esWMS.API.Controllers.Documents
 {
     [ApiController]
     [Route("api/v1/[controller]")]

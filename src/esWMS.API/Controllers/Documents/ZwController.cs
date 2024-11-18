@@ -1,3 +1,5 @@
+using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
 using esWMS.Application.Functions.Documents.ZwFunctions;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZw;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwItems;
@@ -6,14 +8,12 @@ using esWMS.Application.Functions.Documents.ZwFunctions.Commands.DeleteZw;
 using esWMS.Application.Functions.Documents.ZwFunctions.Commands.DeleteZwItem;
 using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetEligibleItemsForZwReturn;
 using esWMS.Application.Functions.Documents.ZwFunctions.Queries.GetSortedFilteredZw;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.Documents
+namespace esWMS.API.Controllers.Documents
 {
     [ApiController]
     [Route("api/v1/[controller]")]

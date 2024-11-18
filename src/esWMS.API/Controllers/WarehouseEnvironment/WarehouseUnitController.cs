@@ -1,4 +1,6 @@
-﻿using esWMS.Application.Functions.WarehouseUnits;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit;
@@ -7,15 +9,13 @@ using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetFullWarehouseUnitStack;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetSortedFilteredWarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Queries.GetWarehouseUnitsByIds;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.WarehouseEnvironment
+namespace esWMS.API.Controllers.WarehouseEnvironment
 {
     [Authorize]
     [ApiController]

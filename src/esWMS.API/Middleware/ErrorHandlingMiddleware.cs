@@ -1,5 +1,5 @@
 ﻿
-namespace esWMS.Middleware
+namespace esWMS.API.Middleware
 {
     public class ErrorHandlingMiddleware : IMiddleware
     {

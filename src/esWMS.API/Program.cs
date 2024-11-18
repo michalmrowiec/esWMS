@@ -1,8 +1,8 @@
+using esWMS.API.Middleware;
+using esWMS.API.Services;
+using esWMS.API.Services.DataSeed;
 using esWMS.Application;
 using esWMS.Infrastructure;
-using esWMS.Middleware;
-using esWMS.Services;
-using esWMS.Services.DataSeed;
 using MediatR;
 using Microsoft.OpenApi.Models;
 using NLog;

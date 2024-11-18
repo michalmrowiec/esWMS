@@ -1,3 +1,5 @@
+using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
 using esWMS.Application.Functions.Documents.PwFunctions;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePw;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.ApprovePwItems;
@@ -5,14 +7,12 @@ using esWMS.Application.Functions.Documents.PwFunctions.Commands.CreatePw;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePw;
 using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePwItem;
 using esWMS.Application.Functions.Documents.PwFunctions.Queries.GetSortedFilteredPw;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.Documents
+namespace esWMS.API.Controllers.Documents
 {
     [ApiController]
     [Route("api/v1/[controller]")]

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace esWMS.Services
+namespace esWMS.API.Services
 {
     internal static class DatabaseMigrationUpdate
     {

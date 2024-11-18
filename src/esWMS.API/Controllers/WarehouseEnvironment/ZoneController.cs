@@ -1,17 +1,17 @@
+using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
 using esWMS.Application.Functions.Zones;
 using esWMS.Application.Functions.Zones.Commands.CreateZone;
 using esWMS.Application.Functions.Zones.Commands.DeleteZone;
 using esWMS.Application.Functions.Zones.Commands.UpdateZone;
 using esWMS.Application.Functions.Zones.Queries.GetSortedFilteredZones;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.WarehouseEnvironment
+namespace esWMS.API.Controllers.WarehouseEnvironment
 {
     [Authorize]
     [ApiController]

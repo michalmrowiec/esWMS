@@ -1,4 +1,6 @@
-﻿using esWMS.Application.Functions.Documents.MmmFunctions;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.Documents.MmmFunctions;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm;
 using esWMS.Application.Functions.Documents.MmmFunctions.Commands.DeleteMmm;
@@ -6,17 +8,13 @@ using esWMS.Application.Functions.Documents.MmmFunctions.Commands.DeleteMmmItems
 using esWMS.Application.Functions.Documents.MmmFunctions.Queries.GetMmmDetailsById;
 using esWMS.Application.Functions.Documents.MmmFunctions.Queries.GetSortedFilteredMmm;
 using esWMS.Application.Functions.Documents.MmpFunctions.Queries.GetListOfWarehouseUnitsInMMM;
-using esWMS.Application.Functions.Documents.PwFunctions.Commands.DeletePw;
-using esWMS.Application.Functions.Documents.RwFunctions.Commands.DeleteRwItem;
 using esWMS.Application.Functions.Documents.WzFunctions.Queries.GetWzById;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.Documents
+namespace esWMS.API.Controllers.Documents
 {
     [ApiController]
     [Route("api/v1/[controller]")]

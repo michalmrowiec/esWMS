@@ -2,7 +2,7 @@
 using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Infrastructure;
 
-namespace esWMS.Services.DataSeed
+namespace esWMS.API.Services.DataSeed
 {
     internal static class StartDataSeederService
     {

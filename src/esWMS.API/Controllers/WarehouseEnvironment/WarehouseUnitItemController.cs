@@ -1,16 +1,16 @@
-﻿using esWMS.Application.Functions.WarehouseUnitItems;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.WarehouseUnitItems;
 using esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseUnitItem;
 using esWMS.Application.Functions.WarehouseUnitItems.Queries.GetSortedFilteredWarehouseUnitItems;
 using esWMS.Application.Functions.WarehouseUnits;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.WarehouseEnvironment
+namespace esWMS.API.Controllers.WarehouseEnvironment
 {
     [Authorize]
     [ApiController]

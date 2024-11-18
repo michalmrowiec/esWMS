@@ -1,17 +1,17 @@
-﻿using esWMS.Application.Functions.Categories;
+﻿using esWMS.API.Controllers.Utils;
+using esWMS.API.Services;
+using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
 using esWMS.Application.Functions.Categories.Commands.DeleteCategory;
 using esWMS.Application.Functions.Categories.Commands.UpdateCategory;
 using esWMS.Application.Functions.Categories.Queries.GetSortedFilteredCategories;
-using esWMS.Controllers.Utils;
 using esWMS.Domain.Models;
-using esWMS.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 
-namespace esWMS.Controllers.WarehouseEnvironment
+namespace esWMS.API.Controllers.WarehouseEnvironment
 {
     [Authorize]
     [ApiController]
