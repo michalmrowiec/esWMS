@@ -11,12 +11,9 @@ using MudBlazor.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-Console.WriteLine($"Blazor build start - baseAddress: {builder.HostEnvironment.BaseAddress}");
+Console.WriteLine($"ApiAddress: {builder.Configuration["ApiUrl"]}");
 
-builder.Services.AddTransient(http => new HttpClient
-{
-    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
-});
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["ApiUrl"]) });
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
@@ -33,7 +30,5 @@ builder.Services.AddMudBlazorSnackbar(config =>
 {
     config.PositionClass = Defaults.Classes.Position.BottomEnd;
 });
-
-Console.WriteLine($"BaseAddress: {builder.HostEnvironment.BaseAddress}");
 
 await builder.Build().RunAsync();

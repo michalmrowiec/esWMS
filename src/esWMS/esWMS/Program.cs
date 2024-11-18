@@ -1,4 +1,3 @@
-using esWMS.Application;
 using esWMS.Client.Services.Api;
 using esWMS.Client.Services.Auth;
 using esWMS.Client.Services.Dialog;
@@ -6,13 +5,7 @@ using esWMS.Client.Services.LocalStorage;
 using esWMS.Client.Services.Notification;
 using esWMS.Client.States;
 using esWMS.Components;
-using esWMS.Infrastructure;
-using esWMS.Middleware;
-using esWMS.Services;
-using esWMS.Services.DataSeed;
-using MediatR;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.OpenApi.Models;
 using MudBlazor.Services;
 using NLog;
 using NLog.Web;
@@ -42,79 +35,15 @@ try
 
     builder.Services.AddMudServices();
 
-    builder.Services.AddApplication();
-    builder.Services.AddInfrastructure(builder.Configuration);
-
-    builder.Services.AddScoped<ErrorHandlingMiddleware>();
-
-    builder.Services.AddScoped<IUserContextService, UserContextService>();
-    builder.Services.AddHttpContextAccessor();
-
-    builder.Services.AddControllers();
-
-    builder.Services.AddSwaggerGen(cfg =>
-    {
-        cfg.AddSecurityDefinition(
-            "Bearer",
-            new OpenApiSecurityScheme
-            {
-                In = ParameterLocation.Header,
-                Description = "Please insert token",
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                BearerFormat = "JWT",
-                Scheme = "bearer"
-            });
-
-        cfg.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    },
-                    Scheme = "oauth2",
-                    Name = "Bearer",
-                    In = ParameterLocation.Header,
-                },
-                new List<string>()
-            }
-        });
-    });
-
     builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
     var app = builder.Build();
 
-    using var scope = app.Services.CreateScope();
-
-    var dbContext = scope.ServiceProvider
-        .GetRequiredService<EsWmsDbContext>();
-
-    var mediator = scope.ServiceProvider
-        .GetRequiredService<IMediator>();
-
-    dbContext.UpdateDatabase(scope.ServiceProvider.GetRequiredService<ILogger<Program>>());
-
-    await dbContext.SeedStartAdmin(mediator);
-
-    var skipSeedData = Environment.GetEnvironmentVariable("SKIP_SEED_DATA");
-    if (skipSeedData != "true")
-    {
-        await dbContext.SeedStartData();
-    }
-
     if (app.Environment.IsDevelopment())
     {
         app.UseWebAssemblyDebugging();
-
-        app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "esWMS"));
     }
     else
     {
@@ -122,20 +51,10 @@ try
         app.UseHsts();
     }
 
-    app.UseAuthentication();
-
     app.UseHttpsRedirection();
 
     app.UseStaticFiles();
     app.UseAntiforgery();
-
-    app.UseAuthorization();
-
-    app.UseMiddleware<ErrorHandlingMiddleware>();
-
-    app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller}/{action}/{id?}");
 
     app.MapRazorComponents<App>()
         .AddInteractiveServerRenderMode()

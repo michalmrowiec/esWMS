@@ -11,8 +11,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\esWMS.Application\esWMS.Application.csproj" />
-		<ProjectReference Include="..\..\esWMS.Infrastructure\esWMS.Infrastructure.csproj" />
 		<ProjectReference Include="..\esWMS.Client\esWMS.Client.csproj" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.7" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.7">

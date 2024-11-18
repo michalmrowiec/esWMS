@@ -1,16 +1,44 @@
 version: '3.4'
 
 services:
-  eswms:
-    container_name: eswms
-    image: ${DOCKER_REGISTRY-}eswms
+  eswmsapi:
+    container_name: eswms_api
+    build:
+      context: .
+      dockerfile: src/esWMS.API/Dockerfile
+    ports:
+      - "5010:8080"
+      - "5011:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - db
+
+  eswmsclient:
+    container_name: eswms_client
     build:
       context: .
       dockerfile: src/esWMS/esWMS/Dockerfile
+    ports:
+      - "5020:8080"
+      - "5021:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - eswmsapi
+      - db
 
   db:
     container_name: mysqldb
-    image: mysql
+    image: mysql:9.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: Strong@Passw0rd
+      MYSQL_DATABASE: eswmsdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
