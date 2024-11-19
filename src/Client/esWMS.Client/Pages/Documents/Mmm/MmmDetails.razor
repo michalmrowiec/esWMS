@@ -15,72 +15,134 @@
 @inject IConfirmDialogService ConfirmDialogService
 @inject OnePageState OnePageState
 
-<PrintDocumentButton Disabled="@(!MmmVM.IsApproved)"
-                     DocumentPrintModel="new DocumentPrintModel(
+<MudGrid Class="mt-2">
+    <MudItem style="padding-top: 0px" xs="12">
+        <MudCard>
+            <MudCardContent>
+                <PrintDocumentButton Disabled="@(!MmmVM.IsApproved)"
+                                     DocumentPrintModel="new DocumentPrintModel(
                         model: MmmVM,
                         targetWarehouse: MmmVM.ToWarehouse ?? new(),
                         documentType: DocumentTypesName.MMM,
                         contractorType: DocumentContractorType.Receiver)" />
-
-<MudButton EndIcon="@Icons.Material.Filled.Refresh"
-           OnClick="RefreshMmm">
-    Odśwież
-</MudButton>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Numer dokumentu:</strong> @MmmVM.DocumentId
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Numer powiązanego dokumentu MM+:</strong> @MmmVM.RelatedMmp?.DocumentId
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Magazyn wydający:</strong>
-    [@MmmVM.IssueWarehouseId] @MmmVM.IssueWarehouse?.WarehouseName
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Komentarz:</strong> @MmmVM.Comment
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Data wystawienia dokumentu:</strong>
-    @MmmVM.DocumentIssueDate.ToString("dd-MM-yyyy")
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Zatwierdzono: </strong>
-    @if (MmmVM.IsApproved)
+                <MudButton EndIcon="@Icons.Material.Filled.Refresh"
+                           OnClick="RefreshMmm">
+                    Odśwież
+                </MudButton>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" lg="12">
+        <MudCard>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="MmmVM.DocumentId"
+                                      Label="Numer dokumentu"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      Value="@MmmVM.RelatedMmp?.DocumentId"
+                                      Label="Numer powiązanego dokumentu MM+"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      Value="@string.Concat($"[{MmmVM.IssueWarehouseId}] {MmmVM.IssueWarehouse?.WarehouseName}")"
+                                      Label="Magazyn wydający"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      Value="@string.Concat($"[{MmmVM.ToWarehouseId}] {MmmVM.ToWarehouse?.WarehouseName}")"
+                                      Label="Magazyn odbierający"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudTextField ShrinkLabel
+                                      Value="@MmmVM.DocumentIssueDate.ToString("dd-MM-yyyy")"
+                                      Label="Data wystawienia"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudTextField ShrinkLabel
+                                      Value="@MmmVM.GoodsReleaseDate?.ToString("dd-MM-yyyy")"
+                                      Label="DaWydanie towaru"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudTextField ShrinkLabel
+                                      Value="@string.Concat(MmmVM.ApprovalDate?.ToString("dd-MM-yyyy"))"
+                                      Label="Data zatwierdzenia"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudText Typo="Typo.body1" Class="mb-3">
+                            <MudCheckBox @bind-Value="MmmVM.IsApproved"
+                                         Label="Zatwierdzono"
+                                         ReadOnly />
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" lg="7">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="MmmVM.Comment"
+                                      Label="Komentarz"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense"
+                                      Lines="2" />
+                    </MudItem>
+                    <MudItem xs="12" lg="5">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="MmmVM.AssignedEmployeeId"
+                                      Label="Przypisany pracownik"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" lg="12">
+        <MudCard>
+            <MudCardContent>
+                <DocumentItemsTable DocumentItems="@MmmVM.DocumentItems"
+                                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails" />
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    @if (!MmmVM.IsApproved && _warehouseUnitIds.Count > 0)
     {
-        <span>TAK</span>
+        <MudItem xs="12" lg="12">
+            <MudCard>
+                <MudCardContent>
+                    <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
+                                        TypeOfSelection="SelectionType.Multi"
+                                        SelectedWarehouseUnits="OnSelected"
+                                        ButtonConfirmSelectionText="Usuń jednostki" />
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
     }
-    else
-    {
-        <span>NIE</span>
-    }
-</MudText>
+</MudGrid>
 
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Data wydania towaru:</strong>
-    @MmmVM.GoodsReleaseDate?.ToString("dd-MM-yyyy")
-</MudText>
-
-<MudText Typo="Typo.body1" Class="mb-3">
-    <strong>Magazyn odbierający: </strong>
-    [@MmmVM.ToWarehouseId] @MmmVM.ToWarehouse?.WarehouseName
-</MudText>
-
-<DocumentItemsTable DocumentItems="@MmmVM.DocumentItems"
-                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails" />
-
-@if (!MmmVM.IsApproved && _warehouseUnitIds.Count > 0)
-{
-    <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
-                        TypeOfSelection="SelectionType.Multi"
-                        SelectedWarehouseUnits="OnSelected"
-                        ButtonConfirmSelectionText="Usuń jednostki" />
-}
 
 @if (MmmVM.DocumentItems.All(x => x.IsApproved)
 && !MmmVM.IsApproved
