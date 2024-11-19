@@ -1,0 +1,138 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
+@using esWMS.Client.Pages.Documents
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@using esWMS.Client.ViewModels.SystemActors
+@using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse
+@inject IDataService<WarehouseVM> warehouseService
+@inject IDataService<CreatePzVM> createPzDataService
+@inject IDataService<ContractorVM> contractorDataService
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IAlertService AlertService
+
+<MudForm Model="@_model"
+         @ref="@_form"
+         Validation="@(_validator.ValidateValue)"
+         ValidationDelay="0" Spacing="4">
+
+    <MudSelect T="string"
+               @bind-Value="_model.IssueWarehouseId"
+               Label="Magazyn wydający"
+               AnchorOrigin="Origin.BottomCenter"
+               For="@(() => _model.IssueWarehouseId)"
+               Immediate="true"
+               Disabled="@(_model.DocumentItems.Count > 0)">
+        @foreach (var warehouse in _warehouses)
+        {
+            <MudSelectItem Value="@warehouse.WarehouseId">
+                [@warehouse.WarehouseId] @warehouse.WarehouseName
+            </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudSelect T="string"
+               @bind-Value="_model.SupplierContractorId"
+               Label="Dostawca"
+               AnchorOrigin="Origin.BottomCenter"
+               For="@(() => _model.SupplierContractorId)">
+        @foreach (var contractor in _contractors)
+        {
+            <MudSelectItem Value="@contractor.ContractorId">
+                [@contractor.ContractorId] @contractor.ContractorName
+            </MudSelectItem>
+        }
+    </MudSelect>
+
+    <MudDatePicker Label="Data wystawienia dokumentu"
+                   @bind-Date="_model.DocumentIssueDate"
+                   For="@(() => _model.DocumentIssueDate)" />
+
+    <MudDatePicker Label="Data przyjęcia"
+                   @bind-Date="_model.GoodsReceiptDate"
+                   For="@(() => _model.GoodsReceiptDate)" />
+
+    <MudTextField T="string"
+                  @bind-Value="_model.Comment"
+                  For="@(() => _model.Comment)"
+                  Immediate="true"
+                  Label="Uwagi"
+                  Lines="3" />
+
+    <esWMS.Client.Components.Employee.EmployeeSelector SelectedEmployee="@((employee) => _model.AssignedEmployeeId = employee.EmployeeId)" />
+
+
+    <MudButton @onclick="OpenDialogAsync"
+               Variant="Variant.Filled"
+               Color="Color.Primary"
+               Disabled="@(string.IsNullOrEmpty(_model.IssueWarehouseId))">
+        Dodaj pozycję
+    </MudButton>
+
+    <DocumentItemsTable DocumentItems="@_model.DocumentItems"
+                        TableType="DocumentItemsTable.DocumentItemTableType.DocumentCreation" />
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               Class="ml-auto"
+               OnClick="@(async () => await Submit())"
+               Disabled="@(_model.DocumentItems.Count == 0)">
+        Utwórz
+    </MudButton>
+</MudForm>
+
+@code {
+    [Parameter]
+    public List<EventCallback>? EventCallbacks { get; set; }
+    private CreatePzVM _model = new();
+    private MudForm _form;
+    private CreatePzVMValidator _validator = new();
+    private List<WarehouseVM> _warehouses = new();
+    private List<ContractorVM> _contractors = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var warehouseResponse = await warehouseService.GetPagedResult(@"api/v1/warehouse/get-filtered", new SieveModelVM(1, 500));
+        var contractorResponse = await contractorDataService.GetPagedResult(@"api/v1/Contractor/get-filtered", new SieveModelVM(1, 500, "", ""));
+        _warehouses = warehouseResponse.Items.ToList();
+        _contractors = contractorResponse.Items.ToList();
+    }
+
+    private Task OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+        var parameters = new DialogParameters<AddReceivedItemDialog>
+        {
+            { x => x.DocumentItemVMs, _model.DocumentItems },
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } }
+        };
+        return DialogService.ShowAsync<AddReceivedItemDialog>(null, parameters, options);
+    }
+
+    private async Task Submit()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            var response = await createPzDataService.Create(@"api/v1/Pz", _model);
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
+            {
+                _model = new();
+                var json = await response.Content.ReadAsStringAsync();
+                var responseObj = JsonConvert.DeserializeObject<PzVM>(json);
+
+                Snackbar.Add(new MarkupString($"Utworzono <b>{responseObj?.DocumentId}</b>"), Severity.Success);
+
+                EventCallbacks?.ForEach(async x => await x.InvokeAsync());
+            }
+            else
+            {
+                await response.HandleFailure(AlertService);
+                StateHasChanged();
+            }
+        }
+    }
+}

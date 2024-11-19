@@ -1,0 +1,248 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
+@using esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnit
+@using esWMS.Client.PrintTemplates.Models
+@using esWMS.Client.Services
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@using static esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnit.WarehouseUnitTable
+@inject IDialogService DialogService
+@inject IDataService<MmpVM> mmpDataService
+@inject IDataService<WarehouseUnitVM> warehouseUnitDataService
+@inject IDocumentDataService documentDataService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
+
+<MudGrid Class="mt-2">
+    <MudItem style="padding-top: 0px" xs="12">
+        <MudCard>
+            <MudCardContent>
+                <PrintDocumentButton Disabled="@(!MmpVM.IsApproved)"
+                                     DocumentPrintModel="new DocumentPrintModel(
+                        model: MmpVM,
+                        targetWarehouse: MmpVM.FromWarehouse ?? new(),
+                        documentType: DocumentTypesName.MMP,
+                        contractorType: DocumentContractorType.Supplier)" />
+                <MudButton EndIcon="@Icons.Material.Filled.Refresh"
+                           OnClick="RefreshMmp">
+                    Odśwież
+                </MudButton>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" lg="12">
+        <MudCard>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="MmpVM.DocumentId"
+                                      Label="Numer dokumentu"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="MmpVM.RelatedMmmId"
+                                      Label="Numer powiązanego dokumentu MM-"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      Value="@string.Concat($"[{MmpVM.IssueWarehouseId}] {MmpVM.IssueWarehouse?.WarehouseName}")"
+                                      Label="Magazyn wydający"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      Value="@string.Concat($"[{MmpVM.FromWarehouseId}] {MmpVM.FromWarehouse?.WarehouseName}")"
+                                      Label="Magazyn wysyłający"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudTextField ShrinkLabel
+                                      Value="@MmpVM.DocumentIssueDate.ToString("dd-MM-yyyy")"
+                                      Label="Data wystawienia"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudTextField ShrinkLabel
+                                      Value="@MmpVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")"
+                                      Label="Przyjęcie towaru"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudTextField ShrinkLabel
+                                      Value="@string.Concat(MmpVM.ApprovalDate?.ToString("dd-MM-yyyy"))"
+                                      Label="Data zatwierdzenia"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudText Typo="Typo.body1" Class="mb-3">
+                            <MudCheckBox @bind-Value="MmpVM.IsApproved"
+                                         Label="Zatwierdzono"
+                                         ReadOnly />
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" lg="7">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="MmpVM.Comment"
+                                      Label="Komentarz"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense"
+                                      Lines="2" />
+                    </MudItem>
+                    <MudItem xs="12" lg="5">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="MmpVM.AssignedEmployeeId"
+                                      Label="Przypisany pracownik"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" lg="12">
+        <MudCard>
+            <MudCardContent>
+                <DocumentItemsTable DocumentItems="@MmpVM.DocumentItems"
+                                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails" />
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    @if (!MmpVM.IsApproved && _warehouseUnitIds.Count > 0)
+    {
+        <MudItem xs="12" lg="12">
+            <MudCard>
+                <MudCardContent>
+                    <WarehouseUnitTable WarehouseUnitIdFilter="@_warehouseUnitIds"
+                                        TypeOfSelection="SelectionType.None" />
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+
+
+@if (MmpVM.DocumentItems.All(x => x.IsApproved) &&
+!MmpVM.IsApproved)
+{
+    <MudButton OnClick="@(() => ApproveMmp())"
+               Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Class="my-3">
+        Zatwierdź
+    </MudButton>
+}
+else if (MmpVM.IsApproved)
+{
+    <MudButton Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled
+               Class="my-3">
+        Zatwierdzono
+    </MudButton>
+}
+else
+{
+    <MudButton Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled
+               Class="my-3">
+        Zatwierdź
+    </MudButton>
+}
+
+@code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
+    [Parameter]
+    public string DocumentId { get; set; }
+    public MmpVM MmpVM { get; set; } = new();
+    [Parameter]
+    public List<EventCallback>? EventCallbacks { get; set; }
+    public HashSet<string> _warehouseUnitIds = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            await RefreshMmp();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshMmp();
+
+        if (!MmpVM.IsApproved)
+        {
+            var idsResponse = await mmpDataService.Get(@"api/v1/Mmp/warehouse-unit-ids", new() { { "DocumentId", MmpVM.DocumentId } });
+            if (idsResponse == null)
+            {
+                return;
+            }
+
+            var json = await idsResponse.Content.ReadAsStringAsync();
+            var resObj = JsonConvert.DeserializeObject<string[]>(json);
+
+            _warehouseUnitIds = resObj?.ToHashSet<string>() ?? new();
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task RefreshMmp()
+    {
+        var response = await mmpDataService.Get(@"api/v1/Mmp/details", new() { { "DocumentId", DocumentId } });
+
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var mmpDetails = JsonConvert.DeserializeObject<MmpDetailsVM>(json) ?? new();
+            MmpVM = mmpDetails;
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    public async Task ApproveMmp()
+    {
+        var response = await documentDataService.ApproveDocument(@"api/v1/Mmp/approve", new { DocumentId = MmpVM.DocumentId });
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<WzVM>(json);
+
+            await RefreshMmp();
+
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{MmpVM.DocumentId}</b>"), Severity.Success);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+}

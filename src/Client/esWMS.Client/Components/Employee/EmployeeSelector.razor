@@ -1,0 +1,50 @@
+﻿@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.SystemActors
+@inject IDataService<EmployeeVM> DataService
+
+<MudAutocomplete @bind-Value="SearchString"
+                 SearchFunc="Search"
+                 Variant="Variant.Text"
+                 Label="Pracownik"
+                 Dense="false"
+                 Clearable="true" />
+
+@code {
+    [Parameter]
+    public EventCallback<EmployeeVM> SelectedEmployee { get; set; }
+
+    private List<EmployeeVM> _employees = new();
+    private string _searchString = "";
+
+    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    {
+        string filters = string.IsNullOrWhiteSpace(value)
+            ? $"RoleId!=ADM,IsActive==true"
+            : $"RoleId!=ADM,IsActive==true,EmployeeId@={value}";
+
+        var locationResponse = await DataService.GetPagedResult(@"api/v1/Employee/get-filtered", new SieveModelVM(1, 10, filters));
+        _employees = locationResponse.Items.ToList();
+
+        return _employees.Select(x => x.EmployeeId)
+                         .Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+
+    private async Task OnSearchStringChanged()
+    {
+        var selectedEmployee = _employees.FirstOrDefault(e => e.EmployeeId == _searchString);
+        await SelectedEmployee.InvokeAsync(selectedEmployee);
+    }
+
+    private string SearchString
+    {
+        get => _searchString;
+        set
+        {
+            if (_searchString != value)
+            {
+                _searchString = value;
+                _ = OnSearchStringChanged();
+            }
+        }
+    }
+}

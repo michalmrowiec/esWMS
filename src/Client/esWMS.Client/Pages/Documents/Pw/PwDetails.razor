@@ -1,0 +1,283 @@
+﻿@using Newtonsoft.Json
+@using esWMS.Client.Components.Document
+@using esWMS.Client.PrintTemplates.Models
+@using esWMS.Client.Services
+@using esWMS.Client.States
+@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels.Documents
+@inject IDialogService DialogService
+@inject IDataService<PwVM> pzDataService
+@inject IDocumentDataService documentDataService
+@inject ISnackbar Snackbar
+@inject IAlertService AlertService
+@inject IConfirmDialogService ConfirmDialogService
+@inject OnePageState OnePageState
+
+<MudGrid Class="mt-2">
+    <MudItem style="padding-top: 0px" xs="12">
+        <MudCard>
+            <MudCardContent>
+                <PrintDocumentButton Disabled="@(!PwVM.IsApproved)"
+                                     DocumentPrintModel="new DocumentPrintModel(
+                        model: PwVM,
+                        targetOrSourceName: PwVM.DepartmentName ?? string.Empty,
+                        documentType: DocumentTypesName.PW,
+                        contractorType: DocumentContractorType.Source)" />
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" lg="12">
+        <MudCard>
+            <MudCardContent>
+                <MudGrid>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="PwVM.DocumentId"
+                                      Label="Numer dokumentu"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      Value="@string.Concat($"[{PwVM.IssueWarehouseId}] {PwVM.IssueWarehouse?.WarehouseName}")"
+                                      Label="Magazyn wydający"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="PwVM.AssignedEmployeeId"
+                                      Label="Przypisany pracownik"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      Value="@PwVM.DepartmentName"
+                                      Label="Źródło"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="12" lg="6">
+                        <MudTextField ShrinkLabel
+                                      Value="@PwVM.DocumentIssueDate.ToString("dd-MM-yyyy")"
+                                      Label="Data wystawienia"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudTextField ShrinkLabel
+                                      Value="@PwVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")"
+                                      Label="Przyjęcia towaru"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudTextField ShrinkLabel
+                                      Value="@string.Concat(PwVM.ApprovalDate?.ToString("dd-MM-yyyy"))"
+                                      Label="Data zatwierdzenia"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense" />
+                    </MudItem>
+                    <MudItem xs="6" lg="3">
+                        <MudText Typo="Typo.body1" Class="mb-3">
+                            <MudCheckBox @bind-Value="PwVM.IsApproved"
+                                         Label="Zatwierdzono"
+                                         ReadOnly />
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" lg="12">
+                        <MudTextField ShrinkLabel
+                                      @bind-Value="PwVM.Comment"
+                                      Label="Komentarz"
+                                      Variant="Variant.Outlined"
+                                      ReadOnly
+                                      Margin="Margin.Dense"
+                                      Lines="2" />
+                    </MudItem>
+                </MudGrid>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" lg="12">
+        <MudCard>
+            <MudCardContent>
+                <DocumentItemsTable DocumentItems="@PwVM.DocumentItems"
+                                    TableType="DocumentItemsTable.DocumentItemTableType.DocumentDetails"
+                                    OnApprove="OpenDialogAsync"
+                                    DeleteFunc="OpenDeleteDialog" />
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+
+@if (PwVM.DocumentItems.All(x => x.IsApproved)
+  && !PwVM.IsApproved
+  && PwVM.DocumentItems.Any())
+{
+    <MudButton OnClick="@(() => ApprovePw())"
+               Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Class="mb-3">
+        Zatwierdź
+    </MudButton>
+}
+else if (!PwVM.IsApproved && !PwVM.DocumentItems.Any(x => x.IsApproved))
+{
+    <MudButton OnClick="@(() => OpenDeleteDocumentDialog())"
+               EndIcon="@Icons.Material.Outlined.Delete"
+               Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Error"
+               Class="my-3 me-2">
+        Usuń
+    </MudButton>
+}
+else
+{
+    <MudButton Size="@Size.Small"
+               Variant="@Variant.Filled"
+               Color="@Color.Primary"
+               Disabled
+               Class="my-3">
+        Zatwierdź
+    </MudButton>
+}
+
+@code {
+    [CascadingParameter]
+    public bool IsActive { get; set; }
+    [Parameter]
+    public PwVM PwVM { get; set; } = new();
+    [Parameter]
+    public List<EventCallback>? EventCallbacks { get; set; }
+    [Parameter]
+    public Guid TabId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (IsActive)
+        {
+            await RefreshPw();
+        }
+    }
+
+    private Task OpenDialogAsync(DocumentItemVM documentItem)
+    {
+        InvokeAsync(RefreshPw);
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+        var parameters = new DialogParameters<ApproveReceivedItemDialog>
+        {
+            { x => x.WarehouseId, PwVM.IssueWarehouseId },
+            { x => x.DocumentItemVM, documentItem },
+            { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, RefreshPw) } },
+            { x => x.Uri, @"api/v1/Pw/approve-items" }
+        };
+        return DialogService.ShowAsync<ApproveReceivedItemDialog>(null, parameters, options);
+    }
+
+    private async Task RefreshPw()
+    {
+        var sm = new SieveModelVM();
+
+        sm.Page = 1;
+        sm.PageSize = 1;
+        sm.Filters = $"DocumentId=={PwVM.DocumentId}";
+
+        var response = await pzDataService.GetPagedResult(@"api/v1/Pw/get-filtered", sm);
+
+        if (response.Items.FirstOrDefault() != null)
+        {
+            PwVM = response.Items.First();
+        }
+
+        StateHasChanged();
+    }
+
+    public async Task ApprovePw()
+    {
+        var response = await documentDataService.ApproveDocument(@"api/v1/Pw/approve", new { DocumentId = PwVM.DocumentId });
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<PwVM>(json);
+
+            await RefreshPw();
+
+            Snackbar.Add(new MarkupString($"Pomyślnie zatwierdzono <b>{PwVM.DocumentId}</b>"), Severity.Success);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task OpenDeleteDialog(DocumentItemVM documentItem)
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć pozycję?",
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteAsync(documentItem);
+        }
+    }
+
+    private async Task OpenDeleteDocumentDialog()
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pozycji", "Czy na pewno chcesz usunąć dokument?",
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (confirm)
+        {
+            await DeleteDocumentAsync();
+        }
+    }
+
+    private async Task DeleteAsync(DocumentItemVM documentItem)
+    {
+        var response = await pzDataService.Delete(@"api/v1/Pw/item/" + documentItem.DocumentItemId);
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto pozycję"), Severity.Success);
+            await RefreshPw();
+
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+
+    private async Task DeleteDocumentAsync()
+    {
+        var response = await pzDataService.Delete(@"api/v1/Pw", new() { { "DocumentId", PwVM.DocumentId } });
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto dokument"), Severity.Success);
+            await OnePageState.RemoveTab(TabId);
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
+    }
+}

@@ -1,0 +1,210 @@
+﻿@using esWMS.Client.ViewModels.Documents
+
+<style>
+    .child-row {
+        background-color: #a7a7a717;
+        border-left: 5px solid #d0d0d0;
+    }
+</style>
+
+<MudTable T="DocumentItemVM"
+          Items="DocumentItems"
+          Hover
+          Dense
+          Bordered>
+    <HeaderContent>
+        @if (ShowAssignments)
+        {
+            <MudTh />
+        }
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductId)">
+                Id produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductCode)">
+                Kod produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.ProductName)">
+                Nazwa produktu
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Quantity)">
+                Ilość
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.DocumentWarehouseUnitItems.Sum(x => x.Quantity))">
+                Zatwierdzono
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Price ?? 0)">
+                Cena
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTd>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.Price * x.Quantity ?? 0)">
+                Wartość
+            </MudTableSortLabel>
+        </MudTd>
+        <MudTh>
+            <MudTableSortLabel T="DocumentItemVM"
+                               SortBy="new Func<DocumentItemVM, object>(x => x.IsApproved)">
+                @(TableType == DocumentItemTableType.DocumentDetails ? "Zatwierdzony" : "")
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        @if (ShowAssignments)
+        {
+            <MudTd>
+                @if (_documentItemAssignmentsShow[context.DocumentItemId!])
+                {
+                    <MudButton Variant="Variant.Outlined"
+                               Size="Size.Small"
+                               EndIcon="@Icons.Material.Filled.KeyboardArrowUp"
+                               OnClick="@(() => ShowBtnPress(context.DocumentItemId!))">
+                        Przypisania (@context.DocumentWarehouseUnitItems.Count)
+                    </MudButton>
+                }
+                else
+                {
+                    <MudButton Variant="Variant.Outlined"
+                               Size="Size.Small"
+                               EndIcon="@Icons.Material.Filled.KeyboardArrowDown"
+                               OnClick="@(() => ShowBtnPress(context.DocumentItemId))">
+                        Przypisania (@context.DocumentWarehouseUnitItems.Count)
+                    </MudButton>
+                }
+            </MudTd>
+        }
+        <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
+        <MudTd DataLabel="Kod produktu">@context.ProductCode</MudTd>
+        <MudTd DataLabel="Nazwa produktu">@context.ProductName</MudTd>
+        <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
+        <MudTd DataLabel="Zatwierdzono">@context.DocumentWarehouseUnitItems.Sum(x => x.Quantity)</MudTd>
+        <MudTd DataLabel="Cena">@context.Price</MudTd>
+        <MudTd DataLabel="Cena">@(context.Quantity * context.Price)</MudTd>
+        <MudTd>
+            @if (TableType == DocumentItemTableType.DocumentDetails)
+            {
+                @if (!context.IsApproved)
+                {
+                    <MudButton OnClick="@(async () => await OnApprove?.Invoke(context))"
+                               Size="@Size.Small"
+                               Variant="@Variant.Filled"
+                               Color="@Color.Primary">
+                        Zatwierdź
+                    </MudButton>
+                }
+                else
+                {
+                    <MudCheckBox Value="@context.IsApproved" ReadOnly />
+                }
+            }
+            else if (TableType == DocumentItemTableType.DocumentCreation)
+            {
+                <MudIconButton Size="@Size.Small"
+                               Icon="@Icons.Material.Outlined.Delete"
+                               OnClick="@(() => DocumentItems.Remove(context))" />
+            }
+        </MudTd>
+        <MudTh>
+            @if (DeleteFunc != null
+            && !context.IsApproved)
+            {
+                <MudIconButton Size="@Size.Small"
+                               Icon="@Icons.Material.Outlined.Delete"
+                               OnClick="@(async() => { await DeleteFunc.Invoke(context); StateHasChanged(); })" />
+            }
+        </MudTh>
+    </RowTemplate>
+    <ChildRowContent>
+        @if (ShowAssignments && _documentItemAssignmentsShow[context.DocumentItemId!] == true)
+        {
+            <MudTr>
+                <td colspan="4">
+                    <MudCard Elevation="0" Style="margin-left:50px;">
+                        <MudCardHeader>
+                        </MudCardHeader>
+                        <MudCardContent Class="pa-0">
+                            <MudTable Items="@context.DocumentWarehouseUnitItems.OrderBy(x => x.Quantity)"
+                                      Context="WuiContext"
+                                      Hover="true"
+                                      Breakpoint="Breakpoint.Sm"
+                                      Elevation="0"
+                                      Dense
+                                      Bordered
+                                      RowClass="child-row">
+                                <ColGroup>
+                                    <col />
+                                    <col />
+                                </ColGroup>
+                                <HeaderContent>
+                                    <MudTh>Id pozycji jednostki</MudTh>
+                                    <MudTh>Pryzpisana ilość</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Id pozycji jednostki">@WuiContext.WarehouseUnitItemId</MudTd>
+                                    <MudTd DataLabel="Pryzpisana ilość">@WuiContext.Quantity</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudCardContent>
+                    </MudCard>
+                </td>
+            </MudTr>
+            <MudDivider />
+        }
+    </ChildRowContent>
+    <FooterContent>
+        <MudTFootRow>
+            <MudTd Style="text-align:right">Wartość całkowita:</MudTd>
+            <MudTd Style="text-align:left">@DocumentItems.Sum(x => x.Quantity * x.Price)</MudTd>
+        </MudTFootRow>
+    </FooterContent>
+</MudTable>
+
+@code {
+    [Parameter]
+    public IList<DocumentItemVM> DocumentItems { get; set; }
+    [Parameter]
+    public DocumentItemTableType TableType { get; set; }
+    [Parameter]
+    public Func<DocumentItemVM, Task>? OnApprove { get; set; }
+    [Parameter]
+    public Func<DocumentItemVM, Task>? DeleteFunc { get; set; }
+    [Parameter]
+    public bool ShowAssignments { get; set; } = false;
+
+    private Dictionary<string, bool> _documentItemAssignmentsShow = new();
+
+    private void ShowBtnPress(string id)
+    {
+        _documentItemAssignmentsShow[id] = !_documentItemAssignmentsShow[id];
+    }
+
+    protected override void OnInitialized()
+    {
+        _documentItemAssignmentsShow =
+            DocumentItems.ToDictionary(key => key.DocumentItemId!, value => false);
+    }
+
+    public enum DocumentItemTableType
+    {
+        DocumentDetails,
+        DocumentCreation
+    }
+}
