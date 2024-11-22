@@ -21,7 +21,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\esWMS.API\esWMS.API.csproj" />
 	  <ProjectReference Include="..\..\src\Server\esWMS.API\esWMS.API.csproj" />
 	</ItemGroup>
 

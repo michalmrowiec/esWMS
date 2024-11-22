@@ -1,17 +1,27 @@
-version: '3.4'
-
 services:
-  eswmsapi:
-    volumes:
-      - ./src/Server/esWMS.API:/app
+  eswms.api:
     environment:
-      - DOTNET_USE_POLLING_FILE_WATCHER=true
-
-  eswmsclient:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "5010:8080"
+      - "5011:8081"
     volumes:
-      - ./src/Client/esWMS:/app
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+  
+  eswms.client:
     environment:
-      - DOTNET_USE_POLLING_FILE_WATCHER=true
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "5020:8080"
+      - "5021:8081"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
   db:
     volumes:

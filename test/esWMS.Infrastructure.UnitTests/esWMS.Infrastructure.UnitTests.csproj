@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\esWMS.Infrastructure\esWMS.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\src\Server\esWMS.Infrastructure\esWMS.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
