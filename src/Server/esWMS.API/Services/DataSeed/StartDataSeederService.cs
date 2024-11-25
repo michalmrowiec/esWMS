@@ -1,5 +1,5 @@
 ﻿using esWMS.Domain.Entities.SystemActors;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Infrastructure;
 
 namespace esWMS.API.Services.DataSeed

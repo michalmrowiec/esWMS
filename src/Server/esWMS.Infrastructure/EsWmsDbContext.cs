@@ -1,6 +1,6 @@
 ﻿using esWMS.Domain.Entities.Documents;
 using esWMS.Domain.Entities.SystemActors;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Infrastructure.EntitiesConfigurations.Documents;
 using Microsoft.EntityFrameworkCore;
 

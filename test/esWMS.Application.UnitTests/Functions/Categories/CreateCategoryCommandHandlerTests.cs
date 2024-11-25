@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Categories;
@@ -9,6 +8,7 @@ using esWMS.Application.Responses;
 using FluentAssertions;
 using MediatR;
 using Moq;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.UnitTests.Functions.Categories
 {

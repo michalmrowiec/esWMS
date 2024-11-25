@@ -1,4 +1,4 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Infrastructure.Repositories.WarehouseEnvironment;
 using esWMS.Infrastructure.UnitTests.Helpers;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations;

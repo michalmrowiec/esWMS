@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Responses;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using MediatR;
 
 namespace esWMS.Application.Functions.Warehouses.Commands.CreateWarehouse

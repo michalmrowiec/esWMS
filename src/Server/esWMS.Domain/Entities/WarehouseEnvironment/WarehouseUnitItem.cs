@@ -2,7 +2,7 @@
 using esWMS.Domain.Services;
 using System.ComponentModel;
 
-namespace esWMS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Domain.Entities.WarehouseEnvironment
 {
     public class WarehouseUnitItem
     {

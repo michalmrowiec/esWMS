@@ -1,8 +1,8 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnvironment;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnviroment
+namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnvironment
 {
     public class WarehouseUnitConfiguration : IEntityTypeConfiguration<WarehouseUnit>
     {

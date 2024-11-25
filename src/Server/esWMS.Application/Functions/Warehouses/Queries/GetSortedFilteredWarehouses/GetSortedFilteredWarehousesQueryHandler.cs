@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Domain.Models;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Warehouses.Queries.GetAllWarehouses;
 using esWMS.Application.Responses;
 using esWMS.Application.Services;
 using MediatR;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.Functions.Warehouses.Queries.GetSortedFilteredWarehouses
 {

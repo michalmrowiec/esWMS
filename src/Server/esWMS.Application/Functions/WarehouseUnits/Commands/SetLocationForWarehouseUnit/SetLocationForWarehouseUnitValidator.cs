@@ -1,7 +1,7 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Application.Functions.Locations;
+﻿using esWMS.Application.Functions.Locations;
 using esWMS.Application.Responses;
 using FluentValidation;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit
 {

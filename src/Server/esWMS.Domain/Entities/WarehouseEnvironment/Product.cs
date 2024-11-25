@@ -1,7 +1,7 @@
 ﻿using esWMS.Domain.Entities.Documents;
 using esWMS.Domain.Entities.SystemActors;
 
-namespace esWMS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Domain.Entities.WarehouseEnvironment
 {
     public class Product
     {

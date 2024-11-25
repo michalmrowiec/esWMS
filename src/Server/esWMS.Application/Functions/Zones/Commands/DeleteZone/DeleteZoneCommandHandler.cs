@@ -1,7 +1,7 @@
 ﻿using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Locations.Queries.GetSortedFilteredLocations;
 using esWMS.Application.Responses;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using MediatR;
 using Sieve.Models;
 

@@ -44,7 +44,7 @@ using esWMS.Application.Functions.Zones.Commands.CreateZone;
 using esWMS.Application.Functions.Zones.Commands.UpdateZone;
 using esWMS.Domain.Entities.Documents;
 using esWMS.Domain.Entities.SystemActors;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Domain.Models;
 
 namespace esWMS.Application.Mappings

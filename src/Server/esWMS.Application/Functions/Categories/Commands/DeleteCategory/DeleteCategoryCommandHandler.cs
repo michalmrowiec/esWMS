@@ -2,7 +2,7 @@
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using MediatR;
 using Sieve.Models;
 

@@ -1,7 +1,7 @@
 ﻿using esWMS.Application.Functions.Documents.PzFunctions;
 using esWMS.Domain.Entities.Documents;
 using esWMS.Domain.Entities.SystemActors;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Domain.Models;
 using Sieve.Models;
 
