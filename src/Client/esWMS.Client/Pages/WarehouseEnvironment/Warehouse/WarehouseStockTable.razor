@@ -88,9 +88,9 @@
         <MudTd DataLabel="Id artykułu">@context.ProductId</MudTd>
         <MudTd DataLabel="Nazwa artykułu">@context.ProductName</MudTd>
         <MudTd DataLabel="Kategoria">@context.CategoryName</MudTd>
-        <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
-        <MudTd DataLabel="Zablokowane">@context.BlockedQuantity</MudTd>
-        <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
+        <MudTd DataLabel="Ilość">@context.Quantity.FormatQuantity()</MudTd>
+        <MudTd DataLabel="Zablokowane">@context.BlockedQuantity.FormatQuantity()</MudTd>
+        <MudTd DataLabel="Dostępne">@((context.Quantity - context.BlockedQuantity).FormatQuantity())</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <TableNoRecordsContent />

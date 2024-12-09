@@ -1,4 +1,6 @@
-﻿namespace esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse
+﻿using esWMS.Client.ViewModels.WarehouseEnvironment.Zone;
+
+namespace esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse
 {
     public class WarehouseVM
     {

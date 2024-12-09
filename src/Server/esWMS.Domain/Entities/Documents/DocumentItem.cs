@@ -11,7 +11,7 @@ namespace esWMS.Domain.Entities.Documents
         public string ProductCode { get; set; } = null!;
         public string? EanCode { get; set; }
         public string ProductName { get; set; } = null!;
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
         public DateTime? BestBefore { get; set; }
         [DisplayName("Batch/Lot")]
         public string? BatchLot { get; set; }

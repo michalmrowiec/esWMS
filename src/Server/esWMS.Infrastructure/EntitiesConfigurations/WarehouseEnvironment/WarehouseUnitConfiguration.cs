@@ -22,17 +22,13 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnvironment
                 .HasDefaultValue(false)
                 .IsRequired();
 
-            builder.Property(wu => wu.TotalLength)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(wu => wu.TotalLength);
 
-            builder.Property(wu => wu.TotalWidth)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(wu => wu.TotalWidth);
 
-            builder.Property(wu => wu.TotalHeight)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(wu => wu.TotalHeight);
 
-            builder.Property(wu => wu.TotalWeight)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(wu => wu.TotalWeight);
 
             builder.Property(wu => wu.CreatedAt)
                 .IsRequired();

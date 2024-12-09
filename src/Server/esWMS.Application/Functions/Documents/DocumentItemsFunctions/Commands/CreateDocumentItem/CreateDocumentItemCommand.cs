@@ -7,7 +7,7 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.
     {
         public string? DocumentId { get; set; }
         public string ProductId { get; set; } = null!;
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
         public int? VatRate { get; set; }

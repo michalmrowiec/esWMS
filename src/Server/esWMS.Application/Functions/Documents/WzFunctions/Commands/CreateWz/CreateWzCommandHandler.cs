@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Services;
 using MediatR;
 using Sieve.Models;
 
@@ -87,7 +87,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                 }
             }
 
-            Dictionary<string, int> warehouseUnitItemsQuantityToBlock = new();
+            Dictionary<string, decimal> warehouseUnitItemsQuantityToBlock = new();
 
             foreach (var documentItem in request.DocumentItems)
             {

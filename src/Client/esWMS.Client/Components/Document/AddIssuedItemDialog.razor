@@ -2,6 +2,7 @@
 @using esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnitItem
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 @inject IDialogService DialogService
 
 <MudDialog>
@@ -171,7 +172,7 @@
         var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
         var parameters = new DialogParameters<WarehouseUnitItemTableDialog>
         {
-            { x => x.WarehouseUnitItem, EventCallback.Factory.Create<(WarehouseUnitItemVM, int)>(this, OnGet) },
+            { x => x.WarehouseUnitItem, EventCallback.Factory.Create<(WarehouseUnitItemVM, decimal)>(this, OnGet) },
             { x => x.FuncsOnAdded, new List<EventCallback>() { EventCallback.Factory.Create(this, StateHasChanged) } },
             { x => x.ProductIdFilter, _selectedStockProduct?.ProductId ?? "" },
             { x => x.WarehouseIdFilter, WarehouseId ?? "" },
@@ -180,7 +181,7 @@
         return DialogService.ShowAsync<WarehouseUnitItemTableDialog>(null, parameters, options);
     }
 
-    private void OnGet((WarehouseUnitItemVM warehouseUnitItem, int quantity) item)
+    private void OnGet((WarehouseUnitItemVM warehouseUnitItem, decimal quantity) item)
     {
         _warehouseUnitItems.Add(item.warehouseUnitItem);
         _warehouseUnitItems.First(x => x.WarehouseUnitItemId.Equals(item.warehouseUnitItem.WarehouseUnitItemId)).Quantity = item.quantity;

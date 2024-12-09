@@ -18,10 +18,10 @@ namespace esWMS.Application.Functions.Locations
         public int Level { get; set; }
         public int Cell { get; set; }
         public decimal Capacity { get; set; }
-        public decimal? MaxLength { get; set; }
-        public decimal? MaxWidth { get; set; }
-        public decimal? MaxHeight { get; set; }
-        public decimal? MaxWeight { get; set; }
+        public double? MaxLength { get; set; }
+        public double? MaxWidth { get; set; }
+        public double? MaxHeight { get; set; }
+        public double? MaxWeight { get; set; }
         public bool IsFull { get; set; }
         public string? DefaultMediaTypeId { get; set; }
     }

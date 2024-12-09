@@ -10,8 +10,8 @@ namespace esWMS.Domain.Entities.WarehouseEnvironment
         public string WarehouseUnitId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
         public bool IsMediaOfWarehouseUnit { get; set; }
-        public int Quantity { get; set; }
-        public int BlockedQuantity { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal BlockedQuantity { get; set; }
         public DateTime? BestBefore { get; set; }
         [DisplayName("Batch/Lot")]
         public string? BatchLot { get; set; }
@@ -34,8 +34,8 @@ namespace esWMS.Domain.Entities.WarehouseEnvironment
         public WarehouseUnitItem(
             string warehouseUnitId,
             string productId,
-            int quantity,
-            int blockedQuantity,
+            decimal quantity,
+            decimal blockedQuantity,
             DateTime? bestBefore,
             string? batchLot,
             string? serialNumber,

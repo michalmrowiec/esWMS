@@ -3,6 +3,6 @@
     public abstract class CommonZoneCommand
     {
         public string? ZoneName { get; set; }
-        public decimal? AvgTemperature { get; set; }
+        public double? AvgTemperature { get; set; }
     }
 }

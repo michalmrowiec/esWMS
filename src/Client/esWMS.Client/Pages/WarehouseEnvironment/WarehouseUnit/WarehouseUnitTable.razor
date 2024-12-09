@@ -7,6 +7,7 @@
 @using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 @rendermode InteractiveAuto
 @inject IDataService<WarehouseUnitVM> warehouseUnitService
 @inject OnePageState OnePageState
@@ -226,9 +227,9 @@
                                     <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
                                     <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
                                     <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
-                                    <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
-                                    <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
-                                    <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                                    <MudTd DataLabel="Ilość">@WuiContext.Quantity.FormatQuantity()</MudTd>
+                                    <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity.FormatQuantity()</MudTd>
+                                    <MudTd DataLabel="Dostępne">@((WuiContext.Quantity - WuiContext.BlockedQuantity).FormatQuantity())</MudTd>
                                     <MudTd DataLabel="Nośnik">
                                         <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
                                                      Size="Size.Small"

@@ -14,7 +14,7 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.
     {
         public string DocumentItemsId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
         public string? WarehouseUnitItemId { get; set; }

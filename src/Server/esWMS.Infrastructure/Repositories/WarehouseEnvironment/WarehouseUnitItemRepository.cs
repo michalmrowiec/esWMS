@@ -18,8 +18,8 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
         private readonly ILogger<WarehouseUnitItemRepository> _logger = logger;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
-        public async Task<IList<WarehouseUnitItem>> BlockExistWarehouseUnitItemsQuantityAsync
-            (Dictionary<string, int> warehouseUnitItemIdQuantity)
+        public async Task<IList<WarehouseUnitItem>> BlockExistWarehouseUnitItemsQuantityAsync(
+            Dictionary<string, decimal> warehouseUnitItemIdQuantity)
         {
             try
             {
@@ -86,8 +86,8 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
             }
         }
 
-        public async Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync
-            (params string[] warehouseUnitItemsIds)
+        public async Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync(
+            params string[] warehouseUnitItemsIds)
         {
             try
             {
@@ -102,8 +102,8 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
             }
         }
 
-        public async Task<IList<WarehouseUnitItem>> UpdateWarehouseUnitItemsAsync
-            (params WarehouseUnitItem[] warehouseUnitItems)
+        public async Task<IList<WarehouseUnitItem>> UpdateWarehouseUnitItemsAsync(
+            params WarehouseUnitItem[] warehouseUnitItems)
         {
             try
             {

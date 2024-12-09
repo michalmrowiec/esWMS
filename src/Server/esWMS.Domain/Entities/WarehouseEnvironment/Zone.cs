@@ -6,7 +6,7 @@
         public string? ZoneName { get; set; }
         public char ZoneAlias { get; set; }
         public string WarehouseId { get; set; } = null!;
-        public decimal? AvgTemperature { get; set; }
+        public double? AvgTemperature { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? ModifiedAt { get; set; }

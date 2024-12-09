@@ -94,10 +94,10 @@
         <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
         <MudTd DataLabel="Kod produktu">@context.ProductCode</MudTd>
         <MudTd DataLabel="Nazwa produktu">@context.ProductName</MudTd>
-        <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
-        <MudTd DataLabel="Zatwierdzono">@context.DocumentWarehouseUnitItems.Sum(x => x.Quantity)</MudTd>
-        <MudTd DataLabel="Cena">@context.Price</MudTd>
-        <MudTd DataLabel="Cena">@(context.Quantity * context.Price)</MudTd>
+        <MudTd DataLabel="Ilość">@context.Quantity.FormatQuantity()</MudTd>
+        <MudTd DataLabel="Zatwierdzono">@context.DocumentWarehouseUnitItems.Sum(x => x.Quantity).FormatQuantity()</MudTd>
+        <MudTd DataLabel="Cena">@context.Price.FormatPrice()</MudTd>
+        <MudTd DataLabel="Wartość">@((context.Quantity * context.Price).FormatPrice())</MudTd>
         <MudTd>
             @if (TableType == DocumentItemTableType.DocumentDetails)
             {
@@ -172,7 +172,7 @@
     <FooterContent>
         <MudTFootRow>
             <MudTd Style="text-align:right">Wartość całkowita:</MudTd>
-            <MudTd Style="text-align:left">@DocumentItems.Sum(x => x.Quantity * x.Price)</MudTd>
+            <MudTd Style="text-align:left">@DocumentItems.Sum(x => x.Quantity * x.Price).FormatPrice()</MudTd>
         </MudTFootRow>
     </FooterContent>
 </MudTable>

@@ -1,5 +1,6 @@
 ﻿@using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 
 <MudDialog>
     <TitleContent>
@@ -32,7 +33,7 @@
     public List<EventCallback>? FuncsOnAdded { get; set; } = new();
 
     [Parameter]
-    public EventCallback<(WarehouseUnitItemVM, int)> WarehouseUnitItem { get; set; }
+    public EventCallback<(WarehouseUnitItemVM, decimal)> WarehouseUnitItem { get; set; }
 
     [Parameter]
     public string? ProductIdFilter { get; set; }
@@ -44,7 +45,7 @@
     public HashSet<string>? ExceptWarehouseUnitItem { get; set; }
 
     private WarehouseUnitItemVM? selected;
-    private int quantity = 0;
+    private decimal quantity = 0;
 
     private void Cancel() => MudDialog.Cancel();
 

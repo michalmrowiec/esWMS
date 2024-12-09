@@ -2,7 +2,7 @@
 {
     public record ReceivingItemAssignment
         (string DocumentItemId,
-        int Quantity,
+        decimal Quantity,
         string WarehouseUnitId,
         bool? IsMedia = null);
 }

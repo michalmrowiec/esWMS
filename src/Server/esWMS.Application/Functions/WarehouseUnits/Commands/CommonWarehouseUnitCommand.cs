@@ -2,10 +2,10 @@
 {
     public class CommonWarehouseUnitCommand
     {
-        public decimal? TotalWeight { get; set; }
-        public decimal? TotalLength { get; set; }
-        public decimal? TotalWidth { get; set; }
-        public decimal? TotalHeight { get; set; }
+        public double? TotalWeight { get; set; }
+        public double? TotalLength { get; set; }
+        public double? TotalWidth { get; set; }
+        public double? TotalHeight { get; set; }
         public bool? CanBeStacked { get; set; }
     }
 }

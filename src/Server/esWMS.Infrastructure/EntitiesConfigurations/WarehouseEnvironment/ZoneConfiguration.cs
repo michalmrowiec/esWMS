@@ -25,8 +25,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnvironment
                 .IsRequired()
                 .HasMaxLength(3);
 
-            builder.Property(l => l.AvgTemperature)
-                .HasColumnType("decimal(18, 2)");
+            builder.Property(l => l.AvgTemperature);
 
             builder.Property(z => z.CreatedAt)
                 .IsRequired();

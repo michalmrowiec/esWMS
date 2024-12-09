@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using esWMS.Client.ViewModels.WarehouseEnvironment.Zone;
+using FluentValidation;
 
 namespace esWMS.Client.ViewModels
 {

@@ -11,7 +11,7 @@ namespace esWMS.Application.Functions.WarehouseUnitItems
         public string WarehouseUnitId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
         public bool IsMediaOfWarehouseUnit { get; set; }
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
         public int BlockedQuantity { get; set; }
         public DateTime? BestBefore { get; set; }
         [DisplayName("Batch/Lot")]

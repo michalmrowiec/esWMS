@@ -35,17 +35,13 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnvironment
                 .IsRequired()
                 .HasDefaultValue(1m);
 
-            builder.Property(l => l.MaxLength)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(l => l.MaxLength);
 
-            builder.Property(l => l.MaxWidth)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(l => l.MaxWidth);
 
-            builder.Property(l => l.MaxHeight)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(l => l.MaxHeight);
 
-            builder.Property(l => l.MaxWeight)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(l => l.MaxWeight);
 
             builder.Property(l => l.CreatedAt)
                 .IsRequired();

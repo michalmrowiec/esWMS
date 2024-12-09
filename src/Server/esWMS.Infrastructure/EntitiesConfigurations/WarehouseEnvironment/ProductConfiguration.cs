@@ -53,23 +53,17 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnvironment
             builder.Property(p => p.IsActive)
                 .IsRequired();
 
-            builder.Property(p => p.TotalLength)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(p => p.TotalLength);
 
-            builder.Property(p => p.TotalWidth)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(p => p.TotalWidth);
 
-            builder.Property(p => p.TotalHeight)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(p => p.TotalHeight);
 
-            builder.Property(p => p.TotalWeight)
-                .HasColumnType("decimal(18, 4)");
+            builder.Property(p => p.TotalWeight);
 
-            builder.Property(p => p.MinStorageTemperature)
-                .HasColumnType("decimal(18, 2)");
+            builder.Property(p => p.MinStorageTemperature);
 
-            builder.Property(p => p.MaxStorageTemperature)
-                .HasColumnType("decimal(18, 2)");
+            builder.Property(p => p.MaxStorageTemperature);
 
             builder.Property(p => p.CreatedAt)
                 .IsRequired();

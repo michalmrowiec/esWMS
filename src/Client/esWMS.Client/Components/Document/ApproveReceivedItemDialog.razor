@@ -3,6 +3,7 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 @using static esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnit.WarehouseUnitTable
 @inject IDocumentDataService documentService
 @inject IDialogService DialogService
@@ -110,7 +111,7 @@
     private WarehouseUnitVM? _selected;
     private bool _canBeMedia = false;
     private bool _setMediaOfWarehouseUnit = false;
-    private int _quantity = 0;
+    private decimal _quantity = 0;
 
     protected override void OnParametersSet()
     {

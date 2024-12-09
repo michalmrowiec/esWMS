@@ -2,7 +2,7 @@
 {
     public record CreateDocumentWarehouseUnitItemCommand
         (string DocumentItemId,
-        int Quantity,
+        decimal Quantity,
         string? WarehouseUnitId = null,
         string? WarehouseUnitItemId = null,
         bool? IsMedia = null);

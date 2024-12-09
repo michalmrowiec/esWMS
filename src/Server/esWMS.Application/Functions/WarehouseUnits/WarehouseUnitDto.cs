@@ -14,10 +14,10 @@ namespace esWMS.Application.Functions.WarehouseUnits
         public string WarehouseUnitId { get; set; } = null!;
         public string WarehouseId { get; set; } = null!;
         public string? LocationId { get; set; }
-        public decimal? TotalWeight { get; set; }
-        public decimal? TotalLength { get; set; }
-        public decimal? TotalWidth { get; set; }
-        public decimal? TotalHeight { get; set; }
+        public double? TotalWeight { get; set; }
+        public double? TotalLength { get; set; }
+        public double? TotalWidth { get; set; }
+        public double? TotalHeight { get; set; }
         public bool IsBlocked { get; set; }
         public bool? CanBeStacked { get; set; }
         public string? StackOnId { get; set; }

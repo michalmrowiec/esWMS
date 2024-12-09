@@ -1,7 +1,8 @@
 ﻿@page "/warehouseunititem"
 @using esWMS.Client.Components.TableColumnsFilters
 @using esWMS.Client.Services
-@using esWMS.Client.ViewModels
+@using esWMS.Client.ViewModels;
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 @rendermode InteractiveAuto
 @inject IDataService<WarehouseUnitItemVM> warehouseUnitItemService
 
@@ -129,10 +130,10 @@
         <MudTd DataLabel="Id magazynu">@context.WarehouseUnit.WarehouseId</MudTd>
         <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
         <MudTd DataLabel="Nazwa produktu">@context.Product.ProductName</MudTd>
-        <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
-        <MudTd DataLabel="Zablokowane">@context.BlockedQuantity</MudTd>
-        <MudTd DataLabel="Dostępne">@(context.Quantity - context.BlockedQuantity)</MudTd>
-        <MudTd DataLabel="Cena">@context.Price</MudTd>
+        <MudTd DataLabel="Ilość">@context.Quantity.FormatQuantity()</MudTd>
+        <MudTd DataLabel="Zablokowane">@context.BlockedQuantity.FormatQuantity()</MudTd>
+        <MudTd DataLabel="Dostępne">@((context.Quantity - context.BlockedQuantity).FormatQuantity())</MudTd>
+        <MudTd DataLabel="Cena">@context.Price.FormatPrice()</MudTd>
     </RowTemplate>
     <GroupHeaderTemplate>
         <MudTh onclick="@(() => OnClickGroup(context.Key))"

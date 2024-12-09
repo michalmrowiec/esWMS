@@ -1,7 +1,7 @@
 ﻿using esWMS.Client.ViewModels.WarehouseEnvironment.Location;
 using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse;
 
-namespace esWMS.Client.ViewModels
+namespace esWMS.Client.ViewModels.WarehouseEnvironment.Zone
 {
     public class ZoneVM
     {
@@ -9,7 +9,7 @@ namespace esWMS.Client.ViewModels
         public string? ZoneName { get; set; }
         public char ZoneAlias { get; set; }
         public string WarehouseId { get; set; } = null!;
-        public decimal? AvgTemperature { get; set; }
+        public double? AvgTemperature { get; set; }
 
         public WarehouseVM? Warehouse { get; set; }
         public IList<LocationVM> Locations { get; set; } = [];

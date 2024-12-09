@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace esWMS.Client.ViewModels
+namespace esWMS.Client.ViewModels.WarehouseEnvironment
 {
     public class ProductVM
     {
@@ -13,12 +13,12 @@ namespace esWMS.Client.ViewModels
         public string CategoryId { get; set; } = null!;
         public string? Unit { get; set; }
         public bool IsWeight { get; set; }
-        public decimal? TotalWeight { get; set; }
-        public decimal? TotalLength { get; set; }
-        public decimal? TotalWidth { get; set; }
-        public decimal? TotalHeight { get; set; }
-        public decimal? MinStorageTemperature { get; set; }
-        public decimal? MaxStorageTemperature { get; set; }
+        public double? TotalWeight { get; set; }
+        public double? TotalLength { get; set; }
+        public double? TotalWidth { get; set; }
+        public double? TotalHeight { get; set; }
+        public double? MinStorageTemperature { get; set; }
+        public double? MaxStorageTemperature { get; set; }
         public bool IsMedia { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }

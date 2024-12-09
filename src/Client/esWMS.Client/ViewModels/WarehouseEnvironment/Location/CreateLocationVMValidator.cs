@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using esWMS.Client.ViewModels.WarehouseEnvironment.Location;
+using FluentValidation;
 
 namespace esWMS.Client.ViewModels.WarehouseEnvironment.Location
 {

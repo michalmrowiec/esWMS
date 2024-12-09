@@ -9,8 +9,8 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.CreateWarehous
         public string WarehouseUnitId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
         public bool IsMediaOfWarehouseUnit { get; set; } = false;
-        public int Quantity { get; set; }
-        public int BlockedQuantity { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal BlockedQuantity { get; set; }
         public DateTime? BestBefore { get; set; }
         [DisplayName("Batch/Lot")]
         public string? BatchLot { get; set; }
