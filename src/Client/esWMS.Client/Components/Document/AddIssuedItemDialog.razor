@@ -63,8 +63,8 @@
             <RowTemplate>
                 <MudTd DataLabel="Id pozycji">@context.WarehouseUnitItemId</MudTd>
                 <MudTd DataLabel="Id jednostki">@context.WarehouseUnitId</MudTd>
-                <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
-                <MudTd DataLabel="Cena">@context.Price</MudTd>
+                <MudTd DataLabel="Ilość">@context.Quantity.FormatQuantity()</MudTd>
+                <MudTd DataLabel="Cena">@context.Price.FormatPrice()</MudTd>
                 <MudTd>
                     <MudIconButton Size="@Size.Small"
                                    Icon="@Icons.Material.Outlined.Delete"
@@ -75,22 +75,24 @@
                 <MudTd DataLabel="Kod produktu">@context.WarehouseUnitItemId</MudTd>
                 <MudTd DataLabel="Nazwa produktu">@context.WarehouseUnitId</MudTd>
                 <MudTd DataLabel="Ilość">
-                    <MudNumericField @bind-Value="context.Quantity" Required />
+                    <MudNumericField @bind-Value="context.Quantity"
+                                     Required
+                                     Format="@NumericFormat.QuantityStringFormat" />
                 </MudTd>
-                <MudTd DataLabel="Cena">@context.Price</MudTd>
+                <MudTd DataLabel="Cena">@context.Price.FormatPrice()</MudTd>
             </RowEditingTemplate>
             <FooterContent>
                 <MudTFootRow>
                     <MudTd Style="text-align:right">Suma:</MudTd>
-                    <MudTd Style="text-align:left">@_warehouseUnitItems.Sum(x => x.Quantity)</MudTd>
+                    <MudTd Style="text-align:left">@_warehouseUnitItems.Sum(x => x.Quantity).FormatQuantity()</MudTd>
                 </MudTFootRow>
                 <MudTFootRow>
                     <MudTd Style="text-align:right">Wartość:</MudTd>
-                    <MudTd Style="text-align:left">@_warehouseUnitItems.Sum(x => x.Quantity * x.Price)</MudTd>
+                    <MudTd Style="text-align:left">@_warehouseUnitItems.Sum(x => x.Quantity * x.Price).FormatPrice()</MudTd>
                 </MudTFootRow>
                 <MudTFootRow>
                     <MudTd Style="text-align:right">Średnia cena:</MudTd>
-                    <MudTd Style="text-align:left">@CalcWeightedAverage().ToString("0.00")</MudTd>
+                    <MudTd Style="text-align:left">@CalcWeightedAverage().FormatPrice()</MudTd>
                 </MudTFootRow>
             </FooterContent>
         </MudTable>

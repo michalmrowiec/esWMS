@@ -32,7 +32,7 @@
             <RowTemplate>
                 <MudTd DataLabel="Kod produktu">@WuiContext.Product.ProductCode</MudTd>
                 <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
-                <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
+                <MudTd DataLabel="Ilość">@WuiContext.Quantity.FormatQuantity()</MudTd>
                 <MudTd DataLabel="Nośnik">
                     <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
                                  Size="Size.Small"
@@ -43,7 +43,7 @@
                 <MudTd DataLabel="Kod produktu">@WuiContext.Product.ProductCode</MudTd>
                 <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
                 <MudTd DataLabel="Ilość">
-                    <MudNumericField @bind-Value="WuiContext.Quantity" Required />
+                    <MudNumericField @bind-Value="WuiContext.Quantity" Required Format="@NumericFormat.QuantityStringFormat" />
                 </MudTd>
                 <MudTd DataLabel="Nośnik">
                     <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"

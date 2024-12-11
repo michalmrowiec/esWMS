@@ -20,7 +20,8 @@
                       TypeOfSelection="SelectionType.Single" />
 
         <MudNumericField Label="Ilość"
-                         @bind-Value="quantity" />
+                         @bind-Value="quantity"
+                         Format="@NumericFormat.QuantityStringFormat"/>
 
         <MudNumericField Label="Cena"
                          @bind-Value="price" />
@@ -53,7 +54,7 @@
     public List<DocumentItemVM> DocumentItemVMs { get; set; }
 
     private ProductVM? selectedProduct;
-    private int quantity = 0;
+    private decimal quantity = 0;
     private decimal price = 0;
     private string currency = "PLN";
     private string productInfo = "";

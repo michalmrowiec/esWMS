@@ -6,7 +6,7 @@
 @using esWMS.Client.States
 @using esWMS.Client.ViewModels;
 @using esWMS.Client.ViewModels.WarehouseEnvironment
-    using esWMS.Client.ViewModels.WarehouseEnvironment
+@inject IDataService<CategoryVM> categoryService
 @inject IDataService<ProductVM> ProductService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
@@ -54,70 +54,36 @@ else
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudTextField ShrinkLabel @bind-Value="_product.ProductDescription"
-                                          Label="Opis Produktu"
-                                          Variant="Variant.Outlined"
-                                          Margin="Margin.Dense"
-                                          Lines="3" />
-                        </MudItem>
-
-                        <MudItem xs="12" md="6">
-                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalWeight"
-                                             Label="Całkowita waga (kg)"
-                                             Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
-                        </MudItem>
-
-                        <MudItem xs="12" md="6">
-                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalLength"
-                                             Label="Całkowita długość (m)"
-                                             Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
-                        </MudItem>
-
-                        <MudItem xs="12" md="6">
-                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalWidth"
-                                             Label="Całkowita szerokość (m)"
-                                             Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
-                        </MudItem>
-
-                        <MudItem xs="12" md="6">
-                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalHeight"
-                                             Label="Całkowita wysokość (m)"
-                                             Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
-                        </MudItem>
-
-                        <MudItem xs="12" md="6">
-                            <MudNumericField ShrinkLabel @bind-Value="_product.Price"
-                                             Label="Cena"
-                                             Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
-                        </MudItem>
-
-                        <MudItem xs="12" md="6">
-                            <MudCheckBox @bind-Value="_product.IsWeight"
-                                         Label="Czy na wagę?" />
-                        </MudItem>
-
-                        <MudItem xs="12" md="6">
-                            <MudCheckBox @bind-Value="_product.IsMedia"
-                                         Label="Czy media?" />
-                        </MudItem>
-
-                        <MudItem xs="12" md="6">
-                            <MudTextField ShrinkLabel @bind-Value="_product.Currency"
-                                          Label="Waluta"
+                            <MudTextField ShrinkLabel @bind-Value="_product.ShortProductName"
+                                          Label="Skrócona nazwa"
                                           Variant="Variant.Outlined"
                                           Margin="Margin.Dense" />
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudNumericField ShrinkLabel @bind-Value="_product.VatRate"
-                                             Label="Stawka VAT (%)"
-                                             Variant="Variant.Outlined"
-                                             Margin="Margin.Dense" />
+                            <MudSelect T="string"
+                                       @bind-Value="_product.CategoryId"
+                                       Label="Kategoria"
+                                       Variant="Variant.Outlined"
+                                       Margin="Margin.Dense"
+                                       AnchorOrigin="Origin.BottomCenter"
+                                       For="@(() => _product.CategoryId)"
+                                       Immediate="true">
+                                @foreach (var category in _categories)
+                                {
+                                    <MudSelectItem Value="@category.CategoryId">
+                                        @category.CategoryName
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField ShrinkLabel @bind-Value="_product.ProductDescription"
+                                          Label="Opis Produktu"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense"
+                                          Lines="3" />
                         </MudItem>
 
                         <MudItem xs="12" md="6">
@@ -128,6 +94,65 @@ else
                         </MudItem>
 
                         <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_product.IsMedia"
+                                         Label="Artykuł jest nośnikiem" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudCheckBox @bind-Value="_product.IsWeight"
+                                         Label="Artykuł wagowy" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalWeight"
+                                             Label="Waga na jednostkę (kg)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalLength"
+                                             Label="Długość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalWidth"
+                                             Label="Szerokość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.TotalHeight"
+                                             Label="Wysokość (m)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.Price"
+                                             Label="Cena"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudTextField ShrinkLabel @bind-Value="_product.Currency"
+                                          Label="Waluta"
+                                          Variant="Variant.Outlined"
+                                          Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6" lg="3">
+                            <MudNumericField ShrinkLabel @bind-Value="_product.VatRate"
+                                             Label="Stawka VAT (%)"
+                                             Variant="Variant.Outlined"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6" lg="3">
                             <MudCheckBox @bind-Value="_product.IsActive"
                                          Label="Aktywny" />
                         </MudItem>
@@ -154,9 +179,13 @@ else
     [Parameter]
     public Guid TabId { get; set; }
     private ProductVM? _product;
+    private List<CategoryVM> _categories = new();
 
     protected override async Task OnInitializedAsync()
     {
+        var res = await categoryService.GetPagedResult(@"api/v1/Category/get-filtered", new SieveModelVM(1, 500, "", ""));
+        _categories = res.Items.ToList();
+
         await ReloadProduct();
     }
 

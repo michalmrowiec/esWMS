@@ -8,7 +8,7 @@
     </TitleContent>
     <DialogContent>
 
-        <MudTextField Value="@string.Concat(selected?.WarehouseUnitItemId," ilość: ", selected?.Quantity).ToString()"
+        <MudTextField Value="@string.Concat(selected?.WarehouseUnitItemId," ilość: ", selected?.Quantity.FormatQuantity()).ToString()"
                       Label="Wybrana jednostka"
                       Disabled />
 
@@ -18,7 +18,8 @@
                                 ExceptWarehouseUnitItem="@ExceptWarehouseUnitItem" />
 
         <MudNumericField Label="Ilość"
-                         @bind-Value="quantity" />
+                         @bind-Value="quantity"
+                         Format="@NumericFormat.QuantityStringFormat" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
