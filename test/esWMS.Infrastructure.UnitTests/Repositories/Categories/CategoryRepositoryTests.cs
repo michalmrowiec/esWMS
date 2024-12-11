@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Sieve.Models;
 
-namespace esWMS.Infrastructure.UnitTests.Repositories
+namespace esWMS.Infrastructure.UnitTests.Repositories.Categories
 {
     public class CategoryRepositoryTests
     {

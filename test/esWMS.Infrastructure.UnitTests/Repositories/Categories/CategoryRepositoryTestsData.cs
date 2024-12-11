@@ -1,6 +1,6 @@
 ﻿using esWMS.Domain.Entities.WarehouseEnvironment;
 
-namespace esWMS.Infrastructure.UnitTests.Repositories
+namespace esWMS.Infrastructure.UnitTests.Repositories.Categories
 {
     internal static class CategoryRepositoryTestsData
     {

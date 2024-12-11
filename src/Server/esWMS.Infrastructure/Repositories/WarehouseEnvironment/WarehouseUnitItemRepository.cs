@@ -8,7 +8,7 @@ using Sieve.Services;
 
 namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
 {
-    internal class WarehouseUnitItemRepository
+    public class WarehouseUnitItemRepository
         (EsWmsDbContext context,
         ILogger<WarehouseUnitItemRepository> logger,
         ISieveProcessor sieveProcessor)
@@ -27,9 +27,21 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
 
                 foreach (var item in warehouseUnitItems)
                 {
-                    // TODO check the blocked quantity???
+                    var quantityToAdd = warehouseUnitItemIdQuantity[item.WarehouseUnitItemId];
 
-                    item.BlockedQuantity += warehouseUnitItemIdQuantity[item.WarehouseUnitItemId];
+                    if (quantityToAdd < 0)
+                        throw new ArgumentOutOfRangeException(nameof(warehouseUnitItemIdQuantity),
+                            $"BlockedQuantity for item {item.WarehouseUnitItemId} is out of range. " +
+                            $"Attempted to add: {quantityToAdd}");
+
+                    item.BlockedQuantity += quantityToAdd;
+
+                    if (item.BlockedQuantity > item.Quantity || item.BlockedQuantity < 0)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(warehouseUnitItemIdQuantity),
+                            $"BlockedQuantity for item {item.WarehouseUnitItemId} is out of range. " +
+                            $"Attempted to add: {quantityToAdd}, Blocked: {item.BlockedQuantity}, Available: {item.Quantity}");
+                    }
                 }
 
                 await _context.SaveChangesAsync();
