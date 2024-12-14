@@ -122,6 +122,7 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
             {
                 return await _context.WarehouseUnitItems
                     .Where(wui => warehouseUnitItemsIds.Contains(wui.WarehouseUnitItemId))
+                    .Include(x => x.WarehouseUnit)
                     .ToListAsync();
             }
             catch (Exception ex)

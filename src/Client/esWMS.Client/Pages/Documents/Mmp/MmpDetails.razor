@@ -69,7 +69,7 @@
                     </MudItem>
                     <MudItem xs="6" lg="3">
                         <MudTextField ShrinkLabel
-                                      Value="@MmpVM.DocumentIssueDate.ToString("dd-MM-yyyy")"
+                                      Value="@MmpVM.DocumentIssueDate.FormatDocumentDate()"
                                       Label="Data wystawienia"
                                       Variant="Variant.Outlined"
                                       ReadOnly
@@ -77,7 +77,7 @@
                     </MudItem>
                     <MudItem xs="6" lg="3">
                         <MudTextField ShrinkLabel
-                                      Value="@MmpVM.GoodsReceiptDate?.ToString("dd-MM-yyyy")"
+                                      Value="@MmpVM.GoodsReceiptDate?.FormatDocumentDate()"
                                       Label="Przyjęcie towaru"
                                       Variant="Variant.Outlined"
                                       ReadOnly
@@ -85,7 +85,7 @@
                     </MudItem>
                     <MudItem xs="6" lg="3">
                         <MudTextField ShrinkLabel
-                                      Value="@string.Concat(MmpVM.ApprovalDate?.ToString("dd-MM-yyyy"))"
+                                      Value="@string.Concat(MmpVM.ApprovalDate?.FormatDocumentDate())"
                                       Label="Data zatwierdzenia"
                                       Variant="Variant.Outlined"
                                       ReadOnly

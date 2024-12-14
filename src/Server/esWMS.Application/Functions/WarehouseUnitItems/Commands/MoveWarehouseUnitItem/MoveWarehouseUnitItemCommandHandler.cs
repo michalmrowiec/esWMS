@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Responses;
-using MediatR;
 using esWMS.Domain.Entities.WarehouseEnvironment;
+using esWMS.Domain.Services;
+using MediatR;
 
 namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseUnitItem
 {
@@ -47,10 +47,16 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseU
                     (BaseResponse.ResponseStatus.BadQuery, "Error retrieving warehouse unit items or warehouse unit");
             }
 
-            if (warehouseUnitItems.Any(x => x.BlockedQuantity != 0))
+            //if (warehouseUnitItems.Any(x => x.BlockedQuantity != 0))
+            //{
+            //    return new BaseResponse<WarehouseUnitDto>
+            //            (BaseResponse.ResponseStatus.BadQuery, "Cannot move blocked items");
+            //}
+
+            if (warehouseUnitItems.Any(x => x.WarehouseUnit?.IsBlocked ?? false))
             {
                 return new BaseResponse<WarehouseUnitDto>
-                        (BaseResponse.ResponseStatus.BadQuery, "Cannot move blocked items");
+                        (BaseResponse.ResponseStatus.BadQuery, "Cannot move items from blocked unit");
             }
 
             if (warehouseUnit.IsBlocked)

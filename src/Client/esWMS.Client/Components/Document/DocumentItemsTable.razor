@@ -141,7 +141,7 @@
                         <MudCardHeader>
                         </MudCardHeader>
                         <MudCardContent Class="pa-0">
-                            <MudTable Items="@context.DocumentWarehouseUnitItems.OrderBy(x => x.Quantity)"
+                            <MudTable Items="@context.DocumentWarehouseUnitItems.OrderBy(x => x.Quantity).OrderBy(x => x.WarehouseUnitItemId)"
                                       Context="WuiContext"
                                       Hover="true"
                                       Breakpoint="Breakpoint.Sm"
@@ -154,12 +154,12 @@
                                     <col />
                                 </ColGroup>
                                 <HeaderContent>
-                                    <MudTh>Id pozycji jednostki</MudTh>
+                                    <MudTh>Id pozycji</MudTh>
                                     <MudTh>Pryzpisana ilość</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
-                                    <MudTd DataLabel="Id pozycji jednostki">@WuiContext.WarehouseUnitItemId</MudTd>
-                                    <MudTd DataLabel="Pryzpisana ilość">@WuiContext.Quantity</MudTd>
+                                    <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
+                                    <MudTd DataLabel="Pryzpisana ilość">@WuiContext.Quantity.FormatQuantity()</MudTd>
                                 </RowTemplate>
                             </MudTable>
                         </MudCardContent>

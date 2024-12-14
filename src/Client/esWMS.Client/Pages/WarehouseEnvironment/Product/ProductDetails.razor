@@ -93,14 +93,32 @@ else
                                           Margin="Margin.Dense" />
                         </MudItem>
 
-                        <MudItem xs="12" md="6">
+                        <MudItem xs="12" md="3">
                             <MudCheckBox @bind-Value="_product.IsMedia"
                                          Label="Artykuł jest nośnikiem" />
                         </MudItem>
 
-                        <MudItem xs="12" md="6">
+                        <MudItem xs="12" md="3">
                             <MudCheckBox @bind-Value="_product.IsWeight"
                                          Label="Artykuł wagowy" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudSelect T="string"
+                                       @bind-Value="_product.Unit"
+                                       Label="Jednostka"
+                                       Variant="Variant.Outlined"
+                                       Margin="Margin.Dense"
+                                       AnchorOrigin="Origin.BottomCenter"
+                                       For="@(() => _product.Unit)"
+                                       Immediate="true">
+                                @foreach (var unit in _units)
+                                {
+                                    <MudSelectItem Value="@unit">
+                                        @unit
+                                    </MudSelectItem>
+                                }
+                            </MudSelect>
                         </MudItem>
 
                         <MudItem xs="12" md="6" lg="3">
@@ -180,6 +198,7 @@ else
     public Guid TabId { get; set; }
     private ProductVM? _product;
     private List<CategoryVM> _categories = new();
+    private string[] _units = ["szt", "2-pak", "3-pak"];
 
     protected override async Task OnInitializedAsync()
     {

@@ -65,7 +65,7 @@
     <RowTemplate>
         <MudTd DataLabel="Id Dokumentu">@context.DocumentId</MudTd>
         <MudTd DataLabel="Id Magazynu Wystawiającego">@context.IssueWarehouseId</MudTd>
-        <MudTd DataLabel="Data Wystawienia">@context.DocumentIssueDate.Date.ToString("dd.MM.yyyy")</MudTd>
+        <MudTd DataLabel="Data Wystawienia">@context.DocumentIssueDate.FormatDocumentDate()</MudTd>
         <MudTd DataLabel="Zatwierdzony">
             <MudCheckBox @bind-Value="@context.IsApproved" Size="Size.Small" Disabled="true"></MudCheckBox>
         </MudTd>
