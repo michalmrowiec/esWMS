@@ -71,6 +71,9 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
                 item.ProductCode = product.ProductCode;
                 item.EanCode = product.EanCode;
                 item.ProductName = product.ProductName;
+                item.Unit = product.Unit;
+                item.VatRate = product.VatRate;
+                item.Currency = product.Currency;
             }
 
             return entity;

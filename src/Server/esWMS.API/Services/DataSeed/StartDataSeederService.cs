@@ -96,6 +96,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 0.5,
                 Price = 50.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -112,6 +113,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 0.2,
                 Price = 20.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -128,6 +130,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 2,
                 Price = 350.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -144,6 +147,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 2.5,
                 Price = 500.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -160,6 +164,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 10,
                 Price = 500.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -176,6 +181,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 5,
                 Price = 300.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -192,6 +198,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 0.0,
                 Price = 1.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -208,6 +215,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 20,
                 Price = 10.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -224,6 +232,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 0.3,
                 Price = 50.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -240,6 +249,7 @@ namespace esWMS.API.Services.DataSeed
                 TotalWeight = 1,
                 Price = 20.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -260,6 +270,7 @@ namespace esWMS.API.Services.DataSeed
                 IsMedia = true,
                 Price = 70.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             }

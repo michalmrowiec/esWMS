@@ -76,6 +76,9 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
                 item.ProductCode = product.ProductCode;
                 item.EanCode = product.EanCode;
                 item.ProductName = product.ProductName;
+                item.Unit = product.Unit;
+                item.VatRate = product.VatRate;
+                item.Currency = product.Currency;
 
                 foreach (var itemAssignment in item.DocumentWarehouseUnitItems)
                 {
