@@ -207,5 +207,22 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
             }
             return fullStack;
         }
+
+        public async Task DeleteEmptyWarehouseUnits()
+        {
+            try
+            {
+                var emptyWarehouseUnits = _context.WarehouseUnits.Where(
+                    x => !x.WarehouseUnitItems.Any());
+
+                _context.WarehouseUnits.RemoveRange(emptyWarehouseUnits);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error deleting empty warehouse units");
+                throw;
+            }
+        }
     }
 }

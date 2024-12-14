@@ -69,6 +69,23 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
             }
         }
 
+        public async Task DeleteEmptyWarehouseUnitItems()
+        {
+            try
+            {
+                var emptyWarehouseUnitItems = _context.WarehouseUnitItems.Where(
+                    x => x.Quantity == 0 && x.BlockedQuantity == 0);
+
+                _context.WarehouseUnitItems.RemoveRange(emptyWarehouseUnitItems);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error deleting empty warehouse unit items");
+                throw;
+            }
+        }
+
         public async Task<PagedResult<WarehouseUnitItem>> GetSortedFilteredAsync(SieveModel sieveModel)
         {
             try
