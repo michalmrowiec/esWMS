@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnvironment;
+using esWMS.Domain.Services;
 using FluentValidation.Results;
 using MediatR;
-using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
 {
@@ -111,6 +111,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
                 {
                     newDocumentItem.DocumentWarehouseUnitItems.Add(new DocumentWarehouseUnitItem
                     {
+                        DocumentWarehouseUnitItemId = Guid.NewGuid().ToString(),
                         DocumentItemId = newDocumentItem.DocumentItemId,
                         WarehouseUnitItemId = dwui.WarehouseUnitItemId,
                         Quantity = dwui.Quantity,

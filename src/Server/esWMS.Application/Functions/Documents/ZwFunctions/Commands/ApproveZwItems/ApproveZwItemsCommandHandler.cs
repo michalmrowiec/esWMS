@@ -61,6 +61,7 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwIt
 
                 var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
                 {
+                    DocumentWarehouseUnitItemId = Guid.NewGuid().ToString(),
                     DocumentItemId = docItem.DocumentItemId,
                     WarehouseUnitItemId = newWarehouseUnitItem.WarehouseUnitItemId,
                     Quantity = itemAssignment.Quantity,

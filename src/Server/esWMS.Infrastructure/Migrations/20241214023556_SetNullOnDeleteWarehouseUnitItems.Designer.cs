@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using esWMS.Infrastructure;
 
@@ -11,9 +12,11 @@ using esWMS.Infrastructure;
 namespace esWMS.Infrastructure.Migrations
 {
     [DbContext(typeof(EsWmsDbContext))]
-    partial class EsWmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241214023556_SetNullOnDeleteWarehouseUnitItems")]
+    partial class SetNullOnDeleteWarehouseUnitItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

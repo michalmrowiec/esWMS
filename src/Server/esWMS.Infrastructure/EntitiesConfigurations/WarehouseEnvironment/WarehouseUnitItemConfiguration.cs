@@ -74,7 +74,7 @@ namespace esWMS.Infrastructure.EntitiesConfigurations.WarehouseEnvironment
                 .HasMany(wui => wui.DocumentWarehouseUnitItems)
                 .WithOne(dwui => dwui.WarehouseUnitItem)
                 .HasForeignKey(dwui => dwui.WarehouseUnitItemId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

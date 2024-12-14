@@ -2,8 +2,9 @@
 {
     public class DocumentWarehouseUnitItemDto
     {
-        public string DocumentItemId { get; set; } = null!;
-        public string WarehouseUnitItemId { get; set; } = null!;
+        public string DocumentWarehouseUnitItemId { get; set; } = null!;
+        public string DocumentItemId { get; set; }
+        public string? WarehouseUnitItemId { get; set; }
         public decimal Quantity { get; set; }
         public DateTime? CreatedAt { get; set; }
         public string? CreatedBy { get; set; }

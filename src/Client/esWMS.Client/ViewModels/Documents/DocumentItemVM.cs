@@ -37,6 +37,7 @@ namespace esWMS.Client.ViewModels.Documents
             IsMedia = isMedia;
         }
 
+        public string? DocumentWarehouseUnitItemId { get; set; }
         public string? DocumentItemId { get; set; }
         public string? WarehouseUnitId { get; set; }
         public string? WarehouseUnitItemId { get; set; }

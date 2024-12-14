@@ -1,5 +1,5 @@
-﻿using esWMS.Domain.Entities.Documents;
-using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
+﻿using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
+using esWMS.Domain.Entities.Documents;
 using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.Services
@@ -27,6 +27,7 @@ namespace esWMS.Application.Services
         {
             return new DocumentWarehouseUnitItem
             {
+                DocumentWarehouseUnitItemId = Guid.NewGuid().ToString(),
                 DocumentItemId = docItem.DocumentItemId,
                 WarehouseUnitItemId = warehouseUnitItem.WarehouseUnitItemId,
                 Quantity = itemAssignment.Quantity,

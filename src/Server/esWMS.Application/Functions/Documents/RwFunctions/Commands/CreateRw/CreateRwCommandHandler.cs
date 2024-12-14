@@ -76,6 +76,7 @@ namespace esWMS.Application.Functions.Documents.RwFunctions.Commands.CreateRw
 
                 foreach (var itemAssignment in item.DocumentWarehouseUnitItems)
                 {
+                    itemAssignment.DocumentWarehouseUnitItemId = Guid.NewGuid().ToString();
                     itemAssignment.DocumentItemId = item.DocumentItemId;
                     itemAssignment.WarehouseUnitItemId = itemAssignment.WarehouseUnitItemId!;
                     itemAssignment.Quantity = itemAssignment.Quantity;

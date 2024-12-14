@@ -79,6 +79,7 @@ namespace esWMS.Application.Functions.Documents.WzFunctions.Commands.CreateWz
 
                 foreach (var itemAssignment in item.DocumentWarehouseUnitItems)
                 {
+                    itemAssignment.DocumentWarehouseUnitItemId = Guid.NewGuid().ToString();
                     itemAssignment.DocumentItemId = item.DocumentItemId;
                     itemAssignment.WarehouseUnitItemId = itemAssignment.WarehouseUnitItemId!;
                     itemAssignment.Quantity = itemAssignment.Quantity;

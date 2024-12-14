@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using esWMS.Infrastructure;
 
@@ -11,9 +12,11 @@ using esWMS.Infrastructure;
 namespace esWMS.Infrastructure.Migrations
 {
     [DbContext(typeof(EsWmsDbContext))]
-    partial class EsWmsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241214020003_RefactorDocumentWarehouseUnitItemsSchema")]
+    partial class RefactorDocumentWarehouseUnitItemsSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,6 +211,7 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("decimal(65,30)");
 
                     b.Property<string>("WarehouseUnitItemId")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
@@ -1010,7 +1014,8 @@ namespace esWMS.Infrastructure.Migrations
                     b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnitItem", "WarehouseUnitItem")
                         .WithMany("DocumentWarehouseUnitItems")
                         .HasForeignKey("WarehouseUnitItemId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
 
                     b.Navigation("DocumentItem");
 
