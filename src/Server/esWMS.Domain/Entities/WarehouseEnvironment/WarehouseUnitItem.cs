@@ -40,6 +40,9 @@ namespace esWMS.Domain.Entities.WarehouseEnvironment
             string? batchLot,
             string? serialNumber,
             decimal? price,
+            string? currency,
+            string? unit,
+            int? vatRate,
             string? createdBy,
             bool isMediaOfWarehouseUnit = false)
         {
@@ -52,6 +55,9 @@ namespace esWMS.Domain.Entities.WarehouseEnvironment
             BatchLot = batchLot;
             SerialNumber = serialNumber;
             Price = price;
+            Currency = currency;
+            Unit = unit;
+            VatRate = vatRate;
             CreatedAt = DateTime.Now;
             CreatedBy = createdBy;
             ModifiedAt = null;
