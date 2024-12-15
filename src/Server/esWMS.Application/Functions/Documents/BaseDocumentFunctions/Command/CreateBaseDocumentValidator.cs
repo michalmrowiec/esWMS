@@ -21,7 +21,7 @@ namespace esWMS.Application.Functions.Documents.BaseDocumentFunctions.Command
                 });
 
             RuleForEach(x => x.DocumentItems)
-                .SetValidator(new CreateDocumentItemValidator());
+                .SetValidator(new CreateDocumentItemValidator(products));
 
             RuleFor(x => x)
                 .Custom((value, context) =>

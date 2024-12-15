@@ -104,21 +104,12 @@ else
                         </MudItem>
 
                         <MudItem xs="12" md="6">
-                            <MudSelect T="string"
-                                       @bind-Value="_product.Unit"
-                                       Label="Jednostka"
-                                       Variant="Variant.Outlined"
-                                       Margin="Margin.Dense"
-                                       AnchorOrigin="Origin.BottomCenter"
-                                       For="@(() => _product.Unit)"
-                                       Immediate="true">
-                                @foreach (var unit in _units)
-                                {
-                                    <MudSelectItem Value="@unit">
-                                        @unit
-                                    </MudSelectItem>
-                                }
-                            </MudSelect>
+                            <MudAutocomplete @bind-Value="_product.Unit"
+                                             SearchFunc="@(async (value, ct) => await Search(value, ct))"
+                                             Variant="Variant.Outlined"
+                                             Label="Jednostka"
+                                             Margin="Margin.Dense"
+                                             CoerceValue="true" />
                         </MudItem>
 
                         <MudItem xs="12" md="6" lg="3">
@@ -198,7 +189,15 @@ else
     public Guid TabId { get; set; }
     private ProductVM? _product;
     private List<CategoryVM> _categories = new();
-    private string[] _units = ["szt", "2-pak", "3-pak"];
+    private string[] _units = new string[] { "szt", "m", "m2", "m3", "kg", "l", "usługa", "2-PAK", "3-PAK", "4-PAK", };
+
+    private async Task<IEnumerable<string>> Search(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value))
+            return _units;
+
+        return _units.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
 
     protected override async Task OnInitializedAsync()
     {
