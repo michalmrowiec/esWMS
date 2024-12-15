@@ -14,7 +14,8 @@
         <ZwDocumentItemsTable SelectedDocumentItem="OnDocumentItemSelected" />
 
         <MudNumericField Label="Ilość"
-                         @bind-Value="quantity" />
+                         @bind-Value="quantity"
+                         Format="@NumericFormat.QuantityStringFormat"/>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>

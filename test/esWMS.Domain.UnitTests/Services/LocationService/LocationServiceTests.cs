@@ -1,4 +1,4 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Domain.Services;
 using FluentAssertions;
 

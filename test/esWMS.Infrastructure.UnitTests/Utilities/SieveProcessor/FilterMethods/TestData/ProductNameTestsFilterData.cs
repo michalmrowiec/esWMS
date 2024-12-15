@@ -1,4 +1,4 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Infrastructure.UnitTests.Utilities.SieveProcessor.FilterMethods.TestData
 {

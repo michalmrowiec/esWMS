@@ -1,5 +1,5 @@
 ﻿using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Domain.Models;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.Documents;
 using esWMS.Infrastructure.Utilities.SieveProcessorConfigurations.WarehouseEnviroment;

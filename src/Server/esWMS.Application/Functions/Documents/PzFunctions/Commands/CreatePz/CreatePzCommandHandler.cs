@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Responses;
 using esWMS.Application.Services;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Services;
 using MediatR;
 
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
 {
-    internal class CreatePzCommandHandler
-        (IPzRepository repository,
+    internal class CreatePzCommandHandler(
+        IPzRepository repository,
         IProductService productService,
         IMapper mapper)
         : IRequestHandler<CreatePzCommand, BaseResponse<PzDto>>
@@ -22,7 +22,8 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
         public async Task<BaseResponse<PzDto>> Handle
             (CreatePzCommand request, CancellationToken cancellationToken)
         {
-            var productsResponse = await _productService.GetProductsAsync(request.DocumentItems.Select(x => x.ProductId));
+            var productsResponse = await _productService.GetProductsAsync(
+                request.DocumentItems.Select(x => x.ProductId));
 
             if (!productsResponse.IsSuccess)
             {
@@ -71,6 +72,9 @@ namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.CreatePz
                 item.ProductCode = product.ProductCode;
                 item.EanCode = product.EanCode;
                 item.ProductName = product.ProductName;
+                item.Unit = product.Unit;
+                item.VatRate = product.VatRate;
+                item.Currency = product.Currency;
             }
 
             return entity;

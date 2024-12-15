@@ -3,6 +3,7 @@ using esWMS.API.Services;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Functions.WarehouseUnits.Commands.CreateWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.DeleteWarehouseUnit;
+using esWMS.Application.Functions.WarehouseUnits.Commands.PurgeEmptyWarehouseUnitsAndItems;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWarehouseUnit;
 using esWMS.Application.Functions.WarehouseUnits.Commands.UpdateWarehouseUnit;
@@ -103,6 +104,14 @@ namespace esWMS.API.Controllers.WarehouseEnvironment
         public async Task<ActionResult> DeleteEmptyWarehouseUnit([FromRoute] string warehouseUnitId)
         {
             var result = await _mediator.Send(new DeleteWarehouseUnitCommand(warehouseUnitId));
+
+            return result.HandleNoContentResult(this);
+        }
+
+        [HttpDelete("purge-empty")]
+        public async Task<ActionResult> PurgeEmptyWarehouseUnitsAndItems()
+        {
+            var result = await _mediator.Send(new PurgeEmptyWarehouseUnitsAndItemsCommand());
 
             return result.HandleNoContentResult(this);
         }

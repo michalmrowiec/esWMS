@@ -7,12 +7,14 @@
 @using esWMS.Client.States
 @using esWMS.Client.ViewModels
 @using esWMS.Client.Components.TableColumnsFilters
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 @rendermode InteractiveAuto
 @inject IDataService<WarehouseUnitVM> warehouseUnitService
 @inject OnePageState OnePageState
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject IAlertService AlertService
+@inject IConfirmDialogService ConfirmDialogService
 
 <style>
     .selected-row {
@@ -58,9 +60,14 @@
         <MudButton @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
                    Color="Color.Primary"
-                   hidden="@(TypeOfSelection == SelectionType.Multi)">
+                   hidden="@(TypeOfSelection == SelectionType.Multi)"
+                   Class="me-3">
             Utwórz jednostkę
         </MudButton>
+        <MudTooltip Text="Usuwa wszystkie puste pozycje i jednostki magazynowe">
+            <MudIconButton @onclick="PurgeEmptyAsync"
+                           Icon="@Icons.Material.Filled.DeleteSweep" />
+        </MudTooltip>
         <MudIconButton Icon="@Icons.Material.Filled.Refresh"
                        OnClick="OnSearch" />
     </ToolBarContent>
@@ -226,9 +233,9 @@
                                     <MudTd DataLabel="Id magazynu">@WuiContext.WarehouseUnit.WarehouseId</MudTd>
                                     <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
                                     <MudTd DataLabel="Nazwa produktu">@WuiContext.Product.ProductName</MudTd>
-                                    <MudTd DataLabel="Ilość">@WuiContext.Quantity</MudTd>
-                                    <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity</MudTd>
-                                    <MudTd DataLabel="Dostępne">@(WuiContext.Quantity - WuiContext.BlockedQuantity)</MudTd>
+                                    <MudTd DataLabel="Ilość">@WuiContext.Quantity.FormatQuantity()</MudTd>
+                                    <MudTd DataLabel="Zablokowane">@WuiContext.BlockedQuantity.FormatQuantity()</MudTd>
+                                    <MudTd DataLabel="Dostępne">@((WuiContext.Quantity - WuiContext.BlockedQuantity).FormatQuantity())</MudTd>
                                     <MudTd DataLabel="Nośnik">
                                         <MudCheckBox @bind-Value="@WuiContext.IsMediaOfWarehouseUnit"
                                                      Size="Size.Small"
@@ -433,6 +440,30 @@
             { x => x.FuncsOnCreated, new List<EventCallback>() { EventCallback.Factory.Create(this, _table.ReloadServerData) } }
         };
         return DialogService.ShowAsync<AddWarehouseUnitDialog>(null, parameters, options);
+    }
+
+    private async Task PurgeEmptyAsync()
+    {
+        bool confirm = false;
+
+        await ConfirmDialogService.OpenDeleteDialogAsync(
+            "Usuwanie pustych pozycji i jednostek magazynowych", "Czy na pewno chcesz usunąć wszystkie puste pozycje i jednostki magazynowe?",
+            Services.Dialog.ConfirmDialogService.ButtonDialogType.Delete,
+            EventCallback.Factory.Create(this, () => confirm = true));
+
+        if (!confirm)
+            return;
+
+        var response = await warehouseUnitService.Delete(@"api/v1/WarehouseUnit/purge-empty/");
+        if (response.IsSuccessStatusCode)
+        {
+            Snackbar.Add(new MarkupString("Usunięto puste pozycje i jednostki"), Severity.Success);
+            await _table.ReloadServerData();
+        }
+        else
+        {
+            await response.HandleFailure(AlertService);
+        }
     }
 
     private Task OpenEditLocationDialogAsync(WarehouseUnitVM warehouseUnit)

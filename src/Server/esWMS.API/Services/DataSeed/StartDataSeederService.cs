@@ -1,5 +1,5 @@
 ﻿using esWMS.Domain.Entities.SystemActors;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Infrastructure;
 
 namespace esWMS.API.Services.DataSeed
@@ -93,9 +93,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-002",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 0.5m,
+                TotalWeight = 0.5,
                 Price = 50.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -109,9 +110,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-002",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 0.2m,
+                TotalWeight = 0.2,
                 Price = 20.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -125,9 +127,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-003",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 2m,
+                TotalWeight = 2,
                 Price = 350.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -141,9 +144,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-003",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 2.5m,
+                TotalWeight = 2.5,
                 Price = 500.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -157,9 +161,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-005",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 10m,
+                TotalWeight = 10,
                 Price = 500.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -173,9 +178,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-005",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 5m,
+                TotalWeight = 5,
                 Price = 300.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -189,9 +195,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-006",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 0.01m,
+                TotalWeight = 0.0,
                 Price = 1.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -205,9 +212,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-006",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 20m,
+                TotalWeight = 20,
                 Price = 10.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -221,9 +229,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-006",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 0.3m,
+                TotalWeight = 0.3,
                 Price = 50.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -237,9 +246,10 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-006",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 1m,
+                TotalWeight = 1,
                 Price = 20.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             },
@@ -253,13 +263,14 @@ namespace esWMS.API.Services.DataSeed
                 CategoryId = "CAT-007",
                 Unit = "szt",
                 IsWeight = false,
-                TotalWeight = 25m,
-                TotalHeight = 0.144m,
-                TotalWidth = 0.8m,
-                TotalLength = 1.2m,
+                TotalWeight = 25,
+                TotalHeight = 0.144,
+                TotalWidth = 0.8,
+                TotalLength = 1.2,
                 IsMedia = true,
                 Price = 70.00m,
                 IsActive = true,
+                Currency = "PLN",
                 VatRate = 23,
                 CreatedAt = DateTime.Now
             }

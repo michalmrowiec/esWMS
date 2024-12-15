@@ -15,6 +15,6 @@ namespace esWMS.Application.Functions.Zones
         public string? ZoneName { get; set; }
         public char ZoneAlias { get; set; }
         public string WarehouseId { get; set; } = null!;
-        public decimal? AvgTemperature { get; set; }
+        public double? AvgTemperature { get; set; }
     }
 }

@@ -156,10 +156,10 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("varchar(250)");
 
-                    b.Property<int>("Quantity")
+                    b.Property<decimal>("Quantity")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("decimal(65,30)")
+                        .HasDefaultValue(0m);
 
                     b.Property<string>("SerialNumber")
                         .HasMaxLength(100)
@@ -183,11 +183,7 @@ namespace esWMS.Infrastructure.Migrations
 
             modelBuilder.Entity("esWMS.Domain.Entities.Documents.DocumentWarehouseUnitItem", b =>
                 {
-                    b.Property<string>("DocumentItemId")
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
-                    b.Property<string>("WarehouseUnitItemId")
+                    b.Property<string>("DocumentWarehouseUnitItemId")
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
@@ -197,16 +193,27 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("DocumentItemId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(65,30)");
 
-                    b.HasKey("DocumentItemId", "WarehouseUnitItemId");
+                    b.Property<string>("WarehouseUnitItemId")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("DocumentWarehouseUnitItemId");
+
+                    b.HasIndex("DocumentItemId");
 
                     b.HasIndex("WarehouseUnitItemId");
 
@@ -359,7 +366,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Category", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Category", b =>
                 {
                     b.Property<string>("CategoryId")
                         .HasMaxLength(50)
@@ -395,7 +402,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Location", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Location", b =>
                 {
                     b.Property<string>("LocationId")
                         .HasMaxLength(20)
@@ -427,17 +434,17 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("MaxHeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("MaxHeight")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("MaxLength")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("MaxLength")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("MaxWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("MaxWeight")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("MaxWidth")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("MaxWidth")
+                        .HasColumnType("double");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
@@ -463,7 +470,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.ToTable("Locations");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Product", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Product", b =>
                 {
                     b.Property<string>("ProductId")
                         .HasMaxLength(50)
@@ -502,11 +509,11 @@ namespace esWMS.Infrastructure.Migrations
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(false);
 
-                    b.Property<decimal?>("MaxStorageTemperature")
-                        .HasColumnType("decimal(18, 2)");
+                    b.Property<double?>("MaxStorageTemperature")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("MinStorageTemperature")
-                        .HasColumnType("decimal(18, 2)");
+                    b.Property<double?>("MinStorageTemperature")
+                        .HasColumnType("double");
 
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime(6)");
@@ -539,17 +546,17 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<string>("SupplierContractorId")
                         .HasColumnType("varchar(3)");
 
-                    b.Property<decimal?>("TotalHeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("TotalHeight")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("TotalLength")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("TotalLength")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("TotalWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("TotalWeight")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("TotalWidth")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("TotalWidth")
+                        .HasColumnType("double");
 
                     b.Property<string>("Unit")
                         .HasMaxLength(10)
@@ -567,7 +574,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Warehouse", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Warehouse", b =>
                 {
                     b.Property<string>("WarehouseId")
                         .HasMaxLength(3)
@@ -620,7 +627,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.ToTable("Warehouses");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnit", b =>
                 {
                     b.Property<string>("WarehouseUnitId")
                         .HasMaxLength(50)
@@ -654,17 +661,17 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<string>("StackOnId")
                         .HasColumnType("varchar(50)");
 
-                    b.Property<decimal?>("TotalHeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("TotalHeight")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("TotalLength")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("TotalLength")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("TotalWeight")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("TotalWeight")
+                        .HasColumnType("double");
 
-                    b.Property<decimal?>("TotalWidth")
-                        .HasColumnType("decimal(18, 4)");
+                    b.Property<double?>("TotalWidth")
+                        .HasColumnType("double");
 
                     b.Property<string>("WarehouseId")
                         .IsRequired()
@@ -683,7 +690,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.ToTable("WarehouseUnits");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnitItem", b =>
                 {
                     b.Property<string>("WarehouseUnitItemId")
                         .HasMaxLength(50)
@@ -696,10 +703,10 @@ namespace esWMS.Infrastructure.Migrations
                     b.Property<DateTime?>("BestBefore")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("BlockedQuantity")
+                    b.Property<decimal>("BlockedQuantity")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("decimal(65,30)")
+                        .HasDefaultValue(0m);
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -732,10 +739,10 @@ namespace esWMS.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<int>("Quantity")
+                    b.Property<decimal>("Quantity")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("decimal(65,30)")
+                        .HasDefaultValue(0m);
 
                     b.Property<string>("SerialNumber")
                         .HasMaxLength(100)
@@ -762,14 +769,14 @@ namespace esWMS.Infrastructure.Migrations
                     b.ToTable("WarehouseUnitItems");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Zone", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Zone", b =>
                 {
                     b.Property<string>("ZoneId")
                         .HasMaxLength(5)
                         .HasColumnType("varchar(5)");
 
-                    b.Property<decimal?>("AvgTemperature")
-                        .HasColumnType("decimal(18, 2)");
+                    b.Property<double?>("AvgTemperature")
+                        .HasColumnType("double");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -954,7 +961,7 @@ namespace esWMS.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("AssignedEmployeeId");
 
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Warehouse", "IssueWarehouse")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Warehouse", "IssueWarehouse")
                         .WithMany("Documents")
                         .HasForeignKey("IssueWarehouseId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -981,7 +988,7 @@ namespace esWMS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Product", "Product")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Product", "Product")
                         .WithMany("DocumentItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1000,20 +1007,19 @@ namespace esWMS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", "WarehouseUnitItem")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnitItem", "WarehouseUnitItem")
                         .WithMany("DocumentWarehouseUnitItems")
                         .HasForeignKey("WarehouseUnitItemId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("DocumentItem");
 
                     b.Navigation("WarehouseUnitItem");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Category", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Category", b =>
                 {
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Category", "ParentCategory")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Category", "ParentCategory")
                         .WithMany("ChildCategories")
                         .HasForeignKey("ParentCategoryId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -1021,14 +1027,14 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("ParentCategory");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Location", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Location", b =>
                 {
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Product", "DefaultMediaType")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Product", "DefaultMediaType")
                         .WithMany("LocationDefaultMedia")
                         .HasForeignKey("DefaultMediaTypeId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Zone", "Zone")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Zone", "Zone")
                         .WithMany("Locations")
                         .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1039,9 +1045,9 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("Zone");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Product", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Product", b =>
                 {
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Category", "Category")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1057,19 +1063,19 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("SupplierContractor");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnit", b =>
                 {
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Location", "Location")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Location", "Location")
                         .WithMany("WarehouseUnits")
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", "StackOn")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnit", "StackOn")
                         .WithOne()
-                        .HasForeignKey("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", "StackOnId")
+                        .HasForeignKey("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnit", "StackOnId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Warehouse", "Warehouse")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Warehouse", "Warehouse")
                         .WithMany("WarehouseUnits")
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1082,15 +1088,15 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("Warehouse");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnitItem", b =>
                 {
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Product", "Product")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Product", "Product")
                         .WithMany("WarehouseUnitItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", "WarehouseUnit")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnit", "WarehouseUnit")
                         .WithMany("WarehouseUnitItems")
                         .HasForeignKey("WarehouseUnitId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1101,9 +1107,9 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("WarehouseUnit");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Zone", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Zone", b =>
                 {
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Warehouse", "Warehouse")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Warehouse", "Warehouse")
                         .WithMany("Zones")
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -1114,7 +1120,7 @@ namespace esWMS.Infrastructure.Migrations
 
             modelBuilder.Entity("esWMS.Domain.Entities.Documents.MMM", b =>
                 {
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Warehouse", "ToWarehouse")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Warehouse", "ToWarehouse")
                         .WithMany("MMMDocuments")
                         .HasForeignKey("ToWarehouseId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1125,7 +1131,7 @@ namespace esWMS.Infrastructure.Migrations
 
             modelBuilder.Entity("esWMS.Domain.Entities.Documents.MMP", b =>
                 {
-                    b.HasOne("esWMS.Domain.Entities.WarehouseEnviroment.Warehouse", "FromWarehouse")
+                    b.HasOne("esWMS.Domain.Entities.WarehouseEnvironment.Warehouse", "FromWarehouse")
                         .WithMany("MMPDocuments")
                         .HasForeignKey("FromWarehouseId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1183,19 +1189,19 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("WZDocuments");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Category", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Category", b =>
                 {
                     b.Navigation("ChildCategories");
 
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Location", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Location", b =>
                 {
                     b.Navigation("WarehouseUnits");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Product", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Product", b =>
                 {
                     b.Navigation("DocumentItems");
 
@@ -1204,7 +1210,7 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("WarehouseUnitItems");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Warehouse", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Warehouse", b =>
                 {
                     b.Navigation("Documents");
 
@@ -1217,17 +1223,17 @@ namespace esWMS.Infrastructure.Migrations
                     b.Navigation("Zones");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnit", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnit", b =>
                 {
                     b.Navigation("WarehouseUnitItems");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.WarehouseUnitItem", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.WarehouseUnitItem", b =>
                 {
                     b.Navigation("DocumentWarehouseUnitItems");
                 });
 
-            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnviroment.Zone", b =>
+            modelBuilder.Entity("esWMS.Domain.Entities.WarehouseEnvironment.Zone", b =>
                 {
                     b.Navigation("Locations");
                 });

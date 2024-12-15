@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
 using esWMS.Application.Services;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using MediatR;
 
 namespace esWMS.Application.Functions.Documents.PzFunctions.Commands.ApprovePzItems

@@ -1,6 +1,6 @@
 ﻿using esWMS.Application.Functions.Categories;
 using esWMS.Application.Functions.Categories.Commands.CreateCategory;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.UnitTests.Functions.Categories
 {

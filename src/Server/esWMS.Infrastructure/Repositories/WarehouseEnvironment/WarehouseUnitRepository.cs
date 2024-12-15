@@ -1,5 +1,5 @@
 ﻿using esWMS.Application.Contracts.Persistence;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -206,6 +206,23 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
                 throw;
             }
             return fullStack;
+        }
+
+        public async Task DeleteEmptyWarehouseUnits()
+        {
+            try
+            {
+                var emptyWarehouseUnits = _context.WarehouseUnits.Where(
+                    x => !x.WarehouseUnitItems.Any());
+
+                _context.WarehouseUnits.RemoveRange(emptyWarehouseUnits);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error deleting empty warehouse units");
+                throw;
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 using esWMS.Domain.Services;
 using System.ComponentModel;
 
-namespace esWMS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Domain.Entities.WarehouseEnvironment
 {
     public class WarehouseUnitItem
     {
@@ -10,8 +10,8 @@ namespace esWMS.Domain.Entities.WarehouseEnviroment
         public string WarehouseUnitId { get; set; } = null!;
         public string ProductId { get; set; } = null!;
         public bool IsMediaOfWarehouseUnit { get; set; }
-        public int Quantity { get; set; }
-        public int BlockedQuantity { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal BlockedQuantity { get; set; }
         public DateTime? BestBefore { get; set; }
         [DisplayName("Batch/Lot")]
         public string? BatchLot { get; set; }
@@ -34,12 +34,15 @@ namespace esWMS.Domain.Entities.WarehouseEnviroment
         public WarehouseUnitItem(
             string warehouseUnitId,
             string productId,
-            int quantity,
-            int blockedQuantity,
+            decimal quantity,
+            decimal blockedQuantity,
             DateTime? bestBefore,
             string? batchLot,
             string? serialNumber,
             decimal? price,
+            string? currency,
+            string? unit,
+            int? vatRate,
             string? createdBy,
             bool isMediaOfWarehouseUnit = false)
         {
@@ -52,6 +55,9 @@ namespace esWMS.Domain.Entities.WarehouseEnviroment
             BatchLot = batchLot;
             SerialNumber = serialNumber;
             Price = price;
+            Currency = currency;
+            Unit = unit;
+            VatRate = vatRate;
             CreatedAt = DateTime.Now;
             CreatedBy = createdBy;
             ModifiedAt = null;

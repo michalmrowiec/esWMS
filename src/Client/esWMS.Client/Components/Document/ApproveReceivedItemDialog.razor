@@ -3,6 +3,7 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 @using static esWMS.Client.Pages.WarehouseEnvironment.WarehouseUnit.WarehouseUnitTable
 @inject IDocumentDataService documentService
 @inject IDialogService DialogService
@@ -18,16 +19,19 @@
     <DialogContent>
         <MudText Typo="Typo.subtitle1"><strong>Id pozycji dokumentu:</strong> @DocumentItemVM.DocumentItemId</MudText>
 
-        <MudText Typo="Typo.h6">Do przypisania: @(DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + _documentItemWithAssignments.Sum(x => x.Quantity)))</MudText>
+        <MudText Typo="Typo.h6">
+            Do przypisania: @((DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + _documentItemWithAssignments.Sum(x => x.Quantity))).FormatQuantity())
+        </MudText>
 
-        <WarehouseUnitTable TypeOfSelection="SelectionType.Single"
-                            SelectedWarehouseUnits="OnGet"
-                            WarehouseIdFilter="@WarehouseId" />
+            <WarehouseUnitTable TypeOfSelection="SelectionType.Single"
+                                SelectedWarehouseUnits="OnGet"
+                                WarehouseIdFilter="@WarehouseId" />
 
-        <MudNumericField Label="Ilość"
-                         @bind-Value="_quantity" />
+            <MudNumericField Label="Ilość"
+                             @bind-Value="_quantity"
+                             Format="@NumericFormat.QuantityStringFormat" />
 
-        @if (_canBeMedia)
+            @if (_canBeMedia)
         {
             <MudCheckBox @bind-Value="_setMediaOfWarehouseUnit" Label="Ustaw jako nośnik jednoski magazynowej" />
         }
@@ -48,7 +52,7 @@
             </ToolBarContent>
             <Columns>
                 <PropertyColumn Property="x => x.WarehouseUnitId" />
-                <PropertyColumn Property="x => x.Quantity" />
+                <PropertyColumn Property="x => x.Quantity.FormatQuantity()" />
                 <TemplateColumn CellClass="d-flex justify-end">
                     <CellTemplate Context="item">
                         <MudStack Row>
@@ -82,7 +86,7 @@
                         </MudStack>
                     </CellTemplate>
                 </TemplateColumn>
-                <PropertyColumn Property="x => x.Quantity" />
+                <PropertyColumn Property="x => x.Quantity.FormatQuantity()" />
             </Columns>
         </MudDataGrid>
 
@@ -110,7 +114,7 @@
     private WarehouseUnitVM? _selected;
     private bool _canBeMedia = false;
     private bool _setMediaOfWarehouseUnit = false;
-    private int _quantity = 0;
+    private decimal _quantity = 0;
 
     protected override void OnParametersSet()
     {
@@ -128,7 +132,6 @@
         if (_selected != null && _quantity > 0)
         {
             _documentItemWithAssignments.Add(new(DocumentItemVM.DocumentItemId, _selected?.WarehouseUnitId, _quantity, isMedia: _setMediaOfWarehouseUnit));
-            _selected = null;
             _setMediaOfWarehouseUnit = false;
             _quantity = DocumentItemVM.Quantity - (DocumentItemVM.DocumentWarehouseUnitItems.Sum(x => x.Quantity) + _documentItemWithAssignments.Sum(x => x.Quantity));
             StateHasChanged();

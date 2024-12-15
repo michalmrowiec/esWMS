@@ -3,6 +3,7 @@
 @using esWMS.Client.Services
 @using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 @using esWMS.Client.ViewModels.WarehouseEnvironment.Warehouse
 @inject IDataService<CreateMmmVM> createMmmDataService
 @inject IDataService<WarehouseVM> warehouseDataService
@@ -62,10 +63,7 @@
                   Label="Uwagi"
                   Lines="3" />
 
-    <MudTextField @bind-Value="_model.AssignedEmployeeId"
-                  For="@(() => _model.AssignedEmployeeId)"
-                  Label="Przypisany pracownik"
-                  Disabled />
+    <esWMS.Client.Components.Employee.EmployeeSelector SelectedEmployee="@((employee) => _model.AssignedEmployeeId = employee.EmployeeId)" />
 
     <MudDatePicker Label="Data wydania"
                    @bind-Date="_model.GoodsReleaseDate"

@@ -1,5 +1,5 @@
 ﻿using esWMS.Application.Contracts.Persistence;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -8,7 +8,7 @@ using Sieve.Services;
 
 namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
 {
-    internal class WarehouseUnitItemRepository
+    public class WarehouseUnitItemRepository
         (EsWmsDbContext context,
         ILogger<WarehouseUnitItemRepository> logger,
         ISieveProcessor sieveProcessor)
@@ -18,8 +18,8 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
         private readonly ILogger<WarehouseUnitItemRepository> _logger = logger;
         private readonly ISieveProcessor _sieveProcessor = sieveProcessor;
 
-        public async Task<IList<WarehouseUnitItem>> BlockExistWarehouseUnitItemsQuantityAsync
-            (Dictionary<string, int> warehouseUnitItemIdQuantity)
+        public async Task<IList<WarehouseUnitItem>> BlockExistWarehouseUnitItemsQuantityAsync(
+            Dictionary<string, decimal> warehouseUnitItemIdQuantity)
         {
             try
             {
@@ -27,9 +27,21 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
 
                 foreach (var item in warehouseUnitItems)
                 {
-                    // TODO check the blocked quantity???
+                    var quantityToAdd = warehouseUnitItemIdQuantity[item.WarehouseUnitItemId];
 
-                    item.BlockedQuantity += warehouseUnitItemIdQuantity[item.WarehouseUnitItemId];
+                    if (quantityToAdd < 0)
+                        throw new ArgumentOutOfRangeException(nameof(warehouseUnitItemIdQuantity),
+                            $"BlockedQuantity for item {item.WarehouseUnitItemId} is out of range. " +
+                            $"Attempted to add: {quantityToAdd}");
+
+                    item.BlockedQuantity += quantityToAdd;
+
+                    if (item.BlockedQuantity > item.Quantity || item.BlockedQuantity < 0)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(warehouseUnitItemIdQuantity),
+                            $"BlockedQuantity for item {item.WarehouseUnitItemId} is out of range. " +
+                            $"Attempted to add: {quantityToAdd}, Blocked: {item.BlockedQuantity}, Available: {item.Quantity}");
+                    }
                 }
 
                 await _context.SaveChangesAsync();
@@ -53,6 +65,23 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating entity");
+                throw;
+            }
+        }
+
+        public async Task DeleteEmptyWarehouseUnitItems()
+        {
+            try
+            {
+                var emptyWarehouseUnitItems = _context.WarehouseUnitItems.Where(
+                    x => x.Quantity == 0 && x.BlockedQuantity == 0);
+
+                _context.WarehouseUnitItems.RemoveRange(emptyWarehouseUnitItems);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error deleting empty warehouse unit items");
                 throw;
             }
         }
@@ -86,13 +115,14 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
             }
         }
 
-        public async Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync
-            (params string[] warehouseUnitItemsIds)
+        public async Task<IList<WarehouseUnitItem>> GetWarehouseUnitItemsByIdsAsync(
+            params string[] warehouseUnitItemsIds)
         {
             try
             {
                 return await _context.WarehouseUnitItems
                     .Where(wui => warehouseUnitItemsIds.Contains(wui.WarehouseUnitItemId))
+                    .Include(x => x.WarehouseUnit)
                     .ToListAsync();
             }
             catch (Exception ex)
@@ -102,8 +132,8 @@ namespace esWMS.Infrastructure.Repositories.WarehouseEnvironment
             }
         }
 
-        public async Task<IList<WarehouseUnitItem>> UpdateWarehouseUnitItemsAsync
-            (params WarehouseUnitItem[] warehouseUnitItems)
+        public async Task<IList<WarehouseUnitItem>> UpdateWarehouseUnitItemsAsync(
+            params WarehouseUnitItem[] warehouseUnitItems)
         {
             try
             {

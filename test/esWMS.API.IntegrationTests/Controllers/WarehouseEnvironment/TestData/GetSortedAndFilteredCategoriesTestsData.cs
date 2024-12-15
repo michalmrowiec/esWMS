@@ -1,5 +1,5 @@
 ﻿using esWMS.Application.Functions.Categories;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 using esWMS.Domain.Models;
 using Sieve.Models;
 

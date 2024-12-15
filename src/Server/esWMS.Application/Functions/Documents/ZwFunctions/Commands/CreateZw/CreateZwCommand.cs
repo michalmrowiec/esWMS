@@ -16,6 +16,6 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.CreateZw
     public class DocumentItemIdQuantity
     {
         public string DocumentItemId { get; set; } = null!;
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
     }
 }

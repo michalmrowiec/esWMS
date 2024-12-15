@@ -52,10 +52,7 @@
                   Label="Uwagi"
                   Lines="3" />
 
-    <MudTextField @bind-Value="_model.AssignedEmployeeId"
-                  For="@(() => _model.AssignedEmployeeId)"
-                  Label="Przypisany pracownik"
-                  Disabled />
+    <esWMS.Client.Components.Employee.EmployeeSelector SelectedEmployee="@((employee) => _model.AssignedEmployeeId = employee.EmployeeId)" />
 
     <MudButton @onclick="OpenDialogAsync"
                Variant="Variant.Filled"

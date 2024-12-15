@@ -9,7 +9,7 @@ namespace esWMS.API.Services.DataSeed
     {
         public static async Task SeedStartAdmin(this EsWmsDbContext dbContext, IMediator mediator)
         {
-            if (!dbContext.Employees.Any())
+            if (!dbContext.Employees.Where(x => x.RoleId == Roles.Admin).Any())
             {
                 await mediator.Send(StartAdmin);
             }

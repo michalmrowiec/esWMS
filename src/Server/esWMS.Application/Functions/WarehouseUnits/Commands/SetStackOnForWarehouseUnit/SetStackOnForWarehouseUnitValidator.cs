@@ -1,4 +1,4 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnvironment;
 using FluentValidation;
 
 namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetStackOnForWarehouseUnit

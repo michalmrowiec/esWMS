@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
 using MediatR;
 
 namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwItems
@@ -47,26 +46,10 @@ namespace esWMS.Application.Functions.Documents.ZwFunctions.Commands.ApproveZwIt
                 var warUnit = warehouseUnits
                     .First(wu => wu.WarehouseUnitId.Equals(itemAssignment.WarehouseUnitId));
 
-                var newWarehouseUnitItem = new WarehouseUnitItem(
-                    warehouseUnitId: warUnit.WarehouseId,
-                    productId: docItem.ProductId,
-                    quantity: itemAssignment.Quantity,
-                    blockedQuantity: itemAssignment.Quantity,
-                    bestBefore: docItem.BestBefore,
-                    batchLot: docItem.BatchLot,
-                    serialNumber: docItem.SerialNumber,
-                    price: docItem.Price,
-                    createdBy: request.ModifiedBy,
-                    isMediaOfWarehouseUnit: itemAssignment.IsMedia ?? false);
-
-                var newDocumentWarehouseUnitItem = new DocumentWarehouseUnitItem
-                {
-                    DocumentItemId = docItem.DocumentItemId,
-                    WarehouseUnitItemId = newWarehouseUnitItem.WarehouseUnitItemId,
-                    Quantity = itemAssignment.Quantity,
-                    CreatedAt = DateTime.Now,
-                    CreatedBy = request.ModifiedBy
-                };
+                var newWarehouseUnitItem =
+                    WarehouseUnitItemService.CreateWarehouseUnitItem(warUnit, docItem, itemAssignment, request.ModifiedBy);
+                var newDocumentWarehouseUnitItem =
+                    WarehouseUnitItemService.CreateDocumentWarehouseUnitItem(docItem, newWarehouseUnitItem, itemAssignment, request.ModifiedBy);
 
                 warUnit.WarehouseUnitItems.Add(newWarehouseUnitItem);
                 docItem.DocumentWarehouseUnitItems.Add(newDocumentWarehouseUnitItem);

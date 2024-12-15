@@ -1,5 +1,5 @@
 ﻿using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.WarehouseEnviroment;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Domain.Entities.SystemActors
 {

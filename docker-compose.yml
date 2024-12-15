@@ -1,32 +1,17 @@
-version: '3.4'
-
 services:
-  eswmsapi:
+  eswms.api:
+    image: ${DOCKER_REGISTRY-}eswmsapi:latest
     container_name: eswms_api
     build:
       context: .
       dockerfile: src/Server/esWMS.API/Dockerfile
-    ports:
-      - "5010:8080"
-      - "5011:8081"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on:
-      - db
 
-  eswmsclient:
+  eswms.client:
+    image: ${DOCKER_REGISTRY-}eswms:latest
     container_name: eswms_client
     build:
       context: .
       dockerfile: src/Client/esWMS/Dockerfile
-    ports:
-      - "5020:8080"
-      - "5021:8081"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    depends_on:
-      - eswmsapi
-      - db
 
   db:
     container_name: eswms_db

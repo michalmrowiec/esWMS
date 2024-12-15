@@ -1,30 +1,65 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Utilities;
+using esWMS.Application.Functions.WarehouseUnitItems.Queries.GetSortedFilteredWarehouseUnitItems;
 using esWMS.Application.Functions.WarehouseUnits;
 using esWMS.Application.Responses;
+using esWMS.Application.Services;
+using esWMS.Domain.Entities.WarehouseEnvironment;
+using esWMS.Domain.Services;
 using MediatR;
+using Sieve.Models;
 
 namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseUnitItem
 {
-    internal class MoveWarehouseUnitItemCommandHandler
-        (IWarehouseUnitItemRepository repository,
+    internal class MoveWarehouseUnitItemCommandHandler(
+        IMediator mediator,
+        IProductService productService,
+        IWarehouseUnitItemRepository repository,
         IWarehouseUnitRepository wuRepository,
         ITransactionManager transactionManager,
         IMapper mapper)
                 : IRequestHandler<MoveWarehouseUnitItemCommand, BaseResponse<WarehouseUnitDto>>
     {
+        private readonly IMediator _mediator = mediator;
+        private readonly IProductService _productService = productService;
         private readonly IWarehouseUnitItemRepository _wuiRepository = repository;
         private readonly IWarehouseUnitRepository _wuRepository = wuRepository;
         private readonly ITransactionManager _transactionManager = transactionManager;
         private readonly IMapper _mapper = mapper;
 
-        public async Task<BaseResponse<WarehouseUnitDto>> Handle(MoveWarehouseUnitItemCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<WarehouseUnitDto>> Handle(
+            MoveWarehouseUnitItemCommand request, CancellationToken cancellationToken)
         {
+            var warehouseUnitItemsResponse = await _mediator.Send(
+                new GetSortedFilteredWarehouseUnitItemsQuery(
+                    new SieveModel()
+                    {
+                        Page = 1,
+                        PageSize = 500,
+                        Filters = "WarehouseUnitItemId==" + string.Join(
+                            '|', request.WarehouseUnitItemWithQuantity.Select(x => x.WarehouseUnitItemId).Distinct())
+                    }));
+
+            if (!warehouseUnitItemsResponse.IsSuccess() || warehouseUnitItemsResponse.ReturnedObj == null)
+            {
+                return new BaseResponse<WarehouseUnitDto>(
+                    BaseResponse.ResponseStatus.ServerError,
+                    "Error retrieving warehouse unit items.");
+            }
+
+            var productsResponse = await _productService.GetProductsAsync(
+                warehouseUnitItemsResponse.ReturnedObj!.Items.Select(x => x.ProductId).Distinct());
+
+            if (!productsResponse.IsSuccess)
+            {
+                return new BaseResponse<WarehouseUnitDto>(
+                    BaseResponse.ResponseStatus.ServerError,
+                    "Error retrieving products for warehouse unit items.");
+            }
+
             var validationResult =
-                await new MoveWarehouseUnitItemValidator().ValidateAsync(request, cancellationToken);
+                await new MoveWarehouseUnitItemValidator(warehouseUnitItemsResponse.ReturnedObj.Items, productsResponse.Products).ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
@@ -47,10 +82,16 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseU
                     (BaseResponse.ResponseStatus.BadQuery, "Error retrieving warehouse unit items or warehouse unit");
             }
 
-            if (warehouseUnitItems.Any(x => x.BlockedQuantity != 0))
+            //if (warehouseUnitItems.Any(x => x.BlockedQuantity != 0))
+            //{
+            //    return new BaseResponse<WarehouseUnitDto>
+            //            (BaseResponse.ResponseStatus.BadQuery, "Cannot move blocked items");
+            //}
+
+            if (warehouseUnitItems.Any(x => x.WarehouseUnit?.IsBlocked ?? false))
             {
                 return new BaseResponse<WarehouseUnitDto>
-                        (BaseResponse.ResponseStatus.BadQuery, "Cannot move blocked items");
+                        (BaseResponse.ResponseStatus.BadQuery, "Cannot move items from blocked unit");
             }
 
             if (warehouseUnit.IsBlocked)

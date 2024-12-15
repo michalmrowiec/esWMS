@@ -15,6 +15,6 @@ namespace esWMS.Application.Functions.WarehouseUnitItems.Commands.MoveWarehouseU
     public class WarehouseUnitItemWithQuantity
     {
         public string WarehouseUnitItemId { get; set; } = null!;
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
     }
 }

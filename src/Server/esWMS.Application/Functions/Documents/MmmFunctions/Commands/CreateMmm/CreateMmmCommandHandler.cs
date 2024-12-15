@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Domain.Models;
-using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Functions.Products;
 using esWMS.Application.Functions.Products.Queries.GetSortedFilteredProducts;
 using esWMS.Application.Responses;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnvironment;
+using esWMS.Domain.Models;
+using esWMS.Domain.Services;
 using MediatR;
 using Sieve.Models;
 
@@ -111,7 +111,9 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
                         BestBefore = wui.BestBefore,
                         BatchLot = wui.BatchLot,
                         SerialNumber = wui.SerialNumber,
+                        Unit = wui.Unit,
                         Price = wui.Price,
+                        VatRate = wui.VatRate,
                         Currency = wui.Currency,
                         DocumentItemId = Guid.NewGuid().ToString(),
                         CreatedAt = DateTime.Now,
@@ -122,6 +124,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.CreateMmm
 
                     documentItem.DocumentWarehouseUnitItems.Add(new DocumentWarehouseUnitItem()
                     {
+                        DocumentWarehouseUnitItemId = Guid.NewGuid().ToString(),
                         DocumentItemId = documentItem.DocumentItemId,
                         WarehouseUnitItemId = wui.WarehouseUnitItemId,
                         Quantity = wui.Quantity,

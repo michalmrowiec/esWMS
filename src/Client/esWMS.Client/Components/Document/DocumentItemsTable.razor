@@ -94,10 +94,10 @@
         <MudTd DataLabel="Id produktu">@context.ProductId</MudTd>
         <MudTd DataLabel="Kod produktu">@context.ProductCode</MudTd>
         <MudTd DataLabel="Nazwa produktu">@context.ProductName</MudTd>
-        <MudTd DataLabel="Ilość">@context.Quantity</MudTd>
-        <MudTd DataLabel="Zatwierdzono">@context.DocumentWarehouseUnitItems.Sum(x => x.Quantity)</MudTd>
-        <MudTd DataLabel="Cena">@context.Price</MudTd>
-        <MudTd DataLabel="Cena">@(context.Quantity * context.Price)</MudTd>
+        <MudTd DataLabel="Ilość">@context.Quantity.FormatQuantity()</MudTd>
+        <MudTd DataLabel="Zatwierdzono">@context.DocumentWarehouseUnitItems.Sum(x => x.Quantity).FormatQuantity()</MudTd>
+        <MudTd DataLabel="Cena">@context.Price.FormatPrice()</MudTd>
+        <MudTd DataLabel="Wartość">@((context.Quantity * context.Price).FormatPrice())</MudTd>
         <MudTd>
             @if (TableType == DocumentItemTableType.DocumentDetails)
             {
@@ -141,7 +141,7 @@
                         <MudCardHeader>
                         </MudCardHeader>
                         <MudCardContent Class="pa-0">
-                            <MudTable Items="@context.DocumentWarehouseUnitItems.OrderBy(x => x.Quantity)"
+                            <MudTable Items="@context.DocumentWarehouseUnitItems.OrderBy(x => x.Quantity).OrderBy(x => x.WarehouseUnitItemId)"
                                       Context="WuiContext"
                                       Hover="true"
                                       Breakpoint="Breakpoint.Sm"
@@ -154,12 +154,12 @@
                                     <col />
                                 </ColGroup>
                                 <HeaderContent>
-                                    <MudTh>Id pozycji jednostki</MudTh>
+                                    <MudTh>Id pozycji</MudTh>
                                     <MudTh>Pryzpisana ilość</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
-                                    <MudTd DataLabel="Id pozycji jednostki">@WuiContext.WarehouseUnitItemId</MudTd>
-                                    <MudTd DataLabel="Pryzpisana ilość">@WuiContext.Quantity</MudTd>
+                                    <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
+                                    <MudTd DataLabel="Pryzpisana ilość">@WuiContext.Quantity.FormatQuantity()</MudTd>
                                 </RowTemplate>
                             </MudTable>
                         </MudCardContent>
@@ -172,7 +172,7 @@
     <FooterContent>
         <MudTFootRow>
             <MudTd Style="text-align:right">Wartość całkowita:</MudTd>
-            <MudTd Style="text-align:left">@DocumentItems.Sum(x => x.Quantity * x.Price)</MudTd>
+            <MudTd Style="text-align:left">@DocumentItems.Sum(x => x.Quantity * x.Price).FormatPrice()</MudTd>
         </MudTFootRow>
     </FooterContent>
 </MudTable>

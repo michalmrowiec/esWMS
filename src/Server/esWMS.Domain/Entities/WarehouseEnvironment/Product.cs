@@ -1,7 +1,7 @@
 ﻿using esWMS.Domain.Entities.Documents;
 using esWMS.Domain.Entities.SystemActors;
 
-namespace esWMS.Domain.Entities.WarehouseEnviroment
+namespace esWMS.Domain.Entities.WarehouseEnvironment
 {
     public class Product
     {
@@ -14,12 +14,12 @@ namespace esWMS.Domain.Entities.WarehouseEnviroment
         public string CategoryId { get; set; } = null!;
         public string? Unit { get; set; }
         public bool IsWeight { get; set; }
-        public decimal? TotalWeight { get; set; }
-        public decimal? TotalLength { get; set; }
-        public decimal? TotalWidth { get; set; }
-        public decimal? TotalHeight { get; set; }
-        public decimal? MinStorageTemperature { get; set; }
-        public decimal? MaxStorageTemperature { get; set; }
+        public double? TotalWeight { get; set; }
+        public double? TotalLength { get; set; }
+        public double? TotalWidth { get; set; }
+        public double? TotalHeight { get; set; }
+        public double? MinStorageTemperature { get; set; }
+        public double? MaxStorageTemperature { get; set; }
         public bool IsMedia { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }

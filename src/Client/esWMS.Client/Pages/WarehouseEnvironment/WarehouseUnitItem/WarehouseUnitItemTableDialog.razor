@@ -1,5 +1,6 @@
 ﻿@using esWMS.Client.ViewModels
 @using esWMS.Client.ViewModels.Documents
+@using esWMS.Client.ViewModels.WarehouseEnvironment
 
 <MudDialog>
     <TitleContent>
@@ -7,7 +8,7 @@
     </TitleContent>
     <DialogContent>
 
-        <MudTextField Value="@string.Concat(selected?.WarehouseUnitItemId," ilość: ", selected?.Quantity).ToString()"
+        <MudTextField Value="@string.Concat(selected?.WarehouseUnitItemId," ilość: ", selected?.Quantity.FormatQuantity()).ToString()"
                       Label="Wybrana jednostka"
                       Disabled />
 
@@ -17,7 +18,8 @@
                                 ExceptWarehouseUnitItem="@ExceptWarehouseUnitItem" />
 
         <MudNumericField Label="Ilość"
-                         @bind-Value="quantity" />
+                         @bind-Value="quantity"
+                         Format="@NumericFormat.QuantityStringFormat" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
@@ -32,7 +34,7 @@
     public List<EventCallback>? FuncsOnAdded { get; set; } = new();
 
     [Parameter]
-    public EventCallback<(WarehouseUnitItemVM, int)> WarehouseUnitItem { get; set; }
+    public EventCallback<(WarehouseUnitItemVM, decimal)> WarehouseUnitItem { get; set; }
 
     [Parameter]
     public string? ProductIdFilter { get; set; }
@@ -44,7 +46,7 @@
     public HashSet<string>? ExceptWarehouseUnitItem { get; set; }
 
     private WarehouseUnitItemVM? selected;
-    private int quantity = 0;
+    private decimal quantity = 0;
 
     private void Cancel() => MudDialog.Cancel();
 

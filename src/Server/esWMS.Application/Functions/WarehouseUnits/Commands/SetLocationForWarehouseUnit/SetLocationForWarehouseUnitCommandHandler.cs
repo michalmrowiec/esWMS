@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.WarehouseEnviroment;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Functions.Locations;
 using esWMS.Application.Functions.Locations.Queries.GetLocationById;
 using esWMS.Application.Responses;
 using MediatR;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.Functions.WarehouseUnits.Commands.SetLocationForWarehouseUnit
 {

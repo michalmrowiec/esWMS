@@ -1,4 +1,4 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Domain.UnitTests.Services.LocationService
 {
@@ -15,10 +15,10 @@ namespace esWMS.Domain.UnitTests.Services.LocationService
                     Level = 2,
                     Cell = 1,
                     Capacity = 1000.0m,
-                    MaxLength = 2.5m,
-                    MaxWidth = 1.5m,
-                    MaxHeight = 2.0m,
-                    MaxWeight = 500.0m,
+                    MaxLength = 2.5,
+                    MaxWidth = 1.5,
+                    MaxHeight = 2.0,
+                    MaxWeight = 500.0,
                     DefaultMediaTypeId = "MEDIA_TYPE_1",
                     CreatedAt = new DateTime(2022, 12, 01),
                     CreatedBy = "admin",
@@ -34,10 +34,10 @@ namespace esWMS.Domain.UnitTests.Services.LocationService
                     Level = 0,
                     Cell = 9,
                     Capacity = 1000.0m,
-                    MaxLength = 2.5m,
-                    MaxWidth = 1.5m,
-                    MaxHeight = 2.0m,
-                    MaxWeight = 500.0m,
+                    MaxLength = 2.5,
+                    MaxWidth = 1.5,
+                    MaxHeight = 2.0,
+                    MaxWeight = 500.0,
                     DefaultMediaTypeId = "MEDIA_TYPE_1",
                     CreatedAt = new DateTime(2022, 12, 01),
                     CreatedBy = "admin",

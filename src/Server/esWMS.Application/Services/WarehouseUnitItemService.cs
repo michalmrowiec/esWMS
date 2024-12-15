@@ -1,13 +1,13 @@
-﻿using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
+﻿using esWMS.Application.Functions.Documents.DocumentItemsFunctions.Commands.CreateDocumentItem;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.Services
 {
     internal static class WarehouseUnitItemService
     {
         internal static WarehouseUnitItem CreateWarehouseUnitItem
-            (WarehouseUnit warehouseUnit, DocumentItem docItem, ReceivingItemAssignment itemAssignment, string? modifiedBy)
+            (WarehouseUnit warehouseUnit, DocumentItem docItem, DocumentWarehouseUnitItemBase itemAssignment, string? modifiedBy)
         {
             return new WarehouseUnitItem(
                 warehouseUnitId: warehouseUnit.WarehouseUnitId,
@@ -18,15 +18,19 @@ namespace esWMS.Application.Services
                 batchLot: docItem.BatchLot,
                 serialNumber: docItem.SerialNumber,
                 price: docItem.Price,
+                currency: docItem.Currency,
+                unit: docItem.Unit,
+                vatRate: docItem.VatRate,
                 createdBy: modifiedBy,
                 isMediaOfWarehouseUnit: itemAssignment.IsMedia ?? false);
         }
 
         internal static DocumentWarehouseUnitItem CreateDocumentWarehouseUnitItem
-            (DocumentItem docItem, WarehouseUnitItem warehouseUnitItem, ReceivingItemAssignment itemAssignment, string? modifiedBy)
+            (DocumentItem docItem, WarehouseUnitItem warehouseUnitItem, DocumentWarehouseUnitItemBase itemAssignment, string? modifiedBy)
         {
             return new DocumentWarehouseUnitItem
             {
+                DocumentWarehouseUnitItemId = Guid.NewGuid().ToString(),
                 DocumentItemId = docItem.DocumentItemId,
                 WarehouseUnitItemId = warehouseUnitItem.WarehouseUnitItemId,
                 Quantity = itemAssignment.Quantity,

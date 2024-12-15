@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using esWMS.Domain.Entities.Documents;
-using esWMS.Domain.Entities.WarehouseEnviroment;
-using esWMS.Domain.Services;
 using esWMS.Application.Contracts.Persistence;
 using esWMS.Application.Contracts.Persistence.Documents;
 using esWMS.Application.Contracts.Utilities;
 using esWMS.Application.Responses;
+using esWMS.Domain.Entities.Documents;
+using esWMS.Domain.Entities.WarehouseEnvironment;
+using esWMS.Domain.Services;
 using FluentValidation.Results;
 using MediatR;
 
@@ -95,7 +95,9 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
                     BestBefore = di.BestBefore,
                     BatchLot = di.BatchLot,
                     SerialNumber = di.SerialNumber,
+                    Unit = di.Unit,
                     Price = di.Price,
+                    VatRate = di.VatRate,
                     Currency = di.Currency,
                     IsApproved = di.IsApproved,
                     CreatedAt = DateTime.Now,
@@ -111,6 +113,7 @@ namespace esWMS.Application.Functions.Documents.MmmFunctions.Commands.ApproveMmm
                 {
                     newDocumentItem.DocumentWarehouseUnitItems.Add(new DocumentWarehouseUnitItem
                     {
+                        DocumentWarehouseUnitItemId = Guid.NewGuid().ToString(),
                         DocumentItemId = newDocumentItem.DocumentItemId,
                         WarehouseUnitItemId = dwui.WarehouseUnitItemId,
                         Quantity = dwui.Quantity,

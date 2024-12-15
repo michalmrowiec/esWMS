@@ -1,4 +1,4 @@
-﻿using esWMS.Domain.Entities.WarehouseEnviroment;
+﻿using esWMS.Domain.Entities.WarehouseEnvironment;
 
 namespace esWMS.Application.Contracts.Persistence
 {
@@ -11,5 +11,6 @@ namespace esWMS.Application.Contracts.Persistence
         Task<IList<WarehouseUnit>> SetWarehouseUnitsBlockedStatusAsync(bool block, params string[] warehouseUnitIds);
         Task<IList<WarehouseUnit>> GetStackedWarehouseUnitsAboveAsync(string warehouseUnitId);
         Task<IList<WarehouseUnit>> GetFullWarehouseUnitStackAsync(string warehouseUnitId);
+        Task DeleteEmptyWarehouseUnits();
     }
 }

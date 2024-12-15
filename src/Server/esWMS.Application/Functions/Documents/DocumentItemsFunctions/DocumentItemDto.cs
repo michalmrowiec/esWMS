@@ -15,7 +15,7 @@ namespace esWMS.Application.Functions.Documents.DocumentItemsFunctions
         [DisplayName("Batch/Lot")]
         public string? BatchLot { get; set; }
         public string? SerialNumber { get; set; }
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
         public int? VatRate { get; set; }
