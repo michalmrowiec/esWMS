@@ -146,6 +146,9 @@ else
                                     <col />
                                     <col />
                                     <col />
+                                    <col />
+                                    <col />
+                                    <col />
                                 </ColGroup>
                                 <HeaderContent>
                                     <MudTh>Id produktu</MudTh>
@@ -154,6 +157,9 @@ else
                                     <MudTh>Zablokowane</MudTh>
                                     <MudTh>Dostępne</MudTh>
                                     <MudTh>Nośnik</MudTh>
+                                    <MudTh>Data przydatności</MudTh>
+                                    <MudTh>Partia</MudTh>
+                                    <MudTh>Numer seryjny</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
                                     <MudTd DataLabel="Id produktu">@WuiContext.ProductId</MudTd>
@@ -166,6 +172,9 @@ else
                                                      Size="Size.Small"
                                                      Disabled />
                                     </MudTd>
+                                    <MudTd DataLabel="Data przydatności">@WuiContext.BestBefore.FormatShortDate()</MudTd>
+                                    <MudTd DataLabel="Partia">@WuiContext.BatchLot</MudTd>
+                                    <MudTd DataLabel="Numer seryjny">@WuiContext.SerialNumber</MudTd>
                                 </RowTemplate>
                             </MudTable>
                         </MudCardContent>
