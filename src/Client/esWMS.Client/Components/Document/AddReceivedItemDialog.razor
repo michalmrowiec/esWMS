@@ -11,23 +11,40 @@
     </TitleContent>
     <DialogContent>
 
-        <MudTextField @bind-Value="productInfo"
-                      Label="Wybrany produkt"
-                      Disabled />
+        <MudStack Spacing="2">
+            <MudGrid>
+                <MudItem xs="9">
+                    <MudTextField @bind-Value="_productInfo"
+                                  Label="Wybrany produkt"
+                                  Disabled />
+                </MudItem>
+                <MudItem xs="3">
+                    <MudButton OnClick="@(() => _productTableExpanded = !_productTableExpanded)"
+                               StartIcon="@(_productTableExpanded ? Icons.Material.Outlined.SearchOff : Icons.Material.Outlined.Search)">
+                        @(_productTableExpanded ? "Zamknij" : "Szukaj")
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
 
-        <ProductTable SelectedProduct="OnProductSelected"
-                      PageSize="new int[] {5,10,25,50}"
-                      TypeOfSelection="SelectionType.Single" />
+            <MudDivider />
+            <MudCollapse Expanded="_productTableExpanded">
+                <ProductTable SelectedProduct="OnProductSelected"
+                              PageSize="new int[] {5,10,25,50}"
+                              TypeOfSelection="SelectionType.Single" />
+            </MudCollapse>
+        </MudStack>
+
+
 
         <MudNumericField Label="Ilość"
-                         @bind-Value="quantity"
-                         Format="@NumericFormat.QuantityStringFormat"/>
+                         @bind-Value="_newDocumentItem.Quantity"
+                         Format="@NumericFormat.QuantityStringFormat" />
 
         <MudNumericField Label="Cena"
-                         @bind-Value="price" />
+                         @bind-Value="_newDocumentItem.Price" />
 
         <MudSelect T="string"
-                   @bind-Value="currency"
+                   @bind-Value="_newDocumentItem.Currency"
                    Label="Waluta"
                    AnchorOrigin="Origin.BottomCenter"
                    Immediate="true">
@@ -35,8 +52,17 @@
             <MudSelectItem Value="@(new string("PLN"))">
                 PLN
             </MudSelectItem>
-
         </MudSelect>
+
+        <MudDatePicker Label="Data przydatności"
+                         @bind-Date="_newDocumentItem.BestBefore" />
+
+        <MudTextField Label="Numer partii"
+                         @bind-Value="_newDocumentItem.BatchLot" />
+
+        <MudTextField Label="Numer seryjny"
+                      @bind-Value="_newDocumentItem.SerialNumber" />
+
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Anuluj</MudButton>
@@ -53,29 +79,15 @@
     [Parameter]
     public List<DocumentItemVM> DocumentItemVMs { get; set; }
 
-    private ProductVM? selectedProduct;
-    private decimal quantity = 0;
-    private decimal price = 0;
-    private string currency = "PLN";
-    private string productInfo = "";
-
+    private string _productInfo = "";
+    private bool _productTableExpanded = true;
+    private DocumentItemVM _newDocumentItem = new();
 
     private void Submit()
     {
-        if (selectedProduct != null)
+        if (_newDocumentItem.ProductId != null)
         {
-            DocumentItemVMs.Add(new DocumentItemVM()
-                {
-                    ProductId = selectedProduct.ProductId,
-                    ProductCode = selectedProduct.ProductCode,
-                    EanCode = selectedProduct.EanCode,
-                    ProductName = selectedProduct.ProductName,
-                    Quantity = quantity,
-                    Price = price,
-                    Currency = currency,
-                    VatRate = selectedProduct.VatRate,
-                    Unit = selectedProduct.Unit
-                });
+            DocumentItemVMs.Add(_newDocumentItem);
         }
 
         FuncsOnAdded?.ForEach(async x => await x.InvokeAsync());
@@ -87,9 +99,18 @@
 
     private void OnProductSelected(ProductVM product)
     {
-        selectedProduct = product;
-        price = product.Price ?? 0;
-        productInfo = product.ProductName;
+        _productTableExpanded = false;
+        _productInfo = product.ProductName;
+
+        _newDocumentItem.Price = product.Price ?? 0;
+        _newDocumentItem.Currency = product.Currency;
+        _newDocumentItem.ProductId = product.ProductId;
+        _newDocumentItem.ProductCode = product.ProductCode;
+        _newDocumentItem.EanCode = product.EanCode;
+        _newDocumentItem.ProductName = product.ProductName;
+        _newDocumentItem.VatRate = product.VatRate;
+        _newDocumentItem.Unit = product.Unit;
+
         StateHasChanged();
     }
 }

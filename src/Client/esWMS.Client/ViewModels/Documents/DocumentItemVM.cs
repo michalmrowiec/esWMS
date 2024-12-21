@@ -1,4 +1,5 @@
 ﻿using esWMS.Client.ViewModels.WarehouseEnvironment;
+using System.ComponentModel;
 
 namespace esWMS.Client.ViewModels.Documents
 {
@@ -11,6 +12,10 @@ namespace esWMS.Client.ViewModels.Documents
         public string? EanCode { get; set; }
         public string ProductName { get; set; } = null!;
         public decimal Quantity { get; set; }
+        public DateTime? BestBefore { get; set; }
+        [DisplayName("Batch/Lot")]
+        public string? BatchLot { get; set; }
+        public string? SerialNumber { get; set; }
         public decimal? Price { get; set; }
         public string? Currency { get; set; }
         public int? VatRate { get; set; }
