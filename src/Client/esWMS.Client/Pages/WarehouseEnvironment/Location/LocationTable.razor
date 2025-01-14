@@ -43,7 +43,8 @@
         <MudSpacer />
         <esWMS.Client.Components.Buttons.PrintQrButton Codes="@(_selectedItems.Select(x => x.LocationId).ToArray())"
                                                        Disabled="@(_selectedItems.Count == 0)" />
-        <MudButton @onclick="OpenDialogAsync"
+        <MudButton Class="ms-2"
+                   @onclick="OpenDialogAsync"
                    Variant="Variant.Filled"
                    Color="Color.Primary">
             Utwórz lokalizację
