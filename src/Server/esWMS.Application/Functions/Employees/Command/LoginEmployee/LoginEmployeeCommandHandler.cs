@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace esWMS.Application.Functions.Employees.Command.LoginEmployee
 {
-    internal class LoginEmployeeCommandCommand
+    internal class LoginEmployeeCommandHandler
         (IEmployeeRepository employeeRepository,
         IMapper mapper,
         IPasswordHasher<Employee> passwordHasher,
