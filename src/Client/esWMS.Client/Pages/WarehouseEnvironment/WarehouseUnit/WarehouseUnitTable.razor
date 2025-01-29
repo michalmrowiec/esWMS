@@ -195,7 +195,7 @@
         @if (_wuIdShow[context.WarehouseUnitId] == true)
         {
             <MudTr>
-                <td colspan="4">
+                <td colspan="7">
                     <MudCard Elevation="0" Style="margin-left:50px;">
                         <MudCardHeader>
                         </MudCardHeader>
@@ -217,6 +217,9 @@
                                     <col />
                                     <col />
                                     <col />
+                                    <col />
+                                    <col />
+                                    <col />
                                 </ColGroup>
                                 <HeaderContent>
                                     <MudTh>Id pozycji</MudTh>
@@ -227,6 +230,9 @@
                                     <MudTh>Zablokowane</MudTh>
                                     <MudTh>Dostępne</MudTh>
                                     <MudTh>Nośnik</MudTh>
+                                    <MudTh>Data przydatności</MudTh>
+                                    <MudTh>Partia</MudTh>
+                                    <MudTh>Numer seryjny</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
                                     <MudTd DataLabel="Id pozycji">@WuiContext.WarehouseUnitItemId</MudTd>
@@ -241,6 +247,9 @@
                                                      Size="Size.Small"
                                                      Disabled />
                                     </MudTd>
+                                    <MudTd DataLabel="Data przydatności">@WuiContext.BestBefore.FormatShortDate()</MudTd>
+                                    <MudTd DataLabel="Partia">@WuiContext.BatchLot</MudTd>
+                                    <MudTd DataLabel="Numer seryjny">@WuiContext.SerialNumber</MudTd>
                                 </RowTemplate>
                             </MudTable>
                         </MudCardContent>
@@ -257,7 +266,7 @@
         <TableLoadingContent />
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <TablePager />
     </PagerContent>
 </MudTable>
 

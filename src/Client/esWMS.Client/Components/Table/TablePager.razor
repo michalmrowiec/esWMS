@@ -1,5 +1,6 @@
 ﻿<MudTablePager HideRowsPerPage="false"
                RowsPerPageString="Elementy na stronę:"
+               InfoFormat="{first_item}-{last_item} z {all_items}"
                PageSizeOptions="PageSize" />
 
 @code {
@@ -12,7 +13,7 @@
             || PageSize?.Length < 1
             || PageSize?.Length > 10)
         {
-            PageSize = new int[] { 25, 50, 100, 500 };
+            PageSize = new int[] { 10, 25, 50, 100, 500 };
         }
 
     }

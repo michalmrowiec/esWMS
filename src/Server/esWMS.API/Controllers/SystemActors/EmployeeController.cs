@@ -1,6 +1,5 @@
 ﻿using esWMS.API.Controllers.Utils;
 using esWMS.API.Services;
-using esWMS.Application.Functions.Contractors;
 using esWMS.Application.Functions.Employees;
 using esWMS.Application.Functions.Employees.Command.CreateEmployee;
 using esWMS.Application.Functions.Employees.Command.LoginEmployee;
@@ -83,7 +82,7 @@ namespace esWMS.API.Controllers.SystemActors
 
         [Authorize(Roles = $"{Roles.Admin}")]
         [HttpPut]
-        public async Task<ActionResult<ContractorDto>> UpdateEmployee(
+        public async Task<ActionResult<EmployeeDto>> UpdateEmployee(
             [FromBody] UpdateEmployeeCommand updateEmployeeCommand)
         {
             if (_userContextService.GetUserId is not null)
